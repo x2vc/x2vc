@@ -1,8 +1,8 @@
 package org.x2vc.stylesheet;
 
 import java.net.URI;
-
 import com.google.common.base.Optional;
+import static com.google.common.base.Preconditions.*;
 
 /**
  * This object is a result of the stylesheet preparation process and provides
@@ -22,6 +22,10 @@ public class StylesheetInformation implements IStylesheetInformation {
 
 	StylesheetInformation(URI originalLocation, String originalStylesheet, String preparedStylesheet,
 			IStylesheetStructure structure) {
+		checkNotNull(originalLocation);
+		checkNotNull(originalStylesheet);
+		checkNotNull(preparedStylesheet);
+		checkNotNull(structure);
 		this.originalLocation = Optional.of(originalLocation);
 		this.originalStylesheet = originalStylesheet;
 		this.preparedStylesheet = preparedStylesheet;
@@ -30,6 +34,9 @@ public class StylesheetInformation implements IStylesheetInformation {
 
 	StylesheetInformation(String originalStylesheet, String preparedStylesheet,
 			IStylesheetStructure structure) {
+		checkNotNull(originalStylesheet);
+		checkNotNull(preparedStylesheet);
+		checkNotNull(structure);
 		this.originalLocation = Optional.absent();
 		this.originalStylesheet = originalStylesheet;
 		this.preparedStylesheet = preparedStylesheet;
