@@ -31,7 +31,7 @@ class StylesheetPreprocessorTestWithProcessor {
 	Processor xsltProcessor;
 
 	@Mock
-	IStylesheetExpander stylesheetExpander;
+	IStylesheetExtender stylesheetExtender;
 
 	@Mock
 	IStylesheetStructureExtractor structureExtractor;
@@ -44,7 +44,7 @@ class StylesheetPreprocessorTestWithProcessor {
 	@BeforeEach
 	void prepareInstances() {
 		this.xsltProcessor = new Processor();
-		this.preprocessor = new StylesheetPreprocessor(this.xsltProcessor, this.stylesheetExpander,
+		this.preprocessor = new StylesheetPreprocessor(this.xsltProcessor, this.stylesheetExtender,
 				this.structureExtractor);
 		lenient().when(this.structureExtractor.extractStructure(anyString())).thenReturn(this.structure);
 	}
@@ -197,7 +197,7 @@ class StylesheetPreprocessorTestWithProcessor {
 
 	@Test
 	void testStylesheetLocation_whenFileBased() throws SaxonApiException {
-		when(this.stylesheetExpander.extendStylesheet(this.minimalStylesheet)).thenReturn(this.minimalStylesheet_Extended);
+		when(this.stylesheetExtender.extendStylesheet(this.minimalStylesheet)).thenReturn(this.minimalStylesheet_Extended);
 		IStylesheetInformation info = this.preprocessor.prepareStylesheet(URI.create("foobar"), this.minimalStylesheet);
 		assertTrue(info.isFileBased());
 		assertEquals(URI.create("foobar"), info.getOriginalLocation());
@@ -205,21 +205,21 @@ class StylesheetPreprocessorTestWithProcessor {
 
 	@Test
 	void testStylesheetLocation_whenNotFileBased() throws SaxonApiException {
-		when(this.stylesheetExpander.extendStylesheet(this.minimalStylesheet)).thenReturn(this.minimalStylesheet_Extended);
+		when(this.stylesheetExtender.extendStylesheet(this.minimalStylesheet)).thenReturn(this.minimalStylesheet_Extended);
 		IStylesheetInformation info = this.preprocessor.prepareStylesheet(this.minimalStylesheet);
 		assertFalse(info.isFileBased());
 	}
 
 	@Test
 	void testStylesheetContents_whenFileBased() throws SaxonApiException {
-		when(this.stylesheetExpander.extendStylesheet(this.minimalStylesheet)).thenReturn(this.minimalStylesheet_Extended);
+		when(this.stylesheetExtender.extendStylesheet(this.minimalStylesheet)).thenReturn(this.minimalStylesheet_Extended);
 		IStylesheetInformation info = this.preprocessor.prepareStylesheet(URI.create("foobar"), this.minimalStylesheet);
 		assertEquals(this.minimalStylesheet, info.getOriginalStylesheet());
 	}
 
 	@Test
 	void testStylesheetContents_whenNotFileBased() throws SaxonApiException {
-		when(this.stylesheetExpander.extendStylesheet(this.minimalStylesheet)).thenReturn(this.minimalStylesheet_Extended);
+		when(this.stylesheetExtender.extendStylesheet(this.minimalStylesheet)).thenReturn(this.minimalStylesheet_Extended);
 		IStylesheetInformation info = this.preprocessor.prepareStylesheet(this.minimalStylesheet);
 		assertEquals(this.minimalStylesheet, info.getOriginalStylesheet());
 	}

@@ -16,13 +16,13 @@ import net.sf.saxon.s9api.XsltExecutable;
 public class StylesheetPreprocessor implements IStylesheetPreprocessor {
 
 	private Processor processor;
-	private IStylesheetExpander expander;
+	private IStylesheetExtender extender;
 	private IStylesheetStructureExtractor extractor;
 
 	@Inject
-	StylesheetPreprocessor(Processor processor, IStylesheetExpander expander, IStylesheetStructureExtractor extractor) {
+	StylesheetPreprocessor(Processor processor, IStylesheetExtender expander, IStylesheetStructureExtractor extractor) {
 		this.processor = processor;
-		this.expander = expander;
+		this.extender = expander;
 		this.extractor = extractor;
 	}
 
@@ -31,7 +31,7 @@ public class StylesheetPreprocessor implements IStylesheetPreprocessor {
 		checkNotNull(originalLocation);
 		checkNotNull(originalSource);
 		checkStylesheet(originalSource);
-		String expandedSource = this.expander.extendStylesheet(originalSource);
+		String expandedSource = this.extender.extendStylesheet(originalSource);
 		IStylesheetStructure structure = this.extractor.extractStructure(expandedSource);
 		return new StylesheetInformation(originalLocation, originalSource, expandedSource, structure);
 	}
@@ -40,7 +40,7 @@ public class StylesheetPreprocessor implements IStylesheetPreprocessor {
 	public IStylesheetInformation prepareStylesheet(String originalSource) {
 		checkNotNull(originalSource);
 		checkStylesheet(originalSource);
-		String expandedSource = this.expander.extendStylesheet(originalSource);
+		String expandedSource = this.extender.extendStylesheet(originalSource);
 		IStylesheetStructure structure = this.extractor.extractStructure(expandedSource);
 		return new StylesheetInformation(originalSource, expandedSource, structure);
 	}
