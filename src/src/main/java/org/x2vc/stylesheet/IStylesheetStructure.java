@@ -14,6 +14,6 @@ import java.io.Serializable;
 
 public interface IStylesheetStructure extends Serializable {
 
-	// TODO specify details of IStylesheetStructure
+	// TODO XSLT structure: specify details of IStylesheetStructure
 	
 }

@@ -73,7 +73,7 @@ public class StylesheetInformation implements IStylesheetInformation {
 
 	@Override
 	public IStylesheetCoverage createCoverageStatistics() {
-		// TODO implement StylesheetInformation.createCoverageStatistics()
+		// TODO XSLT coverage: implement StylesheetInformation.createCoverageStatistics()
 		throw new UnsupportedOperationException();
 	}
 

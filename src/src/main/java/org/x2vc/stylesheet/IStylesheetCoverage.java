@@ -11,6 +11,6 @@ import java.io.Serializable;
  */
 public interface IStylesheetCoverage extends Serializable {
 
-	// TODO specify details of IStylesheetCoverage
+	// TODO XSLT coverage: specify details of IStylesheetCoverage
 	
 }
