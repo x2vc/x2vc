@@ -9,6 +9,7 @@ import org.x2vc.stylesheet.IStylesheetStructure;
  */
 public class TextNode extends AbstractStructureTreeNode implements ITextNode {
 
+	private static final long serialVersionUID = -4649767702919548805L;
 	private String text;
 
 	/**

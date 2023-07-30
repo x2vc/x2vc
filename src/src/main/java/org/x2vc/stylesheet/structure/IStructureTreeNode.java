@@ -1,5 +1,6 @@
 package org.x2vc.stylesheet.structure;
 
+import java.io.Serializable;
 import java.util.Optional;
 
 import org.x2vc.stylesheet.IStylesheetStructure;
@@ -10,7 +11,7 @@ import org.x2vc.stylesheet.IStylesheetStructure;
  * here. XSLT elements are further divided into parameters (xsl:param,
  * xsl:with-param), sorting instructions (xsl:sort) and other directives.
  */
-public interface IStructureTreeNode {
+public interface IStructureTreeNode extends Serializable {
 
 	/**
 	 * Possible values to distinguish the node types.

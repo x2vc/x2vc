@@ -19,6 +19,7 @@ import com.google.common.collect.ImmutableMap;
  */
 public class XMLNode extends AbstractStructureTreeNode implements IXMLNode {
 
+	private static final long serialVersionUID = 7356414007972524223L;
 	private QName name;
 	private ImmutableMap<QName, String> attributes;
 	private ImmutableList<IStructureTreeNode> childElements;

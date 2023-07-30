@@ -13,8 +13,9 @@ import org.x2vc.stylesheet.IStylesheetStructure;
  */
 public abstract class AbstractStructureTreeNode implements IStructureTreeNode {
 
+	private static final long serialVersionUID = -4581883325565055335L;
 	private IStylesheetStructure parentStructure;
-	private Optional<IStructureTreeNode> parentElement;
+	private IStructureTreeNode parentElement;
 
 	/**
 	 * Constructor for a tree node with a parent element.
@@ -26,7 +27,7 @@ public abstract class AbstractStructureTreeNode implements IStructureTreeNode {
 			@Nullable IStructureTreeNode parentElement) {
 		checkNotNull(parentStructure);
 		this.parentStructure = parentStructure;
-		this.parentElement = Optional.ofNullable(parentElement);
+		this.parentElement = parentElement;
 	}
 
 	/**
@@ -37,7 +38,7 @@ public abstract class AbstractStructureTreeNode implements IStructureTreeNode {
 	protected AbstractStructureTreeNode(IStylesheetStructure parentStructure) {
 		checkNotNull(parentStructure);
 		this.parentStructure = parentStructure;
-		this.parentElement = Optional.empty();
+		this.parentElement = null;
 	}
 
 	@Override
@@ -97,7 +98,7 @@ public abstract class AbstractStructureTreeNode implements IStructureTreeNode {
 
 	@Override
 	public Optional<IStructureTreeNode> getParentElement() {
-		return this.parentElement;
+		return Optional.ofNullable(this.parentElement);
 	}
 
 }
