@@ -117,7 +117,7 @@ public class XSLTDirectiveNode extends AbstractStructureTreeNode implements IXSL
 	/**
 	 * Builder to build {@link XSLTDirectiveNode}.
 	 */
-	public static final class Builder {
+	public static final class Builder implements INodeBuilder {
 		private IStylesheetStructure parentStructure;
 		private String name;
 		private Map<String, String> xsltAttributes = new HashMap<>();

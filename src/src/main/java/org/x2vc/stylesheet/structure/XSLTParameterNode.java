@@ -63,7 +63,7 @@ public class XSLTParameterNode extends AbstractStructureTreeNode implements IXSL
 	/**
 	 * Builder to build {@link XSLTParameterNode}.
 	 */
-	public static final class Builder {
+	public static final class Builder implements INodeBuilder {
 		private IStylesheetStructure parentStructure;
 		private String name;
 		private String selection;

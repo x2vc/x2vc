@@ -62,7 +62,7 @@ public class XMLNode extends AbstractStructureTreeNode implements IXMLNode {
 	/**
 	 * Builder to build {@link XMLNode}.
 	 */
-	public static final class Builder {
+	public static final class Builder implements INodeBuilder {
 		private IStylesheetStructure parentStructure;
 		private QName name;
 		private Map<QName, String> attributes = new HashMap<>();

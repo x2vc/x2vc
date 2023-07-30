@@ -73,7 +73,7 @@ public class XSLTSortNode extends AbstractStructureTreeNode implements IXSLTSort
 	/**
 	 * Builder to build {@link XSLTSortNode}.
 	 */
-	public static final class Builder {
+	public static final class Builder implements INodeBuilder {
 		private IStylesheetStructure parentStructure;
 		private String sortingExpression;
 		private String language;
