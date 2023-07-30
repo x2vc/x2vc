@@ -10,16 +10,9 @@ public class TextNode extends AbstractStructureTreeNode implements ITextNode {
 	private static final long serialVersionUID = -4649767702919548805L;
 	private String text;
 
-	/**
-	 * Constructor for a text node with a parent element.
-	 *
-	 * @param parentStructure the {@link IStylesheetStructure} the node belongs to
-	 * @param text            the text contained in the element
-	 */
-	public TextNode(IStylesheetStructure parentStructure, String text) {
-		super(parentStructure);
-		checkNotNull(text);
-		this.text = text;
+	private TextNode(Builder builder) {
+		super(builder.parentStructure);
+		this.text = builder.text.toString();
 	}
 
 	@Override
@@ -40,6 +33,44 @@ public class TextNode extends AbstractStructureTreeNode implements ITextNode {
 	@Override
 	public String getText() {
 		return this.text;
+	}
+
+	/**
+	 * Builder to build {@link TextNode}.
+	 */
+	public static final class Builder implements INodeBuilder {
+		private IStylesheetStructure parentStructure;
+		private StringBuilder text = new StringBuilder();
+
+		/**
+		 * Create a new builder instance.
+		 *
+		 * @param parentStructure the {@link IStylesheetStructure} the node belongs to
+		 */
+		public Builder(IStylesheetStructure parentStructure) {
+			this.parentStructure = parentStructure;
+		}
+
+		/**
+		 * Builder method for text parameter.
+		 *
+		 * @param text field to set
+		 * @return builder
+		 */
+		public Builder withText(String text) {
+			checkNotNull(text);
+			this.text.append(text);
+			return this;
+		}
+
+		/**
+		 * Builder method of the builder.
+		 *
+		 * @return built class
+		 */
+		public TextNode build() {
+			return new TextNode(this);
+		}
 	}
 
 }
