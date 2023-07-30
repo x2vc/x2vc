@@ -24,6 +24,9 @@ import org.x2vc.common.XSLTConstants;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 
+/**
+ * Standard implementation of {@link IStylesheetExtender}.
+ */
 public class StylesheetExtender implements IStylesheetExtender {
 
 	private XMLInputFactory inputFactory = XMLInputFactory.newFactory();

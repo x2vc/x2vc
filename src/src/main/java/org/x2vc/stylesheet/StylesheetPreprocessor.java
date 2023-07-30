@@ -13,6 +13,9 @@ import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XsltExecutable;
 
+/**
+ * Standard implementation of {@link IStylesheetPreprocessor}.
+ */
 public class StylesheetPreprocessor implements IStylesheetPreprocessor {
 
 	private Processor processor;
