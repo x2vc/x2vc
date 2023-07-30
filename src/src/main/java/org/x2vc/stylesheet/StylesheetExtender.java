@@ -19,6 +19,7 @@ import javax.xml.stream.events.XMLEvent;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.x2vc.common.ExtendedXSLTConstants;
 import org.x2vc.common.XSLTConstants;
 
 import com.google.common.collect.ImmutableSet;
@@ -67,8 +68,6 @@ public class StylesheetExtender implements IStylesheetExtender {
 	}
 
 	private class Worker {
-
-		private static final String EXTENSION_NAMESPACE = "http://www.github.com/vwegert/x2vc/XSLTExtension";
 
 		private Logger logger = LogManager.getLogger();
 		private XMLInputFactory inputFactory;
@@ -202,15 +201,15 @@ public class StylesheetExtender implements IStylesheetExtender {
 
 		private StartElement extendRootElement(StartElement originalElement, String newExtensionPrefix) {
 			ArrayList<Namespace> namespaces = Lists.newArrayList(originalElement.getNamespaces());
-			namespaces.add(this.eventFactory.createNamespace(newExtensionPrefix, EXTENSION_NAMESPACE));
+			namespaces.add(this.eventFactory.createNamespace(newExtensionPrefix, ExtendedXSLTConstants.NAMESPACE));
 			return this.eventFactory.createStartElement(originalElement.getName(), originalElement.getAttributes(),
 					namespaces.iterator());
 		}
 
 		private StartElement addIDToElement(StartElement originalElement, String extensionPrefix, int elementID) {
 			ArrayList<Attribute> attributes = Lists.newArrayList(originalElement.getAttributes());
-			attributes.add(this.eventFactory.createAttribute(extensionPrefix, EXTENSION_NAMESPACE, "trace-id",
-					Integer.toString(elementID)));
+			attributes.add(this.eventFactory.createAttribute(extensionPrefix, ExtendedXSLTConstants.NAMESPACE,
+					ExtendedXSLTConstants.ATTRIBUTE_TRACE_ID, Integer.toString(elementID)));
 			return this.eventFactory.createStartElement(originalElement.getName(), attributes.iterator(),
 					originalElement.getNamespaces());
 		}
