@@ -1,8 +1,8 @@
 package org.x2vc.stylesheet;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.net.URI;
-import com.google.common.base.Optional;
-import static com.google.common.base.Preconditions.*;
 
 /**
  * This object is a result of the stylesheet preparation process and provides
@@ -15,7 +15,7 @@ public class StylesheetInformation implements IStylesheetInformation {
 
 	private static final long serialVersionUID = 7037605400818305891L;
 
-	private Optional<URI> originalLocation;
+	private URI originalLocation;
 	private String originalStylesheet;
 	private String preparedStylesheet;
 	private IStylesheetStructure structure;
@@ -26,18 +26,17 @@ public class StylesheetInformation implements IStylesheetInformation {
 		checkNotNull(originalStylesheet);
 		checkNotNull(preparedStylesheet);
 		checkNotNull(structure);
-		this.originalLocation = Optional.of(originalLocation);
+		this.originalLocation = originalLocation;
 		this.originalStylesheet = originalStylesheet;
 		this.preparedStylesheet = preparedStylesheet;
 		this.structure = structure;
 	}
 
-	StylesheetInformation(String originalStylesheet, String preparedStylesheet,
-			IStylesheetStructure structure) {
+	StylesheetInformation(String originalStylesheet, String preparedStylesheet, IStylesheetStructure structure) {
 		checkNotNull(originalStylesheet);
 		checkNotNull(preparedStylesheet);
 		checkNotNull(structure);
-		this.originalLocation = Optional.absent();
+		this.originalLocation = null;
 		this.originalStylesheet = originalStylesheet;
 		this.preparedStylesheet = preparedStylesheet;
 		this.structure = structure;
@@ -45,15 +44,15 @@ public class StylesheetInformation implements IStylesheetInformation {
 
 	@Override
 	public boolean isFileBased() {
-		return this.originalLocation.isPresent();
+		return this.originalLocation != null;
 	}
 
 	@Override
 	public URI getOriginalLocation() throws IllegalStateException {
-		if (!this.originalLocation.isPresent()) {
+		if (this.originalLocation == null) {
 			throw new IllegalStateException("Stylesheet was not loaded from a file.");
 		}
-		return this.originalLocation.get();
+		return this.originalLocation;
 	}
 
 	@Override
@@ -73,7 +72,8 @@ public class StylesheetInformation implements IStylesheetInformation {
 
 	@Override
 	public IStylesheetCoverage createCoverageStatistics() {
-		// TODO XSLT coverage: implement StylesheetInformation.createCoverageStatistics()
+		// TODO XSLT coverage: implement
+		// StylesheetInformation.createCoverageStatistics()
 		throw new UnsupportedOperationException();
 	}
 

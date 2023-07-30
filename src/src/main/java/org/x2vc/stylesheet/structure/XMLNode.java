@@ -67,8 +67,8 @@ public class XMLNode extends AbstractStructureTreeNode implements IXMLNode {
 		private IStylesheetStructure parentStructure;
 		private IStructureTreeNode parentElement;
 		private QName name;
-		private Map<QName, String> attributes = new HashMap<QName, String>();
-		private List<IStructureTreeNode> childElements = new ArrayList<IStructureTreeNode>();
+		private Map<QName, String> attributes = new HashMap<>();
+		private List<IStructureTreeNode> childElements = new ArrayList<>();
 
 		/**
 		 * Creates a new builder instance.

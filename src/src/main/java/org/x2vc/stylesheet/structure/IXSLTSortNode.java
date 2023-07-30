@@ -1,6 +1,6 @@
 package org.x2vc.stylesheet.structure;
 
-import com.google.common.base.Optional;
+import java.util.Optional;
 
 /**
  * A sorting instruction (xsl:sort) within the XSLT structure information.

@@ -22,7 +22,6 @@ import org.apache.logging.log4j.Logger;
 import org.x2vc.common.ExtendedXSLTConstants;
 import org.x2vc.common.XSLTConstants;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 
 /**
@@ -38,15 +37,14 @@ public class StylesheetExtender implements IStylesheetExtender {
 	 * The following directive elements require a trace message BEFORE the actual
 	 * directive element.
 	 */
-	private static final ImmutableSet<String> ELEMENTS_WITH_TRACE_BEFORE = ImmutableSet.of(
-			XSLTConstants.ELEMENT_APPLY_IMPORTS, XSLTConstants.ELEMENT_APPLY_TEMPLATES,
-			XSLTConstants.ELEMENT_CALL_TEMPLATE, XSLTConstants.ELEMENT_CHOOSE);
+	private static final Set<String> ELEMENTS_WITH_TRACE_BEFORE = Set.of(XSLTConstants.ELEMENT_APPLY_IMPORTS,
+			XSLTConstants.ELEMENT_APPLY_TEMPLATES, XSLTConstants.ELEMENT_CALL_TEMPLATE, XSLTConstants.ELEMENT_CHOOSE);
 
 	/**
 	 * The following directive elements require a trace message INSIDE / after the
 	 * actual directive element.
 	 */
-	private static final ImmutableSet<String> ELEMENTS_WITH_TRACE_AFTER = ImmutableSet.of(XSLTConstants.ELEMENT_IF,
+	private static final Set<String> ELEMENTS_WITH_TRACE_AFTER = Set.of(XSLTConstants.ELEMENT_IF,
 			XSLTConstants.ELEMENT_WHEN, XSLTConstants.ELEMENT_OTHERWISE, XSLTConstants.ELEMENT_TEMPLATE,
 			XSLTConstants.ELEMENT_FOR_EACH);
 
@@ -75,7 +73,6 @@ public class StylesheetExtender implements IStylesheetExtender {
 		private XMLEventFactory eventFactory = XMLEventFactory.newFactory();
 
 		private String xsltPrefix;
-		private String extensionPrefix;
 
 		public Worker(XMLInputFactory inputFactory, XMLEventWriter xmlWriter) {
 			this.inputFactory = inputFactory;
@@ -90,8 +87,8 @@ public class StylesheetExtender implements IStylesheetExtender {
 			Set<String> usedNamespacePrefixes = collectNamespacePrefixes(originalStylesheet);
 
 			// Invent a new namespace prefix for our extension namespace.
-			this.extensionPrefix = findUnusedNamespacePrefix(usedNamespacePrefixes, "ext");
-			this.logger.trace("will use prefix {} for extension namespace", this.extensionPrefix);
+			String extensionPrefix = findUnusedNamespacePrefix(usedNamespacePrefixes, "ext");
+			this.logger.trace("will use prefix {} for extension namespace", extensionPrefix);
 
 			XMLEventReader xmlReader = this.inputFactory.createXMLEventReader(new StringReader(originalStylesheet));
 
@@ -108,9 +105,9 @@ public class StylesheetExtender implements IStylesheetExtender {
 
 					if (!rootElementVisited) {
 						// root element: add namespace
-						startElement = extendRootElement(startElement, this.extensionPrefix);
+						startElement = extendRootElement(startElement, extensionPrefix);
 						event = startElement;
-						this.logger.trace("extended root element to {}", event.toString());
+						this.logger.trace("extended root element to {}", event);
 						rootElementVisited = true;
 					} else {
 						// other elements: only handle certain XSL elements
@@ -121,9 +118,9 @@ public class StylesheetExtender implements IStylesheetExtender {
 							if (ELEMENTS_WITH_TRACE_BEFORE.contains(elementName)
 									|| ELEMENTS_WITH_TRACE_AFTER.contains(elementName)) {
 								currentElementID = nextElementID++;
-								startElement = addIDToElement(startElement, this.extensionPrefix, currentElementID);
+								startElement = addIDToElement(startElement, extensionPrefix, currentElementID);
 								event = startElement;
-								this.logger.trace("added ID {} to element {}", currentElementID, event.toString());
+								this.logger.trace("added ID {} to element {}", currentElementID, event);
 							}
 
 							// write trace message before element if required
@@ -171,7 +168,7 @@ public class StylesheetExtender implements IStylesheetExtender {
 		private Set<String> collectNamespacePrefixes(String originalStylesheet) throws XMLStreamException {
 			this.logger.trace("collecting existing namspace prefixes");
 			XMLEventReader xmlReader = this.inputFactory.createXMLEventReader(new StringReader(originalStylesheet));
-			Set<String> prefixes = new HashSet<String>();
+			Set<String> prefixes = new HashSet<>();
 			while (xmlReader.hasNext()) {
 				XMLEvent event = xmlReader.nextEvent();
 				if (event.isStartElement()) {

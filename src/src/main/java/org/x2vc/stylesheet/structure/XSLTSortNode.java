@@ -2,20 +2,20 @@ package org.x2vc.stylesheet.structure;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import org.x2vc.stylesheet.IStylesheetStructure;
+import java.util.Optional;
 
-import com.google.common.base.Optional;
+import org.x2vc.stylesheet.IStylesheetStructure;
 
 /**
  * Standard implementation of {@link IXSLTSortNode}.
  */
 public class XSLTSortNode extends AbstractStructureTreeNode implements IXSLTSortNode {
 
-	private Optional<String> sortingExpression;
-	private Optional<String> language;
-	private Optional<String> dataType;
-	private Optional<String> sortOrder;
-	private Optional<String> caseOrder;
+	private String sortingExpression;
+	private String language;
+	private String dataType;
+	private String sortOrder;
+	private String caseOrder;
 
 	/**
 	 * Private constructor to be used with the builder.
@@ -48,27 +48,27 @@ public class XSLTSortNode extends AbstractStructureTreeNode implements IXSLTSort
 
 	@Override
 	public Optional<String> getSortingExpression() {
-		return this.sortingExpression;
+		return Optional.ofNullable(this.sortingExpression);
 	}
 
 	@Override
 	public Optional<String> getLanguage() {
-		return this.language;
+		return Optional.ofNullable(this.language);
 	}
 
 	@Override
 	public Optional<String> getDataType() {
-		return this.dataType;
+		return Optional.ofNullable(this.dataType);
 	}
 
 	@Override
 	public Optional<String> getSortOrder() {
-		return this.sortOrder;
+		return Optional.ofNullable(this.sortOrder);
 	}
 
 	@Override
 	public Optional<String> getCaseOrder() {
-		return this.caseOrder;
+		return Optional.ofNullable(this.caseOrder);
 	}
 
 	/**
@@ -77,11 +77,11 @@ public class XSLTSortNode extends AbstractStructureTreeNode implements IXSLTSort
 	public static final class Builder {
 		private IStylesheetStructure parentStructure;
 		private IStructureTreeNode parentElement;
-		private Optional<String> sortingExpression = Optional.absent();
-		private Optional<String> language = Optional.absent();
-		private Optional<String> dataType = Optional.absent();
-		private Optional<String> sortOrder = Optional.absent();
-		private Optional<String> caseOrder = Optional.absent();
+		private String sortingExpression;
+		private String language;
+		private String dataType;
+		private String sortOrder;
+		private String caseOrder;
 
 		/**
 		 * Creates a new builder instance.
@@ -101,7 +101,8 @@ public class XSLTSortNode extends AbstractStructureTreeNode implements IXSLTSort
 		 * @return builder
 		 */
 		public Builder withSortingExpression(String sortingExpression) {
-			this.sortingExpression = Optional.of(sortingExpression);
+			checkNotNull(sortingExpression);
+			this.sortingExpression = sortingExpression;
 			return this;
 		}
 
@@ -113,7 +114,7 @@ public class XSLTSortNode extends AbstractStructureTreeNode implements IXSLTSort
 		 */
 		public Builder withLanguage(String language) {
 			checkNotNull(language);
-			this.language = Optional.of(language);
+			this.language = language;
 			return this;
 		}
 
@@ -125,7 +126,7 @@ public class XSLTSortNode extends AbstractStructureTreeNode implements IXSLTSort
 		 */
 		public Builder withDataType(String dataType) {
 			checkNotNull(dataType);
-			this.dataType = Optional.of(dataType);
+			this.dataType = dataType;
 			return this;
 		}
 
@@ -137,7 +138,7 @@ public class XSLTSortNode extends AbstractStructureTreeNode implements IXSLTSort
 		 */
 		public Builder withSortOrder(String sortOrder) {
 			checkNotNull(sortOrder);
-			this.sortOrder = Optional.of(sortOrder);
+			this.sortOrder = sortOrder;
 			return this;
 		}
 
@@ -149,7 +150,7 @@ public class XSLTSortNode extends AbstractStructureTreeNode implements IXSLTSort
 		 */
 		public Builder withCaseOrder(String caseOrder) {
 			checkNotNull(caseOrder);
-			this.caseOrder = Optional.of(caseOrder);
+			this.caseOrder = caseOrder;
 			return this;
 		}
 

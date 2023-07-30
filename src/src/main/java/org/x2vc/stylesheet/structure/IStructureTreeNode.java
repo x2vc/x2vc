@@ -1,8 +1,8 @@
 package org.x2vc.stylesheet.structure;
 
-import org.x2vc.stylesheet.IStylesheetStructure;
+import java.util.Optional;
 
-import com.google.common.base.Optional;
+import org.x2vc.stylesheet.IStylesheetStructure;
 
 /**
  * A common interface to encompass all possible elements of the XSLT structure
@@ -19,7 +19,7 @@ public interface IStructureTreeNode {
 	 */
 	enum NodeType {
 		XSLT_DIRECTIVE, XSLT_PARAM, XSLT_SORT, XML, TEXT
-	};
+	}
 
 	/**
 	 * @return the type of the parameter element

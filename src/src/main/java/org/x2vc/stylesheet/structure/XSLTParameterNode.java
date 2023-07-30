@@ -4,10 +4,10 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.x2vc.stylesheet.IStylesheetStructure;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 
 /**
@@ -16,7 +16,7 @@ import com.google.common.collect.ImmutableList;
 public class XSLTParameterNode extends AbstractStructureTreeNode implements IXSLTParameterNode {
 
 	private String name;
-	private Optional<String> selection;
+	private String selection;
 	private ImmutableList<IStructureTreeNode> childElements;
 
 	/**
@@ -53,7 +53,7 @@ public class XSLTParameterNode extends AbstractStructureTreeNode implements IXSL
 
 	@Override
 	public Optional<String> getSelection() {
-		return this.selection;
+		return Optional.ofNullable(this.selection);
 	}
 
 	@Override
@@ -68,8 +68,8 @@ public class XSLTParameterNode extends AbstractStructureTreeNode implements IXSL
 		private IStylesheetStructure parentStructure;
 		private IStructureTreeNode parentElement;
 		private String name;
-		private Optional<String> selection = Optional.absent();
-		private List<IStructureTreeNode> childElements = new ArrayList<IStructureTreeNode>();
+		private String selection;
+		private List<IStructureTreeNode> childElements = new ArrayList<>();
 
 		/**
 		 * Creates a new builder
@@ -95,7 +95,7 @@ public class XSLTParameterNode extends AbstractStructureTreeNode implements IXSL
 		 */
 		public Builder withSelection(String selection) {
 			checkNotNull(selection);
-			this.selection = Optional.of(selection);
+			this.selection = selection;
 			return this;
 		}
 

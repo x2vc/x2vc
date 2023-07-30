@@ -6,13 +6,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.xml.namespace.QName;
 
 import org.x2vc.common.ExtendedXSLTConstants;
 import org.x2vc.stylesheet.IStylesheetStructure;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
@@ -24,7 +24,8 @@ public class XSLTDirectiveNode extends AbstractStructureTreeNode implements IXSL
 	private String name;
 	private ImmutableMap<String, String> xsltAttributes;
 	private ImmutableMap<QName, String> otherAttributes;
-	private Optional<Integer> traceID;
+	private boolean traceIDExtracted = false;
+	private Integer traceID;
 	private ImmutableList<IStructureTreeNode> childElements;
 	private ImmutableList<IXSLTDirectiveNode> childDirectives;
 	private ImmutableList<IXSLTParameterNode> formalParameters;
@@ -74,15 +75,14 @@ public class XSLTDirectiveNode extends AbstractStructureTreeNode implements IXSL
 
 	@Override
 	public Optional<Integer> getTraceID() {
-		if (this.traceID == null) {
+		if (!this.traceIDExtracted) {
 			if (this.otherAttributes.containsKey(ExtendedXSLTConstants.ATTRIBUTE_NAME_TRACE_ID)) {
-				this.traceID = Optional
-						.of(Integer.parseInt(this.otherAttributes.get(ExtendedXSLTConstants.ATTRIBUTE_NAME_TRACE_ID)));
-			} else {
-				this.traceID = Optional.absent();
+				this.traceID = Integer
+						.parseInt(this.otherAttributes.get(ExtendedXSLTConstants.ATTRIBUTE_NAME_TRACE_ID));
 			}
+			this.traceIDExtracted = true;
 		}
-		return this.traceID;
+		return Optional.ofNullable(this.traceID);
 	}
 
 	@Override
@@ -121,12 +121,12 @@ public class XSLTDirectiveNode extends AbstractStructureTreeNode implements IXSL
 		private IStylesheetStructure parentStructure;
 		private IStructureTreeNode parentElement;
 		private String name;
-		private Map<String, String> xsltAttributes = new HashMap<String, String>();
-		private Map<QName, String> otherAttributes = new HashMap<QName, String>();
-		private List<IStructureTreeNode> childElements = new ArrayList<IStructureTreeNode>();
-		private List<IXSLTParameterNode> formalParameters = new ArrayList<IXSLTParameterNode>();
-		private List<IXSLTParameterNode> actualParameters = new ArrayList<IXSLTParameterNode>();
-		private List<IXSLTSortNode> sorting = new ArrayList<IXSLTSortNode>();
+		private Map<String, String> xsltAttributes = new HashMap<>();
+		private Map<QName, String> otherAttributes = new HashMap<>();
+		private List<IStructureTreeNode> childElements = new ArrayList<>();
+		private List<IXSLTParameterNode> formalParameters = new ArrayList<>();
+		private List<IXSLTParameterNode> actualParameters = new ArrayList<>();
+		private List<IXSLTSortNode> sorting = new ArrayList<>();
 
 		/**
 		 * Create a builder instance.

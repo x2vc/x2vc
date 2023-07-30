@@ -2,11 +2,11 @@ package org.x2vc.stylesheet.structure;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.util.Optional;
+
 import javax.annotation.Nullable;
 
 import org.x2vc.stylesheet.IStylesheetStructure;
-
-import com.google.common.base.Optional;
 
 /**
  * Base class for all derivations of {@link IStructureTreeNode}.
@@ -22,10 +22,11 @@ public abstract class AbstractStructureTreeNode implements IStructureTreeNode {
 	 * @param parentStructure the {@link IStylesheetStructure} the node belongs to
 	 * @param parentElement   the parent element
 	 */
-	public AbstractStructureTreeNode(IStylesheetStructure parentStructure, @Nullable IStructureTreeNode parentElement) {
+	protected AbstractStructureTreeNode(IStylesheetStructure parentStructure,
+			@Nullable IStructureTreeNode parentElement) {
 		checkNotNull(parentStructure);
 		this.parentStructure = parentStructure;
-		this.parentElement = Optional.fromNullable(parentElement);
+		this.parentElement = Optional.ofNullable(parentElement);
 	}
 
 	/**
@@ -33,10 +34,10 @@ public abstract class AbstractStructureTreeNode implements IStructureTreeNode {
 	 *
 	 * @param parentStructure the {@link IStylesheetStructure} the node belongs to
 	 */
-	public AbstractStructureTreeNode(IStylesheetStructure parentStructure) {
+	protected AbstractStructureTreeNode(IStylesheetStructure parentStructure) {
 		checkNotNull(parentStructure);
 		this.parentStructure = parentStructure;
-		this.parentElement = Optional.absent();
+		this.parentElement = Optional.empty();
 	}
 
 	@Override
