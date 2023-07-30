@@ -11,7 +11,6 @@ import java.util.Optional;
 import javax.xml.namespace.QName;
 
 import org.x2vc.common.ExtendedXSLTConstants;
-import org.x2vc.stylesheet.IStylesheetStructure;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -25,16 +24,16 @@ public class XSLTDirectiveNode extends AbstractStructureTreeNode implements IXSL
 	private String name;
 	private ImmutableMap<String, String> xsltAttributes;
 	private ImmutableMap<QName, String> otherAttributes;
-	private boolean traceIDExtracted = false;
-	private Integer traceID;
+	private transient boolean traceIDExtracted = false;
+	private transient Integer traceID;
 	private ImmutableList<IStructureTreeNode> childElements;
-	private ImmutableList<IXSLTDirectiveNode> childDirectives;
+	private transient ImmutableList<IXSLTDirectiveNode> childDirectives;
 	private ImmutableList<IXSLTParameterNode> formalParameters;
 	private ImmutableList<IXSLTParameterNode> actualParameters;
 	private ImmutableList<IXSLTSortNode> sorting;
 
 	private XSLTDirectiveNode(Builder builder) {
-		super(builder.parentStructure, builder.parentElement);
+		super(builder.parentStructure);
 		this.name = builder.name;
 		this.xsltAttributes = ImmutableMap.copyOf(builder.xsltAttributes);
 		this.otherAttributes = ImmutableMap.copyOf(builder.otherAttributes);
@@ -120,7 +119,6 @@ public class XSLTDirectiveNode extends AbstractStructureTreeNode implements IXSL
 	 */
 	public static final class Builder {
 		private IStylesheetStructure parentStructure;
-		private IStructureTreeNode parentElement;
 		private String name;
 		private Map<String, String> xsltAttributes = new HashMap<>();
 		private Map<QName, String> otherAttributes = new HashMap<>();
@@ -140,18 +138,6 @@ public class XSLTDirectiveNode extends AbstractStructureTreeNode implements IXSL
 			checkNotNull(name);
 			this.parentStructure = parentStructure;
 			this.name = name;
-		}
-
-		/**
-		 * Builder method for parentElement parameter.
-		 *
-		 * @param parentElement the parent element
-		 * @return builder
-		 */
-		public Builder withParentElement(IStructureTreeNode parentElement) {
-			checkNotNull(parentElement);
-			this.parentElement = parentElement;
-			return this;
 		}
 
 		/**

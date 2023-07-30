@@ -4,8 +4,6 @@ import java.util.Optional;
 
 import javax.xml.namespace.QName;
 
-import org.x2vc.stylesheet.IStylesheetStructure;
-
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 

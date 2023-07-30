@@ -7,6 +7,9 @@ import java.net.URI;
 
 import javax.xml.transform.stream.StreamSource;
 
+import org.x2vc.stylesheet.structure.IStylesheetStructure;
+import org.x2vc.stylesheet.structure.IStylesheetStructureExtractor;
+
 import com.google.inject.Inject;
 
 import net.sf.saxon.s9api.Processor;

@@ -12,7 +12,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.x2vc.common.ExtendedXSLTConstants;
-import org.x2vc.stylesheet.IStylesheetStructure;
 import org.x2vc.stylesheet.structure.IStructureTreeNode.NodeType;
 
 import com.google.common.collect.ImmutableList;

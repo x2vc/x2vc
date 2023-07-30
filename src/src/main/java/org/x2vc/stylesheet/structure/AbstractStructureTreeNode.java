@@ -2,12 +2,6 @@ package org.x2vc.stylesheet.structure;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import java.util.Optional;
-
-import javax.annotation.Nullable;
-
-import org.x2vc.stylesheet.IStylesheetStructure;
-
 /**
  * Base class for all derivations of {@link IStructureTreeNode}.
  */
@@ -15,30 +9,15 @@ public abstract class AbstractStructureTreeNode implements IStructureTreeNode {
 
 	private static final long serialVersionUID = -4581883325565055335L;
 	private IStylesheetStructure parentStructure;
-	private IStructureTreeNode parentElement;
 
 	/**
-	 * Constructor for a tree node with a parent element.
-	 *
-	 * @param parentStructure the {@link IStylesheetStructure} the node belongs to
-	 * @param parentElement   the parent element
-	 */
-	protected AbstractStructureTreeNode(IStylesheetStructure parentStructure,
-			@Nullable IStructureTreeNode parentElement) {
-		checkNotNull(parentStructure);
-		this.parentStructure = parentStructure;
-		this.parentElement = parentElement;
-	}
-
-	/**
-	 * Constructor for a tree node without a parent element.
+	 * Constructor for a tree node.
 	 *
 	 * @param parentStructure the {@link IStylesheetStructure} the node belongs to
 	 */
 	protected AbstractStructureTreeNode(IStylesheetStructure parentStructure) {
 		checkNotNull(parentStructure);
 		this.parentStructure = parentStructure;
-		this.parentElement = null;
 	}
 
 	@Override
@@ -94,11 +73,6 @@ public abstract class AbstractStructureTreeNode implements IStructureTreeNode {
 	@Override
 	public IStylesheetStructure getParentStructure() {
 		return this.parentStructure;
-	}
-
-	@Override
-	public Optional<IStructureTreeNode> getParentElement() {
-		return Optional.ofNullable(this.parentElement);
 	}
 
 }

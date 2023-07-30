@@ -4,6 +4,8 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.net.URI;
 
+import org.x2vc.stylesheet.structure.IStylesheetStructure;
+
 /**
  * This object is a result of the stylesheet preparation process and provides
  * access to the precompiled extended stylesheet and the structure information.

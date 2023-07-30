@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import org.x2vc.stylesheet.IStylesheetStructure;
-
 import com.google.common.collect.ImmutableList;
 
 /**
@@ -26,7 +24,7 @@ public class XSLTParameterNode extends AbstractStructureTreeNode implements IXSL
 	 * @param builder
 	 */
 	private XSLTParameterNode(Builder builder) {
-		super(builder.parentStructure, builder.parentElement);
+		super(builder.parentStructure);
 		this.name = builder.name;
 		this.selection = builder.selection;
 		this.childElements = ImmutableList.copyOf(builder.childElements);
@@ -67,7 +65,6 @@ public class XSLTParameterNode extends AbstractStructureTreeNode implements IXSL
 	 */
 	public static final class Builder {
 		private IStylesheetStructure parentStructure;
-		private IStructureTreeNode parentElement;
 		private String name;
 		private String selection;
 		private List<IStructureTreeNode> childElements = new ArrayList<>();
@@ -76,15 +73,12 @@ public class XSLTParameterNode extends AbstractStructureTreeNode implements IXSL
 		 * Creates a new builder
 		 *
 		 * @param parentStructure the {@link IStylesheetStructure} the node belongs to
-		 * @param parentElement   the parent element
 		 * @param name            the name of the element
 		 */
-		public Builder(IStylesheetStructure parentStructure, IStructureTreeNode parentElement, String name) {
+		public Builder(IStylesheetStructure parentStructure, String name) {
 			checkNotNull(parentStructure);
-			checkNotNull(parentElement);
 			checkNotNull(name);
 			this.parentStructure = parentStructure;
-			this.parentElement = parentElement;
 			this.name = name;
 		}
 

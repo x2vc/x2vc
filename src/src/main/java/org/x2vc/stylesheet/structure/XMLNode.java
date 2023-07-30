@@ -9,8 +9,6 @@ import java.util.Map;
 
 import javax.xml.namespace.QName;
 
-import org.x2vc.stylesheet.IStylesheetStructure;
-
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
@@ -25,7 +23,7 @@ public class XMLNode extends AbstractStructureTreeNode implements IXMLNode {
 	private ImmutableList<IStructureTreeNode> childElements;
 
 	private XMLNode(Builder builder) {
-		super(builder.parentStructure, builder.parentElement);
+		super(builder.parentStructure);
 		this.name = builder.name;
 		this.attributes = ImmutableMap.copyOf(builder.attributes);
 		this.childElements = ImmutableList.copyOf(builder.childElements);
@@ -66,7 +64,6 @@ public class XMLNode extends AbstractStructureTreeNode implements IXMLNode {
 	 */
 	public static final class Builder {
 		private IStylesheetStructure parentStructure;
-		private IStructureTreeNode parentElement;
 		private QName name;
 		private Map<QName, String> attributes = new HashMap<>();
 		private List<IStructureTreeNode> childElements = new ArrayList<>();
@@ -75,15 +72,12 @@ public class XMLNode extends AbstractStructureTreeNode implements IXMLNode {
 		 * Creates a new builder instance.
 		 *
 		 * @param parentStructure the {@link IStylesheetStructure} the node belongs to
-		 * @param parentElement   the parent element
 		 * @param name            the name of the element
 		 */
-		public Builder(IStylesheetStructure parentStructure, IStructureTreeNode parentElement, QName name) {
+		public Builder(IStylesheetStructure parentStructure, QName name) {
 			checkNotNull(parentStructure);
-			checkNotNull(parentElement);
 			checkNotNull(name);
 			this.parentStructure = parentStructure;
-			this.parentElement = parentElement;
 			this.name = name;
 		}
 

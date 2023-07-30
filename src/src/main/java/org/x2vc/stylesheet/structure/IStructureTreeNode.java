@@ -1,9 +1,6 @@
 package org.x2vc.stylesheet.structure;
 
 import java.io.Serializable;
-import java.util.Optional;
-
-import org.x2vc.stylesheet.IStylesheetStructure;
 
 /**
  * A common interface to encompass all possible elements of the XSLT structure
@@ -96,11 +93,5 @@ public interface IStructureTreeNode extends Serializable {
 	 * @return the structure object this element belongs to
 	 */
 	IStylesheetStructure getParentStructure();
-
-	/**
-	 * @return the parent element in the tree, if any exists. This reference will be
-	 *         set for every element of the tree except for the root node.
-	 */
-	Optional<IStructureTreeNode> getParentElement();
 
 }

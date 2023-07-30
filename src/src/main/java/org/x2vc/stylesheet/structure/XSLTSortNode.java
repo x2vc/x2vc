@@ -4,8 +4,6 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.Optional;
 
-import org.x2vc.stylesheet.IStylesheetStructure;
-
 /**
  * Standard implementation of {@link IXSLTSortNode}.
  */
@@ -24,7 +22,7 @@ public class XSLTSortNode extends AbstractStructureTreeNode implements IXSLTSort
 	 * @param builder
 	 */
 	private XSLTSortNode(Builder builder) {
-		super(builder.parentStructure, builder.parentElement);
+		super(builder.parentStructure);
 		this.sortingExpression = builder.sortingExpression;
 		this.language = builder.language;
 		this.dataType = builder.dataType;
@@ -77,7 +75,6 @@ public class XSLTSortNode extends AbstractStructureTreeNode implements IXSLTSort
 	 */
 	public static final class Builder {
 		private IStylesheetStructure parentStructure;
-		private IStructureTreeNode parentElement;
 		private String sortingExpression;
 		private String language;
 		private String dataType;
@@ -88,11 +85,9 @@ public class XSLTSortNode extends AbstractStructureTreeNode implements IXSLTSort
 		 * Creates a new builder instance.
 		 *
 		 * @param parentStructure the {@link IStylesheetStructure} the node belongs to
-		 * @param parentElement   the parent element
 		 */
-		public Builder(IStylesheetStructure parentStructure, IStructureTreeNode parentElement) {
+		public Builder(IStylesheetStructure parentStructure) {
 			this.parentStructure = parentStructure;
-			this.parentElement = parentElement;
 		}
 
 		/**

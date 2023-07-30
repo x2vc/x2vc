@@ -1,4 +1,4 @@
-package org.x2vc.stylesheet;
+package org.x2vc.stylesheet.structure;
 
 /**
  * This component takes an the extended XSLT stylesheet and derives a structure
