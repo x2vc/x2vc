@@ -12,6 +12,11 @@ import com.google.common.base.Optional;
  */
 public interface IStructureTreeNode {
 
+	/**
+	 * Possible values to distinguish the node types.
+	 *
+	 * @see IStructureTreeNode#getType()
+	 */
 	enum NodeType {
 		XSLT_DIRECTIVE, XSLT_PARAM, XSLT_SORT, XML, TEXT
 	};
@@ -58,7 +63,7 @@ public interface IStructureTreeNode {
 	 *         correct type
 	 * @throws IllegalStateException if the type of the tree node does not match
 	 */
-	IXSLTParameterNode asSort() throws IllegalStateException;
+	IXSLTSortNode asSort() throws IllegalStateException;
 
 	/**
 	 * @return <code>true</code> if the element is a non-XSLT XML element and can be

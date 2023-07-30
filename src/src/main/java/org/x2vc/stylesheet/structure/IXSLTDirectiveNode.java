@@ -1,13 +1,12 @@
 package org.x2vc.stylesheet.structure;
 
-import java.util.Map;
-
 import javax.xml.namespace.QName;
 
 import org.x2vc.stylesheet.IStylesheetStructure;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 
 /**
  * An XSLT element contained in an {@link IStylesheetStructure} tree. These
@@ -25,12 +24,12 @@ public interface IXSLTDirectiveNode extends IStructureTreeNode {
 	/**
 	 * @return the XSLT attributes of the element
 	 */
-	Map<String, String> getXSLTAttributes();
+	ImmutableMap<String, String> getXSLTAttributes();
 
 	/**
 	 * @return the non-XSLT attributes of the element
 	 */
-	Map<QName, String> getOtherAttributes();
+	ImmutableMap<QName, String> getOtherAttributes();
 
 	/**
 	 * @return the trace ID if any is set
