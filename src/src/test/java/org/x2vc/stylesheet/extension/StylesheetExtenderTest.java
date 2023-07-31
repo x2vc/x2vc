@@ -1,9 +1,11 @@
-package org.x2vc.stylesheet;
+package org.x2vc.stylesheet.extension;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.x2vc.stylesheet.extension.IStylesheetExtender;
+import org.x2vc.stylesheet.extension.StylesheetExtender;
 import org.xmlunit.builder.DiffBuilder;
 import org.xmlunit.builder.Input;
 import org.xmlunit.diff.Diff;

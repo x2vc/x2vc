@@ -1,4 +1,4 @@
-package org.x2vc.stylesheet;
+package org.x2vc.stylesheet.extension;
 
 /**
  * This component takes an existing XSLT stylesheet and extends it with message

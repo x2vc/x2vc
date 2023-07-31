@@ -2,7 +2,7 @@ package org.x2vc.common;
 
 import javax.xml.namespace.QName;
 
-import org.x2vc.stylesheet.IStylesheetExtender;
+import org.x2vc.stylesheet.extension.IStylesheetExtender;
 
 /**
  * Constants used for the XSLT extension performed by

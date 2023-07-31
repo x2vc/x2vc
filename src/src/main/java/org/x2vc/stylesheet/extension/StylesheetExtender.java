@@ -1,4 +1,4 @@
-package org.x2vc.stylesheet;
+package org.x2vc.stylesheet.extension;
 
 import java.io.StringReader;
 import java.io.StringWriter;

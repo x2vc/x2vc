@@ -7,6 +7,7 @@ import java.net.URI;
 
 import javax.xml.transform.stream.StreamSource;
 
+import org.x2vc.stylesheet.extension.IStylesheetExtender;
 import org.x2vc.stylesheet.structure.IStylesheetStructure;
 import org.x2vc.stylesheet.structure.IStylesheetStructureExtractor;
 
