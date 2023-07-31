@@ -25,7 +25,7 @@ import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.SaxonApiException;
 
 @ExtendWith(MockitoExtension.class)
-class StylesheetPreprocessorTestWithProcessor {
+class StylesheetPreprocessorTest {
 
 	// This series of tests uses the actual Saxon XSLT processor. Using a mocked
 	// version would be more stable, but it's a lot of work...
@@ -54,8 +54,9 @@ class StylesheetPreprocessorTestWithProcessor {
 
 	@Test
 	void testInvalidStylesheet_whenFileBased() throws SaxonApiException {
+		URI testURI = URI.create("foobar");
 		assertThrows(IllegalArgumentException.class, () -> {
-			this.preprocessor.prepareStylesheet(URI.create("foobar"), "invalid_stylesheet");
+			this.preprocessor.prepareStylesheet(testURI, "invalid_stylesheet");
 		});
 	}
 
@@ -67,17 +68,18 @@ class StylesheetPreprocessorTestWithProcessor {
 	}
 
 	final String unsupportedStylesheet_Version2 = """
-			<?xml version="1.0" encoding="UTF-8"?>
-			<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-			<xsl:template match="/">
-			</xsl:template>
-			</xsl:stylesheet>
-			""";
+													<?xml version="1.0" encoding="UTF-8"?>
+													<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+													<xsl:template match="/">
+													</xsl:template>
+													</xsl:stylesheet>
+													""";
 
 	@Test
 	void testUnsupportedStylesheet_Version2_whenFileBased() throws SaxonApiException {
+		URI testURI = URI.create("foobar");
 		assertThrows(IllegalArgumentException.class, () -> {
-			this.preprocessor.prepareStylesheet(URI.create("foobar"), this.unsupportedStylesheet_Version2);
+			this.preprocessor.prepareStylesheet(testURI, this.unsupportedStylesheet_Version2);
 		});
 	}
 
@@ -89,19 +91,20 @@ class StylesheetPreprocessorTestWithProcessor {
 	}
 
 	final String unsupportedStylesheet_Import = """
-			<?xml version="1.0" encoding="UTF-8"?>
-			<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-			<xsl:import href="otherStylesheet.xsl"/>
-			<xsl:template match="/">
-			</xsl:template>
-			</xsl:stylesheet>
-			""";
+												<?xml version="1.0" encoding="UTF-8"?>
+												<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+												<xsl:import href="otherStylesheet.xsl"/>
+												<xsl:template match="/">
+												</xsl:template>
+												</xsl:stylesheet>
+												""";
 
 	@Test
-	@Disabled
+	@Disabled("feature is not supported yet")
 	void testUnsupportedStylesheet_Import_whenFileBased() throws SaxonApiException {
+		URI testURI = URI.create("foobar");
 		assertThrows(IllegalArgumentException.class, () -> {
-			this.preprocessor.prepareStylesheet(URI.create("foobar"), this.unsupportedStylesheet_Version2);
+			this.preprocessor.prepareStylesheet(testURI, this.unsupportedStylesheet_Version2);
 		});
 
 		fail("test not completed");
@@ -109,7 +112,7 @@ class StylesheetPreprocessorTestWithProcessor {
 	}
 
 	@Test
-	@Disabled
+	@Disabled("feature is not supported yet")
 	void testUnsupportedStylesheet_Import_whenNotFileBased() throws SaxonApiException {
 		assertThrows(IllegalArgumentException.class, () -> {
 			this.preprocessor.prepareStylesheet(this.unsupportedStylesheet_Version2);
@@ -120,19 +123,20 @@ class StylesheetPreprocessorTestWithProcessor {
 	}
 
 	final String unsupportedStylesheet_ApplyImports = """
-			<?xml version="1.0" encoding="UTF-8"?>
-			<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-			<xsl:template match="/">
-			<xsl:apply-imports/> <!-- prolly not strictly legal without an import statement -->
-			</xsl:template>
-			</xsl:stylesheet>
-			""";
+														<?xml version="1.0" encoding="UTF-8"?>
+														<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+														<xsl:template match="/">
+														<xsl:apply-imports/> <!-- prolly not strictly legal without an import statement -->
+														</xsl:template>
+														</xsl:stylesheet>
+														""";
 
 	@Test
-	@Disabled
+	@Disabled("feature is not supported yet")
 	void testUnsupportedStylesheet_ApplyImports_whenFileBased() throws SaxonApiException {
+		URI testURI = URI.create("foobar");
 		assertThrows(IllegalArgumentException.class, () -> {
-			this.preprocessor.prepareStylesheet(URI.create("foobar"), this.unsupportedStylesheet_ApplyImports);
+			this.preprocessor.prepareStylesheet(testURI, this.unsupportedStylesheet_ApplyImports);
 		});
 
 		fail("test not completed");
@@ -140,7 +144,7 @@ class StylesheetPreprocessorTestWithProcessor {
 	}
 
 	@Test
-	@Disabled
+	@Disabled("feature is not supported yet")
 	void testUnsupportedStylesheet_ApplyImports_whenNotFileBased() throws SaxonApiException {
 		assertThrows(IllegalArgumentException.class, () -> {
 			this.preprocessor.prepareStylesheet(this.unsupportedStylesheet_ApplyImports);
@@ -151,19 +155,20 @@ class StylesheetPreprocessorTestWithProcessor {
 	}
 
 	final String unsupportedStylesheet_Include = """
-			<?xml version="1.0" encoding="UTF-8"?>
-			<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-			<xsl:include href="otherStylesheet.xsl"/>
-			<xsl:template match="/">
-			</xsl:template>
-			</xsl:stylesheet>
-			""";
+													<?xml version="1.0" encoding="UTF-8"?>
+													<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+													<xsl:include href="otherStylesheet.xsl"/>
+													<xsl:template match="/">
+													</xsl:template>
+													</xsl:stylesheet>
+													""";
 
 	@Test
-	@Disabled
+	@Disabled("feature is not supported yet")
 	void testUnsupportedStylesheet_Include_whenFileBased() throws SaxonApiException {
+		URI testURI = URI.create("foobar");
 		assertThrows(IllegalArgumentException.class, () -> {
-			this.preprocessor.prepareStylesheet(URI.create("foobar"), this.unsupportedStylesheet_Include);
+			this.preprocessor.prepareStylesheet(testURI, this.unsupportedStylesheet_Include);
 		});
 
 		fail("test not completed");
@@ -171,7 +176,7 @@ class StylesheetPreprocessorTestWithProcessor {
 	}
 
 	@Test
-	@Disabled
+	@Disabled("feature is not supported yet")
 	void testUnsupportedStylesheet_Include_whenNotFileBased() throws SaxonApiException {
 		assertThrows(IllegalArgumentException.class, () -> {
 			this.preprocessor.prepareStylesheet(this.unsupportedStylesheet_Include);
@@ -182,21 +187,21 @@ class StylesheetPreprocessorTestWithProcessor {
 	}
 
 	final String minimalStylesheet = """
-			<?xml version="1.0" encoding="UTF-8"?>
-			<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-			<xsl:template match="/">
-			</xsl:template>
-			</xsl:stylesheet>
-			""";
+										<?xml version="1.0" encoding="UTF-8"?>
+										<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+										<xsl:template match="/">
+										</xsl:template>
+										</xsl:stylesheet>
+										""";
 
 	final String minimalStylesheet_Extended = """
-			<?xml version="1.0" encoding="UTF-8"?>
-			<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-			<xsl:template match="/">
-			<xsl:message>foobar</xsl:message>
-			</xsl:template>
-			</xsl:stylesheet>
-			""";
+												<?xml version="1.0" encoding="UTF-8"?>
+												<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+												<xsl:template match="/">
+												<xsl:message>foobar</xsl:message>
+												</xsl:template>
+												</xsl:stylesheet>
+												""";
 
 	@Test
 	void testStylesheetLocation_whenFileBased() throws SaxonApiException {
