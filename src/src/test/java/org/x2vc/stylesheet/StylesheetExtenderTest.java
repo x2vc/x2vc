@@ -142,6 +142,31 @@ class StylesheetExtenderTest {
 		compareXML(in, ex);
 	}
 
+	@Test
+	void testForEachWithSort() {
+		// message has to be placed after any xsl:sort elements
+		String in = """
+					<?xml version="1.0"?>
+					<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+					<xsl:for-each select="foo">
+					<xsl:sort select="bar"/>
+					<p>test</p>
+					</xsl:for-each>
+					</xsl:stylesheet>
+					""";
+		String ex = """
+					<?xml version="1.0"?>
+					<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ext0="http://www.github.com/vwegert/x2vc/XSLTExtension">
+					<xsl:for-each select="foo" ext0:trace-id="1">
+					<xsl:sort select="bar"/>
+					<xsl:message>trace type=elem name=for-each id=1</xsl:message>
+					<p>test</p>
+					</xsl:for-each>
+					</xsl:stylesheet>
+					""";
+		compareXML(in, ex);
+	}
+
 	// --- xsl:call-template
 	// parameters: name (irrelevant because static)
 	// trace before execution
@@ -160,6 +185,28 @@ class StylesheetExtenderTest {
 					<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ext0="http://www.github.com/vwegert/x2vc/XSLTExtension">
 					<xsl:message>trace type=elem name=call-template id=1</xsl:message>
 					<xsl:call-template name="foobar" ext0:trace-id="1"/>
+					</xsl:stylesheet>
+					""";
+		compareXML(in, ex);
+	}
+
+	@Test
+	void testCallTemplateWithActualParameters() {
+		String in = """
+					<?xml version="1.0"?>
+					<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+					<xsl:call-template name="foo">
+					<xsl:with-param name="bar" select="baz"/>
+					</xsl:call-template>
+					</xsl:stylesheet>
+					""";
+		String ex = """
+					<?xml version="1.0"?>
+					<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ext0="http://www.github.com/vwegert/x2vc/XSLTExtension">
+					<xsl:message>trace type=elem name=call-template id=1</xsl:message>
+					<xsl:call-template name="foo" ext0:trace-id="1">
+					<xsl:with-param name="bar" select="baz"/>
+					</xsl:call-template>
 					</xsl:stylesheet>
 					""";
 		compareXML(in, ex);
@@ -281,6 +328,31 @@ class StylesheetExtenderTest {
 					<?xml version="1.0"?>
 					<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ext0="http://www.github.com/vwegert/x2vc/XSLTExtension">
 					<xsl:template name="bar" ext0:trace-id="1">
+					<xsl:message>trace type=elem name=template id=1</xsl:message>
+					<p>foobar</p>
+					</xsl:template>
+					</xsl:stylesheet>
+					""";
+		compareXML(in, ex);
+	}
+
+	@Test
+	void testTemplateWithFormalParameters() {
+		// message has to be placed after the xsl:param element
+		String in = """
+					<?xml version="1.0"?>
+					<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+					<xsl:template name="foo">
+					<xsl:param name="bar" select="baz"/>
+					<p>foobar</p>
+					</xsl:template>
+					</xsl:stylesheet>
+					""";
+		String ex = """
+					<?xml version="1.0"?>
+					<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ext0="http://www.github.com/vwegert/x2vc/XSLTExtension">
+					<xsl:template name="foo" ext0:trace-id="1">
+					<xsl:param name="bar" select="baz"/>
 					<xsl:message>trace type=elem name=template id=1</xsl:message>
 					<p>foobar</p>
 					</xsl:template>

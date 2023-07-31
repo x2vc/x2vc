@@ -24,7 +24,7 @@ public class PushbackXMLEventReader implements IPushbackXMLEventReader {
 	 */
 	public PushbackXMLEventReader(XMLEventReader wrappedReader) {
 		this.wrappedReader = wrappedReader;
-		this.eventStack = new LinkedList<XMLEvent>();
+		this.eventStack = new LinkedList<>();
 	}
 
 	@Override

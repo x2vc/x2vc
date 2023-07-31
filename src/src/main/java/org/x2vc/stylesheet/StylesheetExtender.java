@@ -3,7 +3,9 @@ package org.x2vc.stylesheet;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.Optional;
 import java.util.Set;
 
@@ -22,6 +24,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.x2vc.common.ExtendedXSLTConstants;
 import org.x2vc.common.XSLTConstants;
+import org.x2vc.utilities.IPushbackXMLEventReader;
+import org.x2vc.utilities.PushbackXMLEventReader;
 
 import com.google.common.collect.Lists;
 
@@ -49,6 +53,13 @@ public class StylesheetExtender implements IStylesheetExtender {
 	private static final Set<String> ELEMENTS_WITH_TRACE_AFTER = Set.of(XSLTConstants.Elements.IF,
 			XSLTConstants.Elements.WHEN, XSLTConstants.Elements.OTHERWISE, XSLTConstants.Elements.TEMPLATE,
 			XSLTConstants.Elements.FOR_EACH);
+
+	/**
+	 * The following directive elements delay the output of a trace message until
+	 * the elements have been closed.
+	 */
+	private static final Set<String> ELEMENTS_DELAYING_MESSAGE = Set.of(XSLTConstants.Elements.SORT,
+			XSLTConstants.Elements.PARAM, XSLTConstants.Elements.WITH_PARAM);
 
 	@Override
 	public String extendStylesheet(String originalStylesheet) throws IllegalArgumentException {
@@ -106,6 +117,12 @@ public class StylesheetExtender implements IStylesheetExtender {
 		Optional<Integer> currentElementID = Optional.empty();
 
 		/**
+		 * Reader used to process the document. Only available during the main
+		 * processing loop.
+		 */
+		IPushbackXMLEventReader xmlReader;
+
+		/**
 		 * Create a new worker instance.
 		 *
 		 * @param xmlWriter the output target for the extended stylesheet
@@ -131,11 +148,11 @@ public class StylesheetExtender implements IStylesheetExtender {
 			this.extensionPrefix = findUnusedNamespacePrefix(usedNamespacePrefixes, "ext");
 			this.logger.trace("will use prefix {} for extension namespace", this.extensionPrefix);
 
-			XMLEventReader xmlReader = StylesheetExtender.this.inputFactory
-					.createXMLEventReader(new StringReader(originalStylesheet));
+			this.xmlReader = new PushbackXMLEventReader(
+					StylesheetExtender.this.inputFactory.createXMLEventReader(new StringReader(originalStylesheet)));
 
-			while (xmlReader.hasNext()) {
-				XMLEvent event = xmlReader.nextEvent();
+			while (this.xmlReader.hasNext()) {
+				XMLEvent event = this.xmlReader.nextEvent();
 				this.currentElementID = Optional.empty();
 
 				// processing BEFORE the event is written to the output stream
@@ -193,7 +210,7 @@ public class StylesheetExtender implements IStylesheetExtender {
 
 					// write trace message before element if required
 					if (ELEMENTS_WITH_TRACE_BEFORE.contains(elementName)) {
-						writeElementMessage(startElement);
+						writeElementMessageDirect(startElement);
 					}
 
 					// TODO XSLT extension: support select expression variables for apply-templates
@@ -220,7 +237,7 @@ public class StylesheetExtender implements IStylesheetExtender {
 
 				// write trace message after element if required
 				if (ELEMENTS_WITH_TRACE_AFTER.contains(elementName)) {
-					writeElementMessage(startElement);
+					writeElementMessageDelayed(startElement);
 				}
 			}
 			return startElement;
@@ -235,11 +252,11 @@ public class StylesheetExtender implements IStylesheetExtender {
 		 */
 		private Set<String> collectNamespacePrefixes(String originalStylesheet) throws XMLStreamException {
 			this.logger.trace("collecting existing namspace prefixes");
-			XMLEventReader xmlReader = StylesheetExtender.this.inputFactory
+			XMLEventReader scanningReader = StylesheetExtender.this.inputFactory
 					.createXMLEventReader(new StringReader(originalStylesheet));
 			Set<String> prefixes = new HashSet<>();
-			while (xmlReader.hasNext()) {
-				XMLEvent event = xmlReader.nextEvent();
+			while (scanningReader.hasNext()) {
+				XMLEvent event = scanningReader.nextEvent();
 				if (event.isStartElement()) {
 					event.asStartElement().getNamespaces().forEachRemaining(ns -> {
 						if (ns.getNamespaceURI().equals(XSLTConstants.NAMESPACE)) {
@@ -305,19 +322,112 @@ public class StylesheetExtender implements IStylesheetExtender {
 		}
 
 		/**
-		 * Add a message element to the output corresponding to an existing element
+		 * Add a message element corresponding to an existing element, observing the
+		 * rules to delay the message in case one of xsl:sort, xsl:param or
+		 * xsl:with-param is encountered.
 		 *
 		 * @param referredElement the element the message refers to
 		 * @throws XMLStreamException
 		 */
-		private void writeElementMessage(StartElement referredElement) throws XMLStreamException {
+		private void writeElementMessageDelayed(StartElement referredElement) throws XMLStreamException {
+
+			// read ahead to the next event that is not a whitespace-only character event,
+			// storing the events in the process
+			Deque<XMLEvent> storedEvents = new LinkedList<>();
+			XMLEvent nextEvent = this.xmlReader.peek();
+			while (nextEvent.isCharacters() && nextEvent.asCharacters().isWhiteSpace()) {
+				storedEvents.addFirst(this.xmlReader.nextEvent());
+				nextEvent = this.xmlReader.peek();
+			}
+
+			// at this point, the next event could be...
+
+			// ...a non-whitespace text node or an end event of the containing element
+			// push back all events and write message immediately
+			if (nextEvent.isCharacters() || nextEvent.isEndElement()) {
+				storedEvents.forEach(e -> this.xmlReader.pushback(e));
+				writeElementMessageDirect(referredElement);
+			}
+
+			// ...a start event of another element:
+			else if (nextEvent.isStartElement()) {
+				StartElement startElement = nextEvent.asStartElement();
+
+				if (ELEMENTS_DELAYING_MESSAGE.contains(startElement.getName().getLocalPart())) {
+					// ...a start event of a delaying element
+					// push all events up to and including the corresponding end event onto the
+					// stack
+					moveSubtreeToStack(storedEvents);
+
+					// push the message events onto the stack
+					for (XMLEvent event : generateMessageEvents(referredElement)) {
+						storedEvents.addFirst(event);
+					}
+
+					// push the entire stack back into the reader
+					storedEvents.forEach(e -> this.xmlReader.pushback(e));
+				} else {
+
+					// ...a start element of another element: push back all events and write message
+					// immediately
+					storedEvents.forEach(e -> this.xmlReader.pushback(e));
+					writeElementMessageDirect(referredElement);
+				}
+			} else {
+				// any other event - don't know what to do yet
+				this.logger.warn("Unclear whether to delay message output, check situation");
+				// push back all events and write message immediately
+				storedEvents.forEach(e -> this.xmlReader.pushback(e));
+				writeElementMessageDirect(referredElement);
+			}
+		}
+
+		/**
+		 * Takes the elements from the XML Reader, starting with a start element event
+		 * and ending with the corresponding end element event.
+		 *
+		 * @param storedEvents the stack to push the elements onto
+		 * @throws XMLStreamException
+		 */
+		private void moveSubtreeToStack(Deque<XMLEvent> storedEvents) throws XMLStreamException {
+			int elementDepth = 0;
+			do {
+				XMLEvent transferEvent = this.xmlReader.nextEvent();
+				if (transferEvent.isStartElement()) {
+					elementDepth++;
+				} else if (transferEvent.isEndElement()) {
+					elementDepth--;
+				}
+				storedEvents.addFirst(transferEvent);
+			} while (elementDepth > 0);
+		}
+
+		/**
+		 * Add a message element corresponding to an existing element directly
+		 *
+		 * @param referredElement the element the message refers to
+		 * @throws XMLStreamException
+		 */
+		private void writeElementMessageDirect(StartElement referredElement) throws XMLStreamException {
+			for (XMLEvent event : generateMessageEvents(referredElement)) {
+				this.xmlWriter.add(event);
+			}
+		}
+
+		/**
+		 * Creates the message elements corresponding to an existing element
+		 *
+		 * @param referredElement the element the message refers to
+		 * @throws XMLStreamException
+		 */
+		private Iterable<XMLEvent> generateMessageEvents(StartElement referredElement) {
 			String traceMessage = String.format("trace type=elem name=%s id=%s",
 					referredElement.getName().getLocalPart(), this.currentElementID.get());
-			this.xmlWriter.add(this.eventFactory.createStartElement(this.xsltPrefix, XSLTConstants.NAMESPACE,
-					XSLTConstants.Elements.MESSAGE));
-			this.xmlWriter.add(this.eventFactory.createCharacters(traceMessage));
-			this.xmlWriter.add(this.eventFactory.createEndElement(this.xsltPrefix, XSLTConstants.NAMESPACE,
-					XSLTConstants.Elements.MESSAGE));
+			return Lists.newArrayList(
+					this.eventFactory.createStartElement(this.xsltPrefix, XSLTConstants.NAMESPACE,
+							XSLTConstants.Elements.MESSAGE),
+					this.eventFactory.createCharacters(traceMessage), this.eventFactory.createEndElement(
+							this.xsltPrefix, XSLTConstants.NAMESPACE, XSLTConstants.Elements.MESSAGE));
 		}
 
 		/**
