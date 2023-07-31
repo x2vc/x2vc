@@ -35,4 +35,15 @@ public interface IStylesheetStructure extends Serializable {
 	 * @return a list of the top-level parameters (exposed by the entire stylesheet)
 	 */
 	ImmutableList<IXSLTParameterNode> getParameters();
+
+	/**
+	 * @return a list of all directives that have a trace ID set
+	 */
+	ImmutableList<IXSLTDirectiveNode> getDirectivesWithTraceID();
+
+	/**
+	 * @param traceID the trace ID of a directive
+	 * @return the structure element corresponding to the trace ID
+	 */
+	IXSLTDirectiveNode getDirectiveByTraceID(int traceID);
 }
