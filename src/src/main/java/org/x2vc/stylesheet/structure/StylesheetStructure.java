@@ -37,8 +37,8 @@ public class StylesheetStructure implements IStylesheetStructure {
 		checkNotNull(rootNode);
 		checkArgument(rootNode.isXSLTDirective());
 		String rootName = rootNode.asDirective().getName();
-		checkArgument(
-				rootName.equals(XSLTConstants.ELEMENT_TRANSFORM) || rootName.equals(XSLTConstants.ELEMENT_STYLESHEET));
+		checkArgument(rootName.equals(XSLTConstants.Elements.TRANSFORM)
+				|| rootName.equals(XSLTConstants.Elements.STYLESHEET));
 		this.rootNode = rootNode;
 	}
 
@@ -63,7 +63,7 @@ public class StylesheetStructure implements IStylesheetStructure {
 		checkInitializationComplete();
 		if (this.templates == null) {
 			this.templates = ImmutableList.copyOf(this.rootNode.getChildDirectives().stream()
-					.filter(d -> d.getName().equals(XSLTConstants.ELEMENT_TEMPLATE)).iterator());
+					.filter(d -> d.getName().equals(XSLTConstants.Elements.TEMPLATE)).iterator());
 		}
 		return this.templates;
 	}

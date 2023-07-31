@@ -18,11 +18,11 @@ class StylesheetStructureTest {
 		StylesheetStructure structure = new StylesheetStructure();
 		XSLTParameterNode param1 = new XSLTParameterNode.Builder(structure, "param1").build();
 		XSLTParameterNode param2 = new XSLTParameterNode.Builder(structure, "param2").build();
-		XSLTDirectiveNode template1 = new XSLTDirectiveNode.Builder(structure, XSLTConstants.ELEMENT_TEMPLATE)
+		XSLTDirectiveNode template1 = new XSLTDirectiveNode.Builder(structure, XSLTConstants.Elements.TEMPLATE)
 				.addXSLTAttribute("name", "template1").build();
-		XSLTDirectiveNode template2 = new XSLTDirectiveNode.Builder(structure, XSLTConstants.ELEMENT_TEMPLATE)
+		XSLTDirectiveNode template2 = new XSLTDirectiveNode.Builder(structure, XSLTConstants.Elements.TEMPLATE)
 				.addXSLTAttribute("name", "template2").build();
-		XSLTDirectiveNode rootNode = new XSLTDirectiveNode.Builder(structure, XSLTConstants.ELEMENT_STYLESHEET)
+		XSLTDirectiveNode rootNode = new XSLTDirectiveNode.Builder(structure, XSLTConstants.Elements.STYLESHEET)
 				.addChildElement(param1).addChildElement(param2).addChildElement(template1).addChildElement(template2)
 				.build();
 		structure.setRootNode(rootNode);
@@ -42,11 +42,11 @@ class StylesheetStructureTest {
 		StylesheetStructure structure = new StylesheetStructure();
 		XSLTParameterNode param1 = new XSLTParameterNode.Builder(structure, "param1").build();
 		XSLTParameterNode param2 = new XSLTParameterNode.Builder(structure, "param2").build();
-		XSLTDirectiveNode template1 = new XSLTDirectiveNode.Builder(structure, XSLTConstants.ELEMENT_TEMPLATE)
+		XSLTDirectiveNode template1 = new XSLTDirectiveNode.Builder(structure, XSLTConstants.Elements.TEMPLATE)
 				.addXSLTAttribute("name", "template1").build();
-		XSLTDirectiveNode template2 = new XSLTDirectiveNode.Builder(structure, XSLTConstants.ELEMENT_TEMPLATE)
+		XSLTDirectiveNode template2 = new XSLTDirectiveNode.Builder(structure, XSLTConstants.Elements.TEMPLATE)
 				.addXSLTAttribute("name", "template2").build();
-		XSLTDirectiveNode rootNode = new XSLTDirectiveNode.Builder(structure, XSLTConstants.ELEMENT_STYLESHEET)
+		XSLTDirectiveNode rootNode = new XSLTDirectiveNode.Builder(structure, XSLTConstants.Elements.STYLESHEET)
 				.addChildElement(param1).addChildElement(param2).addChildElement(template1).addChildElement(template2)
 				.build();
 		structure.setRootNode(rootNode);

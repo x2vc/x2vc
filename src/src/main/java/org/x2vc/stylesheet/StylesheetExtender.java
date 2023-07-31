@@ -37,16 +37,17 @@ public class StylesheetExtender implements IStylesheetExtender {
 	 * The following directive elements require a trace message BEFORE the actual
 	 * directive element.
 	 */
-	private static final Set<String> ELEMENTS_WITH_TRACE_BEFORE = Set.of(XSLTConstants.ELEMENT_APPLY_IMPORTS,
-			XSLTConstants.ELEMENT_APPLY_TEMPLATES, XSLTConstants.ELEMENT_CALL_TEMPLATE, XSLTConstants.ELEMENT_CHOOSE);
+	private static final Set<String> ELEMENTS_WITH_TRACE_BEFORE = Set.of(XSLTConstants.Elements.APPLY_IMPORTS,
+			XSLTConstants.Elements.APPLY_TEMPLATES, XSLTConstants.Elements.CALL_TEMPLATE,
+			XSLTConstants.Elements.CHOOSE);
 
 	/**
 	 * The following directive elements require a trace message INSIDE / after the
 	 * actual directive element.
 	 */
-	private static final Set<String> ELEMENTS_WITH_TRACE_AFTER = Set.of(XSLTConstants.ELEMENT_IF,
-			XSLTConstants.ELEMENT_WHEN, XSLTConstants.ELEMENT_OTHERWISE, XSLTConstants.ELEMENT_TEMPLATE,
-			XSLTConstants.ELEMENT_FOR_EACH);
+	private static final Set<String> ELEMENTS_WITH_TRACE_AFTER = Set.of(XSLTConstants.Elements.IF,
+			XSLTConstants.Elements.WHEN, XSLTConstants.Elements.OTHERWISE, XSLTConstants.Elements.TEMPLATE,
+			XSLTConstants.Elements.FOR_EACH);
 
 	@Override
 	public String extendStylesheet(String originalStylesheet) throws IllegalArgumentException {
@@ -215,10 +216,10 @@ public class StylesheetExtender implements IStylesheetExtender {
 			String traceMessage = String.format("trace type=elem name=%s id=%s", startElement.getName().getLocalPart(),
 					elementID);
 			this.xmlWriter.add(this.eventFactory.createStartElement(this.xsltPrefix, XSLTConstants.NAMESPACE,
-					XSLTConstants.ELEMENT_MESSAGE));
+					XSLTConstants.Elements.MESSAGE));
 			this.xmlWriter.add(this.eventFactory.createCharacters(traceMessage));
 			this.xmlWriter.add(this.eventFactory.createEndElement(this.xsltPrefix, XSLTConstants.NAMESPACE,
-					XSLTConstants.ELEMENT_MESSAGE));
+					XSLTConstants.Elements.MESSAGE));
 
 		}
 

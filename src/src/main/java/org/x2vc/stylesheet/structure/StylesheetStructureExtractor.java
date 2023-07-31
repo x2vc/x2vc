@@ -174,13 +174,13 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 			if (element.getName().getNamespaceURI().equals(XSLTConstants.NAMESPACE)) {
 				// yes - what kind of element?
 				switch (element.getName().getLocalPart()) {
-				case XSLTConstants.ELEMENT_PARAM:
+				case XSLTConstants.Elements.PARAM:
 					processStartOfParameter(element);
 					break;
-				case XSLTConstants.ELEMENT_WITH_PARAM:
+				case XSLTConstants.Elements.WITH_PARAM:
 					processStartOfParameter(element);
 					break;
-				case XSLTConstants.ELEMENT_SORT:
+				case XSLTConstants.Elements.SORT:
 					processStartOfSort(element);
 					break;
 				default:
@@ -278,13 +278,13 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 			if (element.getName().getNamespaceURI().equals(XSLTConstants.NAMESPACE)) {
 				// yes - what kind of element?
 				switch (element.getName().getLocalPart()) {
-				case XSLTConstants.ELEMENT_PARAM:
+				case XSLTConstants.Elements.PARAM:
 					processEndOfParameter(element);
 					break;
-				case XSLTConstants.ELEMENT_WITH_PARAM:
+				case XSLTConstants.Elements.WITH_PARAM:
 					processEndOfParameter(element);
 					break;
-				case XSLTConstants.ELEMENT_SORT:
+				case XSLTConstants.Elements.SORT:
 					processEndOfSort();
 					break;
 				default:
@@ -307,7 +307,7 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 
 			INodeBuilder parentBuilder = this.builderChain.getLast();
 			// parameters may only occur directly beneath an XSLT element
-			if (element.getName().getLocalPart().equals(XSLTConstants.ELEMENT_PARAM)) {
+			if (element.getName().getLocalPart().equals(XSLTConstants.Elements.PARAM)) {
 				((XSLTDirectiveNode.Builder) parentBuilder).addFormalParameter(paramNode);
 			} else {
 				((XSLTDirectiveNode.Builder) parentBuilder).addActualParameter(paramNode);
