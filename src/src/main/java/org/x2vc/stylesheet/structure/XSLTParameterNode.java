@@ -83,9 +83,9 @@ public class XSLTParameterNode extends AbstractStructureTreeNode implements IXSL
 		}
 
 		/**
-		 * Builder method for selection parameter.
+		 * Sets the selection parameter of the builder.
 		 *
-		 * @param selection field to set
+		 * @param selection the select parameter
 		 * @return builder
 		 */
 		public Builder withSelection(String selection) {
@@ -95,9 +95,9 @@ public class XSLTParameterNode extends AbstractStructureTreeNode implements IXSL
 		}
 
 		/**
-		 * Builder method for childElements parameter.
+		 * Adds a child element to the builder.
 		 *
-		 * @param element field to set
+		 * @param element the child element to add
 		 * @return builder
 		 */
 		public Builder addChildElement(IStructureTreeNode element) {

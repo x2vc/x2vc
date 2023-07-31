@@ -141,7 +141,7 @@ public class XSLTDirectiveNode extends AbstractStructureTreeNode implements IXSL
 		}
 
 		/**
-		 * Builder method for xsltAttributes parameter.
+		 * Adds an XSLT attribute to the builder.
 		 *
 		 * @param name  the name of the attribute
 		 * @param value the value of the attribute
@@ -155,7 +155,7 @@ public class XSLTDirectiveNode extends AbstractStructureTreeNode implements IXSL
 		}
 
 		/**
-		 * Builder method for otherAttributes parameter.
+		 * Adds a non-XSLT attribute to the builder.
 		 *
 		 * @param name  the name of the attribute
 		 * @param value the value of the attribute
@@ -169,9 +169,9 @@ public class XSLTDirectiveNode extends AbstractStructureTreeNode implements IXSL
 		}
 
 		/**
-		 * Builder method for childElements parameter.
+		 * Adds a child element to the builder.
 		 *
-		 * @param childElement field to set
+		 * @param childElement the child element
 		 * @return builder
 		 */
 		public Builder addChildElement(IStructureTreeNode childElement) {
@@ -181,9 +181,9 @@ public class XSLTDirectiveNode extends AbstractStructureTreeNode implements IXSL
 		}
 
 		/**
-		 * Builder method for formalParameters parameter.
+		 * Adds a formal parameter (xsl:param) to the builder.
 		 *
-		 * @param formalParameter field to set
+		 * @param formalParameter the parameter to add
 		 * @return builder
 		 */
 		public Builder addFormalParameter(IXSLTParameterNode formalParameter) {
@@ -193,9 +193,9 @@ public class XSLTDirectiveNode extends AbstractStructureTreeNode implements IXSL
 		}
 
 		/**
-		 * Builder method for actualParameters parameter.
+		 * Adds an actual parameter (xsl:with-param) to the builder.
 		 *
-		 * @param actualParameter field to set
+		 * @param actualParameter the parameter to add
 		 * @return builder
 		 */
 		public Builder addActualParameter(IXSLTParameterNode actualParameter) {
@@ -205,9 +205,9 @@ public class XSLTDirectiveNode extends AbstractStructureTreeNode implements IXSL
 		}
 
 		/**
-		 * Builder method for sorting parameter.
+		 * Adds a sorting specification (xsl:sort) to the builder.
 		 *
-		 * @param sorting field to set
+		 * @param sorting the sorting specification to add
 		 * @return builder
 		 */
 		public Builder addSorting(IXSLTSortNode sorting) {

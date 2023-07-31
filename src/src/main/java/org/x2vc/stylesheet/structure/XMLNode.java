@@ -82,7 +82,7 @@ public class XMLNode extends AbstractStructureTreeNode implements IXMLNode {
 		}
 
 		/**
-		 * Builder method for attributes parameter.
+		 * Adds an attribute to the builder.
 		 *
 		 * @param name  the attribute name
 		 * @param value the attribute value
@@ -96,9 +96,9 @@ public class XMLNode extends AbstractStructureTreeNode implements IXMLNode {
 		}
 
 		/**
-		 * Builder method for children parameter.
+		 * Adds a child element to the builder.
 		 *
-		 * @param element
+		 * @param element the child element
 		 * @return builder
 		 */
 		public Builder addChildElement(IStructureTreeNode element) {

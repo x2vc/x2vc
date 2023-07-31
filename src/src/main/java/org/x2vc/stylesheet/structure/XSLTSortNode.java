@@ -91,9 +91,9 @@ public class XSLTSortNode extends AbstractStructureTreeNode implements IXSLTSort
 		}
 
 		/**
-		 * Builder method for sortingExpression parameter.
+		 * Sets the expression used to sort the elements by
 		 *
-		 * @param sortingExpression field to set
+		 * @param sortingExpression the expression used to sort the elements by.
 		 * @return builder
 		 */
 		public Builder withSortingExpression(String sortingExpression) {
@@ -103,9 +103,9 @@ public class XSLTSortNode extends AbstractStructureTreeNode implements IXSLTSort
 		}
 
 		/**
-		 * Builder method for language parameter.
+		 * Sets the sorting language.
 		 *
-		 * @param language field to set
+		 * @param language the sorting language
 		 * @return builder
 		 */
 		public Builder withLanguage(String language) {
@@ -115,9 +115,9 @@ public class XSLTSortNode extends AbstractStructureTreeNode implements IXSLTSort
 		}
 
 		/**
-		 * Builder method for dataType parameter.
+		 * Sets the data type.
 		 *
-		 * @param dataType field to set
+		 * @param dataType the data type
 		 * @return builder
 		 */
 		public Builder withDataType(String dataType) {
@@ -127,9 +127,9 @@ public class XSLTSortNode extends AbstractStructureTreeNode implements IXSLTSort
 		}
 
 		/**
-		 * Builder method for sortOrder parameter.
+		 * Sets the sorting order (ascending or descending)..
 		 *
-		 * @param sortOrder field to set
+		 * @param sortOrder the sorting order (ascending or descending)
 		 * @return builder
 		 */
 		public Builder withSortOrder(String sortOrder) {
@@ -139,9 +139,9 @@ public class XSLTSortNode extends AbstractStructureTreeNode implements IXSLTSort
 		}
 
 		/**
-		 * Builder method for caseOrder parameter.
+		 * Sets the case handling order (upper-first or lower-first).
 		 *
-		 * @param caseOrder field to set
+		 * @param caseOrder the case handling order (upper-first or lower-first)
 		 * @return builder
 		 */
 		public Builder withCaseOrder(String caseOrder) {

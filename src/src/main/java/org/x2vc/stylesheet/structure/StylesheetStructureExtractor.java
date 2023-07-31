@@ -47,8 +47,6 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 			this.logger.info("begin of stylesheet structure extraction");
 			StylesheetStructure structure = new StylesheetStructure();
 			XMLEventReader xmlReader = this.inputFactory.createXMLEventReader(new StringReader(source));
-			// the actual processing is performed in a separate worker class to facilitate
-			// thread safety
 			structure.setRootNode(new Worker(structure).process(xmlReader));
 			this.logger.info("end of stylesheet structure extraction");
 			return structure;
@@ -57,6 +55,10 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 		}
 	}
 
+	/**
+	 * This class is used for the actual implementation in order to ensure thread
+	 * safety.
+	 */
 	private class Worker {
 
 		private Logger logger = LogManager.getLogger();
@@ -64,14 +66,19 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 		private StylesheetStructure structure;
 
 		/**
-		 * @param structure
+		 * Creates a new worker instance.
+		 *
+		 * @param structure the structure object to populate
 		 */
 		public Worker(StylesheetStructure structure) {
 			this.structure = structure;
 		}
 
 		/**
-		 * @param xmlReader
+		 * Processes an extended stylesheet document and populates the structure
+		 * information.
+		 *
+		 * @param xmlReader the input stream to read the extended stylesheet from
 		 * @return the root node of the structure extracted from the stylesheet
 		 * @throws XMLStreamException
 		 */
@@ -167,6 +174,8 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 		}
 
 		/**
+		 * Processes a start element event to dispatch according to element type.
+		 *
 		 * @param element
 		 */
 		private void processStartElement(StartElement element) {
@@ -193,6 +202,8 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 		}
 
 		/**
+		 * Processes a start element event for an xsl:param or xsl:with-param element.
+		 *
 		 * @param element
 		 */
 		private void processStartOfParameter(StartElement element) {
@@ -210,15 +221,17 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 		}
 
 		/**
+		 * Processes a start element event for an xsl:sort element.
+		 *
 		 * @param element
 		 */
 		private void processStartOfSort(StartElement element) {
+			this.logger.trace("start of sort specification ({})", element.getName().getLocalPart());
 			Optional<String> attribSelect = getAttributeValue(element, "select");
 			Optional<String> attribLang = getAttributeValue(element, "lang");
 			Optional<String> attribDataType = getAttributeValue(element, "data-type");
 			Optional<String> attribOrder = getAttributeValue(element, "order");
 			Optional<String> attribCaseOrder = getAttributeValue(element, "case-order");
-			this.logger.trace("start of sort specification ({})", element.getName().getLocalPart());
 			XSLTSortNode.Builder sortBuilder = new XSLTSortNode.Builder(this.structure);
 			if (attribSelect.isPresent()) {
 				sortBuilder.withSortingExpression(attribSelect.get());
@@ -239,6 +252,8 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 		}
 
 		/**
+		 * Processes a start element event for any other XSLT directive.
+		 *
 		 * @param element
 		 */
 		private void processStartOfDirective(StartElement element) {
@@ -258,6 +273,8 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 		}
 
 		/**
+		 * Processes a start element event for any other XML node.
+		 *
 		 * @param element
 		 */
 		private void processStartOfXMLNode(StartElement element) {
@@ -271,6 +288,8 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 		}
 
 		/**
+		 * Processes an end element event to dispatch according to element type.
+		 *
 		 * @param element
 		 */
 		private void processEndElement(EndElement element) {
@@ -298,6 +317,8 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 		}
 
 		/**
+		 * Processes an end element event for an xsl:param or xsl:with-param element.
+		 *
 		 * @param element
 		 */
 		private void processEndOfParameter(EndElement element) {
@@ -315,6 +336,8 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 		}
 
 		/**
+		 * Processes an end element event for an xsl:sort element.
+		 *
 		 * @param element
 		 */
 		private void processEndOfSort() {
@@ -328,6 +351,8 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 		}
 
 		/**
+		 * Processes an end element event for any other XSLT directive.
+		 *
 		 * @param element
 		 */
 		private void processEndOfDirective() {
@@ -342,6 +367,8 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 		}
 
 		/**
+		 * Processes an end element event for any other XML node.
+		 *
 		 * @param element
 		 */
 		private void processEndOfXMLNode() {
@@ -352,6 +379,8 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 		}
 
 		/**
+		 * Processes a character (text) event.
+		 *
 		 * @param characters
 		 */
 		private void processCharacterEvent(Characters characters) {
@@ -364,21 +393,33 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 		}
 
 		/**
-		 * @param node
+		 * Adds the node as a child node to the last builder in the chain
+		 *
+		 * @param node the child node to add
 		 */
 		private void addChildNodeToLastBuilder(IStructureTreeNode node) {
 			INodeBuilder parentBuilder = this.builderChain.getLast();
 			if (parentBuilder instanceof XMLNode.Builder nodeBuilder) {
 				nodeBuilder.addChildElement(node);
-			}
-			if (parentBuilder instanceof XSLTDirectiveNode.Builder directiveBuilder) {
+			} else if (parentBuilder instanceof XSLTDirectiveNode.Builder directiveBuilder) {
 				directiveBuilder.addChildElement(node);
-			}
-			if (parentBuilder instanceof XSLTParameterNode.Builder paramBuilder) {
+			} else if (parentBuilder instanceof XSLTParameterNode.Builder paramBuilder) {
 				paramBuilder.addChildElement(node);
+			} else {
+				throw new IllegalStateException("The child element cannot be added to this parent element");
 			}
 		}
 
+		/**
+		 * Retrieves the value of an XSLT attribute. This method will first try to look
+		 * for a fully prefixed attribute name (which is rather unusual) and then
+		 * fallback to an attribute without a namespace prefix.
+		 *
+		 * @param element       the element to examine
+		 * @param attributeName the name of the attribute to retrieve
+		 * @return an {@link Optional} containing the value or nothing if the attribute
+		 *         was not found
+		 */
 		private Optional<String> getAttributeValue(StartElement element, String attributeName) {
 			Attribute attrib = element.getAttributeByName(new QName(XSLTConstants.NAMESPACE, attributeName));
 			if (attrib == null) {
