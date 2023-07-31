@@ -28,6 +28,7 @@ import org.x2vc.utilities.IPushbackXMLEventReader;
 import org.x2vc.utilities.PushbackXMLEventReader;
 
 import com.google.common.collect.Lists;
+import com.google.inject.Inject;
 
 /**
  * Standard implementation of {@link IStylesheetExtender}.
@@ -37,6 +38,11 @@ public class StylesheetExtender implements IStylesheetExtender {
 	private XMLInputFactory inputFactory = XMLInputFactory.newFactory();
 	private XMLOutputFactory outputFactory = XMLOutputFactory.newFactory();
 	private Logger logger = LogManager.getLogger();
+
+	@Inject
+	StylesheetExtender() {
+		// nothing to do at the moment
+	}
 
 	/**
 	 * The following directive elements require a trace message BEFORE the actual

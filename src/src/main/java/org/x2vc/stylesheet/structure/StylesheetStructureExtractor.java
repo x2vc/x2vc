@@ -23,6 +23,7 @@ import org.apache.logging.log4j.Logger;
 import org.x2vc.common.XSLTConstants;
 
 import com.google.common.base.Strings;
+import com.google.inject.Inject;
 
 /**
  * Standard implementation of {@link IStylesheetStructureExtractor}.
@@ -35,6 +36,7 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 	/**
 	 * Default constructor.
 	 */
+	@Inject
 	public StylesheetStructureExtractor() {
 		this.inputFactory = XMLInputFactory.newFactory();
 		// have the reader combine adjacent text nodes
