@@ -37,7 +37,7 @@ public class StylesheetExtender implements IStylesheetExtender {
 
 	private XMLInputFactory inputFactory = XMLInputFactory.newFactory();
 	private XMLOutputFactory outputFactory = XMLOutputFactory.newFactory();
-	private Logger logger = LogManager.getLogger();
+	private static Logger logger = LogManager.getLogger();
 
 	@Inject
 	StylesheetExtender() {
@@ -69,15 +69,15 @@ public class StylesheetExtender implements IStylesheetExtender {
 
 	@Override
 	public String extendStylesheet(String originalStylesheet) throws IllegalArgumentException {
+		logger.traceEntry();
 		try {
-			this.logger.info("begin of stylesheet extension");
 			StringWriter stringWriter = new StringWriter();
 			XMLEventWriter xmlWriter = this.outputFactory.createXMLEventWriter(stringWriter);
 			new Worker(xmlWriter).process(originalStylesheet);
-			this.logger.info("end of stylesheet extension");
-			return stringWriter.toString();
+			String result = stringWriter.toString();
+			return logger.traceExit(result);
 		} catch (XMLStreamException e) {
-			throw new IllegalArgumentException("Unable to extend stylesheet.", e);
+			throw logger.throwing(new IllegalArgumentException("Unable to extend stylesheet.", e));
 		}
 	}
 
@@ -87,7 +87,7 @@ public class StylesheetExtender implements IStylesheetExtender {
 	 */
 	private class Worker {
 
-		private Logger logger = LogManager.getLogger();
+		private static Logger logger = LogManager.getLogger();
 		private XMLEventFactory eventFactory = XMLEventFactory.newFactory();
 
 		private XMLEventWriter xmlWriter;
@@ -144,6 +144,7 @@ public class StylesheetExtender implements IStylesheetExtender {
 		 * @throws XMLStreamException
 		 */
 		public void process(String originalStylesheet) throws XMLStreamException {
+			logger.traceEntry();
 
 			// We want to introduce a new global namespace prefix. In order to avoid
 			// conflicts with existing prefixes, first build a map of all prefixes that have
@@ -152,7 +153,7 @@ public class StylesheetExtender implements IStylesheetExtender {
 
 			// Invent a new namespace prefix for our extension namespace.
 			this.extensionPrefix = findUnusedNamespacePrefix(usedNamespacePrefixes, "ext");
-			this.logger.trace("will use prefix {} for extension namespace", this.extensionPrefix);
+			Worker.logger.trace("will use prefix {} for extension namespace", this.extensionPrefix);
 
 			this.xmlReader = new PushbackXMLEventReader(
 					StylesheetExtender.this.inputFactory.createXMLEventReader(new StringReader(originalStylesheet)));
@@ -187,6 +188,8 @@ public class StylesheetExtender implements IStylesheetExtender {
 				// TODO XSLT extension: support template actual parameters for template
 
 			}
+
+			logger.traceExit();
 		}
 
 		/**
@@ -197,10 +200,11 @@ public class StylesheetExtender implements IStylesheetExtender {
 		 * @throws XMLStreamException
 		 */
 		private StartElement processBeforeStartElement(StartElement startElement) throws XMLStreamException {
+			logger.traceEntry();
 			if (!this.rootElementVisited) {
 				// root element: add namespace
 				startElement = extendRootElement(startElement, this.extensionPrefix);
-				this.logger.trace("extended root element to {}", startElement);
+				Worker.logger.trace("extended root element to {}", startElement);
 			} else {
 				// other elements: only handle certain XSLT elements
 				if (startElement.getName().getNamespaceURI().equals(XSLTConstants.NAMESPACE)) {
@@ -211,7 +215,7 @@ public class StylesheetExtender implements IStylesheetExtender {
 							|| ELEMENTS_WITH_TRACE_AFTER.contains(elementName)) {
 						this.currentElementID = Optional.of(getNextElementID());
 						startElement = addIDToElement(startElement, this.extensionPrefix);
-						this.logger.trace("added ID {} to element {}", this.currentElementID.get(), startElement);
+						Worker.logger.trace("added ID {} to element {}", this.currentElementID.get(), startElement);
 					}
 
 					// write trace message before element if required
@@ -225,7 +229,7 @@ public class StylesheetExtender implements IStylesheetExtender {
 					// call-template
 				}
 			}
-			return startElement;
+			return logger.traceExit(startElement);
 		}
 
 		/**
@@ -237,6 +241,7 @@ public class StylesheetExtender implements IStylesheetExtender {
 		 * @throws XMLStreamException
 		 */
 		private StartElement processAfterStartElement(StartElement startElement) throws XMLStreamException {
+			logger.traceEntry();
 			// only handle certain XSL elements
 			if (startElement.getName().getNamespaceURI().equals(XSLTConstants.NAMESPACE)) {
 				final String elementName = startElement.getName().getLocalPart();
@@ -246,7 +251,7 @@ public class StylesheetExtender implements IStylesheetExtender {
 					writeElementMessageDelayed(startElement);
 				}
 			}
-			return startElement;
+			return logger.traceExit(startElement);
 		}
 
 		/**
@@ -257,7 +262,7 @@ public class StylesheetExtender implements IStylesheetExtender {
 		 * @throws XMLStreamException
 		 */
 		private Set<String> collectNamespacePrefixes(String originalStylesheet) throws XMLStreamException {
-			this.logger.trace("collecting existing namspace prefixes");
+			Worker.logger.traceEntry();
 			XMLEventReader scanningReader = StylesheetExtender.this.inputFactory
 					.createXMLEventReader(new StringReader(originalStylesheet));
 			Set<String> prefixes = new HashSet<>();
@@ -269,12 +274,12 @@ public class StylesheetExtender implements IStylesheetExtender {
 							this.xsltPrefix = ns.getPrefix();
 						}
 						String prefix = ns.getPrefix();
-						this.logger.trace("encountered namespace prefix {}", prefix);
+						Worker.logger.trace("encountered namespace prefix {}", prefix);
 						prefixes.add(prefix);
 					});
 				}
 			}
-			return prefixes;
+			return logger.traceExit(prefixes);
 		}
 
 		/**
@@ -305,11 +310,13 @@ public class StylesheetExtender implements IStylesheetExtender {
 		 * @return the extended root element
 		 */
 		private StartElement extendRootElement(StartElement originalElement, String newExtensionPrefix) {
+			logger.traceEntry();
 			ArrayList<Namespace> namespaces = Lists.newArrayList(originalElement.getNamespaces());
 			namespaces.add(this.eventFactory.createNamespace(newExtensionPrefix, ExtendedXSLTConstants.NAMESPACE));
 			this.rootElementVisited = true;
-			return this.eventFactory.createStartElement(originalElement.getName(), originalElement.getAttributes(),
-					namespaces.iterator());
+			StartElement result = this.eventFactory.createStartElement(originalElement.getName(),
+					originalElement.getAttributes(), namespaces.iterator());
+			return logger.traceExit(result);
 		}
 
 		/**
@@ -320,11 +327,13 @@ public class StylesheetExtender implements IStylesheetExtender {
 		 * @return the extended element
 		 */
 		private StartElement addIDToElement(StartElement originalElement, String extensionPrefix) {
+			logger.traceEntry();
 			ArrayList<Attribute> attributes = Lists.newArrayList(originalElement.getAttributes());
 			attributes.add(this.eventFactory.createAttribute(extensionPrefix, ExtendedXSLTConstants.NAMESPACE,
 					ExtendedXSLTConstants.ATTRIBUTE_TRACE_ID, Integer.toString(this.currentElementID.get())));
-			return this.eventFactory.createStartElement(originalElement.getName(), attributes.iterator(),
+			StartElement result = this.eventFactory.createStartElement(originalElement.getName(), attributes.iterator(),
 					originalElement.getNamespaces());
+			return logger.traceExit(result);
 		}
 
 		/**
@@ -336,6 +345,7 @@ public class StylesheetExtender implements IStylesheetExtender {
 		 * @throws XMLStreamException
 		 */
 		private void writeElementMessageDelayed(StartElement referredElement) throws XMLStreamException {
+			logger.traceEntry();
 
 			// read ahead to the next event that is not a whitespace-only character event,
 			// storing the events in the process
@@ -381,11 +391,13 @@ public class StylesheetExtender implements IStylesheetExtender {
 				}
 			} else {
 				// any other event - don't know what to do yet
-				this.logger.warn("Unclear whether to delay message output, check situation");
+				Worker.logger.warn("Unclear whether to delay message output, check situation");
 				// push back all events and write message immediately
 				storedEvents.forEach(e -> this.xmlReader.pushback(e));
 				writeElementMessageDirect(referredElement);
 			}
+
+			logger.traceExit();
 		}
 
 		/**
@@ -396,6 +408,7 @@ public class StylesheetExtender implements IStylesheetExtender {
 		 * @throws XMLStreamException
 		 */
 		private void moveSubtreeToStack(Deque<XMLEvent> storedEvents) throws XMLStreamException {
+			logger.traceEntry();
 			int elementDepth = 0;
 			do {
 				XMLEvent transferEvent = this.xmlReader.nextEvent();
@@ -406,6 +419,7 @@ public class StylesheetExtender implements IStylesheetExtender {
 				}
 				storedEvents.addFirst(transferEvent);
 			} while (elementDepth > 0);
+			logger.traceExit();
 		}
 
 		/**
@@ -415,9 +429,11 @@ public class StylesheetExtender implements IStylesheetExtender {
 		 * @throws XMLStreamException
 		 */
 		private void writeElementMessageDirect(StartElement referredElement) throws XMLStreamException {
+			logger.traceEntry();
 			for (XMLEvent event : generateMessageEvents(referredElement)) {
 				this.xmlWriter.add(event);
 			}
+			logger.traceExit();
 		}
 
 		/**
@@ -427,13 +443,15 @@ public class StylesheetExtender implements IStylesheetExtender {
 		 * @throws XMLStreamException
 		 */
 		private Iterable<XMLEvent> generateMessageEvents(StartElement referredElement) {
+			logger.traceEntry();
 			String traceMessage = String.format("trace type=elem name=%s id=%s",
 					referredElement.getName().getLocalPart(), this.currentElementID.get());
-			return Lists.newArrayList(
+			ArrayList<XMLEvent> result = Lists.newArrayList(
 					this.eventFactory.createStartElement(this.xsltPrefix, XSLTConstants.NAMESPACE,
 							XSLTConstants.Elements.MESSAGE),
 					this.eventFactory.createCharacters(traceMessage), this.eventFactory.createEndElement(
 							this.xsltPrefix, XSLTConstants.NAMESPACE, XSLTConstants.Elements.MESSAGE));
+			return logger.traceExit(result);
 		}
 
 		/**

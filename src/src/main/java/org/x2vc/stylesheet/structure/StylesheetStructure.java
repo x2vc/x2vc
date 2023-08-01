@@ -1,8 +1,5 @@
 package org.x2vc.stylesheet.structure;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -10,9 +7,14 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.x2vc.common.XSLTConstants;
 
 import com.google.common.collect.ImmutableList;
+
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Standard implementation of {@link IStylesheetStructure}. Use the
@@ -22,6 +24,7 @@ import com.google.common.collect.ImmutableList;
 public class StylesheetStructure implements IStylesheetStructure {
 
 	private static final long serialVersionUID = 657884766610226773L;
+	private static Logger logger = LogManager.getLogger();
 	private IXSLTDirectiveNode rootNode;
 	private transient ImmutableList<IXSLTDirectiveNode> templates;
 	private transient ImmutableList<IXSLTParameterNode> parameters;
@@ -76,7 +79,7 @@ public class StylesheetStructure implements IStylesheetStructure {
 	 */
 	private void checkInitializationComplete() {
 		if (this.rootNode == null) {
-			throw new IllegalStateException("Structure initialization not completed");
+			throw logger.throwing(new IllegalStateException("Structure initialization not completed"));
 		}
 	}
 
@@ -88,22 +91,42 @@ public class StylesheetStructure implements IStylesheetStructure {
 
 	@Override
 	public ImmutableList<IXSLTDirectiveNode> getTemplates() {
+		logger.traceEntry();
 		checkInitializationComplete();
 		if (this.templates == null) {
-			this.templates = ImmutableList.copyOf(this.rootNode.getChildDirectives().stream()
-					.filter(d -> d.getName().equals(XSLTConstants.Elements.TEMPLATE)).iterator());
+			this.templates = filterTemplates();
 		}
 		return this.templates;
+	}
+
+	/**
+	 * @return the intended result of {@link #getTemplates()}
+	 */
+	private ImmutableList<IXSLTDirectiveNode> filterTemplates() {
+		logger.traceEntry();
+		ImmutableList<IXSLTDirectiveNode> result = ImmutableList.copyOf(this.rootNode.getChildDirectives().stream()
+				.filter(d -> d.getName().equals(XSLTConstants.Elements.TEMPLATE)).iterator());
+		return logger.traceExit(result);
 	}
 
 	@Override
 	public ImmutableList<IXSLTParameterNode> getParameters() {
 		checkInitializationComplete();
 		if (this.parameters == null) {
-			this.parameters = ImmutableList.copyOf(this.rootNode.getChildElements().stream()
-					.filter(e -> e.isXSLTParameter()).map(e -> e.asParameter()).iterator());
+			this.parameters = filterParameters();
 		}
 		return this.parameters;
+	}
+
+	/**
+	 * @return
+	 *
+	 */
+	private ImmutableList<IXSLTParameterNode> filterParameters() {
+		logger.traceEntry();
+		ImmutableList<IXSLTParameterNode> result = ImmutableList.copyOf(this.rootNode.getChildElements().stream()
+				.filter(e -> e.isXSLTParameter()).map(e -> e.asParameter()).iterator());
+		return logger.traceExit(result);
 	}
 
 	@Override
@@ -126,6 +149,7 @@ public class StylesheetStructure implements IStylesheetStructure {
 	 * @return a map of all directives in the tree containing a trace ID
 	 */
 	private Map<Integer, IXSLTDirectiveNode> buildTracedDirectives() {
+		logger.traceEntry();
 		HashMap<Integer, IXSLTDirectiveNode> result = new HashMap<>();
 		Deque<IStructureTreeNode> remainingNodes = new LinkedList<>();
 		remainingNodes.add(this.rootNode);
@@ -146,7 +170,7 @@ public class StylesheetStructure implements IStylesheetStructure {
 				remainingNodes.addAll(currentNode.asXML().getChildElements());
 			}
 		}
-		return result;
+		return logger.traceExit(result);
 	}
 
 }

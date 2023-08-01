@@ -1,8 +1,11 @@
 package org.x2vc.stylesheet.structure;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.util.Objects;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Base class for all derivations of {@link IStructureTreeNode}.
@@ -10,6 +13,7 @@ import java.util.Objects;
 public abstract class AbstractStructureTreeNode implements IStructureTreeNode {
 
 	private static final long serialVersionUID = -4581883325565055335L;
+	private static Logger logger = LogManager.getLogger();
 	private IStylesheetStructure parentStructure;
 
 	/**
@@ -49,7 +53,7 @@ public abstract class AbstractStructureTreeNode implements IStructureTreeNode {
 
 	@Override
 	public IXSLTDirectiveNode asDirective() throws IllegalStateException {
-		throw new IllegalStateException("This structure node can not be cast to IXSLTDirectiveNode");
+		throw logger.throwing(new IllegalStateException("This structure node can not be cast to IXSLTDirectiveNode"));
 	}
 
 	@Override
@@ -59,7 +63,7 @@ public abstract class AbstractStructureTreeNode implements IStructureTreeNode {
 
 	@Override
 	public IXSLTParameterNode asParameter() throws IllegalStateException {
-		throw new IllegalStateException("This structure node can not be cast to IXSLTParameterNode");
+		throw logger.throwing(new IllegalStateException("This structure node can not be cast to IXSLTParameterNode"));
 	}
 
 	@Override
@@ -69,7 +73,7 @@ public abstract class AbstractStructureTreeNode implements IStructureTreeNode {
 
 	@Override
 	public IXSLTSortNode asSort() throws IllegalStateException {
-		throw new IllegalStateException("This structure node can not be cast to IXSLTSortNode");
+		throw logger.throwing(new IllegalStateException("This structure node can not be cast to IXSLTSortNode"));
 	}
 
 	@Override
@@ -79,7 +83,7 @@ public abstract class AbstractStructureTreeNode implements IStructureTreeNode {
 
 	@Override
 	public IXMLNode asXML() throws IllegalStateException {
-		throw new IllegalStateException("This structure node can not be cast to IXMLNode");
+		throw logger.throwing(new IllegalStateException("This structure node can not be cast to IXMLNode"));
 	}
 
 	@Override
@@ -89,7 +93,7 @@ public abstract class AbstractStructureTreeNode implements IStructureTreeNode {
 
 	@Override
 	public ITextNode asText() throws IllegalStateException {
-		throw new IllegalStateException("This structure node can not be cast to ITextNode");
+		throw logger.throwing(new IllegalStateException("This structure node can not be cast to ITextNode"));
 	}
 
 	@Override

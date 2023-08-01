@@ -30,7 +30,7 @@ import com.google.inject.Inject;
  */
 public class StylesheetStructureExtractor implements IStylesheetStructureExtractor {
 
-	private Logger logger = LogManager.getLogger();
+	private static Logger logger = LogManager.getLogger();
 	private XMLInputFactory inputFactory;
 
 	/**
@@ -45,13 +45,12 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 
 	@Override
 	public IStylesheetStructure extractStructure(String source) {
+		logger.traceEntry();
 		try {
-			this.logger.info("begin of stylesheet structure extraction");
 			StylesheetStructure structure = new StylesheetStructure();
 			XMLEventReader xmlReader = this.inputFactory.createXMLEventReader(new StringReader(source));
 			structure.setRootNode(new Worker(structure).process(xmlReader));
-			this.logger.info("end of stylesheet structure extraction");
-			return structure;
+			return logger.traceExit(structure);
 		} catch (XMLStreamException e) {
 			throw new IllegalArgumentException("Unable to analyze stylesheet structure.", e);
 		}
@@ -63,7 +62,7 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 	 */
 	private class Worker {
 
-		private Logger logger = LogManager.getLogger();
+		private static Logger logger = LogManager.getLogger();
 		private Deque<INodeBuilder> builderChain = new ArrayDeque<>();
 		private StylesheetStructure structure;
 
@@ -85,94 +84,96 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 		 * @throws XMLStreamException
 		 */
 		public IXSLTDirectiveNode process(XMLEventReader xmlReader) throws XMLStreamException {
+			logger.traceEntry();
 			while (xmlReader.hasNext()) {
 				XMLEvent event = xmlReader.nextEvent();
 				switch (event.getEventType()) {
 				case XMLStreamConstants.START_ELEMENT:
-					this.logger.trace("processing START_ELEMENT event: {}", event);
+					logger.trace("processing START_ELEMENT event: {}", event);
 					processStartElement(event.asStartElement());
 					break;
 
 				case XMLStreamConstants.END_ELEMENT:
-					this.logger.trace("processing END_ELEMENT event: {}", event);
+					logger.trace("processing END_ELEMENT event: {}", event);
 					processEndElement(event.asEndElement());
 					break;
 
 				case XMLStreamConstants.PROCESSING_INSTRUCTION:
-					this.logger.warn("processing PROCESSING_INSTRUCTION event ignored: {}", event);
+					logger.warn("processing PROCESSING_INSTRUCTION event ignored: {}", event);
 					// TODO XSLT structure extraction: decide how to handle processing instructions
 					break;
 
 				case XMLStreamConstants.CHARACTERS:
-					this.logger.trace("processing CHARACTERS event: {}", event);
+					logger.trace("processing CHARACTERS event: {}", event);
 					processCharacterEvent(event.asCharacters());
 					break;
 
 				case XMLStreamConstants.COMMENT:
-					this.logger.trace("ignoring COMMENT event: {}", event);
+					logger.trace("ignoring COMMENT event: {}", event);
 					// nothing to do here
 					break;
 
 				case XMLStreamConstants.SPACE:
-					this.logger.trace("ignoring SPACE event: {}", event);
+					logger.trace("ignoring SPACE event: {}", event);
 					// nothing to do here
 					break;
 
 				case XMLStreamConstants.START_DOCUMENT:
-					this.logger.trace("ignoring START_DOCUMENT event: {}", event);
+					logger.trace("ignoring START_DOCUMENT event: {}", event);
 					// nothing to do here
 					break;
 
 				case XMLStreamConstants.END_DOCUMENT:
-					this.logger.trace("processing END_DOCUMENT event: {}", event);
+					logger.trace("processing END_DOCUMENT event: {}", event);
 					if (this.builderChain.size() != 1) {
-						this.logger.warn(
-								"expected a single remaining element at end of document, but {} elements remained",
+						logger.warn("expected a single remaining element at end of document, but {} elements remained",
 								this.builderChain.size());
 					}
-					return ((XSLTDirectiveNode.Builder) this.builderChain.getFirst()).build();
+					XSLTDirectiveNode result = ((XSLTDirectiveNode.Builder) this.builderChain.getFirst()).build();
+					return logger.traceExit(result);
 
 				case XMLStreamConstants.ENTITY_REFERENCE:
-					this.logger.warn("ignoring ENTITY_REFERENCE event: {}", event);
+					logger.warn("ignoring ENTITY_REFERENCE event: {}", event);
 					// TODO XSLT structure extraction: decide how to handle entity references
 					// (never seen them occur, though)
 					break;
 
 				case XMLStreamConstants.ATTRIBUTE:
-					this.logger.warn("ignoring ATTRIBUTE event: {}", event);
+					logger.warn("ignoring ATTRIBUTE event: {}", event);
 					// should not be produced by this parser, issue warning just in case
 					break;
 
 				case XMLStreamConstants.DTD:
 					// TODO XSLT structure extraction: decide how to handle entity references
-					this.logger.warn("ignoring DTD event: {}", event);
+					logger.warn("ignoring DTD event: {}", event);
 					break;
 
 				case XMLStreamConstants.CDATA:
-					this.logger.trace("ignoring CDATA event: {}", event);
+					logger.trace("ignoring CDATA event: {}", event);
 					// should not be produced by this parser, issue warning just in case
 					break;
 
 				case XMLStreamConstants.NAMESPACE:
-					this.logger.warn("ignoring NAMESPACE event: {}", event);
+					logger.warn("ignoring NAMESPACE event: {}", event);
 					// should not be produced by this parser, issue warning just in case
 					break;
 
 				case XMLStreamConstants.NOTATION_DECLARATION:
 					// TODO XSLT structure extraction: decide how to handle notation declarations
-					this.logger.warn("ignoring NOTATION_DECLARATION event: {}", event);
+					logger.warn("ignoring NOTATION_DECLARATION event: {}", event);
 					break;
 
 				case XMLStreamConstants.ENTITY_DECLARATION:
 					// TODO XSLT structure extraction: decide how to handle entity declarations
-					this.logger.warn("ignoring ENTITY_DECLARATION event: {}", event);
+					logger.warn("ignoring ENTITY_DECLARATION event: {}", event);
 					break;
 
 				default:
-					this.logger.warn("ignoring unknown event type {}: {}", event.getEventType(), event);
+					logger.warn("ignoring unknown event type {}: {}", event.getEventType(), event);
 				}
 			}
-			throw new IllegalArgumentException("End of event stream reached before end of document event");
+			throw logger
+					.throwing(new IllegalArgumentException("End of event stream reached before end of document event"));
 		}
 
 		/**
@@ -181,6 +182,7 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 		 * @param element
 		 */
 		private void processStartElement(StartElement element) {
+			logger.traceEntry();
 			// is this an XSLT element?
 			if (element.getName().getNamespaceURI().equals(XSLTConstants.NAMESPACE)) {
 				// yes - what kind of element?
@@ -201,6 +203,7 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 				// no - another XML element
 				processStartOfXMLNode(element);
 			}
+			logger.traceExit();
 		}
 
 		/**
@@ -209,17 +212,20 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 		 * @param element
 		 */
 		private void processStartOfParameter(StartElement element) {
+			logger.traceEntry();
 			Optional<String> attribName = getAttributeValue(element, "name");
 			if (attribName.isEmpty()) {
-				throw new IllegalArgumentException("Parameter element without name attribute encountered.");
+				throw logger.throwing(
+						new IllegalArgumentException("Parameter element without name attribute encountered."));
 			}
 			Optional<String> attribSelect = getAttributeValue(element, "select");
-			this.logger.trace("start of parameter ({}) {}", element.getName().getLocalPart(), attribName.get());
+			logger.trace("start of parameter ({}) {}", element.getName().getLocalPart(), attribName.get());
 			XSLTParameterNode.Builder paramBuilder = new XSLTParameterNode.Builder(this.structure, attribName.get());
 			if (attribSelect.isPresent()) {
 				paramBuilder.withSelection(attribSelect.get());
 			}
 			this.builderChain.add(paramBuilder);
+			logger.traceExit();
 		}
 
 		/**
@@ -228,7 +234,8 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 		 * @param element
 		 */
 		private void processStartOfSort(StartElement element) {
-			this.logger.trace("start of sort specification ({})", element.getName().getLocalPart());
+			logger.traceEntry();
+			logger.trace("start of sort specification ({})", element.getName().getLocalPart());
 			Optional<String> attribSelect = getAttributeValue(element, "select");
 			Optional<String> attribLang = getAttributeValue(element, "lang");
 			Optional<String> attribDataType = getAttributeValue(element, "data-type");
@@ -251,6 +258,7 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 				sortBuilder.withCaseOrder(attribCaseOrder.get());
 			}
 			this.builderChain.add(sortBuilder);
+			logger.traceExit();
 		}
 
 		/**
@@ -259,8 +267,9 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 		 * @param element
 		 */
 		private void processStartOfDirective(StartElement element) {
+			logger.traceEntry();
 			String elementName = element.getName().getLocalPart();
-			this.logger.trace("start of XSLT directive {}", elementName);
+			logger.trace("start of XSLT directive {}", elementName);
 			XSLTDirectiveNode.Builder directiveBuilder = new XSLTDirectiveNode.Builder(this.structure, elementName);
 			for (Iterator<Attribute> iterator = element.getAttributes(); iterator.hasNext();) {
 				Attribute attrib = iterator.next();
@@ -272,6 +281,7 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 				}
 			}
 			this.builderChain.add(directiveBuilder);
+			logger.traceExit();
 		}
 
 		/**
@@ -280,13 +290,15 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 		 * @param element
 		 */
 		private void processStartOfXMLNode(StartElement element) {
-			this.logger.trace("start of XML node {}", element.getName());
+			logger.traceEntry();
+			logger.trace("start of XML node {}", element.getName());
 			XMLNode.Builder nodeBuilder = new XMLNode.Builder(this.structure, element.getName());
 			for (Iterator<Attribute> iterator = element.getAttributes(); iterator.hasNext();) {
 				Attribute attrib = iterator.next();
 				nodeBuilder.addAttribute(attrib.getName(), attrib.getValue());
 			}
 			this.builderChain.add(nodeBuilder);
+			logger.traceExit();
 		}
 
 		/**
@@ -295,6 +307,7 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 		 * @param element
 		 */
 		private void processEndElement(EndElement element) {
+			logger.traceEntry();
 			// is this an XSLT element?
 			if (element.getName().getNamespaceURI().equals(XSLTConstants.NAMESPACE)) {
 				// yes - what kind of element?
@@ -315,7 +328,7 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 				// no - another XML element
 				processEndOfXMLNode();
 			}
-
+			logger.traceExit();
 		}
 
 		/**
@@ -324,9 +337,10 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 		 * @param element
 		 */
 		private void processEndOfParameter(EndElement element) {
+			logger.traceEntry();
 			XSLTParameterNode.Builder paramBuilder = (XSLTParameterNode.Builder) this.builderChain.removeLast();
 			XSLTParameterNode paramNode = paramBuilder.build();
-			this.logger.trace("end of parameter {}", paramNode.getName());
+			logger.trace("end of parameter {}", paramNode.getName());
 
 			INodeBuilder parentBuilder = this.builderChain.getLast();
 			// parameters may only occur directly beneath an XSLT element
@@ -335,6 +349,7 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 			} else {
 				((XSLTDirectiveNode.Builder) parentBuilder).addActualParameter(paramNode);
 			}
+			logger.traceExit();
 		}
 
 		/**
@@ -343,13 +358,14 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 		 * @param element
 		 */
 		private void processEndOfSort() {
+			logger.traceEntry();
 			XSLTSortNode.Builder sortBuilder = (XSLTSortNode.Builder) this.builderChain.removeLast();
 			XSLTSortNode sortNode = sortBuilder.build();
-			this.logger.trace("end of sort specification");
 
 			INodeBuilder parentBuilder = this.builderChain.getLast();
 			// sort specifications may only occur directly beneath an XSLT element
 			((XSLTDirectiveNode.Builder) parentBuilder).addSorting(sortNode);
+			logger.traceExit();
 		}
 
 		/**
@@ -358,14 +374,16 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 		 * @param element
 		 */
 		private void processEndOfDirective() {
+			logger.traceEntry();
 			// leave the last builder in the queue to be processed during the
 			// end-of-document event
 			if (this.builderChain.size() > 1) {
 				XSLTDirectiveNode.Builder directiveBuilder = (XSLTDirectiveNode.Builder) this.builderChain.removeLast();
 				XSLTDirectiveNode directiveNode = directiveBuilder.build();
-				this.logger.trace("end of XSLT directive {}", directiveNode.getName());
+				logger.trace("end of XSLT directive {}", directiveNode.getName());
 				addChildNodeToLastBuilder(directiveNode);
 			}
+			logger.traceExit();
 		}
 
 		/**
@@ -374,10 +392,11 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 		 * @param element
 		 */
 		private void processEndOfXMLNode() {
+			logger.traceEntry();
 			XMLNode.Builder nodeBuilder = (XMLNode.Builder) this.builderChain.removeLast();
 			XMLNode node = nodeBuilder.build();
-			this.logger.trace("end of XML node {}", node.getName());
 			addChildNodeToLastBuilder(node);
+			logger.traceExit();
 		}
 
 		/**
@@ -386,12 +405,14 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 		 * @param characters
 		 */
 		private void processCharacterEvent(Characters characters) {
+			logger.traceEntry();
 			// for this tree, ignore whitespace-only nodes
 			if (!characters.isWhiteSpace()) {
 				TextNode node = new TextNode.Builder(this.structure).withText(characters.getData()).build();
-				this.logger.trace("processing text of length {}", node.getText().length());
+				logger.trace("processing text of length {}", node.getText().length());
 				addChildNodeToLastBuilder(node);
 			}
+			logger.traceExit();
 		}
 
 		/**
@@ -400,6 +421,7 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 		 * @param node the child node to add
 		 */
 		private void addChildNodeToLastBuilder(IStructureTreeNode node) {
+			logger.traceEntry();
 			INodeBuilder parentBuilder = this.builderChain.getLast();
 			if (parentBuilder instanceof XMLNode.Builder nodeBuilder) {
 				nodeBuilder.addChildElement(node);
@@ -408,8 +430,10 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 			} else if (parentBuilder instanceof XSLTParameterNode.Builder paramBuilder) {
 				paramBuilder.addChildElement(node);
 			} else {
-				throw new IllegalStateException("The child element cannot be added to this parent element");
+				throw logger.throwing(
+						new IllegalStateException("The child element cannot be added to this parent element"));
 			}
+			logger.traceExit();
 		}
 
 		/**

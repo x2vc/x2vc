@@ -5,6 +5,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.x2vc.stylesheet.structure.IStylesheetStructure;
 import org.x2vc.stylesheet.structure.IXSLTDirectiveNode;
 
@@ -18,6 +20,7 @@ import com.google.common.collect.ImmutableMap;
 public class StylesheetCoverage implements IStylesheetCoverage {
 
 	private static final long serialVersionUID = 8825773547954992141L;
+	private static Logger logger = LogManager.getLogger();
 	private IStylesheetStructure parentStructure;
 	private Map<Integer, Integer> executionCount;
 	private HashMultimap<Integer, ImmutableMap<String, String>> executionParameters;
@@ -37,13 +40,6 @@ public class StylesheetCoverage implements IStylesheetCoverage {
 			}
 		}
 		this.executionParameters = HashMultimap.create();
-	}
-
-	@Override
-	public void recordElementCoverage(int traceID, Map<String, String> parameters) {
-		validateTraceID(traceID);
-		this.executionCount.put(traceID, this.executionCount.get(traceID) + 1);
-		this.executionParameters.put(traceID, ImmutableMap.copyOf(parameters));
 	}
 
 	@Override
@@ -69,6 +65,13 @@ public class StylesheetCoverage implements IStylesheetCoverage {
 	}
 
 	@Override
+	public void recordElementCoverage(int traceID, Map<String, String> parameters) {
+		validateTraceID(traceID);
+		this.executionCount.put(traceID, this.executionCount.get(traceID) + 1);
+		this.executionParameters.put(traceID, ImmutableMap.copyOf(parameters));
+	}
+
+	@Override
 	public int getElementCoverage(int traceID) {
 		validateTraceID(traceID);
 		return this.executionCount.get(traceID);
@@ -87,6 +90,7 @@ public class StylesheetCoverage implements IStylesheetCoverage {
 
 	@Override
 	public void add(IStylesheetCoverage otherObject) {
+		logger.traceEntry();
 		// TODO ensure that the other object relates to the same structure
 		ImmutableMap<Integer, Integer> otherCoverage = otherObject.getElementCoverage();
 		for (Map.Entry<Integer, Integer> entry : otherCoverage.entrySet()) {
@@ -95,6 +99,7 @@ public class StylesheetCoverage implements IStylesheetCoverage {
 				this.executionParameters.putAll(entry.getKey(), otherObject.getCoverageParameters(entry.getKey()));
 			}
 		}
+		logger.traceExit();
 	}
 
 	/**
@@ -104,8 +109,8 @@ public class StylesheetCoverage implements IStylesheetCoverage {
 	 */
 	private void validateTraceID(int traceID) {
 		if (!this.executionCount.containsKey(traceID)) {
-			throw new IllegalArgumentException(
-					String.format("No traced element with ID %s found in stylesheet information", traceID));
+			throw logger.throwing(new IllegalArgumentException(
+					String.format("No traced element with ID %s found in stylesheet information", traceID)));
 		}
 	}
 
