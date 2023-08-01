@@ -2,6 +2,7 @@ package org.x2vc.stylesheet.coverage;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.x2vc.stylesheet.structure.IStylesheetStructure;
@@ -43,6 +44,28 @@ public class StylesheetCoverage implements IStylesheetCoverage {
 		validateTraceID(traceID);
 		this.executionCount.put(traceID, this.executionCount.get(traceID) + 1);
 		this.executionParameters.put(traceID, ImmutableMap.copyOf(parameters));
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(this.executionCount, this.executionParameters, this.parentStructure);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		StylesheetCoverage other = (StylesheetCoverage) obj;
+		return Objects.equals(this.executionCount, other.executionCount)
+				&& Objects.equals(this.executionParameters, other.executionParameters)
+				&& Objects.equals(this.parentStructure, other.parentStructure);
 	}
 
 	@Override

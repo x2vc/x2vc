@@ -7,6 +7,7 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import org.x2vc.common.XSLTConstants;
@@ -31,6 +32,26 @@ public class StylesheetStructure implements IStylesheetStructure {
 	 */
 	StylesheetStructure() {
 		// empty default constructor, requires completion via setRootNode
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(this.rootNode);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		StylesheetStructure other = (StylesheetStructure) obj;
+		return Objects.equals(this.rootNode, other.rootNode);
 	}
 
 	/**

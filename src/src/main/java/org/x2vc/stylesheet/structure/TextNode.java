@@ -2,6 +2,8 @@ package org.x2vc.stylesheet.structure;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.util.Objects;
+
 /**
  * Standard implementation of {@link ITextNode}.
  */
@@ -13,6 +15,29 @@ public class TextNode extends AbstractStructureTreeNode implements ITextNode {
 	private TextNode(Builder builder) {
 		super(builder.parentStructure);
 		this.text = builder.text.toString();
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + Objects.hash(this.text);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!super.equals(obj)) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		TextNode other = (TextNode) obj;
+		return Objects.equals(this.text, other.text);
 	}
 
 	@Override

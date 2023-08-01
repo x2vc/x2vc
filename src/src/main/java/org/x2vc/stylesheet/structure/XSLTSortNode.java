@@ -2,6 +2,7 @@ package org.x2vc.stylesheet.structure;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.util.Objects;
 import java.util.Optional;
 
 /**
@@ -28,6 +29,28 @@ public class XSLTSortNode extends AbstractStructureTreeNode implements IXSLTSort
 		this.dataType = builder.dataType;
 		this.sortOrder = builder.sortOrder;
 		this.caseOrder = builder.caseOrder;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(this.caseOrder, this.dataType, this.language, this.sortOrder, this.sortingExpression);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		XSLTSortNode other = (XSLTSortNode) obj;
+		return Objects.equals(this.caseOrder, other.caseOrder) && Objects.equals(this.dataType, other.dataType)
+				&& Objects.equals(this.language, other.language) && Objects.equals(this.sortOrder, other.sortOrder)
+				&& Objects.equals(this.sortingExpression, other.sortingExpression);
 	}
 
 	@Override

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import javax.xml.namespace.QName;
@@ -41,6 +42,35 @@ public class XSLTDirectiveNode extends AbstractStructureTreeNode implements IXSL
 		this.formalParameters = ImmutableList.copyOf(builder.formalParameters);
 		this.actualParameters = ImmutableList.copyOf(builder.actualParameters);
 		this.sorting = ImmutableList.copyOf(builder.sorting);
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + Objects.hash(this.actualParameters, this.childElements, this.formalParameters,
+				this.name, this.otherAttributes, this.sorting, this.xsltAttributes);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!super.equals(obj)) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		XSLTDirectiveNode other = (XSLTDirectiveNode) obj;
+		return Objects.equals(this.actualParameters, other.actualParameters)
+				&& Objects.equals(this.childElements, other.childElements)
+				&& Objects.equals(this.formalParameters, other.formalParameters)
+				&& Objects.equals(this.name, other.name) && Objects.equals(this.otherAttributes, other.otherAttributes)
+				&& Objects.equals(this.sorting, other.sorting)
+				&& Objects.equals(this.xsltAttributes, other.xsltAttributes);
 	}
 
 	@Override

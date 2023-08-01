@@ -3,6 +3,7 @@ package org.x2vc.stylesheet;
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.net.URI;
+import java.util.Objects;
 
 import org.x2vc.stylesheet.coverage.IStylesheetCoverage;
 import org.x2vc.stylesheet.coverage.StylesheetCoverage;
@@ -44,6 +45,27 @@ public class StylesheetInformation implements IStylesheetInformation {
 		this.originalStylesheet = originalStylesheet;
 		this.preparedStylesheet = preparedStylesheet;
 		this.structure = structure;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(this.originalLocation, this.originalStylesheet);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		StylesheetInformation other = (StylesheetInformation) obj;
+		return Objects.equals(this.originalLocation, other.originalLocation)
+				&& Objects.equals(this.originalStylesheet, other.originalStylesheet);
 	}
 
 	@Override

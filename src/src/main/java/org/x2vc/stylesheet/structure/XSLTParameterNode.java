@@ -4,6 +4,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import com.google.common.collect.ImmutableList;
@@ -28,6 +29,30 @@ public class XSLTParameterNode extends AbstractStructureTreeNode implements IXSL
 		this.name = builder.name;
 		this.selection = builder.selection;
 		this.childElements = ImmutableList.copyOf(builder.childElements);
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + Objects.hash(this.childElements, this.name, this.selection);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!super.equals(obj)) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		XSLTParameterNode other = (XSLTParameterNode) obj;
+		return Objects.equals(this.childElements, other.childElements) && Objects.equals(this.name, other.name)
+				&& Objects.equals(this.selection, other.selection);
 	}
 
 	@Override
