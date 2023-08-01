@@ -40,7 +40,7 @@ class XSLTDirectiveNodeTest {
 	@Test
 	void testGetTraceID_WithIDPresent() {
 		XSLTDirectiveNode node = new XSLTDirectiveNode.Builder(this.parentStructure, "someName")
-				.addOtherAttribute(ExtendedXSLTConstants.ATTRIBUTE_NAME_TRACE_ID, "42").build();
+				.addOtherAttribute(ExtendedXSLTConstants.QualifiedAttributes.TRACE_ID, "42").build();
 		assertTrue(node.getTraceID().isPresent());
 		assertEquals(42, node.getTraceID().get());
 	}
@@ -52,7 +52,7 @@ class XSLTDirectiveNodeTest {
 	@Test
 	void testGetTraceID_WithIDMalformed() {
 		XSLTDirectiveNode node = new XSLTDirectiveNode.Builder(this.parentStructure, "someName")
-				.addOtherAttribute(ExtendedXSLTConstants.ATTRIBUTE_NAME_TRACE_ID, "foobar").build();
+				.addOtherAttribute(ExtendedXSLTConstants.QualifiedAttributes.TRACE_ID, "foobar").build();
 		assertThrows(NumberFormatException.class, () -> {
 			node.getTraceID();
 		});

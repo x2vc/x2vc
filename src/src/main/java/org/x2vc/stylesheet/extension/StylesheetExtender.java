@@ -330,7 +330,7 @@ public class StylesheetExtender implements IStylesheetExtender {
 			logger.traceEntry();
 			ArrayList<Attribute> attributes = Lists.newArrayList(originalElement.getAttributes());
 			attributes.add(this.eventFactory.createAttribute(extensionPrefix, ExtendedXSLTConstants.NAMESPACE,
-					ExtendedXSLTConstants.ATTRIBUTE_TRACE_ID, Integer.toString(this.currentElementID.get())));
+					ExtendedXSLTConstants.Attributes.TRACE_ID, Integer.toString(this.currentElementID.get())));
 			StartElement result = this.eventFactory.createStartElement(originalElement.getName(), attributes.iterator(),
 					originalElement.getNamespaces());
 			return logger.traceExit(result);
@@ -444,13 +444,25 @@ public class StylesheetExtender implements IStylesheetExtender {
 		 */
 		private Iterable<XMLEvent> generateMessageEvents(StartElement referredElement) {
 			logger.traceEntry();
-			String traceMessage = String.format("trace type=elem name=%s id=%s",
-					referredElement.getName().getLocalPart(), this.currentElementID.get());
+			ArrayList<Attribute> traceAttributes = Lists.newArrayList(
+					this.eventFactory.createAttribute(ExtendedXSLTConstants.Attributes.ELEMENT,
+							referredElement.getName().getLocalPart()),
+					this.eventFactory.createAttribute(ExtendedXSLTConstants.Attributes.TRACE_ID,
+							this.currentElementID.get().toString()));
 			ArrayList<XMLEvent> result = Lists.newArrayList(
+					// <xsl:message>
 					this.eventFactory.createStartElement(this.xsltPrefix, XSLTConstants.NAMESPACE,
 							XSLTConstants.Elements.MESSAGE),
-					this.eventFactory.createCharacters(traceMessage), this.eventFactory.createEndElement(
-							this.xsltPrefix, XSLTConstants.NAMESPACE, XSLTConstants.Elements.MESSAGE));
+					// <extN:trace element="foobar" id="X">
+					this.eventFactory.createStartElement(this.extensionPrefix, ExtendedXSLTConstants.NAMESPACE,
+							ExtendedXSLTConstants.Elements.TRACE, traceAttributes.iterator(),
+							referredElement.getNamespaces()),
+					// </extN:trace>
+					this.eventFactory.createEndElement(this.extensionPrefix, ExtendedXSLTConstants.NAMESPACE,
+							ExtendedXSLTConstants.Elements.TRACE),
+					// </xsl:message>
+					this.eventFactory.createEndElement(this.xsltPrefix, XSLTConstants.NAMESPACE,
+							XSLTConstants.Elements.MESSAGE));
 			return logger.traceExit(result);
 		}
 

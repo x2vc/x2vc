@@ -70,10 +70,10 @@ class StylesheetStructureTest {
 		XSLTParameterNode param2 = new XSLTParameterNode.Builder(structure, "param2").build();
 		XSLTDirectiveNode template1 = new XSLTDirectiveNode.Builder(structure, XSLTConstants.Elements.TEMPLATE)
 				.addXSLTAttribute("name", "template1")
-				.addOtherAttribute(ExtendedXSLTConstants.ATTRIBUTE_NAME_TRACE_ID, "1").build();
+				.addOtherAttribute(ExtendedXSLTConstants.QualifiedAttributes.TRACE_ID, "1").build();
 		XSLTDirectiveNode template2 = new XSLTDirectiveNode.Builder(structure, XSLTConstants.Elements.TEMPLATE)
 				.addXSLTAttribute("name", "template2")
-				.addOtherAttribute(ExtendedXSLTConstants.ATTRIBUTE_NAME_TRACE_ID, "2").build();
+				.addOtherAttribute(ExtendedXSLTConstants.QualifiedAttributes.TRACE_ID, "2").build();
 		XSLTDirectiveNode rootNode = new XSLTDirectiveNode.Builder(structure, XSLTConstants.Elements.STYLESHEET)
 				.addChildElement(param1).addChildElement(param2).addChildElement(template1).addChildElement(template2)
 				.build();
@@ -96,10 +96,10 @@ class StylesheetStructureTest {
 		XSLTParameterNode param2 = new XSLTParameterNode.Builder(structure, "param2").build();
 		XSLTDirectiveNode template1 = new XSLTDirectiveNode.Builder(structure, XSLTConstants.Elements.TEMPLATE)
 				.addXSLTAttribute("name", "template1")
-				.addOtherAttribute(ExtendedXSLTConstants.ATTRIBUTE_NAME_TRACE_ID, "1").build();
+				.addOtherAttribute(ExtendedXSLTConstants.QualifiedAttributes.TRACE_ID, "1").build();
 		XSLTDirectiveNode template2 = new XSLTDirectiveNode.Builder(structure, XSLTConstants.Elements.TEMPLATE)
 				.addXSLTAttribute("name", "template2")
-				.addOtherAttribute(ExtendedXSLTConstants.ATTRIBUTE_NAME_TRACE_ID, "2").build();
+				.addOtherAttribute(ExtendedXSLTConstants.QualifiedAttributes.TRACE_ID, "2").build();
 		XSLTDirectiveNode rootNode = new XSLTDirectiveNode.Builder(structure, XSLTConstants.Elements.STYLESHEET)
 				.addChildElement(param1).addChildElement(param2).addChildElement(template1).addChildElement(template2)
 				.build();

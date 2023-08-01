@@ -106,9 +106,9 @@ public class XSLTDirectiveNode extends AbstractStructureTreeNode implements IXSL
 	@Override
 	public Optional<Integer> getTraceID() {
 		if (!this.traceIDExtracted) {
-			if (this.otherAttributes.containsKey(ExtendedXSLTConstants.ATTRIBUTE_NAME_TRACE_ID)) {
+			if (this.otherAttributes.containsKey(ExtendedXSLTConstants.QualifiedAttributes.TRACE_ID)) {
 				this.traceID = Integer
-						.parseInt(this.otherAttributes.get(ExtendedXSLTConstants.ATTRIBUTE_NAME_TRACE_ID));
+						.parseInt(this.otherAttributes.get(ExtendedXSLTConstants.QualifiedAttributes.TRACE_ID));
 			}
 			this.traceIDExtracted = true;
 		}

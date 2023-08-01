@@ -42,7 +42,7 @@ class StylesheetExtenderTest {
 		String ex = """
 					<?xml version="1.0"?>
 					<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ext0="http://www.github.com/vwegert/x2vc/XSLTExtension">
-					<xsl:message>trace type=elem name=apply-imports id=1</xsl:message>
+					<xsl:message><ext0:trace element="apply-imports" trace-id="1"/></xsl:message>
 					<xsl:apply-imports ext0:trace-id="1"/>
 					</xsl:stylesheet>
 					""";
@@ -60,7 +60,7 @@ class StylesheetExtenderTest {
 		String ex = """
 					<?xml version="1.0"?>
 					<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ext0="http://foobar" xmlns:ext1="http://www.github.com/vwegert/x2vc/XSLTExtension">
-					<xsl:message>trace type=elem name=apply-imports id=1</xsl:message>
+					<xsl:message><ext1:trace element="apply-imports" trace-id="1"/></xsl:message>
 					<xsl:apply-imports ext1:trace-id="1"/>
 					</xsl:stylesheet>
 					""";
@@ -80,11 +80,11 @@ class StylesheetExtenderTest {
 		String ex = """
 					<?xml version="1.0"?>
 					<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ext0="http://www.github.com/vwegert/x2vc/XSLTExtension">
-					<xsl:message>trace type=elem name=apply-imports id=1</xsl:message>
+					<xsl:message><ext0:trace element="apply-imports" trace-id="1"/></xsl:message>
 					<xsl:apply-imports ext0:trace-id="1"/>
-					<xsl:message>trace type=elem name=apply-imports id=2</xsl:message>
+					<xsl:message><ext0:trace element="apply-imports" trace-id="2"/></xsl:message>
 					<xsl:apply-imports ext0:trace-id="2"/>
-					<xsl:message>trace type=elem name=apply-imports id=3</xsl:message>
+					<xsl:message><ext0:trace element="apply-imports" trace-id="3"/></xsl:message>
 					<xsl:apply-imports ext0:trace-id="3"/>
 					</xsl:stylesheet>
 					""";
@@ -108,7 +108,7 @@ class StylesheetExtenderTest {
 		String ex = """
 					<?xml version="1.0"?>
 					<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ext0="http://www.github.com/vwegert/x2vc/XSLTExtension">
-					<xsl:message>trace type=elem name=apply-templates id=1</xsl:message>
+					<xsl:message><ext0:trace element="apply-templates" trace-id="1"/></xsl:message>
 					<xsl:apply-templates ext0:trace-id="1"/>
 					</xsl:stylesheet>
 					""";
@@ -134,7 +134,7 @@ class StylesheetExtenderTest {
 					<?xml version="1.0"?>
 					<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ext0="http://www.github.com/vwegert/x2vc/XSLTExtension">
 					<xsl:for-each select="foobar" ext0:trace-id="1">
-					<xsl:message>trace type=elem name=for-each id=1</xsl:message>
+					<xsl:message><ext0:trace element="for-each" trace-id="1"/></xsl:message>
 					<p>test</p>
 					</xsl:for-each>
 					</xsl:stylesheet>
@@ -159,7 +159,7 @@ class StylesheetExtenderTest {
 					<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ext0="http://www.github.com/vwegert/x2vc/XSLTExtension">
 					<xsl:for-each select="foo" ext0:trace-id="1">
 					<xsl:sort select="bar"/>
-					<xsl:message>trace type=elem name=for-each id=1</xsl:message>
+					<xsl:message><ext0:trace element="for-each" trace-id="1"/></xsl:message>
 					<p>test</p>
 					</xsl:for-each>
 					</xsl:stylesheet>
@@ -183,7 +183,7 @@ class StylesheetExtenderTest {
 		String ex = """
 					<?xml version="1.0"?>
 					<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ext0="http://www.github.com/vwegert/x2vc/XSLTExtension">
-					<xsl:message>trace type=elem name=call-template id=1</xsl:message>
+					<xsl:message><ext0:trace element="call-template" trace-id="1"/></xsl:message>
 					<xsl:call-template name="foobar" ext0:trace-id="1"/>
 					</xsl:stylesheet>
 					""";
@@ -203,7 +203,7 @@ class StylesheetExtenderTest {
 		String ex = """
 					<?xml version="1.0"?>
 					<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ext0="http://www.github.com/vwegert/x2vc/XSLTExtension">
-					<xsl:message>trace type=elem name=call-template id=1</xsl:message>
+					<xsl:message><ext0:trace element="call-template" trace-id="1"/></xsl:message>
 					<xsl:call-template name="foo" ext0:trace-id="1">
 					<xsl:with-param name="bar" select="baz"/>
 					</xsl:call-template>
@@ -231,7 +231,7 @@ class StylesheetExtenderTest {
 					<?xml version="1.0"?>
 					<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ext0="http://www.github.com/vwegert/x2vc/XSLTExtension">
 					<xsl:if test="foobar" ext0:trace-id="1">
-					<xsl:message>trace type=elem name=if id=1</xsl:message>
+					<xsl:message><ext0:trace element="if" trace-id="1"/></xsl:message>
 					<p>test</p>
 					</xsl:if>
 					</xsl:stylesheet>
@@ -265,18 +265,18 @@ class StylesheetExtenderTest {
 		String ex = """
 					<?xml version="1.0"?>
 					<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ext0="http://www.github.com/vwegert/x2vc/XSLTExtension">
-					<xsl:message>trace type=elem name=choose id=1</xsl:message>
+					<xsl:message><ext0:trace element="choose" trace-id="1"/></xsl:message>
 					<xsl:choose ext0:trace-id="1">
 					<xsl:when test="fooA" ext0:trace-id="2">
-					<xsl:message>trace type=elem name=when id=2</xsl:message>
+					<xsl:message><ext0:trace element="when" trace-id="2"/></xsl:message>
 					<p>test A</p>
 					</xsl:when>
 					<xsl:when test="fooB" ext0:trace-id="3">
-					<xsl:message>trace type=elem name=when id=3</xsl:message>
+					<xsl:message><ext0:trace element="when" trace-id="3"/></xsl:message>
 					<p>test B</p>
 					</xsl:when>
 					<xsl:otherwise ext0:trace-id="4">
-					<xsl:message>trace type=elem name=otherwise id=4</xsl:message>
+					<xsl:message><ext0:trace element="otherwise" trace-id="4"/></xsl:message>
 					<p>test O</p>
 					</xsl:otherwise>
 					</xsl:choose>
@@ -306,7 +306,7 @@ class StylesheetExtenderTest {
 					<?xml version="1.0"?>
 					<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ext0="http://www.github.com/vwegert/x2vc/XSLTExtension">
 					<xsl:template match="/" ext0:trace-id="1">
-					<xsl:message>trace type=elem name=template id=1</xsl:message>
+					<xsl:message><ext0:trace element="template" trace-id="1"/></xsl:message>
 					<p>foobar</p>
 					</xsl:template>
 					</xsl:stylesheet>
@@ -328,7 +328,7 @@ class StylesheetExtenderTest {
 					<?xml version="1.0"?>
 					<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ext0="http://www.github.com/vwegert/x2vc/XSLTExtension">
 					<xsl:template name="bar" ext0:trace-id="1">
-					<xsl:message>trace type=elem name=template id=1</xsl:message>
+					<xsl:message><ext0:trace element="template" trace-id="1"/></xsl:message>
 					<p>foobar</p>
 					</xsl:template>
 					</xsl:stylesheet>
@@ -353,7 +353,7 @@ class StylesheetExtenderTest {
 					<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ext0="http://www.github.com/vwegert/x2vc/XSLTExtension">
 					<xsl:template name="foo" ext0:trace-id="1">
 					<xsl:param name="bar" select="baz"/>
-					<xsl:message>trace type=elem name=template id=1</xsl:message>
+					<xsl:message><ext0:trace element="template" trace-id="1"/></xsl:message>
 					<p>foobar</p>
 					</xsl:template>
 					</xsl:stylesheet>

@@ -16,18 +16,62 @@ public class ExtendedXSLTConstants {
 	public static final String NAMESPACE = "http://www.github.com/vwegert/x2vc/XSLTExtension";
 
 	/**
-	 * The name of the attribute used to annotate the XSLT directives with trace
-	 * IDs.
+	 * XSLT element names
 	 */
-	public static final String ATTRIBUTE_TRACE_ID = "trace-id";
+	public class Elements {
+
+		/**
+		 * The name of the element used to emit trace messages
+		 */
+		public static final String TRACE = "trace";
+
+		private Elements() {
+		}
+	}
 
 	/**
-	 * The qualified name of the attribute used to annotate the XSLT directives with
-	 * trace IDs.
+	 * XSLT attribute names (string only)
 	 */
-	public static final QName ATTRIBUTE_NAME_TRACE_ID = new QName(NAMESPACE, ATTRIBUTE_TRACE_ID);
+	public class Attributes {
+
+		/**
+		 * The name of the attribute used to annotate the XSLT directives with trace
+		 * IDs. Also used to to identify the trace elements.
+		 */
+		public static final String TRACE_ID = "trace-id";
+
+		/**
+		 * The name of the attribute used to denote the XSLT element in the trace
+		 * message.
+		 */
+		public static final String ELEMENT = "element";
+
+		private Attributes() {
+		}
+	}
+
+	/**
+	 * XSLT attribute names (qualified name objects)
+	 */
+	public class QualifiedAttributes {
+
+		/**
+		 * The qualified name of the attribute used to annotate the XSLT directives with
+		 * trace IDs.
+		 */
+		public static final QName TRACE_ID = new QName(NAMESPACE, Attributes.TRACE_ID);
+
+		/**
+		 * The name of the attribute used to denote the XSLT element in the trace
+		 * message.
+		 */
+		public static final QName ELEMENT = new QName(NAMESPACE, Attributes.ELEMENT);
+
+		private QualifiedAttributes() {
+		}
+
+	}
 
 	private ExtendedXSLTConstants() {
-
 	}
 }
