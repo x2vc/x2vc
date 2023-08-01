@@ -1,0 +1,10 @@
+These samples were obtained more or less randomly using the following procedure:
+ * search github.com for code with filter
+   language:xslt AND content:"version=\"1.0\"" AND NOT content:":import " AND NOT content:":include " AND content:"html"
+ * examine files using checker - in case of parse errors, reject
+
+sample_01.xslt = https://github.com/apache/nutch/blob/9109bdd740ba578fcffff17745ebc9f53f464667/conf/configuration.xsl
+sample_02.xslt = https://github.com/VSCodium/vscodium/blob/0b2fc64a3b8a3c6f9b9b373a3ccb7f1036eec3e2/build/windows/msi/vscodium.xsl
+sample_03.xslt = https://github.com/WPO-Foundation/webpagetest/blob/436daf849d15d1f439688c1aa2e405966dd4131d/www/assets/xsl/getTesters.xsl
+sample_04.xslt = https://github.com/ilius/pyglossary/blob/c1c2b930cf384ff83bd1bbe0300d63463dedfbaa/pyglossary/xdxf/xdxf.xsl
+sample_05.xslt = https://github.com/ravinitp/jetty.project/blob/0f32e264a22d5588eae4b87f9ba926f8cf8c3938/scripts/clirr-gen-master-index.output-html.xslt
