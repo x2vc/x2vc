@@ -24,11 +24,16 @@ public interface IXMLDocumentContainer {
 	IStylesheetInformation getStylesheet();
 
 	/**
+	 * @return the descriptor containing the values that were used to generate the
+	 *         document.
+	 */
+	IXMLDocumentDescriptor getDocumentDescriptor();
+
+	/**
 	 * @return the generated XML document
 	 */
 	String getDocument();
 
-	// TODO XML Document: add missing accessors: descriptor
 	// TODO XML Document: add missing accessors: request
 	// TODO XML Document: add missing accessors: schema and version
 
