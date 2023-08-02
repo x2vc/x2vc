@@ -4,6 +4,8 @@ import java.util.Optional;
 
 import org.x2vc.xmldoc.IXMLDocumentContainer;
 
+import com.google.common.collect.ImmutableList;
+
 import net.sf.saxon.s9api.SaxonApiException;
 
 /**
@@ -46,7 +48,9 @@ public interface IHTMLDocumentContainer {
 	 */
 	IXMLDocumentContainer getSource();
 
-	// TODO HTML Document: add missing accessors: error information
-	// TODO HTML Document: add missing accessors: trace results
+	/**
+	 * @return the {@link ITraceEvent}s collected during the execution
+	 */
+	ImmutableList<ITraceEvent> getTraceEvents();
 
 }

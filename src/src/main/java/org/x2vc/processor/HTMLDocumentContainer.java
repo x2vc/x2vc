@@ -1,10 +1,13 @@
 package org.x2vc.processor;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
+import java.util.List;
 import java.util.Optional;
 
 import org.x2vc.xmldoc.IXMLDocumentContainer;
 
-import static com.google.common.base.Preconditions.checkArgument;
+import com.google.common.collect.ImmutableList;
 
 import net.sf.saxon.s9api.SaxonApiException;
 
@@ -17,6 +20,7 @@ class HTMLDocumentContainer implements IHTMLDocumentContainer {
 	String htmlDocument;
 	SaxonApiException compilationError;
 	SaxonApiException processingError;
+	private ImmutableList<ITraceEvent> traceEvents;
 
 	private HTMLDocumentContainer(Builder builder) {
 		// we can either have a result document or error conditions, but not both
@@ -29,6 +33,7 @@ class HTMLDocumentContainer implements IHTMLDocumentContainer {
 		this.htmlDocument = builder.htmlDocument;
 		this.compilationError = builder.compilationError;
 		this.processingError = builder.processingError;
+		this.traceEvents = builder.traceEvents;
 	}
 
 	@Override
@@ -56,6 +61,11 @@ class HTMLDocumentContainer implements IHTMLDocumentContainer {
 		return this.source;
 	}
 
+	@Override
+	public ImmutableList<ITraceEvent> getTraceEvents() {
+		return this.traceEvents;
+	}
+
 	/**
 	 * Builder to build {@link HTMLDocumentContainer}.
 	 */
@@ -64,6 +74,7 @@ class HTMLDocumentContainer implements IHTMLDocumentContainer {
 		private String htmlDocument;
 		private SaxonApiException compilationError;
 		private SaxonApiException processingError;
+		private ImmutableList<ITraceEvent> traceEvents;
 
 		public Builder(IXMLDocumentContainer source) {
 			this.source = source;
@@ -103,6 +114,13 @@ class HTMLDocumentContainer implements IHTMLDocumentContainer {
 		}
 
 		/**
+		 * @param traceEvents
+		 */
+		public void withTraceEvents(List<ITraceEvent> traceEvents) {
+			this.traceEvents = ImmutableList.copyOf(traceEvents);
+		}
+
+		/**
 		 * Builder method of the builder.
 		 *
 		 * @return built class
@@ -110,6 +128,7 @@ class HTMLDocumentContainer implements IHTMLDocumentContainer {
 		public HTMLDocumentContainer build() {
 			return new HTMLDocumentContainer(this);
 		}
+
 	}
 
 }
