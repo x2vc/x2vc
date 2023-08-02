@@ -5,9 +5,16 @@ import static com.google.common.base.Preconditions.checkArgument;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.x2vc.stylesheet.IStylesheetInformation;
+import org.x2vc.stylesheet.coverage.IStylesheetCoverage;
+import org.x2vc.stylesheet.structure.IStylesheetStructure;
+import org.x2vc.stylesheet.structure.IXSLTDirectiveNode;
 import org.x2vc.xmldoc.IXMLDocumentContainer;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Maps;
 
 import net.sf.saxon.s9api.SaxonApiException;
 
@@ -16,11 +23,13 @@ import net.sf.saxon.s9api.SaxonApiException;
  */
 class HTMLDocumentContainer implements IHTMLDocumentContainer {
 
-	IXMLDocumentContainer source;
-	String htmlDocument;
-	SaxonApiException compilationError;
-	SaxonApiException processingError;
+	private static Logger logger = LogManager.getLogger();
+	private IXMLDocumentContainer source;
+	private String htmlDocument;
+	private SaxonApiException compilationError;
+	private SaxonApiException processingError;
 	private ImmutableList<ITraceEvent> traceEvents;
+	private IStylesheetCoverage coverage;
 
 	private HTMLDocumentContainer(Builder builder) {
 		// we can either have a result document or error conditions, but not both
@@ -62,8 +71,37 @@ class HTMLDocumentContainer implements IHTMLDocumentContainer {
 	}
 
 	@Override
-	public ImmutableList<ITraceEvent> getTraceEvents() {
-		return this.traceEvents;
+	public Optional<ImmutableList<ITraceEvent>> getTraceEvents() {
+		return Optional.ofNullable(this.traceEvents);
+	}
+
+	@Override
+	public Optional<IStylesheetCoverage> getCoverage() {
+		if ((this.traceEvents != null) && (this.coverage == null)) {
+			buildCoverage();
+		}
+		return Optional.ofNullable(this.coverage);
+	}
+
+	/**
+	 * Fills a {@link IStylesheetCoverage} object with the information supplied by
+	 * the trace events.
+	 */
+	private void buildCoverage() {
+		logger.traceEntry();
+		final IStylesheetInformation stylesheet = this.source.getStylesheet();
+		final IStylesheetStructure structure = stylesheet.getStructure();
+		this.coverage = stylesheet.createCoverageStatistics();
+		for (ITraceEvent traceEvent : this.traceEvents) {
+			int traceID = traceEvent.getTraceID();
+			IXSLTDirectiveNode directive = structure.getDirectiveByTraceID(traceID);
+			if (!directive.getName().equals(traceEvent.getElementName())) {
+				logger.warn("Trace event element name {} differs from structure element name {}",
+						traceEvent.getElementName(), directive.getName());
+			}
+			this.coverage.recordElementCoverage(traceID, Maps.newHashMap());
+		}
+		logger.traceExit();
 	}
 
 	/**
@@ -115,9 +153,11 @@ class HTMLDocumentContainer implements IHTMLDocumentContainer {
 
 		/**
 		 * @param traceEvents
+		 * @return builder
 		 */
-		public void withTraceEvents(List<ITraceEvent> traceEvents) {
+		public Builder withTraceEvents(List<ITraceEvent> traceEvents) {
 			this.traceEvents = ImmutableList.copyOf(traceEvents);
+			return this;
 		}
 
 		/**

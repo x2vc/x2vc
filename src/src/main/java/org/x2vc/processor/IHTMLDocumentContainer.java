@@ -2,6 +2,7 @@ package org.x2vc.processor;
 
 import java.util.Optional;
 
+import org.x2vc.stylesheet.coverage.IStylesheetCoverage;
 import org.x2vc.xmldoc.IXMLDocumentContainer;
 
 import com.google.common.collect.ImmutableList;
@@ -51,6 +52,11 @@ public interface IHTMLDocumentContainer {
 	/**
 	 * @return the {@link ITraceEvent}s collected during the execution
 	 */
-	ImmutableList<ITraceEvent> getTraceEvents();
+	Optional<ImmutableList<ITraceEvent>> getTraceEvents();
+
+	/**
+	 * @return the coverage information collected during the execution.
+	 */
+	Optional<IStylesheetCoverage> getCoverage();
 
 }

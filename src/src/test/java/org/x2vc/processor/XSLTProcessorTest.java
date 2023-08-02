@@ -98,7 +98,8 @@ class XSLTProcessorTest {
 		// of the XSLT processor itself
 		assertTrue(document.contains("<li>abc</li>"));
 
-		ImmutableList<ITraceEvent> traceEvents = htmlDocument.getTraceEvents();
+		assertTrue(htmlDocument.getTraceEvents().isPresent());
+		ImmutableList<ITraceEvent> traceEvents = htmlDocument.getTraceEvents().get();
 		assertEquals(
 				ImmutableList.of(new TraceEvent(1, "template"), new TraceEvent(2, "apply-templates"),
 						new TraceEvent(3, "template"), new TraceEvent(3, "template"), new TraceEvent(3, "template")),
