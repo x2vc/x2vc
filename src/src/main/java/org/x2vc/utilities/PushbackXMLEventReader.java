@@ -40,9 +40,9 @@ public class PushbackXMLEventReader implements IPushbackXMLEventReader {
 	public Object next() {
 		try {
 			return nextEvent();
-		} catch (XMLStreamException streamException) {
+		} catch (final XMLStreamException streamException) {
 			// don't swallow the cause
-			NoSuchElementException e = new NoSuchElementException(streamException.getMessage());
+			final NoSuchElementException e = new NoSuchElementException(streamException.getMessage());
 			e.initCause(streamException.getCause());
 			throw e;
 		}

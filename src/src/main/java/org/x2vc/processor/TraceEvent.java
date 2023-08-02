@@ -37,7 +37,7 @@ public class TraceEvent implements ITraceEvent {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		TraceEvent other = (TraceEvent) obj;
+		final TraceEvent other = (TraceEvent) obj;
 		return Objects.equals(this.elementName, other.elementName) && this.traceID == other.traceID;
 	}
 

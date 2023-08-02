@@ -49,7 +49,7 @@ public class XMLNode extends AbstractStructureTreeNode implements IXMLNode {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		XMLNode other = (XMLNode) obj;
+		final XMLNode other = (XMLNode) obj;
 		return Objects.equals(this.attributes, other.attributes)
 				&& Objects.equals(this.childElements, other.childElements) && Objects.equals(this.name, other.name);
 	}

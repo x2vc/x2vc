@@ -28,7 +28,7 @@ public class Checker {
 	 * @param args the command line parameters
 	 */
 	public static void main(String[] args) {
-		int exitCode = new CommandLine(Checker.class, new CheckerFactory())
+		final int exitCode = new CommandLine(Checker.class, new CheckerFactory())
 				.setExecutionStrategy(LoggingMixin::executionStrategy).execute(args);
 		System.exit(exitCode);
 	}

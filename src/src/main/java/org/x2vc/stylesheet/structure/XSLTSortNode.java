@@ -47,7 +47,7 @@ public class XSLTSortNode extends AbstractStructureTreeNode implements IXSLTSort
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		XSLTSortNode other = (XSLTSortNode) obj;
+		final XSLTSortNode other = (XSLTSortNode) obj;
 		return Objects.equals(this.caseOrder, other.caseOrder) && Objects.equals(this.dataType, other.dataType)
 				&& Objects.equals(this.language, other.language) && Objects.equals(this.sortOrder, other.sortOrder)
 				&& Objects.equals(this.sortingExpression, other.sortingExpression);

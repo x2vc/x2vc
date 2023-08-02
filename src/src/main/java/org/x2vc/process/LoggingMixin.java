@@ -134,11 +134,11 @@ public class LoggingMixin {
 	 * </ul>
 	 */
 	public void configureLoggers() {
-		Level level = getTopLevelCommandLoggingMixin(this.mixee).calcLogLevel();
+		final Level level = getTopLevelCommandLoggingMixin(this.mixee).calcLogLevel();
 
-		LoggerContext loggerContext = LoggerContext.getContext(false);
-		LoggerConfig rootConfig = loggerContext.getConfiguration().getRootLogger();
-		for (Appender appender : rootConfig.getAppenders().values()) {
+		final LoggerContext loggerContext = LoggerContext.getContext(false);
+		final LoggerConfig rootConfig = loggerContext.getConfiguration().getRootLogger();
+		for (final Appender appender : rootConfig.getAppenders().values()) {
 			if (appender instanceof ConsoleAppender) {
 				rootConfig.removeAppender(appender.getName());
 				rootConfig.addAppender(appender, level, null);
@@ -171,10 +171,10 @@ public class LoggingMixin {
 		// for this example we do a quick and dirty programmatic setup
 		// IMPORTANT: The below MUST be called BEFORE any call to LogManager.getLogger()
 		// is made.
-		ConfigurationBuilder<BuiltConfiguration> builder = ConfigurationBuilderFactory.newConfigurationBuilder();
+		final ConfigurationBuilder<BuiltConfiguration> builder = ConfigurationBuilderFactory.newConfigurationBuilder();
 		builder.setStatusLevel(Level.ERROR); // show internal log4j2 errors
 		builder.setConfigurationName("QuickAndDirtySetup");
-		AppenderComponentBuilder appenderBuilder = builder.newAppender("Stdout", "CONSOLE").addAttribute("target",
+		final AppenderComponentBuilder appenderBuilder = builder.newAppender("Stdout", "CONSOLE").addAttribute("target",
 				ConsoleAppender.Target.SYSTEM_OUT);
 		appenderBuilder
 				.add(builder.newLayout("PatternLayout").addAttribute("pattern", "%d [%t] %-5level: %msg%n%throwable"));

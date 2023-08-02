@@ -63,7 +63,7 @@ public class StylesheetInformation implements IStylesheetInformation {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		StylesheetInformation other = (StylesheetInformation) obj;
+		final StylesheetInformation other = (StylesheetInformation) obj;
 		return Objects.equals(this.originalLocation, other.originalLocation)
 				&& Objects.equals(this.originalStylesheet, other.originalStylesheet);
 	}

@@ -1,5 +1,7 @@
 package org.x2vc.stylesheet;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.io.StringReader;
 import java.net.URI;
 
@@ -13,8 +15,6 @@ import org.x2vc.stylesheet.structure.IStylesheetStructureExtractor;
 
 import com.google.inject.Inject;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.SaxonApiException;
 import net.sf.saxon.s9api.XsltExecutable;
@@ -24,7 +24,7 @@ import net.sf.saxon.s9api.XsltExecutable;
  */
 public class StylesheetPreprocessor implements IStylesheetPreprocessor {
 
-	private static Logger logger = LogManager.getLogger();
+	private static final Logger logger = LogManager.getLogger();
 
 	private Processor processor;
 	private IStylesheetExtender extender;
@@ -42,8 +42,8 @@ public class StylesheetPreprocessor implements IStylesheetPreprocessor {
 		checkNotNull(originalLocation);
 		checkNotNull(originalSource);
 		checkStylesheet(originalSource);
-		String expandedSource = this.extender.extendStylesheet(originalSource);
-		IStylesheetStructure structure = this.extractor.extractStructure(expandedSource);
+		final String expandedSource = this.extender.extendStylesheet(originalSource);
+		final IStylesheetStructure structure = this.extractor.extractStructure(expandedSource);
 		return new StylesheetInformation(originalLocation, originalSource, expandedSource, structure);
 	}
 
@@ -51,8 +51,8 @@ public class StylesheetPreprocessor implements IStylesheetPreprocessor {
 	public IStylesheetInformation prepareStylesheet(String originalSource) {
 		checkNotNull(originalSource);
 		checkStylesheet(originalSource);
-		String expandedSource = this.extender.extendStylesheet(originalSource);
-		IStylesheetStructure structure = this.extractor.extractStructure(expandedSource);
+		final String expandedSource = this.extender.extendStylesheet(originalSource);
+		final IStylesheetStructure structure = this.extractor.extractStructure(expandedSource);
 		return new StylesheetInformation(originalSource, expandedSource, structure);
 	}
 
@@ -69,15 +69,16 @@ public class StylesheetPreprocessor implements IStylesheetPreprocessor {
 		logger.traceEntry();
 		// try to try to compile the stylesheet to check the overall syntax and version
 		try {
-			XsltExecutable executable = this.processor.newXsltCompiler()
+			final XsltExecutable executable = this.processor.newXsltCompiler()
 					.compile(new StreamSource(new StringReader(originalSource)));
-			String stylesheetVersion = executable.getUnderlyingCompiledStylesheet().getPrimarySerializationProperties()
-					.getProperty("{http://saxon.sf.net/}stylesheet-version");
+			final String stylesheetVersion = executable.getUnderlyingCompiledStylesheet()
+					.getPrimarySerializationProperties().getProperty("{http://saxon.sf.net/}stylesheet-version");
 			// currently only XSLT 1.0 is supported
 			if (!stylesheetVersion.equals("10")) {
-				throw logger.throwing(new IllegalArgumentException("Stylesheet version not supported (only XSLT 1.0 allowed)"));
+				throw logger.throwing(
+						new IllegalArgumentException("Stylesheet version not supported (only XSLT 1.0 allowed)"));
 			}
-		} catch (SaxonApiException e) {
+		} catch (final SaxonApiException e) {
 			throw logger.throwing(new IllegalArgumentException("Stylesheet cannot be compiled", e));
 		}
 

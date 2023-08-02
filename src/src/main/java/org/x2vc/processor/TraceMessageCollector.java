@@ -23,7 +23,7 @@ import net.sf.saxon.s9api.XdmNodeKind;
  */
 class TraceMessageCollector implements Consumer<Message> {
 
-	private static Logger logger = LogManager.getLogger();
+	private static final Logger logger = LogManager.getLogger();
 	private Deque<Message> messages = Lists.newLinkedList();
 	private List<ITraceEvent> traceEvents = Lists.newLinkedList();
 
@@ -43,11 +43,11 @@ class TraceMessageCollector implements Consumer<Message> {
 	private void processRemainingMessages() {
 		logger.traceEntry();
 		while (!this.messages.isEmpty()) {
-			Message message = this.messages.removeFirst();
-			Iterator<XdmNode> contentIterator = message.getContent().children().iterator();
+			final Message message = this.messages.removeFirst();
+			final Iterator<XdmNode> contentIterator = message.getContent().children().iterator();
 			while (contentIterator.hasNext()) {
-				XdmNode node = contentIterator.next();
-				XdmNodeKind nodeKind = node.getNodeKind();
+				final XdmNode node = contentIterator.next();
+				final XdmNodeKind nodeKind = node.getNodeKind();
 				if (nodeKind == XdmNodeKind.ELEMENT) {
 					processMessageElement(node);
 				} else {
@@ -65,13 +65,13 @@ class TraceMessageCollector implements Consumer<Message> {
 	 */
 	private void processMessageElement(XdmNode node) {
 		logger.traceEntry();
-		QName nodeName = node.getNodeName();
+		final QName nodeName = node.getNodeName();
 		if (nodeName.getNamespace().equals(ExtendedXSLTConstants.NAMESPACE)) {
-			String localName = nodeName.getLocalName();
+			final String localName = nodeName.getLocalName();
 			if (ExtendedXSLTConstants.Elements.TRACE.equals(localName)) {
-				int traceID = Integer
+				final int traceID = Integer
 						.parseInt(node.getAttributeValue(new QName(ExtendedXSLTConstants.Attributes.TRACE_ID)));
-				String elementName = node.getAttributeValue(new QName(ExtendedXSLTConstants.Attributes.ELEMENT));
+				final String elementName = node.getAttributeValue(new QName(ExtendedXSLTConstants.Attributes.ELEMENT));
 				this.traceEvents.add(new TraceEvent(traceID, elementName));
 			} else {
 				logger.debug("ignoring unknown trace element: {}", node);

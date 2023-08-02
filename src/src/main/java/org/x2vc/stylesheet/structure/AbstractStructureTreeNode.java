@@ -1,11 +1,11 @@
 package org.x2vc.stylesheet.structure;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.util.Objects;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import static com.google.common.base.Preconditions.checkNotNull;
 
 /**
  * Base class for all derivations of {@link IStructureTreeNode}.
@@ -13,7 +13,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public abstract class AbstractStructureTreeNode implements IStructureTreeNode {
 
 	private static final long serialVersionUID = -4581883325565055335L;
-	private static Logger logger = LogManager.getLogger();
+	private static final Logger logger = LogManager.getLogger();
 	private IStylesheetStructure parentStructure;
 
 	/**
@@ -42,7 +42,7 @@ public abstract class AbstractStructureTreeNode implements IStructureTreeNode {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		AbstractStructureTreeNode other = (AbstractStructureTreeNode) obj;
+		final AbstractStructureTreeNode other = (AbstractStructureTreeNode) obj;
 		return Objects.equals(this.parentStructure, other.parentStructure);
 	}
 

@@ -36,7 +36,7 @@ public class TextNode extends AbstractStructureTreeNode implements ITextNode {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		TextNode other = (TextNode) obj;
+		final TextNode other = (TextNode) obj;
 		return Objects.equals(this.text, other.text);
 	}
 

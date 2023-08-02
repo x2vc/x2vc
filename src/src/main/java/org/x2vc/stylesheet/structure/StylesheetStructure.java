@@ -1,5 +1,8 @@
 package org.x2vc.stylesheet.structure;
 
+import static com.google.common.base.Preconditions.checkArgument;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.util.Deque;
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -13,9 +16,6 @@ import org.x2vc.common.XSLTConstants;
 
 import com.google.common.collect.ImmutableList;
 
-import static com.google.common.base.Preconditions.checkArgument;
-import static com.google.common.base.Preconditions.checkNotNull;
-
 /**
  * Standard implementation of {@link IStylesheetStructure}. Use the
  * {@link IStylesheetStructureExtractor} implementations to instantiate this
@@ -24,7 +24,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 public class StylesheetStructure implements IStylesheetStructure {
 
 	private static final long serialVersionUID = 657884766610226773L;
-	private static Logger logger = LogManager.getLogger();
+	private static final Logger logger = LogManager.getLogger();
 	private IXSLTDirectiveNode rootNode;
 	private transient ImmutableList<IXSLTDirectiveNode> templates;
 	private transient ImmutableList<IXSLTParameterNode> parameters;
@@ -53,7 +53,7 @@ public class StylesheetStructure implements IStylesheetStructure {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		StylesheetStructure other = (StylesheetStructure) obj;
+		final StylesheetStructure other = (StylesheetStructure) obj;
 		return Objects.equals(this.rootNode, other.rootNode);
 	}
 
@@ -67,7 +67,7 @@ public class StylesheetStructure implements IStylesheetStructure {
 	void setRootNode(IXSLTDirectiveNode rootNode) {
 		checkNotNull(rootNode);
 		checkArgument(rootNode.isXSLTDirective());
-		String rootName = rootNode.asDirective().getName();
+		final String rootName = rootNode.asDirective().getName();
 		checkArgument(rootName.equals(XSLTConstants.Elements.TRANSFORM)
 				|| rootName.equals(XSLTConstants.Elements.STYLESHEET));
 		this.rootNode = rootNode;
@@ -104,8 +104,8 @@ public class StylesheetStructure implements IStylesheetStructure {
 	 */
 	private ImmutableList<IXSLTDirectiveNode> filterTemplates() {
 		logger.traceEntry();
-		ImmutableList<IXSLTDirectiveNode> result = ImmutableList.copyOf(this.rootNode.getChildDirectives().stream()
-				.filter(d -> d.getName().equals(XSLTConstants.Elements.TEMPLATE)).iterator());
+		final ImmutableList<IXSLTDirectiveNode> result = ImmutableList.copyOf(this.rootNode.getChildDirectives()
+				.stream().filter(d -> d.getName().equals(XSLTConstants.Elements.TEMPLATE)).iterator());
 		return logger.traceExit(result);
 	}
 
@@ -124,7 +124,7 @@ public class StylesheetStructure implements IStylesheetStructure {
 	 */
 	private ImmutableList<IXSLTParameterNode> filterParameters() {
 		logger.traceEntry();
-		ImmutableList<IXSLTParameterNode> result = ImmutableList.copyOf(this.rootNode.getChildElements().stream()
+		final ImmutableList<IXSLTParameterNode> result = ImmutableList.copyOf(this.rootNode.getChildElements().stream()
 				.filter(e -> e.isXSLTParameter()).map(e -> e.asParameter()).iterator());
 		return logger.traceExit(result);
 	}
@@ -150,13 +150,13 @@ public class StylesheetStructure implements IStylesheetStructure {
 	 */
 	private Map<Integer, IXSLTDirectiveNode> buildTracedDirectives() {
 		logger.traceEntry();
-		HashMap<Integer, IXSLTDirectiveNode> result = new HashMap<>();
-		Deque<IStructureTreeNode> remainingNodes = new LinkedList<>();
+		final HashMap<Integer, IXSLTDirectiveNode> result = new HashMap<>();
+		final Deque<IStructureTreeNode> remainingNodes = new LinkedList<>();
 		remainingNodes.add(this.rootNode);
 		while (!remainingNodes.isEmpty()) {
-			IStructureTreeNode currentNode = remainingNodes.remove();
+			final IStructureTreeNode currentNode = remainingNodes.remove();
 			if (currentNode.isXSLTDirective()) {
-				Optional<Integer> nodeID = currentNode.asDirective().getTraceID();
+				final Optional<Integer> nodeID = currentNode.asDirective().getTraceID();
 				if (nodeID.isPresent()) {
 					result.put(nodeID.get(), currentNode.asDirective());
 				}

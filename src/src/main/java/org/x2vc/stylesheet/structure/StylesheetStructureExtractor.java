@@ -30,7 +30,7 @@ import com.google.inject.Inject;
  */
 public class StylesheetStructureExtractor implements IStylesheetStructureExtractor {
 
-	private static Logger logger = LogManager.getLogger();
+	private static final Logger logger = LogManager.getLogger();
 	private XMLInputFactory inputFactory;
 
 	/**
@@ -47,11 +47,11 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 	public IStylesheetStructure extractStructure(String source) {
 		logger.traceEntry();
 		try {
-			StylesheetStructure structure = new StylesheetStructure();
-			XMLEventReader xmlReader = this.inputFactory.createXMLEventReader(new StringReader(source));
+			final StylesheetStructure structure = new StylesheetStructure();
+			final XMLEventReader xmlReader = this.inputFactory.createXMLEventReader(new StringReader(source));
 			structure.setRootNode(new Worker(structure).process(xmlReader));
 			return logger.traceExit(structure);
-		} catch (XMLStreamException e) {
+		} catch (final XMLStreamException e) {
 			throw new IllegalArgumentException("Unable to analyze stylesheet structure.", e);
 		}
 	}
@@ -62,7 +62,7 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 	 */
 	private class Worker {
 
-		private static Logger logger = LogManager.getLogger();
+		private static final Logger logger = LogManager.getLogger();
 		private Deque<INodeBuilder> builderChain = new ArrayDeque<>();
 		private StylesheetStructure structure;
 
@@ -86,7 +86,7 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 		public IXSLTDirectiveNode process(XMLEventReader xmlReader) throws XMLStreamException {
 			logger.traceEntry();
 			while (xmlReader.hasNext()) {
-				XMLEvent event = xmlReader.nextEvent();
+				final XMLEvent event = xmlReader.nextEvent();
 				switch (event.getEventType()) {
 				case XMLStreamConstants.START_ELEMENT:
 					logger.trace("processing START_ELEMENT event: {}", event);
@@ -129,7 +129,7 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 						logger.warn("expected a single remaining element at end of document, but {} elements remained",
 								this.builderChain.size());
 					}
-					XSLTDirectiveNode result = ((XSLTDirectiveNode.Builder) this.builderChain.getFirst()).build();
+					final XSLTDirectiveNode result = ((XSLTDirectiveNode.Builder) this.builderChain.getFirst()).build();
 					return logger.traceExit(result);
 
 				case XMLStreamConstants.ENTITY_REFERENCE:
@@ -213,14 +213,15 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 		 */
 		private void processStartOfParameter(StartElement element) {
 			logger.traceEntry();
-			Optional<String> attribName = getAttributeValue(element, "name");
+			final Optional<String> attribName = getAttributeValue(element, "name");
 			if (attribName.isEmpty()) {
 				throw logger.throwing(
 						new IllegalArgumentException("Parameter element without name attribute encountered."));
 			}
-			Optional<String> attribSelect = getAttributeValue(element, "select");
+			final Optional<String> attribSelect = getAttributeValue(element, "select");
 			logger.trace("start of parameter ({}) {}", element.getName().getLocalPart(), attribName.get());
-			XSLTParameterNode.Builder paramBuilder = new XSLTParameterNode.Builder(this.structure, attribName.get());
+			final XSLTParameterNode.Builder paramBuilder = new XSLTParameterNode.Builder(this.structure,
+					attribName.get());
 			if (attribSelect.isPresent()) {
 				paramBuilder.withSelection(attribSelect.get());
 			}
@@ -236,12 +237,12 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 		private void processStartOfSort(StartElement element) {
 			logger.traceEntry();
 			logger.trace("start of sort specification ({})", element.getName().getLocalPart());
-			Optional<String> attribSelect = getAttributeValue(element, "select");
-			Optional<String> attribLang = getAttributeValue(element, "lang");
-			Optional<String> attribDataType = getAttributeValue(element, "data-type");
-			Optional<String> attribOrder = getAttributeValue(element, "order");
-			Optional<String> attribCaseOrder = getAttributeValue(element, "case-order");
-			XSLTSortNode.Builder sortBuilder = new XSLTSortNode.Builder(this.structure);
+			final Optional<String> attribSelect = getAttributeValue(element, "select");
+			final Optional<String> attribLang = getAttributeValue(element, "lang");
+			final Optional<String> attribDataType = getAttributeValue(element, "data-type");
+			final Optional<String> attribOrder = getAttributeValue(element, "order");
+			final Optional<String> attribCaseOrder = getAttributeValue(element, "case-order");
+			final XSLTSortNode.Builder sortBuilder = new XSLTSortNode.Builder(this.structure);
 			if (attribSelect.isPresent()) {
 				sortBuilder.withSortingExpression(attribSelect.get());
 			}
@@ -268,12 +269,13 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 		 */
 		private void processStartOfDirective(StartElement element) {
 			logger.traceEntry();
-			String elementName = element.getName().getLocalPart();
+			final String elementName = element.getName().getLocalPart();
 			logger.trace("start of XSLT directive {}", elementName);
-			XSLTDirectiveNode.Builder directiveBuilder = new XSLTDirectiveNode.Builder(this.structure, elementName);
-			for (Iterator<Attribute> iterator = element.getAttributes(); iterator.hasNext();) {
-				Attribute attrib = iterator.next();
-				String attribNamespace = attrib.getName().getNamespaceURI();
+			final XSLTDirectiveNode.Builder directiveBuilder = new XSLTDirectiveNode.Builder(this.structure,
+					elementName);
+			for (final Iterator<Attribute> iterator = element.getAttributes(); iterator.hasNext();) {
+				final Attribute attrib = iterator.next();
+				final String attribNamespace = attrib.getName().getNamespaceURI();
 				if (attribNamespace.equals(XSLTConstants.NAMESPACE) || Strings.isNullOrEmpty(attribNamespace)) {
 					directiveBuilder.addXSLTAttribute(attrib.getName().getLocalPart(), attrib.getValue());
 				} else {
@@ -292,9 +294,9 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 		private void processStartOfXMLNode(StartElement element) {
 			logger.traceEntry();
 			logger.trace("start of XML node {}", element.getName());
-			XMLNode.Builder nodeBuilder = new XMLNode.Builder(this.structure, element.getName());
-			for (Iterator<Attribute> iterator = element.getAttributes(); iterator.hasNext();) {
-				Attribute attrib = iterator.next();
+			final XMLNode.Builder nodeBuilder = new XMLNode.Builder(this.structure, element.getName());
+			for (final Iterator<Attribute> iterator = element.getAttributes(); iterator.hasNext();) {
+				final Attribute attrib = iterator.next();
 				nodeBuilder.addAttribute(attrib.getName(), attrib.getValue());
 			}
 			this.builderChain.add(nodeBuilder);
@@ -338,11 +340,11 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 		 */
 		private void processEndOfParameter(EndElement element) {
 			logger.traceEntry();
-			XSLTParameterNode.Builder paramBuilder = (XSLTParameterNode.Builder) this.builderChain.removeLast();
-			XSLTParameterNode paramNode = paramBuilder.build();
+			final XSLTParameterNode.Builder paramBuilder = (XSLTParameterNode.Builder) this.builderChain.removeLast();
+			final XSLTParameterNode paramNode = paramBuilder.build();
 			logger.trace("end of parameter {}", paramNode.getName());
 
-			INodeBuilder parentBuilder = this.builderChain.getLast();
+			final INodeBuilder parentBuilder = this.builderChain.getLast();
 			// parameters may only occur directly beneath an XSLT element
 			if (element.getName().getLocalPart().equals(XSLTConstants.Elements.PARAM)) {
 				((XSLTDirectiveNode.Builder) parentBuilder).addFormalParameter(paramNode);
@@ -359,10 +361,10 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 		 */
 		private void processEndOfSort() {
 			logger.traceEntry();
-			XSLTSortNode.Builder sortBuilder = (XSLTSortNode.Builder) this.builderChain.removeLast();
-			XSLTSortNode sortNode = sortBuilder.build();
+			final XSLTSortNode.Builder sortBuilder = (XSLTSortNode.Builder) this.builderChain.removeLast();
+			final XSLTSortNode sortNode = sortBuilder.build();
 
-			INodeBuilder parentBuilder = this.builderChain.getLast();
+			final INodeBuilder parentBuilder = this.builderChain.getLast();
 			// sort specifications may only occur directly beneath an XSLT element
 			((XSLTDirectiveNode.Builder) parentBuilder).addSorting(sortNode);
 			logger.traceExit();
@@ -378,8 +380,9 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 			// leave the last builder in the queue to be processed during the
 			// end-of-document event
 			if (this.builderChain.size() > 1) {
-				XSLTDirectiveNode.Builder directiveBuilder = (XSLTDirectiveNode.Builder) this.builderChain.removeLast();
-				XSLTDirectiveNode directiveNode = directiveBuilder.build();
+				final XSLTDirectiveNode.Builder directiveBuilder = (XSLTDirectiveNode.Builder) this.builderChain
+						.removeLast();
+				final XSLTDirectiveNode directiveNode = directiveBuilder.build();
 				logger.trace("end of XSLT directive {}", directiveNode.getName());
 				addChildNodeToLastBuilder(directiveNode);
 			}
@@ -393,8 +396,8 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 		 */
 		private void processEndOfXMLNode() {
 			logger.traceEntry();
-			XMLNode.Builder nodeBuilder = (XMLNode.Builder) this.builderChain.removeLast();
-			XMLNode node = nodeBuilder.build();
+			final XMLNode.Builder nodeBuilder = (XMLNode.Builder) this.builderChain.removeLast();
+			final XMLNode node = nodeBuilder.build();
 			addChildNodeToLastBuilder(node);
 			logger.traceExit();
 		}
@@ -408,7 +411,7 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 			logger.traceEntry();
 			// for this tree, ignore whitespace-only nodes
 			if (!characters.isWhiteSpace()) {
-				TextNode node = new TextNode.Builder(this.structure).withText(characters.getData()).build();
+				final TextNode node = new TextNode.Builder(this.structure).withText(characters.getData()).build();
 				logger.trace("processing text of length {}", node.getText().length());
 				addChildNodeToLastBuilder(node);
 			}
@@ -422,12 +425,12 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 		 */
 		private void addChildNodeToLastBuilder(IStructureTreeNode node) {
 			logger.traceEntry();
-			INodeBuilder parentBuilder = this.builderChain.getLast();
-			if (parentBuilder instanceof XMLNode.Builder nodeBuilder) {
+			final INodeBuilder parentBuilder = this.builderChain.getLast();
+			if (parentBuilder instanceof final XMLNode.Builder nodeBuilder) {
 				nodeBuilder.addChildElement(node);
-			} else if (parentBuilder instanceof XSLTDirectiveNode.Builder directiveBuilder) {
+			} else if (parentBuilder instanceof final XSLTDirectiveNode.Builder directiveBuilder) {
 				directiveBuilder.addChildElement(node);
-			} else if (parentBuilder instanceof XSLTParameterNode.Builder paramBuilder) {
+			} else if (parentBuilder instanceof final XSLTParameterNode.Builder paramBuilder) {
 				paramBuilder.addChildElement(node);
 			} else {
 				throw logger.throwing(

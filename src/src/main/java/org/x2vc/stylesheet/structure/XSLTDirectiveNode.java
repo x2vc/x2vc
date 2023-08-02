@@ -64,7 +64,7 @@ public class XSLTDirectiveNode extends AbstractStructureTreeNode implements IXSL
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		XSLTDirectiveNode other = (XSLTDirectiveNode) obj;
+		final XSLTDirectiveNode other = (XSLTDirectiveNode) obj;
 		return Objects.equals(this.actualParameters, other.actualParameters)
 				&& Objects.equals(this.childElements, other.childElements)
 				&& Objects.equals(this.formalParameters, other.formalParameters)

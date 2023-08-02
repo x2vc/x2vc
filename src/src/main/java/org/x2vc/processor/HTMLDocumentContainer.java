@@ -23,7 +23,7 @@ import net.sf.saxon.s9api.SaxonApiException;
  */
 class HTMLDocumentContainer implements IHTMLDocumentContainer {
 
-	private static Logger logger = LogManager.getLogger();
+	private static final Logger logger = LogManager.getLogger();
 	private IXMLDocumentContainer source;
 	private String htmlDocument;
 	private SaxonApiException compilationError;
@@ -92,9 +92,9 @@ class HTMLDocumentContainer implements IHTMLDocumentContainer {
 		final IStylesheetInformation stylesheet = this.source.getStylesheet();
 		final IStylesheetStructure structure = stylesheet.getStructure();
 		this.coverage = stylesheet.createCoverageStatistics();
-		for (ITraceEvent traceEvent : this.traceEvents) {
-			int traceID = traceEvent.getTraceID();
-			IXSLTDirectiveNode directive = structure.getDirectiveByTraceID(traceID);
+		for (final ITraceEvent traceEvent : this.traceEvents) {
+			final int traceID = traceEvent.getTraceID();
+			final IXSLTDirectiveNode directive = structure.getDirectiveByTraceID(traceID);
 			if (!directive.getName().equals(traceEvent.getElementName())) {
 				logger.warn("Trace event element name {} differs from structure element name {}",
 						traceEvent.getElementName(), directive.getName());

@@ -20,7 +20,7 @@ import com.google.common.collect.ImmutableMap;
 public class StylesheetCoverage implements IStylesheetCoverage {
 
 	private static final long serialVersionUID = 8825773547954992141L;
-	private static Logger logger = LogManager.getLogger();
+	private static final Logger logger = LogManager.getLogger();
 	private IStylesheetStructure parentStructure;
 	private Map<Integer, Integer> executionCount;
 	private HashMultimap<Integer, ImmutableMap<String, String>> executionParameters;
@@ -33,8 +33,8 @@ public class StylesheetCoverage implements IStylesheetCoverage {
 	public StylesheetCoverage(IStylesheetStructure structure) {
 		this.parentStructure = structure;
 		this.executionCount = new HashMap<>();
-		for (IXSLTDirectiveNode directive : this.parentStructure.getDirectivesWithTraceID()) {
-			Optional<Integer> traceID = directive.getTraceID();
+		for (final IXSLTDirectiveNode directive : this.parentStructure.getDirectivesWithTraceID()) {
+			final Optional<Integer> traceID = directive.getTraceID();
 			if (traceID.isPresent()) {
 				this.executionCount.put(traceID.get(), 0);
 			}
@@ -58,7 +58,7 @@ public class StylesheetCoverage implements IStylesheetCoverage {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		StylesheetCoverage other = (StylesheetCoverage) obj;
+		final StylesheetCoverage other = (StylesheetCoverage) obj;
 		return Objects.equals(this.executionCount, other.executionCount)
 				&& Objects.equals(this.executionParameters, other.executionParameters)
 				&& Objects.equals(this.parentStructure, other.parentStructure);
@@ -92,8 +92,8 @@ public class StylesheetCoverage implements IStylesheetCoverage {
 	public void add(IStylesheetCoverage otherObject) {
 		logger.traceEntry();
 		// TODO ensure that the other object relates to the same structure
-		ImmutableMap<Integer, Integer> otherCoverage = otherObject.getElementCoverage();
-		for (Map.Entry<Integer, Integer> entry : otherCoverage.entrySet()) {
+		final ImmutableMap<Integer, Integer> otherCoverage = otherObject.getElementCoverage();
+		for (final Map.Entry<Integer, Integer> entry : otherCoverage.entrySet()) {
 			if (entry.getValue() > 0) {
 				this.executionCount.put(entry.getKey(), this.executionCount.get(entry.getKey()) + entry.getValue());
 				this.executionParameters.putAll(entry.getKey(), otherObject.getCoverageParameters(entry.getKey()));

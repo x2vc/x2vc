@@ -50,7 +50,7 @@ public class XSLTParameterNode extends AbstractStructureTreeNode implements IXSL
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		XSLTParameterNode other = (XSLTParameterNode) obj;
+		final XSLTParameterNode other = (XSLTParameterNode) obj;
 		return Objects.equals(this.childElements, other.childElements) && Objects.equals(this.name, other.name)
 				&& Objects.equals(this.selection, other.selection);
 	}

@@ -17,7 +17,7 @@ public class CheckerFactory implements IFactory {
 	public <K> K create(Class<K> aClass) throws Exception {
 		try {
 			return this.injector.getInstance(aClass);
-		} catch (ConfigurationException ex) {
+		} catch (final ConfigurationException ex) {
 			// no implementation found in Guice configuration: use fallback
 			return CommandLine.defaultFactory().create(aClass);
 		}

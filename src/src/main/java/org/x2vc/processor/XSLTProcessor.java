@@ -28,7 +28,7 @@ import net.sf.saxon.s9api.XsltExecutable;
  */
 public class XSLTProcessor implements IXSLTProcessor {
 
-	private static Logger logger = LogManager.getLogger();
+	private static final Logger logger = LogManager.getLogger();
 
 	private Processor processor;
 
@@ -43,30 +43,30 @@ public class XSLTProcessor implements IXSLTProcessor {
 	@Override
 	public IHTMLDocumentContainer processDocument(IXMLDocumentContainer xmlDocument) {
 		logger.traceEntry();
-		HTMLDocumentContainer.Builder builder = new HTMLDocumentContainer.Builder(xmlDocument);
+		final HTMLDocumentContainer.Builder builder = new HTMLDocumentContainer.Builder(xmlDocument);
 		XsltExecutable stylesheet = null;
 		try {
 			stylesheet = this.stylesheetCache.get(xmlDocument.getStylesheet());
-		} catch (ExecutionException e) {
+		} catch (final ExecutionException e) {
 			logger.error("Error retrieving compiled stylesheet from cache", e);
 			builder.withCompilationError((SaxonApiException) e.getCause());
 		}
 		if (stylesheet != null) {
 			try {
-				StringWriter stringWriter = new StringWriter();
-				Serializer out = this.processor.newSerializer(stringWriter);
-				TraceMessageCollector messageCollector = new TraceMessageCollector();
-				Xslt30Transformer transformer = stylesheet.load30();
+				final StringWriter stringWriter = new StringWriter();
+				final Serializer out = this.processor.newSerializer(stringWriter);
+				final TraceMessageCollector messageCollector = new TraceMessageCollector();
+				final Xslt30Transformer transformer = stylesheet.load30();
 				transformer.setMessageHandler(messageCollector);
 				transformer.transform(new StreamSource(new StringReader(xmlDocument.getDocument())), out);
 				builder.withHtmlDocument(stringWriter.toString());
 				builder.withTraceEvents(messageCollector.getTraceEvents());
-			} catch (SaxonApiException e) {
+			} catch (final SaxonApiException e) {
 				logger.error("Error processing XML document", e);
 				builder.withProcessingError(e);
 			}
 		}
-		HTMLDocumentContainer container = builder.build();
+		final HTMLDocumentContainer container = builder.build();
 		return logger.traceExit(container);
 	}
 
@@ -75,7 +75,7 @@ public class XSLTProcessor implements IXSLTProcessor {
 	 */
 	private final class StylesheetCacheLoader extends CacheLoader<IStylesheetInformation, XsltExecutable> {
 
-		private static Logger logger = LogManager.getLogger();
+		private static final Logger logger = LogManager.getLogger();
 		private XsltCompiler compiler;
 
 		/**
@@ -89,7 +89,7 @@ public class XSLTProcessor implements IXSLTProcessor {
 		public XsltExecutable load(IStylesheetInformation stylesheet) throws SaxonApiException {
 			logger.traceEntry();
 			logger.debug("Compiling stylesheet to provide cache entry");
-			XsltExecutable result = this.compiler
+			final XsltExecutable result = this.compiler
 					.compile(new StreamSource(new StringReader(stylesheet.getPreparedStylesheet())));
 			return logger.traceExit(result);
 		}

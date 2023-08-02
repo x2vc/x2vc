@@ -21,7 +21,7 @@ import picocli.CommandLine.Parameters;
 @Command(name = "demo", mixinStandardHelpOptions = true, version = "demo 0.1", description = "Intermediary process to test some components.")
 public class DemoProcess implements Callable<Integer> {
 
-	private static Logger logger = LogManager.getLogger();
+	private static final Logger logger = LogManager.getLogger();
 
 	@Mixin
 	LoggingMixin loggingMixin;
@@ -38,8 +38,8 @@ public class DemoProcess implements Callable<Integer> {
 
 	@Override
 	public Integer call() throws Exception {
-		URI uri = this.xsltFile.toURI();
-		String source = Files.readString(this.xsltFile.toPath());
+		final URI uri = this.xsltFile.toURI();
+		final String source = Files.readString(this.xsltFile.toPath());
 		logger.info("{} characters read from file {}", source.length(), uri);
 		/* IStylesheetInformation ssi = */this.preprocessor.prepareStylesheet(uri, source);
 
