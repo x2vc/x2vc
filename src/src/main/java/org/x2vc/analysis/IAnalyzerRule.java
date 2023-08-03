@@ -6,6 +6,7 @@ import org.jsoup.nodes.Node;
 import org.x2vc.analysis.rules.AbstractAttributeRule;
 import org.x2vc.analysis.rules.AbstractElementRule;
 import org.x2vc.analysis.rules.AbstractTextRule;
+import org.x2vc.xmldoc.IDocumentModifier;
 import org.x2vc.xmldoc.IXMLDocumentDescriptor;
 
 /**
@@ -31,6 +32,6 @@ public interface IAnalyzerRule {
 	 * @param descriptor the input document descriptor
 	 * @param collector  a sink to send any resulting modification requests to
 	 */
-	void checkNode(Node node, IXMLDocumentDescriptor descriptor, Consumer<IRuleDataModifier> collector);
+	void checkNode(Node node, IXMLDocumentDescriptor descriptor, Consumer<IDocumentModifier> collector);
 
 }

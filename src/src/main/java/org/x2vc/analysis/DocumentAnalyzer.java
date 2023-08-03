@@ -11,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.x2vc.processor.IHTMLDocumentContainer;
+import org.x2vc.xmldoc.IDocumentModifier;
 import org.x2vc.xmldoc.IXMLDocumentDescriptor;
 
 import com.google.inject.Inject;
@@ -35,7 +36,7 @@ public class DocumentAnalyzer implements IDocumentAnalyzer {
 	}
 
 	@Override
-	public void analyzeDocument(IHTMLDocumentContainer document, Consumer<IRuleDataModifier> modifierCollector) {
+	public void analyzeDocument(IHTMLDocumentContainer document, Consumer<IDocumentModifier> modifierCollector) {
 		checkArgument(!document.isFailed());
 		logger.traceEntry();
 		final IXMLDocumentDescriptor descriptor = document.getSource().getDocumentDescriptor();
@@ -52,7 +53,7 @@ public class DocumentAnalyzer implements IDocumentAnalyzer {
 	 * @param descriptor
 	 */
 	private void performFirstPass(IHTMLDocumentContainer container, IXMLDocumentDescriptor descriptor,
-			Consumer<IRuleDataModifier> modifierCollector) {
+			Consumer<IDocumentModifier> modifierCollector) {
 		logger.traceEntry();
 		final Optional<String> doc = container.getDocument();
 		checkArgument(doc.isPresent());

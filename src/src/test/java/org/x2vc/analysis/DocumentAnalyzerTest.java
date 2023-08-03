@@ -20,6 +20,7 @@ import org.mockito.Mock;
 import org.mockito.internal.util.collections.Sets;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.x2vc.processor.IHTMLDocumentContainer;
+import org.x2vc.xmldoc.IDocumentModifier;
 import org.x2vc.xmldoc.IXMLDocumentContainer;
 import org.x2vc.xmldoc.IXMLDocumentDescriptor;
 
@@ -32,7 +33,7 @@ class DocumentAnalyzerTest {
 	private DocumentAnalyzer analyzer;
 
 	@Mock
-	private Consumer<IRuleDataModifier> modifierCollector;
+	private Consumer<IDocumentModifier> modifierCollector;
 
 	@Mock
 	private IHTMLDocumentContainer container;
@@ -86,8 +87,8 @@ class DocumentAnalyzerTest {
 			"""
 		));
 		doAnswer(invocation -> {
-			final Consumer<IRuleDataModifier> argCollector = invocation.getArgument(2);
-			argCollector.accept(mock(IRuleDataModifier.class));
+			final Consumer<IDocumentModifier> argCollector = invocation.getArgument(2);
+			argCollector.accept(mock(IDocumentModifier.class));
 			return null;
 		}).when(this.rule).checkNode(any(Node.class), same(this.descriptor), any());
 		this.analyzer.analyzeDocument(this.container, this.modifierCollector);

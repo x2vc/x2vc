@@ -3,6 +3,7 @@ package org.x2vc.analysis;
 import java.util.function.Consumer;
 
 import org.x2vc.processor.IHTMLDocumentContainer;
+import org.x2vc.xmldoc.IDocumentModifier;
 import org.x2vc.xmldoc.IXMLDocumentDescriptor;
 
 /**
@@ -27,7 +28,7 @@ public interface IDocumentAnalyzer {
 	 * @param document
 	 * @param modifierCollector
 	 */
-	void analyzeDocument(IHTMLDocumentContainer document, Consumer<IRuleDataModifier> modifierCollector);
+	void analyzeDocument(IHTMLDocumentContainer document, Consumer<IDocumentModifier> modifierCollector);
 
 	// TODO XSS Analyzer: determine suitable output form
 

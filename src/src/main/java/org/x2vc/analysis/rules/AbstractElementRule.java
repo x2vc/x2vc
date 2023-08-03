@@ -7,7 +7,7 @@ import org.apache.logging.log4j.Logger;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.x2vc.analysis.IAnalyzerRule;
-import org.x2vc.analysis.IRuleDataModifier;
+import org.x2vc.xmldoc.IDocumentModifier;
 import org.x2vc.xmldoc.IXMLDocumentDescriptor;
 
 /**
@@ -18,7 +18,7 @@ public abstract class AbstractElementRule implements IAnalyzerRule {
 	private static final Logger logger = LogManager.getLogger();
 
 	@Override
-	public final void checkNode(Node node, IXMLDocumentDescriptor descriptor, Consumer<IRuleDataModifier> collector) {
+	public final void checkNode(Node node, IXMLDocumentDescriptor descriptor, Consumer<IDocumentModifier> collector) {
 		logger.traceEntry();
 		if (node instanceof final Element element && (isApplicableTo(element, descriptor))) {
 			performCheckOn(element, descriptor, collector);
@@ -43,6 +43,6 @@ public abstract class AbstractElementRule implements IAnalyzerRule {
 	 * @param collector  a sink to send any resulting modification requests to
 	 */
 	protected abstract void performCheckOn(Element element, IXMLDocumentDescriptor descriptor,
-			Consumer<IRuleDataModifier> collector);
+			Consumer<IDocumentModifier> collector);
 
 }

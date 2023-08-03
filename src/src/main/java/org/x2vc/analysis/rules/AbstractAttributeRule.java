@@ -7,7 +7,7 @@ import org.apache.logging.log4j.Logger;
 import org.jsoup.nodes.Attribute;
 import org.jsoup.nodes.Element;
 import org.x2vc.analysis.IAnalyzerRule;
-import org.x2vc.analysis.IRuleDataModifier;
+import org.x2vc.xmldoc.IDocumentModifier;
 import org.x2vc.xmldoc.IXMLDocumentDescriptor;
 
 /**
@@ -19,7 +19,7 @@ public abstract class AbstractAttributeRule extends AbstractElementRule {
 
 	@Override
 	protected final void performCheckOn(Element element, IXMLDocumentDescriptor descriptor,
-			Consumer<IRuleDataModifier> collector) {
+			Consumer<IDocumentModifier> collector) {
 		logger.traceEntry();
 		for (final Attribute attribute : element.attributes()) {
 			if (isApplicableTo(element, attribute, descriptor)) {
@@ -49,6 +49,6 @@ public abstract class AbstractAttributeRule extends AbstractElementRule {
 	 * @param collector  a sink to send any resulting modification requests to
 	 */
 	protected abstract void performCheckOn(Element element, Attribute attribute, IXMLDocumentDescriptor descriptor,
-			Consumer<IRuleDataModifier> collector);
+			Consumer<IDocumentModifier> collector);
 
 }

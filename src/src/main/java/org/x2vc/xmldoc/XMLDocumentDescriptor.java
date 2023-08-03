@@ -14,7 +14,7 @@ public class XMLDocumentDescriptor implements IXMLDocumentDescriptor {
 	private String valuePrefix;
 	private int valueLength;
 	private boolean mutated;
-	private HashMultimap<String, IValueDescriptor> valueDescriptors;
+	private HashMultimap<String, IDocumentValueDescriptor> valueDescriptors;
 
 	XMLDocumentDescriptor(Builder builder) {
 		this.valuePrefix = builder.valuePrefix;
@@ -38,7 +38,7 @@ public class XMLDocumentDescriptor implements IXMLDocumentDescriptor {
 	}
 
 	@Override
-	public Optional<ImmutableSet<IValueDescriptor>> getValueDescriptor(String value) {
+	public Optional<ImmutableSet<IDocumentValueDescriptor>> getValueDescriptors(String value) {
 		if (this.valueDescriptors.containsKey(value)) {
 			return Optional.empty();
 		}
@@ -51,7 +51,7 @@ public class XMLDocumentDescriptor implements IXMLDocumentDescriptor {
 	public static final class Builder {
 		private String valuePrefix;
 		private int valueLength;
-		private HashMultimap<String, IValueDescriptor> valueDescriptors = HashMultimap.create();
+		private HashMultimap<String, IDocumentValueDescriptor> valueDescriptors = HashMultimap.create();
 
 		/**
 		 * Creates a new builder
@@ -70,7 +70,7 @@ public class XMLDocumentDescriptor implements IXMLDocumentDescriptor {
 		 * @param valueDescriptor the descriptor to add
 		 * @return builder
 		 */
-		public Builder addValueDescriptors(IValueDescriptor valueDescriptor) {
+		public Builder addValueDescriptors(IDocumentValueDescriptor valueDescriptor) {
 			this.valueDescriptors.put(valueDescriptor.getValue(), valueDescriptor);
 			return this;
 		}

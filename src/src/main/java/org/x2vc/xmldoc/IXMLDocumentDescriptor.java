@@ -36,8 +36,8 @@ public interface IXMLDocumentDescriptor extends Serializable {
 
 	/**
 	 * @param value the value to determine the source descriptor for.
-	 * @return the value descriptor
+	 * @return the set of value descriptors that may have contributed the value
 	 */
-	Optional<ImmutableSet<IValueDescriptor>> getValueDescriptor(String value);
+	Optional<ImmutableSet<IDocumentValueDescriptor>> getValueDescriptors(String value);
 
 }

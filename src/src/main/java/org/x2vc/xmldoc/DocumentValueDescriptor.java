@@ -1,13 +1,16 @@
 package org.x2vc.xmldoc;
 
+import java.util.UUID;
+
 /**
- * Standard implementation of {@link IValueDescriptor}.
+ * Standard implementation of {@link IDocumentValueDescriptor}.
  */
-public class ValueDescriptor implements IValueDescriptor {
+public class DocumentValueDescriptor implements IDocumentValueDescriptor {
 
 	private static final long serialVersionUID = 8574714365246157772L;
 	private String value;
 	private boolean mutated;
+	private UUID schemaElementID;
 
 	// TODO XML Descriptor: generate hadhCode/equals after attributes are complete
 	// TODO XML Descriptor: generate builder
@@ -20,6 +23,11 @@ public class ValueDescriptor implements IValueDescriptor {
 	@Override
 	public boolean isMutated() {
 		return this.mutated;
+	}
+
+	@Override
+	public UUID getSchemaElementID() {
+		return this.schemaElementID;
 	}
 
 }
