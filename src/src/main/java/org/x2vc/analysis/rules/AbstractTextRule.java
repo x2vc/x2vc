@@ -15,7 +15,7 @@ import org.x2vc.xmldoc.IXMLDocumentDescriptor;
  * text nodes (see {@link TextNode#isBlank()}) will be skipped without further
  * notice.
  */
-public abstract class AbstractTextRule implements IAnalyzerRule {
+public abstract class AbstractTextRule extends AbstractRule implements IAnalyzerRule {
 
 	private static final Logger logger = LogManager.getLogger();
 

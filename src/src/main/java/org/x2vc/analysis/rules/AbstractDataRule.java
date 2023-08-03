@@ -13,7 +13,7 @@ import org.x2vc.xmldoc.IXMLDocumentDescriptor;
 /**
  * An {@link IAnalyzerRule} that performs a check on data nodes.
  */
-public abstract class AbstractDataRule implements IAnalyzerRule {
+public abstract class AbstractDataRule extends AbstractRule implements IAnalyzerRule {
 
 	private static final Logger logger = LogManager.getLogger();
 

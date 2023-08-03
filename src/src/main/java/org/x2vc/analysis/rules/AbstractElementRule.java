@@ -13,7 +13,7 @@ import org.x2vc.xmldoc.IXMLDocumentDescriptor;
 /**
  * An {@link IAnalyzerRule} that performs a check on an element level.
  */
-public abstract class AbstractElementRule implements IAnalyzerRule {
+public abstract class AbstractElementRule extends AbstractRule implements IAnalyzerRule {
 
 	private static final Logger logger = LogManager.getLogger();
 

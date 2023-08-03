@@ -44,6 +44,9 @@ public class DirectAttributeCheckRule extends AbstractAttributeRule {
 	protected void performCheckOn(Element element, Attribute attribute, IXMLDocumentDescriptor descriptor,
 			Consumer<IDocumentModifier> collector) {
 		logger.traceEntry("element {}, attribute {}", element, attribute);
+		final String path = getPathToNode(element);
+		logger.debug("path: {}", path);
+
 		final String attributeName = attribute.getKey();
 
 		// shortcut - if entire attribute name matches a data value
