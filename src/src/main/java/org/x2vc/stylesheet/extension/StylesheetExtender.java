@@ -153,7 +153,7 @@ public class StylesheetExtender implements IStylesheetExtender {
 
 			// Invent a new namespace prefix for our extension namespace.
 			this.extensionPrefix = findUnusedNamespacePrefix(usedNamespacePrefixes, "ext");
-			Worker.logger.trace("will use prefix {} for extension namespace", this.extensionPrefix);
+			Worker.logger.debug("will use prefix {} for extension namespace", this.extensionPrefix);
 
 			this.xmlReader = new PushbackXMLEventReader(
 					StylesheetExtender.this.inputFactory.createXMLEventReader(new StringReader(originalStylesheet)));
@@ -204,7 +204,7 @@ public class StylesheetExtender implements IStylesheetExtender {
 			if (!this.rootElementVisited) {
 				// root element: add namespace
 				startElement = extendRootElement(startElement, this.extensionPrefix);
-				Worker.logger.trace("extended root element to {}", startElement);
+				Worker.logger.debug("extended root element to {}", startElement);
 			} else {
 				// other elements: only handle certain XSLT elements
 				if (startElement.getName().getNamespaceURI().equals(XSLTConstants.NAMESPACE)) {
@@ -215,7 +215,7 @@ public class StylesheetExtender implements IStylesheetExtender {
 							|| ELEMENTS_WITH_TRACE_AFTER.contains(elementName)) {
 						this.currentElementID = Optional.of(getNextElementID());
 						startElement = addIDToElement(startElement, this.extensionPrefix);
-						Worker.logger.trace("added ID {} to element {}", this.currentElementID.get(), startElement);
+						Worker.logger.debug("added ID {} to element {}", this.currentElementID.get(), startElement);
 					}
 
 					// write trace message before element if required
@@ -264,7 +264,7 @@ public class StylesheetExtender implements IStylesheetExtender {
 		private Set<String> collectNamespacePrefixes(String originalStylesheet) throws XMLStreamException {
 			Worker.logger.traceEntry();
 			final XMLEventReader scanningReader = StylesheetExtender.this.inputFactory
-					.createXMLEventReader(new StringReader(originalStylesheet));
+				.createXMLEventReader(new StringReader(originalStylesheet));
 			final Set<String> prefixes = new HashSet<>();
 			while (scanningReader.hasNext()) {
 				final XMLEvent event = scanningReader.nextEvent();
@@ -274,7 +274,7 @@ public class StylesheetExtender implements IStylesheetExtender {
 							this.xsltPrefix = ns.getPrefix();
 						}
 						final String prefix = ns.getPrefix();
-						Worker.logger.trace("encountered namespace prefix {}", prefix);
+						Worker.logger.debug("encountered namespace prefix {}", prefix);
 						prefixes.add(prefix);
 					});
 				}
