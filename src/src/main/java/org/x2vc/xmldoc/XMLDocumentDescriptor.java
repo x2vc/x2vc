@@ -13,13 +13,14 @@ public class XMLDocumentDescriptor implements IXMLDocumentDescriptor {
 	private static final long serialVersionUID = -5704343410391161375L;
 	private String valuePrefix;
 	private int valueLength;
-	private boolean mutated;
 	private HashMultimap<String, IDocumentValueDescriptor> valueDescriptors;
+	private IDocumentModifier modifier;
 
 	XMLDocumentDescriptor(Builder builder) {
 		this.valuePrefix = builder.valuePrefix;
 		this.valueLength = builder.valueLength;
 		this.valueDescriptors = builder.valueDescriptors;
+		this.modifier = builder.modifier;
 	}
 
 	@Override
@@ -33,16 +34,16 @@ public class XMLDocumentDescriptor implements IXMLDocumentDescriptor {
 	}
 
 	@Override
-	public boolean isMutated() {
-		return this.mutated;
-	}
-
-	@Override
 	public Optional<ImmutableSet<IDocumentValueDescriptor>> getValueDescriptors(String value) {
 		if (this.valueDescriptors.containsKey(value)) {
 			return Optional.empty();
 		}
 		return Optional.of(ImmutableSet.copyOf(this.valueDescriptors.get(value)));
+	}
+
+	@Override
+	public Optional<IDocumentModifier> getModifier() {
+		return Optional.ofNullable(this.modifier);
 	}
 
 	/**
@@ -52,6 +53,7 @@ public class XMLDocumentDescriptor implements IXMLDocumentDescriptor {
 		private String valuePrefix;
 		private int valueLength;
 		private HashMultimap<String, IDocumentValueDescriptor> valueDescriptors = HashMultimap.create();
+		private IDocumentModifier modifier;
 
 		/**
 		 * Creates a new builder
@@ -76,6 +78,17 @@ public class XMLDocumentDescriptor implements IXMLDocumentDescriptor {
 		}
 
 		/**
+		 * Builder method to set the modifier
+		 *
+		 * @param modifier
+		 * @return builder
+		 */
+		public Builder withModifier(IDocumentModifier modifier) {
+			this.modifier = modifier;
+			return this;
+		}
+
+		/**
 		 * Builder method of the builder.
 		 *
 		 * @return built class
@@ -84,5 +97,4 @@ public class XMLDocumentDescriptor implements IXMLDocumentDescriptor {
 			return new XMLDocumentDescriptor(this);
 		}
 	}
-
 }

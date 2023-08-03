@@ -16,6 +16,7 @@ public class DocumentValueModifier implements IDocumentValueModifier {
 	private UUID schemaElementID;
 	private String originalValue;
 	private String replacementValue;
+	private String analyzerRuleID;
 
 	private DocumentValueModifier(Builder builder) {
 		checkNotNull(builder.replacementValue);
@@ -23,6 +24,7 @@ public class DocumentValueModifier implements IDocumentValueModifier {
 		this.schemaElementID = builder.schemaElementID;
 		this.originalValue = builder.originalValue;
 		this.replacementValue = builder.replacementValue;
+		this.analyzerRuleID = builder.analyzerRuleID;
 	}
 
 	@Override
@@ -45,6 +47,11 @@ public class DocumentValueModifier implements IDocumentValueModifier {
 		return this.replacementValue;
 	}
 
+	@Override
+	public Optional<String> getAnalyzerRuleID() {
+		return Optional.ofNullable(this.analyzerRuleID);
+	}
+
 	/**
 	 * Builder to build {@link DocumentValueModifier}.
 	 */
@@ -53,6 +60,7 @@ public class DocumentValueModifier implements IDocumentValueModifier {
 		private UUID schemaElementID;
 		private String originalValue;
 		private String replacementValue;
+		private String analyzerRuleID;
 
 		/**
 		 * Creates a new builder
@@ -93,6 +101,17 @@ public class DocumentValueModifier implements IDocumentValueModifier {
 		 */
 		public Builder withReplacementValue(String replacementValue) {
 			this.replacementValue = replacementValue;
+			return this;
+		}
+
+		/**
+		 * Builder method for analyzerRuleID parameter.
+		 *
+		 * @param analyzerRuleID field to set
+		 * @return builder
+		 */
+		public Builder withAnalyzerRuleID(String analyzerRuleID) {
+			this.analyzerRuleID = analyzerRuleID;
 			return this;
 		}
 

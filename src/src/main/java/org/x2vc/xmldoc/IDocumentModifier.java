@@ -11,6 +11,12 @@ import java.util.Optional;
 public interface IDocumentModifier extends Serializable {
 
 	/**
+	 * @return the ID of the analyzer rule if this modifier was produced by an
+	 *         analyzer rule
+	 */
+	Optional<String> getAnalyzerRuleID();
+
+	/**
 	 * @return the payload carried by the modifier, if any
 	 */
 	Optional<IModifierPayload> getPayload();

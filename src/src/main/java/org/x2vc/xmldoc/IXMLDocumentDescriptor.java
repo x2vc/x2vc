@@ -29,15 +29,15 @@ public interface IXMLDocumentDescriptor extends Serializable {
 	int getValueLength();
 
 	/**
-	 * @return <code>true</code> if the descriptor contains values that were
-	 *         requested by another component
-	 */
-	boolean isMutated();
-
-	/**
 	 * @param value the value to determine the source descriptor for.
 	 * @return the set of value descriptors that may have contributed the value
 	 */
 	Optional<ImmutableSet<IDocumentValueDescriptor>> getValueDescriptors(String value);
+
+	/**
+	 * @return the modifier that was used to generate the document, or an empty
+	 *         object if this is an unmodified document
+	 */
+	Optional<IDocumentModifier> getModifier();
 
 }
