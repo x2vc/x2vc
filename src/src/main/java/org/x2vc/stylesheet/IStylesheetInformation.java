@@ -16,16 +16,10 @@ import org.x2vc.stylesheet.structure.IStylesheetStructure;
 public interface IStylesheetInformation extends Serializable {
 
 	/**
-	 * @return <code>true</code> if the stylesheet was originally loaded from a file
+	 * @return the URI of the stylesheet (either a local file URI or a temporary,
+	 *         in-memory ID issued by {@link IStylesheetManager}).
 	 */
-	boolean isFileBased();
-
-	/**
-	 * @return the location of the file this stylesheet was originally read from
-	 * @throws IllegalStateException if the stylesheet was not loaded from a file
-	 * @see #isFileBased()
-	 */
-	URI getOriginalLocation() throws IllegalStateException;
+	URI getURI();
 
 	/**
 	 * @return the original (unprepared) stylesheet

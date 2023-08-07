@@ -38,22 +38,13 @@ public class StylesheetPreprocessor implements IStylesheetPreprocessor {
 	}
 
 	@Override
-	public IStylesheetInformation prepareStylesheet(URI originalLocation, String originalSource) {
-		checkNotNull(originalLocation);
+	public IStylesheetInformation prepareStylesheet(URI uri, String originalSource) {
+		checkNotNull(uri);
 		checkNotNull(originalSource);
 		checkStylesheet(originalSource);
 		final String expandedSource = this.extender.extendStylesheet(originalSource);
 		final IStylesheetStructure structure = this.extractor.extractStructure(expandedSource);
-		return new StylesheetInformation(originalLocation, originalSource, expandedSource, structure);
-	}
-
-	@Override
-	public IStylesheetInformation prepareStylesheet(String originalSource) {
-		checkNotNull(originalSource);
-		checkStylesheet(originalSource);
-		final String expandedSource = this.extender.extendStylesheet(originalSource);
-		final IStylesheetStructure structure = this.extractor.extractStructure(expandedSource);
-		return new StylesheetInformation(originalSource, expandedSource, structure);
+		return new StylesheetInformation(uri, originalSource, expandedSource, structure);
 	}
 
 	/**
@@ -70,13 +61,13 @@ public class StylesheetPreprocessor implements IStylesheetPreprocessor {
 		// try to try to compile the stylesheet to check the overall syntax and version
 		try {
 			final XsltExecutable executable = this.processor.newXsltCompiler()
-					.compile(new StreamSource(new StringReader(originalSource)));
+				.compile(new StreamSource(new StringReader(originalSource)));
 			final String stylesheetVersion = executable.getUnderlyingCompiledStylesheet()
-					.getPrimarySerializationProperties().getProperty("{http://saxon.sf.net/}stylesheet-version");
+				.getPrimarySerializationProperties().getProperty("{http://saxon.sf.net/}stylesheet-version");
 			// currently only XSLT 1.0 is supported
 			if (!stylesheetVersion.equals("10")) {
-				throw logger.throwing(
-						new IllegalArgumentException("Stylesheet version not supported (only XSLT 1.0 allowed)"));
+				throw logger
+					.throwing(new IllegalArgumentException("Stylesheet version not supported (only XSLT 1.0 allowed)"));
 			}
 		} catch (final SaxonApiException e) {
 			throw logger.throwing(new IllegalArgumentException("Stylesheet cannot be compiled", e));

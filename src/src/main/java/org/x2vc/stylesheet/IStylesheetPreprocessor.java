@@ -18,7 +18,7 @@ import java.net.URI;
  * </ul>
  * The process also extracts the stylesheet structure information that can be
  * used to interpret the messages resulting from the execution.
- * 
+ *
  * Known limitations: Does not support multi-file stylesheets (import and
  * include statements as listed above). Will need major structural changes for
  * that (probably a URIResolver added to the XSLT processors).
@@ -27,22 +27,15 @@ import java.net.URI;
 public interface IStylesheetPreprocessor {
 
 	/**
-	 * Prepares a file-based XSLT stylesheet for further processing. See the interface documentation for more information on the process
-	 * 
-	 * @param location the original location of the stylesheet
+	 * Prepares an XSLT stylesheet for further processing. See the interface
+	 * documentation for more information on the process.
+	 *
+	 * @param uri            the URI of the stylesheet
 	 * @param originalSource the source code of the stylesheet
-	 * @return an {@link IStylesheetInformation} object containing the assembled information
+	 * @return an {@link IStylesheetInformation} object containing the assembled
+	 *         information
 	 * @throws IllegalArgumentException if an invalid stylesheet source was passed
 	 */
-	IStylesheetInformation prepareStylesheet(URI location, String originalSource) throws IllegalArgumentException;
-
-	/**
-	 * Prepares a non-file-based XSLT stylesheet for further processing. See the interface documentation for more information on the process
-	 * 
-	 * @param originalSource the source code of the stylesheet
-	 * @return an {@link IStylesheetInformation} object containing the assembled information
-	 * @throws IllegalArgumentException if an invalid stylesheet source was passed
-	 */
-	IStylesheetInformation prepareStylesheet(String originalSource) throws IllegalArgumentException;
+	IStylesheetInformation prepareStylesheet(URI uri, String originalSource) throws IllegalArgumentException;
 
 }

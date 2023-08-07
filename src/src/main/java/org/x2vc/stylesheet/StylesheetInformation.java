@@ -20,28 +20,18 @@ public class StylesheetInformation implements IStylesheetInformation {
 
 	private static final long serialVersionUID = 7037605400818305891L;
 
-	private URI originalLocation;
+	private URI uri;
 	private String originalStylesheet;
 	private String preparedStylesheet;
 	private IStylesheetStructure structure;
 
-	StylesheetInformation(URI originalLocation, String originalStylesheet, String preparedStylesheet,
+	StylesheetInformation(URI uri, String originalStylesheet, String preparedStylesheet,
 			IStylesheetStructure structure) {
-		checkNotNull(originalLocation);
+		checkNotNull(uri);
 		checkNotNull(originalStylesheet);
 		checkNotNull(preparedStylesheet);
 		checkNotNull(structure);
-		this.originalLocation = originalLocation;
-		this.originalStylesheet = originalStylesheet;
-		this.preparedStylesheet = preparedStylesheet;
-		this.structure = structure;
-	}
-
-	StylesheetInformation(String originalStylesheet, String preparedStylesheet, IStylesheetStructure structure) {
-		checkNotNull(originalStylesheet);
-		checkNotNull(preparedStylesheet);
-		checkNotNull(structure);
-		this.originalLocation = null;
+		this.uri = uri;
 		this.originalStylesheet = originalStylesheet;
 		this.preparedStylesheet = preparedStylesheet;
 		this.structure = structure;
@@ -49,7 +39,7 @@ public class StylesheetInformation implements IStylesheetInformation {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(this.originalLocation, this.originalStylesheet);
+		return Objects.hash(this.uri, this.originalStylesheet);
 	}
 
 	@Override
@@ -64,21 +54,12 @@ public class StylesheetInformation implements IStylesheetInformation {
 			return false;
 		}
 		final StylesheetInformation other = (StylesheetInformation) obj;
-		return Objects.equals(this.originalLocation, other.originalLocation)
-				&& Objects.equals(this.originalStylesheet, other.originalStylesheet);
+		return Objects.equals(this.uri, other.uri) && Objects.equals(this.originalStylesheet, other.originalStylesheet);
 	}
 
 	@Override
-	public boolean isFileBased() {
-		return this.originalLocation != null;
-	}
-
-	@Override
-	public URI getOriginalLocation() throws IllegalStateException {
-		if (this.originalLocation == null) {
-			throw new IllegalStateException("Stylesheet was not loaded from a file.");
-		}
-		return this.originalLocation;
+	public URI getURI() throws IllegalStateException {
+		return this.uri;
 	}
 
 	@Override
