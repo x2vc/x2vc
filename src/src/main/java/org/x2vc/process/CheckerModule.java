@@ -1,6 +1,8 @@
 package org.x2vc.process;
 
+import org.x2vc.stylesheet.IStylesheetManager;
 import org.x2vc.stylesheet.IStylesheetPreprocessor;
+import org.x2vc.stylesheet.StylesheetManager;
 import org.x2vc.stylesheet.StylesheetPreprocessor;
 import org.x2vc.stylesheet.extension.IStylesheetExtender;
 import org.x2vc.stylesheet.extension.StylesheetExtender;
@@ -19,9 +21,16 @@ public class CheckerModule extends AbstractModule {
 
 	@Override
 	protected void configure() {
+		// analysis
+		// process
+		// processor
+		// schema
+		// stylesheet
+		bind(IStylesheetManager.class).to(StylesheetManager.class);
 		bind(IStylesheetPreprocessor.class).to(StylesheetPreprocessor.class);
 		bind(IStylesheetExtender.class).to(StylesheetExtender.class);
 		bind(IStylesheetStructureExtractor.class).to(StylesheetStructureExtractor.class);
+		// xmldoc
 	}
 
 	@Provides

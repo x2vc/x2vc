@@ -15,17 +15,14 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
-import net.sf.saxon.s9api.Processor;
-import net.sf.saxon.s9api.SaxonApiException;
-import net.sf.saxon.s9api.Serializer;
-import net.sf.saxon.s9api.Xslt30Transformer;
-import net.sf.saxon.s9api.XsltCompiler;
-import net.sf.saxon.s9api.XsltExecutable;
+import net.sf.saxon.s9api.*;
 
 /**
  * Standard implementation of {@link IXSLTProcessor}.
  */
+@Singleton
 public class XSLTProcessor implements IXSLTProcessor {
 
 	private static final Logger logger = LogManager.getLogger();
@@ -37,6 +34,7 @@ public class XSLTProcessor implements IXSLTProcessor {
 	@Inject
 	XSLTProcessor(Processor processor) {
 		this.processor = processor;
+		// TODO Infrastructure: make cache sizes configurable
 		this.stylesheetCache = CacheBuilder.newBuilder().maximumSize(25).build(new StylesheetCacheLoader(processor));
 	}
 
@@ -90,7 +88,7 @@ public class XSLTProcessor implements IXSLTProcessor {
 			logger.traceEntry();
 			logger.debug("Compiling stylesheet to provide cache entry");
 			final XsltExecutable result = this.compiler
-					.compile(new StreamSource(new StringReader(stylesheet.getPreparedStylesheet())));
+				.compile(new StreamSource(new StringReader(stylesheet.getPreparedStylesheet())));
 			return logger.traceExit(result);
 		}
 	}
