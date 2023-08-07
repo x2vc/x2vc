@@ -185,6 +185,33 @@ public class XMLElementReference extends AbstractSchemaObject implements IXMLEle
 		public XMLElementReference build() {
 			return new XMLElementReference(this);
 		}
+
+		/**
+		 * Adds the resulting object to an {@link XMLElementType} builder and returns
+		 * the object for further processing.
+		 *
+		 * @param elementBuilder
+		 * @return the built reference
+		 */
+		public XMLElementReference addTo(XMLElementType.Builder elementBuilder) {
+			final XMLElementReference ref = build();
+			elementBuilder.addElement(ref);
+			return ref;
+		}
+
+		/**
+		 * Adds the resulting object to an {@link XMLSchema} builder and returns the
+		 * object for further processing.
+		 *
+		 * @param schemaBuilder
+		 * @return the built element
+		 */
+		public XMLElementReference addTo(XMLSchema.Builder schemaBuilder) {
+			final XMLElementReference ref = build();
+			schemaBuilder.addRootElement(ref);
+			return ref;
+		}
+
 	}
 
 }

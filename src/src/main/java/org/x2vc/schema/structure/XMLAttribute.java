@@ -287,12 +287,16 @@ public class XMLAttribute extends AbstractSchemaObject implements IXMLAttribute 
 		}
 
 		/**
-		 * Adds the resulting object to an {@link XMLElementType} builder.
+		 * Adds the resulting object to an {@link XMLElementType} builder and returns
+		 * the object for further processing.
 		 *
 		 * @param elementBuilder
+		 * @return the built attribute
 		 */
-		public void addTo(XMLElementType.Builder elementBuilder) {
-			elementBuilder.addAttribute(build());
+		public XMLAttribute addTo(XMLElementType.Builder elementBuilder) {
+			final XMLAttribute attribute = build();
+			elementBuilder.addAttribute(attribute);
+			return attribute;
 		}
 
 	}

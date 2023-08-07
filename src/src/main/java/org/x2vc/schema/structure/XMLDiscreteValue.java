@@ -194,13 +194,18 @@ public class XMLDiscreteValue extends AbstractSchemaObject implements IXMLDiscre
 		}
 
 		/**
-		 * Adds the resulting object to an {@link XMLElementType} builder.
+		 * Adds the resulting object to an {@link XMLElementType} builder and returns
+		 * the object for further processing.
 		 *
 		 * @param elementBuilder
+		 * @return the built value
 		 */
-		public void addTo(XMLElementType.Builder elementBuilder) {
-			elementBuilder.addDiscreteValue(build());
+		public XMLDiscreteValue addTo(XMLElementType.Builder elementBuilder) {
+			final XMLDiscreteValue value = build();
+			elementBuilder.addDiscreteValue(value);
+			return value;
 		}
+
 	}
 
 }

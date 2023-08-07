@@ -1,8 +1,11 @@
-package org.x2vc.schema;
+package org.x2vc.schema.structure;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 import org.x2vc.stylesheet.IStylesheetInformation;
+
+import com.google.common.collect.ImmutableSet;
 
 /**
  * A working copy of the XML Schema. This contains the stylesheet parameters as
@@ -30,5 +33,34 @@ public interface IXMLSchema extends Serializable {
 	 */
 	IStylesheetInformation getStylesheet();
 
+	/**
+	 * @return the version of the schema
+	 */
+	int getVersion();
+
+	/**
+	 * @return the element types that comprise the schema.
+	 */
+	ImmutableSet<IXMLElementType> getElementTypes();
+
+	/**
+	 * @return the possible root element references
+	 */
+	ImmutableSet<IXMLElementReference> getRootElements();
+
+	/**
+	 * @param id the ID of a schema object
+	 * @return the object with the ID
+	 * @throws IllegalArgumentException if the object is not part of the schema
+	 */
+	IXMLSchemaObject getObjectByID(UUID id) throws IllegalArgumentException;
+
 	// TODO XML Schema: complete type
+
+	/**
+	 * Serializes the XML schema.
+	 *
+	 * @return the XML schema in string form
+	 */
+	String toXML();
 }

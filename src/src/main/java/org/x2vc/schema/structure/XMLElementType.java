@@ -406,6 +406,19 @@ public class XMLElementType extends AbstractSchemaObject implements IXMLElementT
 			return new XMLElementType(this);
 		}
 
+		/**
+		 * Adds the resulting object to an {@link XMLSchema} builder and returns the
+		 * object for further processing.
+		 *
+		 * @param schemaBuilder
+		 * @return the built element
+		 */
+		public XMLElementType addTo(XMLSchema.Builder schemaBuilder) {
+			final XMLElementType element = build();
+			schemaBuilder.addElementType(element);
+			return element;
+		}
+
 	}
 
 }

@@ -1,6 +1,6 @@
 package org.x2vc.xmldoc;
 
-import org.x2vc.schema.IXMLSchema;
+import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.stylesheet.IStylesheetInformation;
 
 /**
