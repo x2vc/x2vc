@@ -24,7 +24,6 @@ public class XMLSchema implements IXMLSchema {
 	private static final long serialVersionUID = -3750868711514667450L;
 	private static final Logger logger = LogManager.getLogger();
 
-	@XmlAttribute
 	private URI stylesheetURI;
 
 	@XmlAttribute
@@ -59,9 +58,20 @@ public class XMLSchema implements IXMLSchema {
 		this.rootElements = Set.copyOf(builder.rootElements);
 	}
 
+	@XmlAttribute
 	@Override
 	public URI getStylesheetURI() {
 		return this.stylesheetURI;
+	}
+
+	/**
+	 * Change the stylesheet URI. Used after deserialization to adjust to the
+	 * potentially changed local path.
+	 *
+	 * @param stylesheetURI the stylesheetURI to set
+	 */
+	public void setStylesheetURI(URI stylesheetURI) {
+		this.stylesheetURI = stylesheetURI;
 	}
 
 	@Override
@@ -72,6 +82,16 @@ public class XMLSchema implements IXMLSchema {
 	@Override
 	public URI getURI() {
 		return this.schemaURI;
+	}
+
+	/**
+	 * Change the schema URI. Used after deserialization to adjust to the new
+	 * in-memory ID.
+	 *
+	 * @param newURI the new schema URI
+	 */
+	public void setURI(URI newURI) {
+		this.schemaURI = newURI;
 	}
 
 	@Override
@@ -101,8 +121,8 @@ public class XMLSchema implements IXMLSchema {
 	 * unmarshalled for this object, but before this object is set to the parent
 	 * object.
 	 *
-	 * @param unmarshaller
-	 * @param parent
+	 * @param unmarshaller the unmarshaller used
+	 * @param parent       the parent object
 	 * @see <a href=
 	 *      "https://docs.oracle.com/javase/8/docs/api/javax/xml/bind/Unmarshaller.html#unmarshalEventCallback">Unmarshal
 	 *      Event Callbacks</a>

@@ -1,17 +1,24 @@
 package org.x2vc.schema;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.x2vc.common.URIHandling;
 import org.x2vc.common.URIHandling.ObjectType;
 import org.x2vc.schema.structure.IXMLSchema;
+import org.x2vc.schema.structure.XMLSchema;
 import org.x2vc.stylesheet.IStylesheetInformation;
 import org.x2vc.stylesheet.IStylesheetManager;
 
@@ -19,6 +26,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.hash.Hashing;
+import com.google.common.io.Files;
 import com.google.common.util.concurrent.UncheckedExecutionException;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
@@ -41,6 +49,10 @@ public class SchemaManager implements ISchemaManager {
 	private IStylesheetManager stylesheetManager;
 	private IInitialSchemaGenerator schemaGenerator;
 
+	private JAXBContext context;
+//	private Marshaller marshaller;
+	private Unmarshaller unmarshaller;
+
 	/**
 	 * @param stylesheetManager
 	 * @param schemaGenerator
@@ -52,6 +64,13 @@ public class SchemaManager implements ISchemaManager {
 		this.schemaGenerator = schemaGenerator;
 		// TODO Infrastructure: make cache sizes configurable
 		this.schemaCache = CacheBuilder.newBuilder().maximumSize(100).build(new SchemaCacheLoader());
+		try {
+			this.context = JAXBContext.newInstance(XMLSchema.class);
+//			this.marshaller = this.context.createMarshaller();
+			this.unmarshaller = this.context.createUnmarshaller();
+		} catch (final JAXBException e) {
+			throw logger.throwing(new RuntimeException("Unable to initialize JAXB for schema handling", e));
+		}
 	}
 
 	@Override
@@ -134,21 +153,90 @@ public class SchemaManager implements ISchemaManager {
 		@Override
 		public IXMLSchema load(URI schemaURI) throws Exception {
 			logger.traceEntry();
+			// the cache is organized by _schema_ URI, but to load the schema, we need the
+			// _stylesheet_ URI
+			final URI stylesheetURI = getStylesheetURIChecked(schemaURI);
+
+			IXMLSchema schema = null;
+
+			// for file-based stylesheets, try to load an existing schema file
+			if (!URIHandling.isMemoryURI(stylesheetURI)) {
+				final Optional<IXMLSchema> loadedSchema = loadSchemaIfExists(schemaURI, stylesheetURI);
+				if (loadedSchema.isPresent()) {
+					schema = loadedSchema.get();
+				}
+			}
+
+			if (schema == null) {
+				// this is either an in-memory stylesheet or no existing schema was found
+				schema = generateInitialSchema(schemaURI, stylesheetURI);
+			}
+
+			// also store the "version 1" URI in the register in case someone requests the
+			// first version by number
+			final URI schemaURIv1 = URI.create(schemaURI.toString() + "#v1");
+			SchemaManager.this.stylesheetURIRegister.computeIfAbsent(schemaURIv1, key -> stylesheetURI);
+
+			return logger.traceExit(schema);
+		}
+
+		/**
+		 * @param schemaURI the schema URI used to access the cache
+		 * @return the stylesheet URI
+		 * @throws IllegalArgumentException
+		 */
+		private URI getStylesheetURIChecked(URI schemaURI) throws IllegalArgumentException {
+			logger.traceEntry();
 			final URI stylesheetURI = SchemaManager.this.stylesheetURIRegister.get(schemaURI);
 			if (stylesheetURI == null) {
 				throw logger.throwing(new IllegalArgumentException(
 						String.format("Unknown schema URI %s - don't know how to access stylesheet.", schemaURI)));
 			}
-			logger.debug("loading stylesheet {} for schema {}", stylesheetURI, schemaURI);
-			final IStylesheetInformation stylesheet = SchemaManager.this.stylesheetManager.get(stylesheetURI);
+			return logger.traceExit(stylesheetURI);
+		}
+
+		/**
+		 * @param schemaURI
+		 * @param stylesheetURI
+		 * @return
+		 */
+		private IXMLSchema generateInitialSchema(URI schemaURI, final URI stylesheetURI) {
+			logger.traceEntry();
 			logger.debug("generating stylesheet {} for schema {}", stylesheetURI, schemaURI);
-			final IXMLSchema schema = SchemaManager.this.schemaGenerator.generateSchema(stylesheet);
-
-			// also store the "version 1" URI in the register
-			final URI schemaURIv1 = URI.create(schemaURI.toString() + "#v1");
-			SchemaManager.this.stylesheetURIRegister.computeIfAbsent(schemaURIv1, key -> stylesheetURI);
-
+			final IStylesheetInformation stylesheet = SchemaManager.this.stylesheetManager.get(stylesheetURI);
+			final IXMLSchema schema = SchemaManager.this.schemaGenerator.generateSchema(stylesheet, schemaURI);
 			return logger.traceExit(schema);
+		}
+
+		/**
+		 * @param schemaURI
+		 * @param stylesheetURI
+		 * @return
+		 */
+		private Optional<IXMLSchema> loadSchemaIfExists(URI schemaURI, URI stylesheetURI) {
+			logger.traceEntry();
+			final File stylesheetFile = new File(stylesheetURI);
+			final String schemaFilename = stylesheetFile.getParent() + File.separator
+					+ Files.getNameWithoutExtension(stylesheetFile.getName()) + ".x2vc_schema";
+			logger.debug("will attempt to locate existing schema for stylesheet %s at %s", stylesheetURI,
+					schemaFilename);
+			final File schemaFile = new File(schemaFilename);
+			if (schemaFile.canRead()) {
+				XMLSchema schema = null;
+				logger.debug("schema file %s found, will attempt to load", schemaFilename);
+				try {
+					schema = (XMLSchema) SchemaManager.this.unmarshaller
+						.unmarshal(Files.newReader(schemaFile, StandardCharsets.UTF_8));
+					schema.setURI(schemaURI);
+					schema.setStylesheetURI(stylesheetURI);
+				} catch (FileNotFoundException | JAXBException e) {
+					logger.throwing(new IllegalStateException(
+							String.format("Unable to read existing schema file %s", schemaFilename), e));
+				}
+				return logger.traceExit(Optional.of(schema));
+			} else {
+				return logger.traceExit(Optional.empty());
+			}
 		}
 
 	}
