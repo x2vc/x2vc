@@ -91,7 +91,8 @@ public class StylesheetCoverage implements IStylesheetCoverage {
 	@Override
 	public void add(IStylesheetCoverage otherObject) {
 		logger.traceEntry();
-		// TODO ensure that the other object relates to the same structure
+		// TODO XSLT coverage: ensure that the other object relates to the same
+		// structure
 		final ImmutableMap<Integer, Integer> otherCoverage = otherObject.getElementCoverage();
 		for (final Map.Entry<Integer, Integer> entry : otherCoverage.entrySet()) {
 			if (entry.getValue() > 0) {
