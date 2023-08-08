@@ -2,10 +2,14 @@ package org.x2vc.schema.structure;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.net.URI;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.x2vc.common.URIHandling;
+import org.x2vc.common.URIHandling.ObjectType;
 import org.x2vc.schema.structure.IXMLElementType.ContentType;
 import org.x2vc.schema.structure.IXMLElementType.ElementArrangement;
 import org.x2vc.schema.structure.XMLSchema.Builder;
@@ -19,7 +23,9 @@ class XMLSchemaTest {
 
 	@Test
 	void testIndexByID() {
-		final Builder schemaBuilder = new XMLSchema.Builder(this.stylesheet, 0);
+		final URI stylesheetURI = URIHandling.makeMemoryURI(ObjectType.STYLESHEET, "foo");
+		final URI schemaURI = URIHandling.makeMemoryURI(ObjectType.SCHEMA, "bar");
+		final Builder schemaBuilder = new XMLSchema.Builder(stylesheetURI, schemaURI, 1);
 
 		final XMLElementType.Builder builderRootA = new XMLElementType.Builder().withComment("root sequence")
 			.withContentType(ContentType.ELEMENT).withElementArrangement(ElementArrangement.SEQUENCE);

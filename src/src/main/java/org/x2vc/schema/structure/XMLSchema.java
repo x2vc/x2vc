@@ -1,10 +1,10 @@
 package org.x2vc.schema.structure;
 
+import java.net.URI;
 import java.util.*;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.x2vc.stylesheet.IStylesheetInformation;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -17,27 +17,34 @@ public class XMLSchema implements IXMLSchema {
 	private static final long serialVersionUID = -3750868711514667450L;
 	private static final Logger logger = LogManager.getLogger();
 
-	private transient IStylesheetInformation stylesheet;
+	private URI stylesheetURI;
+	private URI schemaURI;
 	private int version;
 	private ImmutableSet<IXMLElementType> elementTypes;
 	private ImmutableSet<IXMLElementReference> rootElements;
 	private transient ImmutableMap<UUID, IXMLSchemaObject> objectMap;
 
 	private XMLSchema(Builder builder) {
-		this.stylesheet = builder.stylesheet;
+		this.stylesheetURI = builder.stylesheetURI;
+		this.schemaURI = builder.schemaURI;
 		this.version = builder.version;
 		this.elementTypes = ImmutableSet.copyOf(builder.elementTypes);
 		this.rootElements = ImmutableSet.copyOf(builder.rootElements);
 	}
 
 	@Override
-	public IStylesheetInformation getStylesheet() {
-		return this.stylesheet;
+	public URI getStylesheetURI() {
+		return this.stylesheetURI;
 	}
 
 	@Override
 	public int getVersion() {
 		return this.version;
+	}
+
+	@Override
+	public URI getURI() {
+		return this.schemaURI;
 	}
 
 	@Override
@@ -156,7 +163,8 @@ public class XMLSchema implements IXMLSchema {
 	 * Builder to build {@link XMLSchema}.
 	 */
 	public static final class Builder {
-		private IStylesheetInformation stylesheet;
+		private URI stylesheetURI;
+		private URI schemaURI;
 		private int version;
 		private Set<IXMLElementType> elementTypes = new HashSet<>();
 		private Set<IXMLElementReference> rootElements = new HashSet<>();
@@ -164,16 +172,19 @@ public class XMLSchema implements IXMLSchema {
 		/**
 		 * Creates a new builder.
 		 *
-		 * @param stylesheet
+		 * @param stylesheetURI
+		 * @param schemaURI
 		 * @param version
 		 */
-		public Builder(IStylesheetInformation stylesheet, int version) {
-			this.stylesheet = stylesheet;
+		public Builder(URI stylesheetURI, URI schemaURI, int version) {
+			this.stylesheetURI = stylesheetURI;
+			this.schemaURI = schemaURI;
 			this.version = version;
 		}
 
 		private Builder(XMLSchema xMLSchema) {
-			this.stylesheet = xMLSchema.stylesheet;
+			this.stylesheetURI = xMLSchema.stylesheetURI;
+			this.schemaURI = xMLSchema.schemaURI;
 			this.version = xMLSchema.version;
 			this.elementTypes = xMLSchema.elementTypes;
 			this.rootElements = xMLSchema.rootElements;

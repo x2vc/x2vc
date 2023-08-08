@@ -27,7 +27,7 @@ public class StylesheetManager implements IStylesheetManager {
 
 	private static final Logger logger = LogManager.getLogger();
 
-	LoadingCache<URI, IStylesheetInformation> stylesheetCache;
+	private LoadingCache<URI, IStylesheetInformation> stylesheetCache;
 
 	private IStylesheetPreprocessor preprocessor;
 

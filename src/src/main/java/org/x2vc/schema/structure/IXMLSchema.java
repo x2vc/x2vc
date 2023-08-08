@@ -1,9 +1,8 @@
 package org.x2vc.schema.structure;
 
 import java.io.Serializable;
+import java.net.URI;
 import java.util.UUID;
-
-import org.x2vc.stylesheet.IStylesheetInformation;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -29,14 +28,19 @@ import com.google.common.collect.ImmutableSet;
 public interface IXMLSchema extends Serializable {
 
 	/**
-	 * @return the stylesheet for which this schema describes input data
+	 * @return the URI of the stylesheet for which this schema describes input data
 	 */
-	IStylesheetInformation getStylesheet();
+	URI getStylesheetURI();
 
 	/**
 	 * @return the version of the schema
 	 */
 	int getVersion();
+
+	/**
+	 * @return the URI of the schema itself (containing the URI)
+	 */
+	URI getURI();
 
 	/**
 	 * @return the element types that comprise the schema.
