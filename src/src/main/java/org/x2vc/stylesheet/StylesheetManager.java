@@ -3,13 +3,14 @@ package org.x2vc.stylesheet;
 import java.io.File;
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.x2vc.common.URIHandling;
+import org.x2vc.common.URIHandling.ObjectType;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -25,8 +26,6 @@ import com.google.inject.Singleton;
 public class StylesheetManager implements IStylesheetManager {
 
 	private static final Logger logger = LogManager.getLogger();
-
-	private static final String SCHEME_MEMORY = "memory";
 
 	LoadingCache<URI, IStylesheetInformation> stylesheetCache;
 
@@ -58,12 +57,7 @@ public class StylesheetManager implements IStylesheetManager {
 	@Override
 	public URI insert(String source) {
 		logger.traceEntry();
-		URI newURI;
-		try {
-			newURI = new URI(SCHEME_MEMORY, String.format("stylesheet/%s", UUID.randomUUID()), null);
-		} catch (final URISyntaxException e) {
-			throw logger.throwing(new RuntimeException("error generating temporary stylesheet URI", e));
-		}
+		final URI newURI = URIHandling.makeMemoryURI(ObjectType.STYLESHEET, UUID.randomUUID().toString());
 		logger.debug("URI for inserted stylesheet is {}", newURI);
 		final IStylesheetInformation stylesheet = this.preprocessor.prepareStylesheet(newURI, source);
 		this.stylesheetCache.put(newURI, stylesheet);
@@ -75,7 +69,7 @@ public class StylesheetManager implements IStylesheetManager {
 		@Override
 		public IStylesheetInformation load(URI uri) throws Exception {
 			logger.traceEntry();
-			if (uri.getScheme().equals(SCHEME_MEMORY)) {
+			if (URIHandling.isMemoryURI(uri)) {
 				throw logger.throwing(new IllegalArgumentException(
 						"temporary stylesheets have to be inserted explicitly before use"));
 			}
