@@ -224,8 +224,6 @@ class XMLSchemaTest {
 		// deserialize
 		final Unmarshaller unmarshaller = context.createUnmarshaller();
 		final XMLSchema schemaAfterRoundtrip = (XMLSchema) unmarshaller.unmarshal(new StringReader(serializedModel));
-		// internal references need to be fixed...
-		schemaAfterRoundtrip.fixElementReferences();
 
 		// and check
 		assertEquals(schema, schemaAfterRoundtrip);

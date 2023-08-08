@@ -3,6 +3,7 @@ package org.x2vc.schema.structure;
 import java.net.URI;
 import java.util.*;
 
+import javax.xml.bind.Unmarshaller;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
@@ -96,9 +97,24 @@ public class XMLSchema implements IXMLSchema {
 	}
 
 	/**
+	 * This method is called after all the properties (except IDREF) are
+	 * unmarshalled for this object, but before this object is set to the parent
+	 * object.
+	 *
+	 * @param unmarshaller
+	 * @param parent
+	 * @see <a href=
+	 *      "https://docs.oracle.com/javase/8/docs/api/javax/xml/bind/Unmarshaller.html#unmarshalEventCallback">Unmarshal
+	 *      Event Callbacks</a>
+	 */
+	public void afterUnmarshal(Unmarshaller unmarshaller, Object parent) {
+		fixElementReferences();
+	}
+
+	/**
 	 * Ensures that all element references are recreated after deserialization
 	 */
-	void fixElementReferences() {
+	private void fixElementReferences() {
 		final HashSet<IXMLElementReference> references = Sets.newHashSet();
 		references.addAll(this.rootElements);
 		references.addAll(this.elementTypes.stream()
