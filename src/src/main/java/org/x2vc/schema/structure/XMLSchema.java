@@ -3,33 +3,59 @@ package org.x2vc.schema.structure;
 import java.net.URI;
 import java.util.*;
 
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.x2vc.schema.structure.IXMLElementType.ContentType;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
 
 /**
  * Standard implementation of {@link IXMLSchema}.
  */
+@XmlRootElement(name = "schema")
 public class XMLSchema implements IXMLSchema {
 
 	private static final long serialVersionUID = -3750868711514667450L;
 	private static final Logger logger = LogManager.getLogger();
 
+	@XmlAttribute
 	private URI stylesheetURI;
+
+	@XmlAttribute
 	private URI schemaURI;
+
+	@XmlAttribute
 	private int version;
-	private ImmutableSet<IXMLElementType> elementTypes;
-	private ImmutableSet<IXMLElementReference> rootElements;
-	private transient ImmutableMap<UUID, IXMLSchemaObject> objectMap;
+
+	@XmlElementWrapper(name = "elementTypes")
+	@XmlElement(type = XMLElementType.class, name = "elementType")
+	private Set<IXMLElementType> elementTypes;
+
+	@XmlElementWrapper(name = "rootElements")
+	@XmlElement(type = XMLElementReference.class, name = "rootElement")
+	private Set<IXMLElementReference> rootElements;
+
+	private transient Map<UUID, IXMLSchemaObject> objectMap;
+
+	/**
+	 * Parameterless constructor for deserialization only.
+	 */
+	XMLSchema() {
+		this.elementTypes = Sets.newHashSet();
+		this.rootElements = Sets.newHashSet();
+	}
 
 	private XMLSchema(Builder builder) {
 		this.stylesheetURI = builder.stylesheetURI;
 		this.schemaURI = builder.schemaURI;
 		this.version = builder.version;
-		this.elementTypes = ImmutableSet.copyOf(builder.elementTypes);
-		this.rootElements = ImmutableSet.copyOf(builder.rootElements);
+		this.elementTypes = Set.copyOf(builder.elementTypes);
+		this.rootElements = Set.copyOf(builder.rootElements);
 	}
 
 	@Override
@@ -48,12 +74,12 @@ public class XMLSchema implements IXMLSchema {
 	}
 
 	@Override
-	public ImmutableSet<IXMLElementType> getElementTypes() {
+	public Set<IXMLElementType> getElementTypes() {
 		return this.elementTypes;
 	}
 
 	@Override
-	public ImmutableSet<IXMLElementReference> getRootElements() {
+	public Set<IXMLElementReference> getRootElements() {
 		return this.rootElements;
 	}
 
@@ -70,9 +96,26 @@ public class XMLSchema implements IXMLSchema {
 	}
 
 	/**
+	 * Ensures that all element references are recreated after deserialization
+	 */
+	void fixElementReferences() {
+		final HashSet<IXMLElementReference> references = Sets.newHashSet();
+		references.addAll(this.rootElements);
+		references.addAll(this.elementTypes.stream()
+			.filter(element -> ((element.getContentType() == ContentType.ELEMENT)
+					|| (element.getContentType() == ContentType.MIXED)))
+			.<IXMLElementReference>mapMulti((element, consumer) -> element.getElements().forEach(consumer)).toList());
+		references.forEach(ref -> {
+			if (ref instanceof final XMLElementReference elRef) {
+				elRef.fixElementReference((IXMLElementType) getObjectByID(elRef.getElementID()));
+			}
+		});
+	}
+
+	/**
 	 * @return
 	 */
-	private ImmutableMap<UUID, IXMLSchemaObject> buildObjectMap() {
+	private Map<UUID, IXMLSchemaObject> buildObjectMap() {
 		logger.traceEntry();
 		final HashMap<UUID, IXMLSchemaObject> map = new HashMap<>();
 		for (final IXMLElementType element : this.elementTypes) {
@@ -81,7 +124,7 @@ public class XMLSchema implements IXMLSchema {
 		for (final IXMLElementReference element : this.rootElements) {
 			addToMap(element, map);
 		}
-		return logger.traceExit(ImmutableMap.copyOf(map));
+		return logger.traceExit(Map.copyOf(map));
 	}
 
 	/**
@@ -130,22 +173,6 @@ public class XMLSchema implements IXMLSchema {
 				addToMap(reference, map);
 			}
 		}
-	}
-
-	@Override
-	public String toXML() {
-		// TODO XML Schema: Fix serialization (this doesn't work!)
-//		final ByteArrayOutputStream stream = new ByteArrayOutputStream();
-//		final XMLEncoder encoder = new XMLEncoder(stream, Charsets.UTF_8.name(), true, 4);
-////		encoder.setExceptionListener(new ExceptionListener() {
-////			public void exceptionThrown(Exception e) {
-////				System.out.println("Exception! :" + e.toString());
-////			}
-////		});
-//		encoder.writeObject(this);
-//		encoder.close();
-//		return stream.toString();
-		return null;
 	}
 
 	/**
@@ -222,7 +249,29 @@ public class XMLSchema implements IXMLSchema {
 		}
 	}
 
-	// TODO copy operation with reconnection of element references
-	// TODO load and save schema
+	@Override
+	public int hashCode() {
+		return Objects.hash(this.elementTypes, this.rootElements, this.schemaURI, this.stylesheetURI, this.version);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final XMLSchema other = (XMLSchema) obj;
+		return Objects.equals(this.elementTypes, other.elementTypes)
+				&& Objects.equals(this.rootElements, other.rootElements)
+				&& Objects.equals(this.schemaURI, other.schemaURI)
+				&& Objects.equals(this.stylesheetURI, other.stylesheetURI) && this.version == other.version;
+	}
+
+	// TODO XML Schema: Add copy operation with reconnection of element references
 
 }

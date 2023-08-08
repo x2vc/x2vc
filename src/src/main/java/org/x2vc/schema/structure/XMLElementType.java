@@ -2,11 +2,14 @@ package org.x2vc.schema.structure;
 
 import java.util.*;
 
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 
 /**
  * Standard implementation of {@link IXMLElementType}.
@@ -16,31 +19,61 @@ public class XMLElementType extends AbstractSchemaObject implements IXMLElementT
 	private static final long serialVersionUID = -1422448896072065357L;
 	private static final Logger logger = LogManager.getLogger();
 
-	private ImmutableSet<IXMLAttribute> attributes;
+	@XmlElement(type = XMLAttribute.class, name = "attribute")
+	private Set<IXMLAttribute> attributes;
+
+	@XmlAttribute
 	private ContentType contentType;
+
+	@XmlAttribute
 	private XMLDatatype datatype;
+
+	@XmlAttribute
 	private Integer maxLength;
+
+	@XmlAttribute
 	private Integer minValue;
+
+	@XmlAttribute
 	private Integer maxValue;
-	private ImmutableSet<IXMLDiscreteValue> discreteValues;
+
+	@XmlElement(type = XMLDiscreteValue.class, name = "discreteValue")
+	private Set<IXMLDiscreteValue> discreteValues;
+
+	@XmlAttribute
 	private Boolean fixedValueset;
+
+	@XmlAttribute
 	private Boolean userModifiable;
-	private ImmutableList<IXMLElementReference> elements;
+
+	@XmlElement(type = XMLElementReference.class, name = "subElement")
+	private List<IXMLElementReference> elements;
+
+	@XmlAttribute
 	private ElementArrangement elementArrangement;
+
+	/**
+	 * Parameterless constructor for deserialization only.
+	 */
+	XMLElementType() {
+		this.attributes = Sets.newHashSet();
+		this.discreteValues = Sets.newHashSet();
+		this.elements = Lists.newArrayList();
+	}
 
 	private XMLElementType(Builder builder) {
 		this.id = builder.id;
 		this.comment = builder.comment;
-		this.attributes = ImmutableSet.copyOf(builder.attributes);
+		this.attributes = Set.copyOf(builder.attributes);
 		this.contentType = builder.contentType;
 		this.datatype = builder.datatype;
 		this.maxLength = builder.maxLength;
 		this.minValue = builder.minValue;
 		this.maxValue = builder.maxValue;
-		this.discreteValues = ImmutableSet.copyOf(builder.discreteValues);
+		this.discreteValues = Set.copyOf(builder.discreteValues);
 		this.fixedValueset = builder.fixedValueset;
 		this.userModifiable = builder.userModifiable;
-		this.elements = ImmutableList.copyOf(builder.elements);
+		this.elements = List.copyOf(builder.elements);
 		this.elementArrangement = builder.elementArrangement;
 		// TODO XML Schema: Validate XMLElementType attribute combinations
 	}
@@ -56,7 +89,7 @@ public class XMLElementType extends AbstractSchemaObject implements IXMLElementT
 	}
 
 	@Override
-	public ImmutableSet<IXMLAttribute> getAttributes() {
+	public Set<IXMLAttribute> getAttributes() {
 		return this.attributes;
 	}
 
@@ -137,7 +170,7 @@ public class XMLElementType extends AbstractSchemaObject implements IXMLElementT
 	}
 
 	@Override
-	public ImmutableSet<IXMLDiscreteValue> getDiscreteValues() {
+	public Set<IXMLDiscreteValue> getDiscreteValues() {
 		if (this.contentType == ContentType.DATA) {
 			return this.discreteValues;
 		} else {
@@ -155,7 +188,7 @@ public class XMLElementType extends AbstractSchemaObject implements IXMLElementT
 	}
 
 	@Override
-	public ImmutableList<IXMLElementReference> getElements() {
+	public List<IXMLElementReference> getElements() {
 		if ((this.contentType == ContentType.ELEMENT) || (this.contentType == ContentType.MIXED)) {
 			return this.elements;
 		} else {
@@ -419,6 +452,37 @@ public class XMLElementType extends AbstractSchemaObject implements IXMLElementT
 			return element;
 		}
 
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + Objects.hash(this.attributes, this.contentType, this.datatype, this.discreteValues,
+				this.elementArrangement, this.elements, this.fixedValueset, this.maxLength, this.maxValue,
+				this.minValue, this.userModifiable);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!super.equals(obj)) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final XMLElementType other = (XMLElementType) obj;
+		return Objects.equals(this.attributes, other.attributes) && this.contentType == other.contentType
+				&& this.datatype == other.datatype && Objects.equals(this.discreteValues, other.discreteValues)
+				&& this.elementArrangement == other.elementArrangement && Objects.equals(this.elements, other.elements)
+				&& Objects.equals(this.fixedValueset, other.fixedValueset)
+				&& Objects.equals(this.maxLength, other.maxLength) && Objects.equals(this.maxValue, other.maxValue)
+				&& Objects.equals(this.minValue, other.minValue)
+				&& Objects.equals(this.userModifiable, other.userModifiable);
 	}
 
 }

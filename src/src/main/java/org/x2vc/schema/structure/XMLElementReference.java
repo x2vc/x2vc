@@ -1,7 +1,10 @@
 package org.x2vc.schema.structure;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+
+import javax.xml.bind.annotation.XmlAttribute;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -13,20 +16,35 @@ public class XMLElementReference extends AbstractSchemaObject implements IXMLEle
 
 	private static final long serialVersionUID = 6174908457125600638L;
 	private static final Logger logger = LogManager.getLogger();
+
+	@XmlAttribute
 	private String name;
+
 	private IXMLElementType element;
+
+	@XmlAttribute
+	private UUID elementID;
+
+	@XmlAttribute
 	private Integer minOccurrence;
+
+	@XmlAttribute
 	private Integer maxOccurrence;
-	private transient UUID originalElementReference;
+
+	/**
+	 * Parameterless constructor for deserialization only.
+	 */
+	XMLElementReference() {
+	}
 
 	private XMLElementReference(Builder builder) {
 		this.id = builder.id;
 		this.comment = builder.comment;
 		this.name = builder.name;
 		this.element = builder.element;
+		this.elementID = builder.elementID;
 		this.minOccurrence = builder.minOccurrence;
 		this.maxOccurrence = builder.maxOccurrence;
-		this.originalElementReference = builder.originalElementReference;
 	}
 
 	@Override
@@ -46,32 +64,29 @@ public class XMLElementReference extends AbstractSchemaObject implements IXMLEle
 
 	@Override
 	public IXMLElementType getElement() {
-		if (this.originalElementReference != null) {
+		if (this.element == null) {
 			throw logger.throwing(new IllegalStateException(
 					"Attempt to follow element reference that has not been completed after copy operation."));
 		}
 		return this.element;
 	}
 
-	/**
-	 * @return the original element reference
-	 */
-	UUID getOriginalElementReference() {
-		return this.originalElementReference;
+	@Override
+	public UUID getElementID() {
+		return this.elementID;
 	}
 
 	void fixElementReference(IXMLElementType element) {
-		if (this.originalElementReference == null) {
+		if (this.element != null) {
 			throw logger.throwing(new IllegalStateException(
 					"Attempt to fix element reference that has already been completed after copy operation."));
 		}
-		if (element.getID() != this.originalElementReference) {
+		if (!element.getID().equals(this.elementID)) {
 			throw logger.throwing(new IllegalArgumentException(
 					String.format("Attempt to fix element reference with ID %s with different element with ID %s.",
-							this.originalElementReference, element.getID())));
+							this.elementID, element.getID())));
 		}
 		this.element = element;
-		this.originalElementReference = null;
 	}
 
 	@Override
@@ -103,9 +118,9 @@ public class XMLElementReference extends AbstractSchemaObject implements IXMLEle
 		private String comment;
 		private String name;
 		private IXMLElementType element;
+		private UUID elementID;
 		private Integer minOccurrence = 0;
 		private Integer maxOccurrence = null;
-		private UUID originalElementReference;
 
 		/**
 		 * Create a new builder instance.
@@ -117,6 +132,7 @@ public class XMLElementReference extends AbstractSchemaObject implements IXMLEle
 			this.id = UUID.randomUUID();
 			this.name = name;
 			this.element = element;
+			this.elementID = element.getID();
 		}
 
 		/**
@@ -130,12 +146,13 @@ public class XMLElementReference extends AbstractSchemaObject implements IXMLEle
 			this.id = id;
 			this.name = name;
 			this.element = element;
+			this.elementID = element.getID();
 		}
 
 		private Builder(IXMLElementReference xMLElementReference) {
 			this.id = xMLElementReference.getID();
 			this.comment = xMLElementReference.getComment().orElse(null);
-			this.originalElementReference = xMLElementReference.getElement().getID();
+			this.elementID = xMLElementReference.getElement().getID();
 			this.minOccurrence = xMLElementReference.getMinOccurrence();
 			this.maxOccurrence = xMLElementReference.getMaxOccurrence().orElse(null);
 
@@ -212,6 +229,32 @@ public class XMLElementReference extends AbstractSchemaObject implements IXMLEle
 			return ref;
 		}
 
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result
+				+ Objects.hash(this.element, this.elementID, this.maxOccurrence, this.minOccurrence, this.name);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!super.equals(obj)) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final XMLElementReference other = (XMLElementReference) obj;
+		return Objects.equals(this.element, other.element) && Objects.equals(this.elementID, other.elementID)
+				&& Objects.equals(this.maxOccurrence, other.maxOccurrence)
+				&& Objects.equals(this.minOccurrence, other.minOccurrence) && Objects.equals(this.name, other.name);
 	}
 
 }

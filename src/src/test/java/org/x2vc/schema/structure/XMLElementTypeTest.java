@@ -104,7 +104,7 @@ class XMLElementTypeTest {
 		new XMLAttribute.Builder("aName").withType(XMLDatatype.OTHER).addTo(builder);
 		final XMLElementType elem = builder.build();
 		assertEquals(1, elem.getAttributes().size());
-		assertEquals("aName", elem.getAttributes().asList().get(0).getName());
+		assertEquals("aName", elem.getAttributes().toArray(new IXMLAttribute[0])[0].getName());
 	}
 
 	@Test
@@ -114,7 +114,7 @@ class XMLElementTypeTest {
 		new XMLDiscreteValue.Builder().withStringValue("foobar").addTo(builder);
 		final XMLElementType elem = builder.build();
 		assertEquals(1, elem.getDiscreteValues().size());
-		assertEquals("foobar", elem.getDiscreteValues().asList().get(0).asString());
+		assertEquals("foobar", elem.getDiscreteValues().toArray(new IXMLDiscreteValue[0])[0].asString());
 	}
 
 	@Test
@@ -129,12 +129,12 @@ class XMLElementTypeTest {
 
 		assertEquals(ContentType.DATA, copy.getContentType());
 		assertEquals(XMLDatatype.STRING, copy.getDatatype());
-		assertEquals("foobar", copy.getDiscreteValues().asList().get(0).asString());
+		assertEquals("foobar", copy.getDiscreteValues().toArray(new IXMLDiscreteValue[0])[0].asString());
 
 		// attributes need to be copies, not the same objects reused
-		assertNotSame(value, copy.getDiscreteValues().asList().get(0));
+		assertNotSame(value, copy.getDiscreteValues().toArray(new IXMLDiscreteValue[0])[0]);
 		// discrete values need to be copies, not the same objects reused
-		assertNotSame(value, copy.getDiscreteValues().asList().get(0));
+		assertNotSame(value, copy.getDiscreteValues().toArray(new IXMLDiscreteValue[0])[0]);
 	}
 
 	@Test

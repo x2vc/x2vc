@@ -1,9 +1,8 @@
 package org.x2vc.schema.structure;
 
+import java.util.List;
 import java.util.Optional;
-
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableSet;
+import java.util.Set;
 
 /**
  * A XML schema element type, representing an element in the XML document. This
@@ -15,7 +14,7 @@ public interface IXMLElementType extends IXMLSchemaObject {
 	/**
 	 * @return the attributes that can be set for the element. May be empty!
 	 */
-	ImmutableSet<IXMLAttribute> getAttributes();
+	Set<IXMLAttribute> getAttributes();
 
 	/**
 	 * This enum describes what kind of contents can be found inside this element.
@@ -98,7 +97,7 @@ public interface IXMLElementType extends IXMLSchemaObject {
 	 *         {@link #isFixedValueset()} for additional information on how to
 	 *         interpret this value.
 	 */
-	ImmutableSet<IXMLDiscreteValue> getDiscreteValues();
+	Set<IXMLDiscreteValue> getDiscreteValues();
 
 	/**
 	 * Determines whether a set of discrete values specified for the attribute
@@ -117,7 +116,7 @@ public interface IXMLElementType extends IXMLSchemaObject {
 	 *         the content type is {@link ContentType#ELEMENT} or
 	 *         {@link ContentType#MIXED}.
 	 */
-	ImmutableList<IXMLElementReference> getElements();
+	List<IXMLElementReference> getElements();
 
 	/**
 	 * The mode in which the sub-elements of an element can be arranged.

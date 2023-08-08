@@ -19,6 +19,7 @@ class XMLElementReferenceTest {
 		assertFalse(ref.isValue());
 		assertFalse(ref.getComment().isPresent());
 		assertSame(innerElem, ref.getElement());
+		assertEquals(innerElem.getID(), ref.getElementID());
 		assertEquals(0, ref.getMinOccurrence());
 		assertFalse(ref.getMaxOccurrence().isPresent());
 	}
@@ -53,7 +54,7 @@ class XMLElementReferenceTest {
 
 		// copied element has to be in "incomplete" state
 		assertThrows(IllegalStateException.class, () -> copy.getElement());
-		assertEquals(innerElem.getID(), copy.getOriginalElementReference());
+		assertEquals(innerElem.getID(), copy.getElementID());
 
 		// attempt to connect with other element that has different ID has to fail
 		final XMLElementType otherElem = new XMLElementType.Builder().withContentType(ContentType.ELEMENT).build();

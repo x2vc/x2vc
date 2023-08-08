@@ -1,14 +1,14 @@
 package org.x2vc.schema.structure;
 
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
+
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
 
 /**
  * Standard implementation of {@link IXMLAttribute}.
@@ -17,15 +17,40 @@ public class XMLAttribute extends AbstractSchemaObject implements IXMLAttribute 
 
 	private static final long serialVersionUID = -1714282681209635316L;
 	private static final Logger logger = LogManager.getLogger();
+
+	@XmlAttribute
 	private String name;
+
+	@XmlAttribute
 	private XMLDatatype type;
+
+	@XmlAttribute
 	private Boolean optional;
+
+	@XmlAttribute
 	private Integer maxLength;
+
+	@XmlAttribute
 	private Integer minValue;
+
+	@XmlAttribute
 	private Integer maxValue;
-	private ImmutableSet<IXMLDiscreteValue> discreteValues;
+
+	@XmlElement(type = XMLDiscreteValue.class, name = "discreteValue")
+	private Set<IXMLDiscreteValue> discreteValues;
+
+	@XmlAttribute
 	private Boolean fixedValueset;
+
+	@XmlAttribute
 	private Boolean userModifiable;
+
+	/**
+	 * Parameterless constructor for deserialization only.
+	 */
+	XMLAttribute() {
+		this.discreteValues = Sets.newHashSet();
+	}
 
 	private XMLAttribute(Builder builder) {
 		this.id = builder.id;
@@ -36,7 +61,7 @@ public class XMLAttribute extends AbstractSchemaObject implements IXMLAttribute 
 		this.maxLength = builder.maxLength;
 		this.minValue = builder.minValue;
 		this.maxValue = builder.maxValue;
-		this.discreteValues = ImmutableSet.copyOf(builder.discreteValues);
+		this.discreteValues = Set.copyOf(builder.discreteValues);
 		this.fixedValueset = builder.fixedValueset;
 		this.userModifiable = builder.userModifiable;
 		// TODO XML Schema: Validate XMLAttribute attribute combinations
@@ -95,7 +120,7 @@ public class XMLAttribute extends AbstractSchemaObject implements IXMLAttribute 
 	}
 
 	@Override
-	public ImmutableSet<IXMLDiscreteValue> getDiscreteValues() {
+	public Set<IXMLDiscreteValue> getDiscreteValues() {
 		return this.discreteValues;
 	}
 
@@ -299,6 +324,35 @@ public class XMLAttribute extends AbstractSchemaObject implements IXMLAttribute 
 			return attribute;
 		}
 
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + Objects.hash(this.discreteValues, this.fixedValueset, this.maxLength, this.maxValue,
+				this.minValue, this.name, this.optional, this.type, this.userModifiable);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!super.equals(obj)) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final XMLAttribute other = (XMLAttribute) obj;
+		return Objects.equals(this.discreteValues, other.discreteValues)
+				&& Objects.equals(this.fixedValueset, other.fixedValueset)
+				&& Objects.equals(this.maxLength, other.maxLength) && Objects.equals(this.maxValue, other.maxValue)
+				&& Objects.equals(this.minValue, other.minValue) && Objects.equals(this.name, other.name)
+				&& Objects.equals(this.optional, other.optional) && this.type == other.type
+				&& Objects.equals(this.userModifiable, other.userModifiable);
 	}
 
 }

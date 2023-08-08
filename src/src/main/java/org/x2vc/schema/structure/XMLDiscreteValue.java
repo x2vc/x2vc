@@ -1,6 +1,9 @@
 package org.x2vc.schema.structure;
 
+import java.util.Objects;
 import java.util.UUID;
+
+import javax.xml.bind.annotation.XmlAttribute;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -12,10 +15,24 @@ public class XMLDiscreteValue extends AbstractSchemaObject implements IXMLDiscre
 
 	private static final long serialVersionUID = 7139083422209051401L;
 	private static final Logger logger = LogManager.getLogger();
+
+	@XmlAttribute
 	private XMLDatatype type;
+
+	@XmlAttribute
 	private String stringValue;
+
+	@XmlAttribute
 	private Boolean booleanValue;
+
+	@XmlAttribute
 	private Integer integerValue;
+
+	/**
+	 * Parameterless constructor for deserialization only.
+	 */
+	XMLDiscreteValue() {
+	}
 
 	private XMLDiscreteValue(Builder builder) {
 		this.id = builder.id;
@@ -206,6 +223,31 @@ public class XMLDiscreteValue extends AbstractSchemaObject implements IXMLDiscre
 			return value;
 		}
 
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + Objects.hash(this.booleanValue, this.integerValue, this.stringValue, this.type);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!super.equals(obj)) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final XMLDiscreteValue other = (XMLDiscreteValue) obj;
+		return Objects.equals(this.booleanValue, other.booleanValue)
+				&& Objects.equals(this.integerValue, other.integerValue)
+				&& Objects.equals(this.stringValue, other.stringValue) && this.type == other.type;
 	}
 
 }

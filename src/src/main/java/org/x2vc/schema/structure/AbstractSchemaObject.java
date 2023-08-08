@@ -1,7 +1,11 @@
 package org.x2vc.schema.structure;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
+
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -13,7 +17,11 @@ public abstract class AbstractSchemaObject implements IXMLSchemaObject {
 
 	private static final long serialVersionUID = 2406827816150443227L;
 	private static final Logger logger = LogManager.getLogger();
+
+	@XmlAttribute
 	protected UUID id;
+
+	@XmlElement
 	protected String comment;
 
 	@Override
@@ -64,6 +72,26 @@ public abstract class AbstractSchemaObject implements IXMLSchemaObject {
 	@Override
 	public IXMLDiscreteValue asValue() {
 		throw logger.throwing(new IllegalStateException("This schema object can not be cast to IXMLDiscreteValue"));
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(this.comment, this.id);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final AbstractSchemaObject other = (AbstractSchemaObject) obj;
+		return Objects.equals(this.comment, other.comment) && Objects.equals(this.id, other.id);
 	}
 
 }

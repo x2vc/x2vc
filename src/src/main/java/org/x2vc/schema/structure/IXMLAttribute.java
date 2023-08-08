@@ -1,8 +1,7 @@
 package org.x2vc.schema.structure;
 
 import java.util.Optional;
-
-import com.google.common.collect.ImmutableSet;
+import java.util.Set;
 
 /**
  * Attribute of an XML Element.
@@ -47,7 +46,7 @@ public interface IXMLAttribute extends IXMLSchemaObject {
 	 *         {@link #isFixedValueset()} for additional information on how to
 	 *         interpret this value.
 	 */
-	ImmutableSet<IXMLDiscreteValue> getDiscreteValues();
+	Set<IXMLDiscreteValue> getDiscreteValues();
 
 	/**
 	 * Determines whether a set of discrete values specified for the attribute
