@@ -14,8 +14,8 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.x2vc.processor.IHTMLDocumentContainer;
-import org.x2vc.xmldoc.IDocumentModifier;
-import org.x2vc.xmldoc.IXMLDocumentDescriptor;
+import org.x2vc.xml.IDocumentModifier;
+import org.x2vc.xml.IXMLDocumentDescriptor;
 
 import com.google.inject.Inject;
 

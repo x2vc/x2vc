@@ -1,4 +1,4 @@
-package org.x2vc.xmldoc;
+package org.x2vc.xml;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 

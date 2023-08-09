@@ -1,6 +1,6 @@
 package org.x2vc.processor;
 
-import org.x2vc.xmldoc.IXMLDocumentContainer;
+import org.x2vc.xml.IXMLDocumentContainer;
 
 /**
  * A wrapper that encapsulates the XSLT processor and handles the input and

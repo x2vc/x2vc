@@ -3,7 +3,7 @@ package org.x2vc.processor;
 import java.util.Optional;
 
 import org.x2vc.stylesheet.coverage.IStylesheetCoverage;
-import org.x2vc.xmldoc.IXMLDocumentContainer;
+import org.x2vc.xml.IXMLDocumentContainer;
 
 import com.google.common.collect.ImmutableList;
 

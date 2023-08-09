@@ -9,7 +9,7 @@ import javax.xml.transform.stream.StreamSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.x2vc.stylesheet.IStylesheetInformation;
-import org.x2vc.xmldoc.IXMLDocumentContainer;
+import org.x2vc.xml.IXMLDocumentContainer;
 
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;

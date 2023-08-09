@@ -1,4 +1,4 @@
-package org.x2vc.xmldoc;
+package org.x2vc.xml;
 
 import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.stylesheet.IStylesheetInformation;

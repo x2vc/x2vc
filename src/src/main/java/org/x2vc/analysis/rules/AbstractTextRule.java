@@ -7,8 +7,8 @@ import org.apache.logging.log4j.Logger;
 import org.jsoup.nodes.Node;
 import org.jsoup.nodes.TextNode;
 import org.x2vc.analysis.IAnalyzerRule;
-import org.x2vc.xmldoc.IDocumentModifier;
-import org.x2vc.xmldoc.IXMLDocumentDescriptor;
+import org.x2vc.xml.IDocumentModifier;
+import org.x2vc.xml.IXMLDocumentDescriptor;
 
 /**
  * An {@link IAnalyzerRule} that performs a check on text nodes. Note that blank
