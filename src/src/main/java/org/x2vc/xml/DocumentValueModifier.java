@@ -2,6 +2,7 @@ package org.x2vc.xml;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -133,6 +134,31 @@ public class DocumentValueModifier implements IDocumentValueModifier {
 			collector.accept(build());
 		}
 
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(this.analyzerRuleID, this.originalValue, this.payload, this.replacementValue,
+				this.schemaElementID);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final DocumentValueModifier other = (DocumentValueModifier) obj;
+		return Objects.equals(this.analyzerRuleID, other.analyzerRuleID)
+				&& Objects.equals(this.originalValue, other.originalValue)
+				&& Objects.equals(this.payload, other.payload)
+				&& Objects.equals(this.replacementValue, other.replacementValue)
+				&& Objects.equals(this.schemaElementID, other.schemaElementID);
 	}
 
 }
