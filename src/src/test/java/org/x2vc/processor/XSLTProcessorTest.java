@@ -13,7 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.stylesheet.IStylesheetInformation;
-import org.x2vc.xml.IXMLDocumentContainer;
+import org.x2vc.xml.document.IXMLDocumentContainer;
 
 import com.google.common.collect.ImmutableList;
 
@@ -52,7 +52,7 @@ class XSLTProcessorTest {
 
 	/**
 	 * Test method for
-	 * {@link org.x2vc.processor.XSLTProcessor#processDocument(org.x2vc.xml.IXMLDocumentContainer)}.
+	 * {@link org.x2vc.processor.XSLTProcessor#processDocument(org.x2vc.xml.document.IXMLDocumentContainer)}.
 	 */
 	@Test
 	void testBasicProcessing() {
@@ -107,7 +107,7 @@ class XSLTProcessorTest {
 
 	/**
 	 * Test method for
-	 * {@link org.x2vc.processor.XSLTProcessor#processDocument(org.x2vc.xml.IXMLDocumentContainer)}.
+	 * {@link org.x2vc.processor.XSLTProcessor#processDocument(org.x2vc.xml.document.IXMLDocumentContainer)}.
 	 */
 	@Test
 	void testCompilationError() {
@@ -128,7 +128,7 @@ class XSLTProcessorTest {
 
 	/**
 	 * Test method for
-	 * {@link org.x2vc.processor.XSLTProcessor#processDocument(org.x2vc.xml.IXMLDocumentContainer)}.
+	 * {@link org.x2vc.processor.XSLTProcessor#processDocument(org.x2vc.xml.document.IXMLDocumentContainer)}.
 	 */
 	@Test
 	void testProcessingError() {

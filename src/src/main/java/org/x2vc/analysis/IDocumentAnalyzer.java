@@ -3,8 +3,8 @@ package org.x2vc.analysis;
 import java.util.function.Consumer;
 
 import org.x2vc.processor.IHTMLDocumentContainer;
-import org.x2vc.xml.IDocumentModifier;
-import org.x2vc.xml.IXMLDocumentDescriptor;
+import org.x2vc.xml.document.IDocumentModifier;
+import org.x2vc.xml.document.IXMLDocumentDescriptor;
 
 /**
  * This component processes the HTML document and examines each context that

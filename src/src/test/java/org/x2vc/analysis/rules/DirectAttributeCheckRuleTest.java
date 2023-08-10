@@ -22,10 +22,10 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.x2vc.xml.IDocumentModifier;
-import org.x2vc.xml.IDocumentValueDescriptor;
-import org.x2vc.xml.IDocumentValueModifier;
-import org.x2vc.xml.IXMLDocumentDescriptor;
+import org.x2vc.xml.document.IDocumentModifier;
+import org.x2vc.xml.document.IDocumentValueDescriptor;
+import org.x2vc.xml.document.IDocumentValueModifier;
+import org.x2vc.xml.document.IXMLDocumentDescriptor;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
@@ -58,7 +58,7 @@ class DirectAttributeCheckRuleTest {
 
 	/**
 	 * Test method for
-	 * {@link org.x2vc.analysis.rules.AbstractElementRule#checkNode(org.jsoup.nodes.Node, org.x2vc.xml.IXMLDocumentDescriptor, java.util.function.Consumer)}.
+	 * {@link org.x2vc.analysis.rules.AbstractElementRule#checkNode(org.jsoup.nodes.Node, org.x2vc.xml.document.IXMLDocumentDescriptor, java.util.function.Consumer)}.
 	 */
 	@ParameterizedTest
 	@CsvSource({ "<p qwertzui=\"foobar\">test</p>, qwer, qwertzui, 8",

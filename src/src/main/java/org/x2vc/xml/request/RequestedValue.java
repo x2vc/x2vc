@@ -3,7 +3,7 @@ package org.x2vc.xml.request;
 import java.util.Objects;
 import java.util.Optional;
 
-import org.x2vc.xml.IDocumentModifier;
+import org.x2vc.xml.document.IDocumentModifier;
 
 /**
  * Standard implementation of {@link IRequestedValue}.

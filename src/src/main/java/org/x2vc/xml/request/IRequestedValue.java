@@ -3,7 +3,7 @@ package org.x2vc.xml.request;
 import java.io.Serializable;
 import java.util.Optional;
 
-import org.x2vc.xml.IDocumentModifier;
+import org.x2vc.xml.document.IDocumentModifier;
 
 /**
  * A request to the document generator to use a certain value for a particular

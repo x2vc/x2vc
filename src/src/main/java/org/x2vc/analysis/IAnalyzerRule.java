@@ -7,8 +7,8 @@ import org.jsoup.nodes.Node;
 import org.x2vc.analysis.rules.AbstractAttributeRule;
 import org.x2vc.analysis.rules.AbstractElementRule;
 import org.x2vc.analysis.rules.AbstractTextRule;
-import org.x2vc.xml.IDocumentModifier;
-import org.x2vc.xml.IXMLDocumentDescriptor;
+import org.x2vc.xml.document.IDocumentModifier;
+import org.x2vc.xml.document.IXMLDocumentDescriptor;
 
 /**
  * A rule that checks for a certain condition that might be exploited in order

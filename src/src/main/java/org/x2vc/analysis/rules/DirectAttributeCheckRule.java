@@ -14,7 +14,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.x2vc.analysis.IVulnerabilityReport;
 import org.x2vc.analysis.VulnerabilityReport;
-import org.x2vc.xml.*;
+import org.x2vc.xml.document.*;
 
 import com.google.common.collect.ImmutableSet;
 

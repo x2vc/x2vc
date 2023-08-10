@@ -18,7 +18,7 @@ import org.x2vc.stylesheet.coverage.IStylesheetCoverage;
 import org.x2vc.stylesheet.coverage.StylesheetCoverage;
 import org.x2vc.stylesheet.structure.IStylesheetStructure;
 import org.x2vc.stylesheet.structure.XSLTDirectiveNode;
-import org.x2vc.xml.IXMLDocumentContainer;
+import org.x2vc.xml.document.IXMLDocumentContainer;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;

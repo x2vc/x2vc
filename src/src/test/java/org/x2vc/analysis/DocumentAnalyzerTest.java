@@ -20,9 +20,9 @@ import org.mockito.Mock;
 import org.mockito.internal.util.collections.Sets;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.x2vc.processor.IHTMLDocumentContainer;
-import org.x2vc.xml.IDocumentModifier;
-import org.x2vc.xml.IXMLDocumentContainer;
-import org.x2vc.xml.IXMLDocumentDescriptor;
+import org.x2vc.xml.document.IDocumentModifier;
+import org.x2vc.xml.document.IXMLDocumentContainer;
+import org.x2vc.xml.document.IXMLDocumentDescriptor;
 
 import com.google.common.collect.ImmutableSet;
 

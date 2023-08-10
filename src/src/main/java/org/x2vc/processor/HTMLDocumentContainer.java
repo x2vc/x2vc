@@ -11,7 +11,7 @@ import org.x2vc.stylesheet.IStylesheetInformation;
 import org.x2vc.stylesheet.coverage.IStylesheetCoverage;
 import org.x2vc.stylesheet.structure.IStylesheetStructure;
 import org.x2vc.stylesheet.structure.IXSLTDirectiveNode;
-import org.x2vc.xml.IXMLDocumentContainer;
+import org.x2vc.xml.document.IXMLDocumentContainer;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;

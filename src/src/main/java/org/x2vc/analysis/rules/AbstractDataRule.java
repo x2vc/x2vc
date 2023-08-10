@@ -7,8 +7,8 @@ import org.apache.logging.log4j.Logger;
 import org.jsoup.nodes.DataNode;
 import org.jsoup.nodes.Node;
 import org.x2vc.analysis.IAnalyzerRule;
-import org.x2vc.xml.IDocumentModifier;
-import org.x2vc.xml.IXMLDocumentDescriptor;
+import org.x2vc.xml.document.IDocumentModifier;
+import org.x2vc.xml.document.IXMLDocumentDescriptor;
 
 /**
  * An {@link IAnalyzerRule} that performs a check on data nodes.

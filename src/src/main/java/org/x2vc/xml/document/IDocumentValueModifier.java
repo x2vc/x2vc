@@ -1,4 +1,4 @@
-package org.x2vc.xml;
+package org.x2vc.xml.document;
 
 import java.util.Optional;
 import java.util.UUID;

@@ -12,8 +12,8 @@ import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
 import org.junit.jupiter.api.Test;
 import org.x2vc.analysis.IVulnerabilityReport;
-import org.x2vc.xml.IDocumentModifier;
-import org.x2vc.xml.IXMLDocumentDescriptor;
+import org.x2vc.xml.document.IDocumentModifier;
+import org.x2vc.xml.document.IXMLDocumentDescriptor;
 
 import com.google.common.collect.ImmutableSet;
 
