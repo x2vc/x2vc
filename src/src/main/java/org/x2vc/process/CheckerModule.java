@@ -35,7 +35,7 @@ public class CheckerModule extends AbstractModule {
 
 	@Provides
 	static Processor provideProcessor() {
-		// TODO supply XSLT processor configuration
+		// TODO Infrastructure: supply XSLT processor configuration
 		return new Processor();
 	}
 

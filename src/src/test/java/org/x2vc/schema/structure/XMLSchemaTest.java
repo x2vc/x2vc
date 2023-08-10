@@ -230,6 +230,4 @@ class XMLSchemaTest {
 
 	}
 
-	// TODO XML Schema: add test for serialization
-
 }
