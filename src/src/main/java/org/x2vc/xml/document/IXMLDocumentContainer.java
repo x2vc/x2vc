@@ -1,7 +1,8 @@
 package org.x2vc.xml.document;
 
-import org.x2vc.schema.structure.IXMLSchema;
-import org.x2vc.stylesheet.IStylesheetInformation;
+import java.net.URI;
+
+import org.x2vc.xml.request.IDocumentRequest;
 
 /**
  * A container object that is used to transport a generated XML document, its
@@ -12,16 +13,26 @@ import org.x2vc.stylesheet.IStylesheetInformation;
 public interface IXMLDocumentContainer {
 
 	/**
-	 * @return the {@link IXMLSchema} used to generate this document
+	 * @return the URI of the schema that was used to generate this document
 	 */
-	IXMLSchema getSchema();
+	URI getSchemaURI();
+
+	/**
+	 * @return the version of the schema that was used to generate this document
+	 */
+	int getSchemaVersion();
 
 	/**
 	 * Shortcut for <code>getSchema().getStylesheet()</code>
 	 *
-	 * @return the stylesheet for which this input document was generated
+	 * @return the ID of the stylesheet for which this input document was generated
 	 */
-	IStylesheetInformation getStylesheet();
+	URI getStylesheeURI();
+
+	/**
+	 * @return the request that was used to generate the document
+	 */
+	IDocumentRequest getRequest();
 
 	/**
 	 * @return the descriptor containing the values that were used to generate the
@@ -33,8 +44,5 @@ public interface IXMLDocumentContainer {
 	 * @return the generated XML document
 	 */
 	String getDocument();
-
-	// TODO XML Document: add missing accessors: request
-	// TODO XML Document: add missing accessors: schema and version
 
 }

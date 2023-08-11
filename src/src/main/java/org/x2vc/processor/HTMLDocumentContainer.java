@@ -2,12 +2,12 @@ package org.x2vc.processor;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
-import java.util.List;
 import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.x2vc.stylesheet.IStylesheetInformation;
+import org.x2vc.stylesheet.IStylesheetManager;
 import org.x2vc.stylesheet.coverage.IStylesheetCoverage;
 import org.x2vc.stylesheet.structure.IStylesheetStructure;
 import org.x2vc.stylesheet.structure.IXSLTDirectiveNode;
@@ -21,9 +21,11 @@ import net.sf.saxon.s9api.SaxonApiException;
 /**
  * Standard implementation of {@link IHTMLDocumentContainer}.
  */
-class HTMLDocumentContainer implements IHTMLDocumentContainer {
+public class HTMLDocumentContainer implements IHTMLDocumentContainer {
 
 	private static final Logger logger = LogManager.getLogger();
+	private IStylesheetManager stylesheetManager;
+
 	private IXMLDocumentContainer source;
 	private String htmlDocument;
 	private SaxonApiException compilationError;
@@ -31,18 +33,32 @@ class HTMLDocumentContainer implements IHTMLDocumentContainer {
 	private ImmutableList<ITraceEvent> traceEvents;
 	private IStylesheetCoverage coverage;
 
-	private HTMLDocumentContainer(Builder builder) {
+	/**
+	 * Internal constructor - use an injected {@link IHTMLDocumentFactory} to create
+	 * a new document container.
+	 *
+	 * @param stylesheetManager
+	 * @param source
+	 * @param htmlDocument
+	 * @param compilationError
+	 * @param processingError
+	 * @param traceEvents
+	 */
+	HTMLDocumentContainer(IStylesheetManager stylesheetManager, IXMLDocumentContainer source, String htmlDocument,
+			SaxonApiException compilationError, SaxonApiException processingError,
+			ImmutableList<ITraceEvent> traceEvents) {
+		this.stylesheetManager = stylesheetManager;
 		// we can either have a result document or error conditions, but not both
-		if (builder.htmlDocument == null) {
-			checkArgument((builder.compilationError != null) || (builder.processingError != null));
+		if (htmlDocument == null) {
+			checkArgument((compilationError != null) || (processingError != null));
 		} else {
-			checkArgument((builder.compilationError == null) && (builder.processingError == null));
+			checkArgument((compilationError == null) && (processingError == null));
 		}
-		this.source = builder.source;
-		this.htmlDocument = builder.htmlDocument;
-		this.compilationError = builder.compilationError;
-		this.processingError = builder.processingError;
-		this.traceEvents = builder.traceEvents;
+		this.source = source;
+		this.htmlDocument = htmlDocument;
+		this.compilationError = compilationError;
+		this.processingError = processingError;
+		this.traceEvents = traceEvents;
 	}
 
 	@Override
@@ -89,7 +105,7 @@ class HTMLDocumentContainer implements IHTMLDocumentContainer {
 	 */
 	private void buildCoverage() {
 		logger.traceEntry();
-		final IStylesheetInformation stylesheet = this.source.getStylesheet();
+		final IStylesheetInformation stylesheet = this.stylesheetManager.get(this.source.getStylesheeURI());
 		final IStylesheetStructure structure = stylesheet.getStructure();
 		this.coverage = stylesheet.createCoverageStatistics();
 		for (final ITraceEvent traceEvent : this.traceEvents) {
@@ -102,73 +118,6 @@ class HTMLDocumentContainer implements IHTMLDocumentContainer {
 			this.coverage.recordElementCoverage(traceID, Maps.newHashMap());
 		}
 		logger.traceExit();
-	}
-
-	/**
-	 * Builder to build {@link HTMLDocumentContainer}.
-	 */
-	public static final class Builder {
-		private IXMLDocumentContainer source;
-		private String htmlDocument;
-		private SaxonApiException compilationError;
-		private SaxonApiException processingError;
-		private ImmutableList<ITraceEvent> traceEvents;
-
-		public Builder(IXMLDocumentContainer source) {
-			this.source = source;
-		}
-
-		/**
-		 * Builder method for htmlDocument parameter.
-		 *
-		 * @param htmlDocument field to set
-		 * @return builder
-		 */
-		public Builder withHtmlDocument(String htmlDocument) {
-			this.htmlDocument = htmlDocument;
-			return this;
-		}
-
-		/**
-		 * Builder method for compilationError parameter.
-		 *
-		 * @param compilationError field to set
-		 * @return builder
-		 */
-		public Builder withCompilationError(SaxonApiException compilationError) {
-			this.compilationError = compilationError;
-			return this;
-		}
-
-		/**
-		 * Builder method for processingError parameter.
-		 *
-		 * @param processingError field to set
-		 * @return builder
-		 */
-		public Builder withProcessingError(SaxonApiException processingError) {
-			this.processingError = processingError;
-			return this;
-		}
-
-		/**
-		 * @param traceEvents
-		 * @return builder
-		 */
-		public Builder withTraceEvents(List<ITraceEvent> traceEvents) {
-			this.traceEvents = ImmutableList.copyOf(traceEvents);
-			return this;
-		}
-
-		/**
-		 * Builder method of the builder.
-		 *
-		 * @return built class
-		 */
-		public HTMLDocumentContainer build() {
-			return new HTMLDocumentContainer(this);
-		}
-
 	}
 
 }

@@ -6,13 +6,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
+import java.net.URI;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.x2vc.schema.structure.IXMLSchema;
+import org.x2vc.common.URIHandling;
+import org.x2vc.common.URIHandling.ObjectType;
 import org.x2vc.stylesheet.IStylesheetInformation;
+import org.x2vc.stylesheet.IStylesheetManager;
 import org.x2vc.xml.document.IXMLDocumentContainer;
 
 import com.google.common.collect.ImmutableList;
@@ -30,13 +34,19 @@ class XSLTProcessorTest {
 	private XSLTProcessor wrapper;
 
 	@Mock
+	IStylesheetManager stylesheetManager;
+
+	@Mock
+	IStylesheetInformation stylesheet;
+
+	IHTMLDocumentFactory documentFactory;
+
+	@Mock
 	private IXMLDocumentContainer xmlDocument;
 
-	@Mock
-	private IStylesheetInformation stylesheet;
-
-	@Mock
-	private IXMLSchema schema;
+	private URI stylesheetURI;
+	private URI schemaURI;
+	private int schemaVersion;
 
 	/**
 	 * @throws java.lang.Exception
@@ -44,10 +54,18 @@ class XSLTProcessorTest {
 	@BeforeEach
 	void setUp() throws Exception {
 		this.saxonProcessor = new Processor();
-		this.wrapper = new XSLTProcessor(this.saxonProcessor);
-		// wire up interconnected mock instances
-		lenient().when(this.xmlDocument.getStylesheet()).thenReturn(this.stylesheet);
-		lenient().when(this.xmlDocument.getSchema()).thenReturn(this.schema);
+		this.documentFactory = new HTMLDocumentFactory(this.stylesheetManager);
+		this.wrapper = new XSLTProcessor(this.stylesheetManager, this.saxonProcessor, this.documentFactory);
+
+		this.stylesheetURI = URIHandling.makeMemoryURI(ObjectType.STYLESHEET, "foo");
+		lenient().when(this.xmlDocument.getStylesheeURI()).thenReturn(this.stylesheetURI);
+		lenient().when(this.stylesheetManager.get(this.stylesheetURI)).thenReturn(this.stylesheet);
+
+		this.schemaURI = URIHandling.makeMemoryURI(ObjectType.SCHEMA, "bar");
+		lenient().when(this.xmlDocument.getSchemaURI()).thenReturn(this.schemaURI);
+		this.schemaVersion = 1;
+		lenient().when(this.xmlDocument.getSchemaVersion()).thenReturn(this.schemaVersion);
+
 	}
 
 	/**

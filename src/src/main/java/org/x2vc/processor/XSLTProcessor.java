@@ -2,13 +2,16 @@ package org.x2vc.processor;
 
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.net.URI;
 import java.util.concurrent.ExecutionException;
 
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.x2vc.processor.IHTMLDocumentFactory.Builder;
 import org.x2vc.stylesheet.IStylesheetInformation;
+import org.x2vc.stylesheet.IStylesheetManager;
 import org.x2vc.xml.document.IXMLDocumentContainer;
 
 import com.google.common.cache.CacheBuilder;
@@ -27,13 +30,17 @@ public class XSLTProcessor implements IXSLTProcessor {
 
 	private static final Logger logger = LogManager.getLogger();
 
+	private IStylesheetManager stylesheetManager;
 	private Processor processor;
+	private IHTMLDocumentFactory documentFactory;
 
-	private LoadingCache<IStylesheetInformation, XsltExecutable> stylesheetCache;
+	private LoadingCache<URI, XsltExecutable> stylesheetCache;
 
 	@Inject
-	XSLTProcessor(Processor processor) {
+	XSLTProcessor(IStylesheetManager stylesheetManager, Processor processor, IHTMLDocumentFactory documentFactory) {
+		this.stylesheetManager = stylesheetManager;
 		this.processor = processor;
+		this.documentFactory = documentFactory;
 		// TODO Infrastructure: make cache sizes configurable
 		this.stylesheetCache = CacheBuilder.newBuilder().maximumSize(25).build(new StylesheetCacheLoader(processor));
 	}
@@ -41,10 +48,10 @@ public class XSLTProcessor implements IXSLTProcessor {
 	@Override
 	public IHTMLDocumentContainer processDocument(IXMLDocumentContainer xmlDocument) {
 		logger.traceEntry();
-		final HTMLDocumentContainer.Builder builder = new HTMLDocumentContainer.Builder(xmlDocument);
+		final Builder builder = this.documentFactory.newBuilder(xmlDocument);
 		XsltExecutable stylesheet = null;
 		try {
-			stylesheet = this.stylesheetCache.get(xmlDocument.getStylesheet());
+			stylesheet = this.stylesheetCache.get(xmlDocument.getStylesheeURI());
 		} catch (final ExecutionException e) {
 			logger.error("Error retrieving compiled stylesheet from cache", e);
 			builder.withCompilationError((SaxonApiException) e.getCause());
@@ -64,14 +71,14 @@ public class XSLTProcessor implements IXSLTProcessor {
 				builder.withProcessingError(e);
 			}
 		}
-		final HTMLDocumentContainer container = builder.build();
+		final IHTMLDocumentContainer container = builder.build();
 		return logger.traceExit(container);
 	}
 
 	/**
 	 * A {@link CacheLoader} to provide precompiled instances for stylesheets.
 	 */
-	private final class StylesheetCacheLoader extends CacheLoader<IStylesheetInformation, XsltExecutable> {
+	private final class StylesheetCacheLoader extends CacheLoader<URI, XsltExecutable> {
 
 		private static final Logger logger = LogManager.getLogger();
 		private XsltCompiler compiler;
@@ -84,8 +91,9 @@ public class XSLTProcessor implements IXSLTProcessor {
 		}
 
 		@Override
-		public XsltExecutable load(IStylesheetInformation stylesheet) throws SaxonApiException {
+		public XsltExecutable load(URI stylesheetURI) throws SaxonApiException {
 			logger.traceEntry();
+			final IStylesheetInformation stylesheet = XSLTProcessor.this.stylesheetManager.get(stylesheetURI);
 			logger.debug("Compiling stylesheet to provide cache entry");
 			final XsltExecutable result = this.compiler
 				.compile(new StreamSource(new StringReader(stylesheet.getPreparedStylesheet())));
