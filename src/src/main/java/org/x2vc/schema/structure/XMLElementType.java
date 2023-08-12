@@ -277,7 +277,8 @@ public class XMLElementType extends AbstractSchemaObject implements IXMLElementT
 				}
 				this.fixedValueset = xMLElementType.isFixedValueset();
 			}
-			if (this.contentType != ContentType.ELEMENT) {
+			if ((this.contentType == ContentType.TEXT) || (this.contentType == ContentType.DATA)
+					|| (this.contentType == ContentType.MIXED)) {
 				this.userModifiable = xMLElementType.isUserModifiable().orElse(null);
 			} else {
 				this.elementArrangement = xMLElementType.getElementArrangement();

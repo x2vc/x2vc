@@ -21,6 +21,10 @@ public interface IXMLElementType extends IXMLSchemaObject {
 	 */
 	enum ContentType {
 		/**
+		 * The element does not contain any sub-elements or content.
+		 */
+		EMPTY,
+		/**
 		 * The element may contain any kind of unstructured text.
 		 */
 		TEXT,
@@ -36,8 +40,6 @@ public interface IXMLElementType extends IXMLSchemaObject {
 		 * The element contains a variety if text and element content.
 		 */
 		MIXED
-
-		// TODO XML Schema: Support elements without sub-tree (attribute-only)
 	}
 
 	/**
