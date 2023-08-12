@@ -7,7 +7,7 @@ import java.util.UUID;
 /**
  * Standard implementation of {@link IAddDataContentRule}.
  */
-public class AddDataContentRule implements IAddDataContentRule {
+public class AddDataContentRule extends AbstractGenerationRule implements IAddDataContentRule {
 
 	private static final long serialVersionUID = -6406343863665611821L;
 
@@ -15,7 +15,7 @@ public class AddDataContentRule implements IAddDataContentRule {
 	private IRequestedValue requestedValue;
 
 	/**
-	 * Create a new rule with a requested value specified.
+	 * Create a new rule with a random ID and a requested value specified.
 	 *
 	 * @param requestedValue
 	 */
@@ -26,7 +26,7 @@ public class AddDataContentRule implements IAddDataContentRule {
 	}
 
 	/**
-	 * Create a new rule without a requested value specified.
+	 * Create a new rule with a random ID and without a requested value specified.
 	 *
 	 * @param requestedValue
 	 */
@@ -54,7 +54,10 @@ public class AddDataContentRule implements IAddDataContentRule {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(this.elementID, this.requestedValue);
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + Objects.hash(this.elementID, this.requestedValue);
+		return result;
 	}
 
 	@Override
@@ -62,7 +65,7 @@ public class AddDataContentRule implements IAddDataContentRule {
 		if (this == obj) {
 			return true;
 		}
-		if (obj == null) {
+		if (!super.equals(obj)) {
 			return false;
 		}
 		if (getClass() != obj.getClass()) {

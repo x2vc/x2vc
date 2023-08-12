@@ -7,16 +7,17 @@ import java.util.UUID;
 import org.x2vc.schema.structure.IXMLAttribute;
 
 /**
- *
+ * Standard implementation of {@link ISetAttributeRule}.
  */
-public class SetAttributeRule implements ISetAttributeRule {
+public class SetAttributeRule extends AbstractGenerationRule implements ISetAttributeRule {
 
 	private static final long serialVersionUID = 1L;
 	private UUID attributeID;
 	private IRequestedValue requestedValue;
 
 	/**
-	 * Creates a new attribute rule with a requested value specified.
+	 * Creates a new attribute rule with a random ID and a requested value
+	 * specified.
 	 *
 	 * @param attributeID
 	 * @param requestedValue
@@ -28,7 +29,8 @@ public class SetAttributeRule implements ISetAttributeRule {
 	}
 
 	/**
-	 * Creates a new attribute rule with a requested value specified.
+	 * Creates a new attribute rule with a random ID and a requested value
+	 * specified.
 	 *
 	 * @param attributeID
 	 * @param requestedValue
@@ -40,7 +42,8 @@ public class SetAttributeRule implements ISetAttributeRule {
 	}
 
 	/**
-	 * Creates a new attribute rule without a requested value specified.
+	 * Creates a new attribute rule with a random ID and without a requested value
+	 * specified.
 	 *
 	 * @param attribute
 	 */
@@ -50,7 +53,8 @@ public class SetAttributeRule implements ISetAttributeRule {
 	}
 
 	/**
-	 * Creates a new attribute rule without a requested value specified.
+	 * Creates a new attribute rule with a random ID and without a requested value
+	 * specified.
 	 *
 	 * @param attribute
 	 */
@@ -85,7 +89,10 @@ public class SetAttributeRule implements ISetAttributeRule {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(this.attributeID, this.requestedValue);
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + Objects.hash(this.attributeID, this.requestedValue);
+		return result;
 	}
 
 	@Override
@@ -93,7 +100,7 @@ public class SetAttributeRule implements ISetAttributeRule {
 		if (this == obj) {
 			return true;
 		}
-		if (obj == null) {
+		if (!super.equals(obj)) {
 			return false;
 		}
 		if (getClass() != obj.getClass()) {

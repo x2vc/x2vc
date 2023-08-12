@@ -6,14 +6,14 @@ import java.util.Optional;
 /**
  * Standard implementation of {@link IAddRawContentRule}.
  */
-public class AddRawContentRule implements IAddRawContentRule {
+public class AddRawContentRule extends AbstractGenerationRule implements IAddRawContentRule {
 
 	private static final long serialVersionUID = 6302144710732981152L;
 
 	private IRequestedValue requestedValue;
 
 	/**
-	 * Create a new rule with a requested value specified.
+	 * Create a new rule with a random ID and a requested value specified.
 	 *
 	 * @param requestedValue
 	 */
@@ -23,7 +23,7 @@ public class AddRawContentRule implements IAddRawContentRule {
 	}
 
 	/**
-	 * Create a new rule without a requested value specified.
+	 * Create a new rule with a random ID and without a requested value specified.
 	 *
 	 * @param requestedValue
 	 */
@@ -45,7 +45,10 @@ public class AddRawContentRule implements IAddRawContentRule {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(this.requestedValue);
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result + Objects.hash(this.requestedValue);
+		return result;
 	}
 
 	@Override
@@ -53,7 +56,7 @@ public class AddRawContentRule implements IAddRawContentRule {
 		if (this == obj) {
 			return true;
 		}
-		if (obj == null) {
+		if (!super.equals(obj)) {
 			return false;
 		}
 		if (getClass() != obj.getClass()) {

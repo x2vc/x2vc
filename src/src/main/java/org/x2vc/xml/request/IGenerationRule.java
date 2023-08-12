@@ -1,6 +1,7 @@
 package org.x2vc.xml.request;
 
 import java.io.Serializable;
+import java.util.UUID;
 
 /**
  * This component represents a single rule to add information to an XML
@@ -14,5 +15,10 @@ import java.io.Serializable;
  * </ul>
  */
 public interface IGenerationRule extends Serializable {
+
+	/**
+	 * @return the ID of the generation rule
+	 */
+	UUID getID();
 
 }

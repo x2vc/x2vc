@@ -4,7 +4,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * An {@link IGenerationRule} to add text content to an element.
+ * An {@link IGenerationRule} to add data or text content to an element.
  */
 public interface IAddDataContentRule extends IContentGenerationRule {
 
@@ -15,7 +15,8 @@ public interface IAddDataContentRule extends IContentGenerationRule {
 	UUID getElementID();
 
 	/**
-	 * @return a reference to the requested value for the text, if set
+	 * @return a reference to the requested value for the text or data content, if
+	 *         set
 	 */
 	Optional<IRequestedValue> getRequestedValue();
 
