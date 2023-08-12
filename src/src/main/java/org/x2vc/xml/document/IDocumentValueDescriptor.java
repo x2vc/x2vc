@@ -3,15 +3,25 @@ package org.x2vc.xml.document;
 import java.io.Serializable;
 import java.util.UUID;
 
+import org.x2vc.schema.structure.IXMLSchemaObject;
+import org.x2vc.xml.request.IGenerationRule;
+
 /**
  * A description of an input value used to generate an XML document.
  */
 public interface IDocumentValueDescriptor extends Serializable {
 
 	/**
-	 * @return the ID of the schema element that describes the value
+	 * @return the ID of the schema element {@link IXMLSchemaObject} that describes
+	 *         the value
 	 */
 	UUID getSchemaElementID();
+
+	/**
+	 * @return the ID of the {@link IGenerationRule} that was responsible for
+	 *         creating the value
+	 */
+	UUID getGenerationRuleID();
 
 	/**
 	 * @return the actual value used to generate the document
@@ -22,7 +32,5 @@ public interface IDocumentValueDescriptor extends Serializable {
 	 * @return <code>true</code> if the value was requested by another component
 	 */
 	boolean isMutated();
-
-	// TODO XML Descriptor: link to XML schema
 
 }
