@@ -2,14 +2,16 @@ package org.x2vc.xml.request;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
- * Standard implementation of {@link IAddTextContentRule}.
+ * Standard implementation of {@link IAddDataContentRule}.
  */
-public class AddTextContentRule implements IAddTextContentRule {
+public class AddDataContentRule implements IAddDataContentRule {
 
 	private static final long serialVersionUID = -6406343863665611821L;
 
+	private UUID elementID;
 	private IRequestedValue requestedValue;
 
 	/**
@@ -17,8 +19,9 @@ public class AddTextContentRule implements IAddTextContentRule {
 	 *
 	 * @param requestedValue
 	 */
-	AddTextContentRule(IRequestedValue requestedValue) {
+	AddDataContentRule(UUID elementID, IRequestedValue requestedValue) {
 		super();
+		this.elementID = elementID;
 		this.requestedValue = requestedValue;
 	}
 
@@ -27,8 +30,14 @@ public class AddTextContentRule implements IAddTextContentRule {
 	 *
 	 * @param requestedValue
 	 */
-	AddTextContentRule() {
+	AddDataContentRule(UUID elementID) {
 		super();
+		this.elementID = elementID;
+	}
+
+	@Override
+	public UUID getElementID() {
+		return this.elementID;
 	}
 
 	@Override
@@ -45,7 +54,7 @@ public class AddTextContentRule implements IAddTextContentRule {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(this.requestedValue);
+		return Objects.hash(this.elementID, this.requestedValue);
 	}
 
 	@Override
@@ -59,8 +68,9 @@ public class AddTextContentRule implements IAddTextContentRule {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		final AddTextContentRule other = (AddTextContentRule) obj;
-		return Objects.equals(this.requestedValue, other.requestedValue);
+		final AddDataContentRule other = (AddDataContentRule) obj;
+		return Objects.equals(this.elementID, other.elementID)
+				&& Objects.equals(this.requestedValue, other.requestedValue);
 	}
 
 }
