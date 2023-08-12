@@ -36,16 +36,10 @@ public class DemoProcess implements Callable<Integer> {
 
 	@Override
 	public Integer call() throws Exception {
-		/*
-		 * final URI uri = this.xsltFile.toURI(); final String source =
-		 * Files.readString(this.xsltFile.toPath());
-		 * logger.info("{} characters read from file {}", source.length(), uri);
-		 * IStylesheetInformation ssi = this.preprocessor.prepareStylesheet(uri,
-		 * source);
-		 */
+		logger.traceEntry();
 		this.stylesheetManager.get(this.xsltFile.toURI());
 
-		return 0;
+		return logger.traceExit(0);
 
 	}
 
