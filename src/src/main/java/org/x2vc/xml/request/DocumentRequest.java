@@ -103,7 +103,7 @@ public class DocumentRequest implements IDocumentRequest {
 				rv = textContentRule.getRequestedValue();
 			}
 			if (rv.isPresent()) {
-				newMap.put(rule.getElementID(), rv.get());
+				newMap.put(rule.getElementReferenceID(), rv.get());
 			}
 		});
 	}

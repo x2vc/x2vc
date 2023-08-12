@@ -18,27 +18,27 @@ import com.google.common.collect.Sets;
 public class AddElementRule extends AbstractGenerationRule implements IAddElementRule {
 
 	private static final long serialVersionUID = 7708211517867960929L;
-	private UUID elementID;
+	private UUID elementReferenceID;
 	private ImmutableSet<ISetAttributeRule> attributeRules;
 	private ImmutableList<IContentGenerationRule> contentRules;
 
 	private AddElementRule(UUID ruleID, Builder builder) {
 		super(ruleID);
-		this.elementID = builder.elementID;
+		this.elementReferenceID = builder.elementReferenceID;
 		this.attributeRules = ImmutableSet.copyOf(builder.attributeRules);
 		this.contentRules = ImmutableList.copyOf(builder.contentRules);
 	}
 
 	private AddElementRule(Builder builder) {
 		super();
-		this.elementID = builder.elementID;
+		this.elementReferenceID = builder.elementReferenceID;
 		this.attributeRules = ImmutableSet.copyOf(builder.attributeRules);
 		this.contentRules = ImmutableList.copyOf(builder.contentRules);
 	}
 
 	@Override
-	public UUID getElementID() {
-		return this.elementID;
+	public UUID getElementReferenceID() {
+		return this.elementReferenceID;
 	}
 
 	@Override
@@ -66,7 +66,7 @@ public class AddElementRule extends AbstractGenerationRule implements IAddElemen
 	 * Builder to build {@link AddElementRule}.
 	 */
 	public static final class Builder {
-		private UUID elementID;
+		private UUID elementReferenceID;
 		private UUID ruleID;
 		private Set<ISetAttributeRule> attributeRules = Sets.newHashSet();
 		private List<IContentGenerationRule> contentRules = Lists.newArrayList();
@@ -74,10 +74,10 @@ public class AddElementRule extends AbstractGenerationRule implements IAddElemen
 		/**
 		 * Creates a new builder
 		 *
-		 * @param elementID
+		 * @param elementReferenceID
 		 */
-		public Builder(UUID elementID) {
-			this.elementID = elementID;
+		public Builder(UUID elementReferenceID) {
+			this.elementReferenceID = elementReferenceID;
 		}
 
 		/**
@@ -86,11 +86,11 @@ public class AddElementRule extends AbstractGenerationRule implements IAddElemen
 		 * @param elementReference
 		 */
 		public Builder(IXMLElementReference elementReference) {
-			this.elementID = elementReference.getID();
+			this.elementReferenceID = elementReference.getID();
 		}
 
 		private Builder(AddElementRule addElementRule) {
-			this.elementID = addElementRule.elementID;
+			this.elementReferenceID = addElementRule.elementReferenceID;
 			this.attributeRules.addAll(addElementRule.attributeRules);
 			this.contentRules.addAll(addElementRule.contentRules);
 		}
@@ -146,7 +146,7 @@ public class AddElementRule extends AbstractGenerationRule implements IAddElemen
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + Objects.hash(this.attributeRules, this.contentRules, this.elementID);
+		result = prime * result + Objects.hash(this.attributeRules, this.contentRules, this.elementReferenceID);
 		return result;
 	}
 
@@ -164,7 +164,7 @@ public class AddElementRule extends AbstractGenerationRule implements IAddElemen
 		final AddElementRule other = (AddElementRule) obj;
 		return Objects.equals(this.attributeRules, other.attributeRules)
 				&& Objects.equals(this.contentRules, other.contentRules)
-				&& Objects.equals(this.elementID, other.elementID);
+				&& Objects.equals(this.elementReferenceID, other.elementReferenceID);
 	}
 
 }

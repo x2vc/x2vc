@@ -11,9 +11,9 @@ import com.google.common.collect.ImmutableSet;
 public interface IAddElementRule extends IContentGenerationRule {
 
 	/**
-	 * @return the ID of the element in the schema description
+	 * @return the ID of the element reference in the schema description
 	 */
-	UUID getElementID();
+	UUID getElementReferenceID();
 
 	/**
 	 * @return a list of rules to set the attribute values
