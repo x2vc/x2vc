@@ -25,10 +25,6 @@ public interface IXMLElementType extends IXMLSchemaObject {
 		 */
 		EMPTY,
 		/**
-		 * The element may contain any kind of unstructured text.
-		 */
-		TEXT,
-		/**
 		 * The element contains data of a certain type.
 		 */
 		DATA,
@@ -37,7 +33,7 @@ public interface IXMLElementType extends IXMLSchemaObject {
 		 */
 		ELEMENT,
 		/**
-		 * The element contains a variety if text and element content.
+		 * The element contains a variety of text and element content.
 		 */
 		MIXED
 	}
@@ -46,11 +42,6 @@ public interface IXMLElementType extends IXMLSchemaObject {
 	 * @return the content type of the element.
 	 */
 	ContentType getContentType();
-
-	/**
-	 * @return <code>true</code> if the element contains unstructured text.
-	 */
-	boolean hasTextContent();
 
 	/**
 	 * @return <code>true</code> if the element contains data of a certain type.
@@ -154,8 +145,8 @@ public interface IXMLElementType extends IXMLSchemaObject {
 
 	/**
 	 * @return <code>true</code> if the contents of the element can be influenced by
-	 *         user input. Only set if the content type is {@link ContentType#TEXT},
-	 *         {@link ContentType#DATA} or {@link ContentType#MIXED}.
+	 *         user input. Only set if the content type is {@link ContentType#DATA}
+	 *         or {@link ContentType#MIXED}.
 	 */
 	Optional<Boolean> isUserModifiable();
 

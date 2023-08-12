@@ -20,7 +20,6 @@ class XMLElementTypeTest {
 		assertFalse(elem.isValue());
 		assertEquals(0, elem.getAttributes().size());
 		assertEquals(ContentType.ELEMENT, elem.getContentType());
-		assertFalse(elem.hasTextContent());
 		assertFalse(elem.hasDataContent());
 		assertTrue(elem.hasElementContent());
 		assertFalse(elem.hasMixedContent());
@@ -44,28 +43,9 @@ class XMLElementTypeTest {
 	}
 
 	@Test
-	void testBuilderWithTextContent() {
-		final XMLElementType elem = new XMLElementType.Builder().withContentType(ContentType.TEXT).build();
-		assertEquals(ContentType.TEXT, elem.getContentType());
-		assertTrue(elem.hasTextContent());
-		assertFalse(elem.hasDataContent());
-		assertFalse(elem.hasElementContent());
-		assertFalse(elem.hasMixedContent());
-		assertThrows(IllegalStateException.class, () -> elem.getDatatype());
-		assertThrows(IllegalStateException.class, () -> elem.getMaxLength());
-		assertThrows(IllegalStateException.class, () -> elem.getMinValue());
-		assertThrows(IllegalStateException.class, () -> elem.getMaxValue());
-		assertThrows(IllegalStateException.class, () -> elem.getDiscreteValues());
-		assertThrows(IllegalStateException.class, () -> elem.isFixedValueset());
-		assertThrows(IllegalStateException.class, () -> elem.getElements());
-		assertThrows(IllegalStateException.class, () -> elem.getElementArrangement());
-		assertFalse(elem.isUserModifiable().isPresent());
-	}
-
-	@Test
 	void testBuilderWithUserModifiable() {
-		final XMLElementType elem = new XMLElementType.Builder().withContentType(ContentType.TEXT)
-			.withUserModifiable(true).build();
+		final XMLElementType elem = new XMLElementType.Builder().withContentType(ContentType.DATA)
+			.withDatatype(XMLDatatype.STRING).withUserModifiable(true).build();
 		assertTrue(elem.isUserModifiable().isPresent());
 		assertTrue(elem.isUserModifiable().get());
 	}

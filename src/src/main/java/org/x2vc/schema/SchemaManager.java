@@ -218,12 +218,12 @@ public class SchemaManager implements ISchemaManager {
 			final File stylesheetFile = new File(stylesheetURI);
 			final String schemaFilename = stylesheetFile.getParent() + File.separator
 					+ Files.getNameWithoutExtension(stylesheetFile.getName()) + ".x2vc_schema";
-			logger.debug("will attempt to locate existing schema for stylesheet %s at %s", stylesheetURI,
+			logger.debug("will attempt to locate existing schema for stylesheet {} at {}", stylesheetURI,
 					schemaFilename);
 			final File schemaFile = new File(schemaFilename);
 			if (schemaFile.canRead()) {
 				XMLSchema schema = null;
-				logger.debug("schema file %s found, will attempt to load", schemaFilename);
+				logger.debug("schema file {} found, will attempt to load", schemaFilename);
 				try {
 					schema = (XMLSchema) SchemaManager.this.unmarshaller
 						.unmarshal(Files.newReader(schemaFile, StandardCharsets.UTF_8));

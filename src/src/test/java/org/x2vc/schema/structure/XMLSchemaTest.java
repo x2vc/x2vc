@@ -58,8 +58,9 @@ class XMLSchemaTest {
 		final XMLElementType.Builder builderRootB = new XMLElementType.Builder().withComment("root all")
 			.withContentType(ContentType.ELEMENT).withElementArrangement(ElementArrangement.ALL);
 
-		final XMLElementType elemTextContent = new XMLElementType.Builder().withComment("all element with text content")
-			.withContentType(ContentType.TEXT).withUserModifiable(true).addTo(schemaBuilder);
+		final XMLElementType elemTextContent = new XMLElementType.Builder().withComment("all element with data content")
+			.withContentType(ContentType.DATA).withDatatype(XMLDatatype.STRING).withUserModifiable(true)
+			.addTo(schemaBuilder);
 		new XMLElementReference.Builder("text", elemTextContent)
 			.withComment("reference to all element with text content").addTo(builderRootB);
 		final XMLElementType elemMixedContent = new XMLElementType.Builder()
@@ -163,7 +164,8 @@ class XMLSchemaTest {
 			.withContentType(ContentType.ELEMENT).withElementArrangement(ElementArrangement.ALL);
 
 		final XMLElementType elemTextContent = new XMLElementType.Builder().withComment("all element with text content")
-			.withContentType(ContentType.TEXT).withUserModifiable(true).addTo(schemaBuilder);
+			.withContentType(ContentType.DATA).withDatatype(XMLDatatype.STRING).withUserModifiable(true)
+			.addTo(schemaBuilder);
 		new XMLElementReference.Builder("text", elemTextContent)
 			.withComment("reference to all element with text content").addTo(builderRootB);
 		final XMLElementType elemMixedContent = new XMLElementType.Builder()
