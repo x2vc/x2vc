@@ -52,17 +52,6 @@ public class AddElementRule extends AbstractGenerationRule implements IAddElemen
 	}
 
 	/**
-	 * Creates a builder to build {@link AddElementRule} and initialize it with the
-	 * given object.
-	 *
-	 * @param addElementRule to initialize the builder with
-	 * @return created builder
-	 */
-	public static Builder builderFrom(AddElementRule addElementRule) {
-		return new Builder(addElementRule);
-	}
-
-	/**
 	 * Builder to build {@link AddElementRule}.
 	 */
 	public static final class Builder {
@@ -87,12 +76,6 @@ public class AddElementRule extends AbstractGenerationRule implements IAddElemen
 		 */
 		public Builder(IXMLElementReference elementReference) {
 			this.elementReferenceID = elementReference.getID();
-		}
-
-		private Builder(AddElementRule addElementRule) {
-			this.elementReferenceID = addElementRule.elementReferenceID;
-			this.attributeRules.addAll(addElementRule.attributeRules);
-			this.contentRules.addAll(addElementRule.contentRules);
 		}
 
 		/**

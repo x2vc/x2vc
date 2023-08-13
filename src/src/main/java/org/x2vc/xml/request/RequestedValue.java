@@ -4,6 +4,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.x2vc.xml.document.IDocumentModifier;
+import org.x2vc.xml.document.IDocumentValueModifier;
 
 /**
  * Standard implementation of {@link IRequestedValue}.
@@ -14,6 +15,17 @@ public class RequestedValue implements IRequestedValue {
 
 	private String value;
 	private IDocumentModifier modifier;
+
+	/**
+	 * Create a new requested value based on a value modifier specification.
+	 *
+	 * @param modifier
+	 */
+	RequestedValue(IDocumentValueModifier modifier) {
+		super();
+		this.value = modifier.getReplacementValue();
+		this.modifier = modifier;
+	}
 
 	/**
 	 * Create a new requested value with a modifier specification.

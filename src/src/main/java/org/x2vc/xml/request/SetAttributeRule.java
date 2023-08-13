@@ -16,6 +16,19 @@ public class SetAttributeRule extends AbstractGenerationRule implements ISetAttr
 	private IRequestedValue requestedValue;
 
 	/**
+	 * Creates a new attribute rule with a specified ID and a requested value
+	 * specified.
+	 *
+	 * @param attributeID
+	 * @param requestedValue
+	 */
+	SetAttributeRule(UUID ruleID, UUID attributeID, IRequestedValue requestedValue) {
+		super(ruleID);
+		this.attributeID = attributeID;
+		this.requestedValue = requestedValue;
+	}
+
+	/**
 	 * Creates a new attribute rule with a random ID and a requested value
 	 * specified.
 	 *
@@ -25,6 +38,19 @@ public class SetAttributeRule extends AbstractGenerationRule implements ISetAttr
 	SetAttributeRule(UUID attributeID, IRequestedValue requestedValue) {
 		super();
 		this.attributeID = attributeID;
+		this.requestedValue = requestedValue;
+	}
+
+	/**
+	 * Creates a new attribute rule with a specified ID and a requested value
+	 * specified.
+	 *
+	 * @param attributeID
+	 * @param requestedValue
+	 */
+	SetAttributeRule(UUID ruleID, IXMLAttribute attribute, IRequestedValue requestedValue) {
+		super(ruleID);
+		this.attributeID = attribute.getID();
 		this.requestedValue = requestedValue;
 	}
 
@@ -42,6 +68,17 @@ public class SetAttributeRule extends AbstractGenerationRule implements ISetAttr
 	}
 
 	/**
+	 * Creates a new attribute rule with a specified ID and without a requested
+	 * value specified.
+	 *
+	 * @param attribute
+	 */
+	SetAttributeRule(UUID ruleID, UUID attributeID) {
+		super(ruleID);
+		this.attributeID = attributeID;
+	}
+
+	/**
 	 * Creates a new attribute rule with a random ID and without a requested value
 	 * specified.
 	 *
@@ -50,6 +87,17 @@ public class SetAttributeRule extends AbstractGenerationRule implements ISetAttr
 	SetAttributeRule(UUID attributeID) {
 		super();
 		this.attributeID = attributeID;
+	}
+
+	/**
+	 * Creates a new attribute rule with a specified ID and without a requested
+	 * value specified.
+	 *
+	 * @param attribute
+	 */
+	SetAttributeRule(UUID ruleID, IXMLAttribute attribute) {
+		super(ruleID);
+		this.attributeID = attribute.getID();
 	}
 
 	/**

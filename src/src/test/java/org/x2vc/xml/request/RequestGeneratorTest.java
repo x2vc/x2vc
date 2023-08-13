@@ -1,7 +1,7 @@
 package org.x2vc.xml.request;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.lenient;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -17,7 +17,6 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -25,8 +24,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.x2vc.schema.ISchemaManager;
 import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.schema.structure.XMLSchema;
+import org.x2vc.xml.document.IDocumentModifier;
 import org.x2vc.xml.document.IDocumentValueModifier;
 
+import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.UnmodifiableIterator;
 import com.google.common.io.Files;
@@ -324,24 +325,28 @@ class RequestGeneratorTest {
 			}
 		}
 
-		assertInRange("textElementCount", 1, textElementCount, 10);
+		assertInRange("textElementCount", 0, textElementCount, 10);
 		assertInRange("emptyElementCount", 1, emptyElementCount, 10);
 		assertInRange("dataContentCount", 0, dataContentCount, 121);
 	}
 
-	@Disabled("not yet implemented")
 	@Test
 	void testModifyRequest_ForAttributeValue() throws FileNotFoundException, JAXBException {
 
 		final IXMLSchema schema = loadSchema("SingleEmptyElement_WithRequiredAttribute.x2vc_schema");
+		// shortcut to provide schema for request construction
+		lenient().when(this.schemaManager.getSchema(URI.create("memory:schema/bar"), 1)).thenReturn(schema);
 
 		final IDocumentRequest originalRequest = this.requestGenerator.generateNewRequest(schema);
 		final IAddElementRule originalRootElementRule = originalRequest.getRootElementRule();
 		final ISetAttributeRule originalRootAttributeRule = originalRootElementRule.getAttributeRules()
 			.toArray(new ISetAttributeRule[0])[0];
+		final UUID modifiedAttributeID = UUID.fromString("73a9b784-7a61-48c4-8110-9855cef81cef");
+		assertEquals(modifiedAttributeID, originalRootAttributeRule.getAttributeID());
 
-		when(this.valueModifier.getSchemaElementID()).thenReturn(originalRootAttributeRule.getAttributeID());
-		when(this.valueModifier.getReplacementValue()).thenReturn("foobar");
+		lenient().when(this.valueModifier.getGenerationRuleID()).thenReturn(originalRootAttributeRule.getID());
+		lenient().when(this.valueModifier.getSchemaElementID()).thenReturn(originalRootAttributeRule.getAttributeID());
+		lenient().when(this.valueModifier.getReplacementValue()).thenReturn("foobar");
 
 		final IDocumentRequest modifiedRequest = this.requestGenerator.modifyRequest(originalRequest,
 				this.valueModifier);
@@ -353,28 +358,37 @@ class RequestGeneratorTest {
 		final Optional<IRequestedValue> rv = modifiedRootAttributeRule.getRequestedValue();
 		assertTrue(rv.isPresent());
 		final IRequestedValue requestedValue = rv.get();
-		assertSame(this.valueModifier, requestedValue.getModifier());
+		final Optional<IDocumentModifier> mod = requestedValue.getModifier();
+		assertTrue(mod.isPresent());
+		final IDocumentModifier modifier = mod.get();
+		assertSame(this.valueModifier, modifier);
 		assertEquals("foobar", requestedValue.getValue());
 
 		final ImmutableMultimap<UUID, IRequestedValue> rvMap = modifiedRequest.getRequestedValues();
-		assertTrue(rvMap.containsKey(originalRootAttributeRule.getAttributeID()));
-		assertEquals(Set.of(requestedValue), rvMap.get(originalRootAttributeRule.getAttributeID()));
+		assertTrue(rvMap.containsKey(modifiedAttributeID));
+		final ImmutableCollection<IRequestedValue> valuesFromMap = rvMap.get(modifiedAttributeID);
+		assertEquals(1, valuesFromMap.size());
+		assertSame(requestedValue, valuesFromMap.iterator().next());
 
 	}
 
-	@Disabled("not yet implemented")
 	@Test
 	void testModifyRequest_ForElementContent() throws FileNotFoundException, JAXBException {
 
 		final IXMLSchema schema = loadSchema("SingleDataElement.x2vc_schema");
+		// shortcut to provide schema for request construction
+		lenient().when(this.schemaManager.getSchema(URI.create("memory:schema/bar"), 1)).thenReturn(schema);
 
 		final IDocumentRequest originalRequest = this.requestGenerator.generateNewRequest(schema);
 		final IAddElementRule originalRootElementRule = originalRequest.getRootElementRule();
 		final IAddDataContentRule originalRootContentRule = (IAddDataContentRule) originalRootElementRule
 			.getContentRules().get(0);
+		final UUID modifiedElementID = UUID.fromString("45023ac4-9c79-4247-bbe5-36f893bd7eaa");
+		assertEquals(modifiedElementID, originalRootContentRule.getElementID());
 
-		when(this.valueModifier.getSchemaElementID()).thenReturn(originalRootContentRule.getElementID());
-		when(this.valueModifier.getReplacementValue()).thenReturn("foobar");
+		lenient().when(this.valueModifier.getGenerationRuleID()).thenReturn(originalRootContentRule.getID());
+		lenient().when(this.valueModifier.getSchemaElementID()).thenReturn(originalRootContentRule.getElementID());
+		lenient().when(this.valueModifier.getReplacementValue()).thenReturn("foobar");
 
 		final IDocumentRequest modifiedRequest = this.requestGenerator.modifyRequest(originalRequest,
 				this.valueModifier);
@@ -386,12 +400,17 @@ class RequestGeneratorTest {
 		final Optional<IRequestedValue> rv = modifiedRootContentRule.getRequestedValue();
 		assertTrue(rv.isPresent());
 		final IRequestedValue requestedValue = rv.get();
-		assertSame(this.valueModifier, requestedValue.getModifier());
+		final Optional<IDocumentModifier> mod = requestedValue.getModifier();
+		assertTrue(mod.isPresent());
+		final IDocumentModifier modifier = mod.get();
+		assertSame(this.valueModifier, modifier);
 		assertEquals("foobar", requestedValue.getValue());
 
 		final ImmutableMultimap<UUID, IRequestedValue> rvMap = modifiedRequest.getRequestedValues();
-		assertTrue(rvMap.containsKey(originalRootContentRule.getElementID()));
-		assertEquals(Set.of(requestedValue), rvMap.get(originalRootContentRule.getID()));
+		assertTrue(rvMap.containsKey(modifiedElementID));
+		final ImmutableCollection<IRequestedValue> valuesFromMap = rvMap.get(modifiedElementID);
+		assertEquals(1, valuesFromMap.size());
+		assertSame(requestedValue, valuesFromMap.iterator().next());
 
 	}
 

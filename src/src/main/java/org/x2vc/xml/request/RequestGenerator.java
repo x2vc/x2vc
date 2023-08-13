@@ -16,6 +16,7 @@ import org.x2vc.schema.structure.IXMLElementType.ContentType;
 import org.x2vc.schema.structure.IXMLElementType.ElementArrangement;
 import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.xml.document.IDocumentModifier;
+import org.x2vc.xml.document.IDocumentValueModifier;
 import org.x2vc.xml.request.AddElementRule.Builder;
 
 import com.google.common.collect.Lists;
@@ -42,21 +43,12 @@ public class RequestGenerator implements IRequestGenerator {
 		this.schemaManager = schemaManager;
 	}
 
+	// ===== initial request generation ==========
+
 	@Override
 	public IDocumentRequest generateNewRequest(IXMLSchema schema) {
 		logger.traceEntry();
 		final IAddElementRule rootElementRule = generateRootElementRule(schema);
-		final DocumentRequest request = new DocumentRequest(schema, rootElementRule);
-		return logger.traceExit(request);
-	}
-
-	@Override
-	public IDocumentRequest modifyRequest(IDocumentRequest originalRequest, IDocumentModifier modifier) {
-		logger.traceEntry();
-		final IXMLSchema schema = this.schemaManager.getSchema(originalRequest.getSchemaURI(),
-				originalRequest.getSchemaVersion());
-		final IAddElementRule rootElementRule = null;
-		// TODO XML Request Generator: Auto-generated method stub
 		final DocumentRequest request = new DocumentRequest(schema, rootElementRule);
 		return logger.traceExit(request);
 	}
@@ -76,8 +68,10 @@ public class RequestGenerator implements IRequestGenerator {
 	}
 
 	/**
-	 * @param ixmlElementReference
-	 * @return
+	 * Generate a single rule for an element reference
+	 *
+	 * @param elementReference the element reference
+	 * @return the {@link IAddElementRule} generated
 	 */
 	private IAddElementRule generateSingleRuleForElementReference(IXMLElementReference elementReference) {
 		logger.traceEntry("element reference {} for element {}", elementReference.getID(),
@@ -106,9 +100,10 @@ public class RequestGenerator implements IRequestGenerator {
 	}
 
 	/**
-	 * Determines whether to add an {@link ISetAttributeRule} to a builder.
+	 * Generates an attribute rule (or maybe not, if the attribute is optional).
 	 *
-	 * @param attrib
+	 * @param attrib the attribute
+	 * @return the {@link ISetAttributeRule}, or an empty object
 	 */
 	private Optional<ISetAttributeRule> generateAttributeRule(IXMLAttribute attrib) {
 		logger.traceEntry("attribute {}", attrib.getID());
@@ -129,7 +124,10 @@ public class RequestGenerator implements IRequestGenerator {
 	}
 
 	/**
-	 * @param element
+	 * Creates the rules to generate the content of an element.
+	 *
+	 * @param element the element
+	 * @return a list of {@link IContentGenerationRule} to generate the conten
 	 */
 	private List<IContentGenerationRule> generateElementContent(IXMLElementType element) {
 		logger.traceEntry("element {}", element.getID());
@@ -177,9 +175,13 @@ public class RequestGenerator implements IRequestGenerator {
 	}
 
 	/**
-	 * @param element
-	 * @param originalRules
-	 * @return
+	 * Adds random {@link IAddRawContentRule} to the rules to simulate mixed
+	 * content.
+	 *
+	 * @param element       the parent element
+	 * @param originalRules the {@link IContentGenerationRule} list
+	 * @return the {@link IContentGenerationRule} list with additional
+	 *         {@link IAddRawContentRule} instances mixed in.
 	 */
 	private List<IContentGenerationRule> addRandomRawRules(IXMLElementType element,
 			List<IContentGenerationRule> originalRules) {
@@ -199,15 +201,142 @@ public class RequestGenerator implements IRequestGenerator {
 	}
 
 	/**
-	 * @param references
-	 * @return
+	 * Selects one reference from a collection of references randomly.
+	 *
+	 * @param references the list of possible references
+	 * @return the reference selected
 	 */
 	private IXMLElementReference selectOneReferenceOf(Collection<IXMLElementReference> references) {
 		logger.traceEntry();
+		// shortcut for single-element reference lists
+		if (references.size() == 1) {
+			return logger.traceExit(references.iterator().next());
+		}
 		final IXMLElementReference[] referenceArray = references.toArray(new IXMLElementReference[0]);
 		final int index = ThreadLocalRandom.current().nextInt(0, referenceArray.length);
 		logger.debug("aelected choice element reference {} out of {} options", index + 1, referenceArray.length);
 		return logger.traceExit(referenceArray[index]);
+	}
+
+	// ===== request modification ==========
+
+	@Override
+	public IDocumentRequest modifyRequest(IDocumentRequest originalRequest, IDocumentModifier modifier) {
+		logger.traceEntry();
+		final IXMLSchema schema = this.schemaManager.getSchema(originalRequest.getSchemaURI(),
+				originalRequest.getSchemaVersion());
+		IAddElementRule rootElementRule = null;
+
+		// dispatch according to modifier type
+		if (modifier instanceof final IDocumentValueModifier valueModifier) {
+			rootElementRule = copyAndModifyAddElementRule(originalRequest.getRootElementRule(), valueModifier);
+		} else {
+			throw logger.throwing(new IllegalArgumentException(
+					String.format("Unknown modifier type %s", modifier.getClass().toString())));
+		}
+
+		final DocumentRequest request = new DocumentRequest(schema, rootElementRule);
+		return logger.traceExit(request);
+	}
+
+	/**
+	 * Creates a copy of the {@link IAddElementRule} while applying the modification
+	 * specified by a {@link IDocumentValueModifier}.
+	 *
+	 * @param originalRule  the original element generation rule
+	 * @param valueModifier the modifier to apply
+	 * @return the new element generation rule
+	 */
+	private IAddElementRule copyAndModifyAddElementRule(IAddElementRule originalRule,
+			IDocumentValueModifier valueModifier) {
+		logger.traceEntry();
+		final Builder builder = new AddElementRule.Builder(originalRule.getElementReferenceID())
+			.withRuleID(originalRule.getID());
+		originalRule.getAttributeRules().forEach(
+				attributeRule -> builder.addAttributeRule(copyAndModifySetAttributeRule(attributeRule, valueModifier)));
+		originalRule.getContentRules().forEach(contentRule -> {
+			if (contentRule instanceof final IAddDataContentRule dataContentRule) {
+				builder.addContentRule(copyAndModifyAddDataContentRule(dataContentRule, valueModifier));
+			} else if (contentRule instanceof final IAddElementRule elementRule) {
+				builder.addContentRule(copyAndModifyAddElementRule(elementRule, valueModifier));
+			} else if (contentRule instanceof final IAddRawContentRule rawContentRule) {
+				builder.addContentRule(copyAndModifyAddRawContentRule(rawContentRule, valueModifier));
+			} else {
+				throw logger.throwing(new IllegalStateException(
+						String.format("Unknown content rule type %s", contentRule.getClass().toString())));
+
+			}
+		});
+		return logger.traceExit(builder.build());
+	}
+
+	/**
+	 * Creates a copy of the {@link IAddDataContentRule} while applying the
+	 * modification specified by a {@link IDocumentValueModifier}.
+	 *
+	 * @param originalRule  the original generation rule
+	 * @param valueModifier the modifier to apply
+	 * @return the new generation rule
+	 */
+	private IAddDataContentRule copyAndModifyAddDataContentRule(IAddDataContentRule originalRule,
+			IDocumentValueModifier valueModifier) {
+		logger.traceEntry();
+		IAddDataContentRule newRule = null;
+		if (originalRule.getID().equals(valueModifier.getGenerationRuleID())) {
+			logger.debug("Adding requested value to rule {} to generate data content for element {}",
+					originalRule.getID(), originalRule.getElementID());
+			newRule = new AddDataContentRule(originalRule.getID(), originalRule.getElementID(),
+					new RequestedValue(valueModifier));
+		} else {
+			newRule = new AddDataContentRule(originalRule.getID(), originalRule.getElementID());
+		}
+		return logger.traceExit(newRule);
+	}
+
+	/**
+	 * Creates a copy of the {@link IAddRawContentRule} while applying the
+	 * modification specified by a {@link IDocumentValueModifier}.
+	 *
+	 * @param originalRule  the original generation rule
+	 * @param valueModifier the modifier to apply
+	 * @return the new generation rule
+	 */
+	private IAddRawContentRule copyAndModifyAddRawContentRule(IAddRawContentRule originalRule,
+			IDocumentValueModifier valueModifier) {
+		logger.traceEntry();
+		IAddRawContentRule newRule = null;
+		if (originalRule.getID().equals(valueModifier.getGenerationRuleID())) {
+			logger.debug("Adding requested value to rule {} to generate raw content for element {}",
+					originalRule.getID(), originalRule.getElementID());
+			newRule = new AddRawContentRule(originalRule.getID(), originalRule.getElementID(),
+					new RequestedValue(valueModifier));
+		} else {
+			newRule = new AddRawContentRule(originalRule.getID(), originalRule.getElementID());
+		}
+		return logger.traceExit(newRule);
+	}
+
+	/**
+	 * Creates a copy of the {@link ISetAttributeRule} while applying the
+	 * modification specified by a {@link IDocumentValueModifier}.
+	 *
+	 * @param originalRule  the original generation rule
+	 * @param valueModifier the modifier to apply
+	 * @return the new generation rule
+	 */
+	private ISetAttributeRule copyAndModifySetAttributeRule(ISetAttributeRule originalRule,
+			IDocumentValueModifier valueModifier) {
+		logger.traceEntry();
+		ISetAttributeRule newRule = null;
+		if (originalRule.getID().equals(valueModifier.getGenerationRuleID())) {
+			logger.debug("Adding requested value to rule {} to generate attribute {}", originalRule.getID(),
+					originalRule.getAttributeID());
+			newRule = new SetAttributeRule(originalRule.getID(), originalRule.getAttributeID(),
+					new RequestedValue(valueModifier));
+		} else {
+			newRule = new SetAttributeRule(originalRule.getID(), originalRule.getAttributeID());
+		}
+		return logger.traceExit(newRule);
 	}
 
 }
