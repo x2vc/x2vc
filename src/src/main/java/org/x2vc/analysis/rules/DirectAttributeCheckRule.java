@@ -4,7 +4,6 @@ import static com.google.common.base.Preconditions.checkArgument;
 
 import java.util.Optional;
 import java.util.Set;
-import java.util.UUID;
 import java.util.function.Consumer;
 
 import org.apache.logging.log4j.LogManager;
@@ -90,14 +89,13 @@ public class DirectAttributeCheckRule extends AbstractAttributeRule {
 		// TODO XSS Rule A.1: add payload for later handling
 
 		for (final IDocumentValueDescriptor valueDescriptor : valueDescriptors) {
-			final UUID sid = valueDescriptor.getSchemaElementID();
 			// try to replace the entire attribute with style attribute
-			new DocumentValueModifier.Builder(sid).withAnalyzerRuleID(RULE_ID).withOriginalValue(attributeName)
-				.withReplacementValue("style").withPayload(new DirectAttributeCheckPayload(elementSelector, "style"))
-				.sendTo(collector);
+			new DocumentValueModifier.Builder(valueDescriptor).withAnalyzerRuleID(RULE_ID)
+				.withOriginalValue(attributeName).withReplacementValue("style")
+				.withPayload(new DirectAttributeCheckPayload(elementSelector, "style")).sendTo(collector);
 			// try to replace the entire Attribute with a Javascript event handler
-			new DocumentValueModifier.Builder(sid).withAnalyzerRuleID(RULE_ID).withOriginalValue(attributeName)
-				.withReplacementValue("onerror")
+			new DocumentValueModifier.Builder(valueDescriptor).withAnalyzerRuleID(RULE_ID)
+				.withOriginalValue(attributeName).withReplacementValue("onerror")
 				.withPayload(new DirectAttributeCheckPayload(elementSelector, "onerror")).sendTo(collector);
 		}
 		logger.traceExit();
@@ -113,18 +111,17 @@ public class DirectAttributeCheckRule extends AbstractAttributeRule {
 		logger.traceEntry();
 
 		for (final IDocumentValueDescriptor valueDescriptor : valueDescriptors) {
-			final UUID sid = valueDescriptor.getSchemaElementID();
 			// try to introduce new attribute by breaking the encoding
-			new DocumentValueModifier.Builder(sid).withAnalyzerRuleID(RULE_ID).withOriginalValue(candidate)
+			new DocumentValueModifier.Builder(valueDescriptor).withAnalyzerRuleID(RULE_ID).withOriginalValue(candidate)
 				.withReplacementValue("=\"\" style=\"test\" rest")
 				.withPayload(new DirectAttributeCheckPayload(elementSelector, "style", "test")).sendTo(collector);
-			new DocumentValueModifier.Builder(sid).withAnalyzerRuleID(RULE_ID).withOriginalValue(candidate)
+			new DocumentValueModifier.Builder(valueDescriptor).withAnalyzerRuleID(RULE_ID).withOriginalValue(candidate)
 				.withReplacementValue("=\"\" onerror=\"test\" rest")
 				.withPayload(new DirectAttributeCheckPayload(elementSelector, "onerror", "test")).sendTo(collector);
-			new DocumentValueModifier.Builder(sid).withAnalyzerRuleID(RULE_ID).withOriginalValue(candidate)
+			new DocumentValueModifier.Builder(valueDescriptor).withAnalyzerRuleID(RULE_ID).withOriginalValue(candidate)
 				.withReplacementValue("=&quot;&quot; style=&quot;foo&quot; rest")
 				.withPayload(new DirectAttributeCheckPayload(elementSelector, "style", "foo")).sendTo(collector);
-			new DocumentValueModifier.Builder(sid).withAnalyzerRuleID(RULE_ID).withOriginalValue(candidate)
+			new DocumentValueModifier.Builder(valueDescriptor).withAnalyzerRuleID(RULE_ID).withOriginalValue(candidate)
 				.withReplacementValue("=&quot;&quot; onerror=&quot;foo&quot; rest")
 				.withPayload(new DirectAttributeCheckPayload(elementSelector, "onerror", "foo")).sendTo(collector);
 

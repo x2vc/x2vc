@@ -15,6 +15,7 @@ public class DocumentValueModifier implements IDocumentValueModifier {
 	private static final long serialVersionUID = -1698974074806350109L;
 	private IModifierPayload payload;
 	private UUID schemaElementID;
+	private UUID generationRuleID;
 	private String originalValue;
 	private String replacementValue;
 	private String analyzerRuleID;
@@ -23,6 +24,7 @@ public class DocumentValueModifier implements IDocumentValueModifier {
 		checkNotNull(builder.replacementValue);
 		this.payload = builder.payload;
 		this.schemaElementID = builder.schemaElementID;
+		this.generationRuleID = builder.generationRuleID;
 		this.originalValue = builder.originalValue;
 		this.replacementValue = builder.replacementValue;
 		this.analyzerRuleID = builder.analyzerRuleID;
@@ -36,6 +38,11 @@ public class DocumentValueModifier implements IDocumentValueModifier {
 	@Override
 	public UUID getSchemaElementID() {
 		return this.schemaElementID;
+	}
+
+	@Override
+	public UUID getGenerationRuleID() {
+		return this.generationRuleID;
 	}
 
 	@Override
@@ -59,6 +66,7 @@ public class DocumentValueModifier implements IDocumentValueModifier {
 	public static final class Builder {
 		private IModifierPayload payload;
 		private UUID schemaElementID;
+		private UUID generationRuleID;
 		private String originalValue;
 		private String replacementValue;
 		private String analyzerRuleID;
@@ -66,10 +74,23 @@ public class DocumentValueModifier implements IDocumentValueModifier {
 		/**
 		 * Creates a new builder
 		 *
-		 * @param schemaElementID
+		 * @param valueDescriptor the descriptor of the value to modify
 		 */
-		public Builder(UUID schemaElementID) {
+		public Builder(IDocumentValueDescriptor valueDescriptor) {
+			this.schemaElementID = valueDescriptor.getSchemaElementID();
+			this.generationRuleID = valueDescriptor.getGenerationRuleID();
+		}
+
+		/**
+		 * Creates a new builder
+		 *
+		 * @param schemaElementID
+		 * @param generationRuleID
+		 *
+		 */
+		public Builder(UUID schemaElementID, UUID generationRuleID) {
 			this.schemaElementID = schemaElementID;
+			this.generationRuleID = generationRuleID;
 		}
 
 		/**
@@ -138,8 +159,8 @@ public class DocumentValueModifier implements IDocumentValueModifier {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(this.analyzerRuleID, this.originalValue, this.payload, this.replacementValue,
-				this.schemaElementID);
+		return Objects.hash(this.analyzerRuleID, this.generationRuleID, this.originalValue, this.payload,
+				this.replacementValue, this.schemaElementID);
 	}
 
 	@Override
@@ -155,6 +176,7 @@ public class DocumentValueModifier implements IDocumentValueModifier {
 		}
 		final DocumentValueModifier other = (DocumentValueModifier) obj;
 		return Objects.equals(this.analyzerRuleID, other.analyzerRuleID)
+				&& Objects.equals(this.generationRuleID, other.generationRuleID)
 				&& Objects.equals(this.originalValue, other.originalValue)
 				&& Objects.equals(this.payload, other.payload)
 				&& Objects.equals(this.replacementValue, other.replacementValue)
