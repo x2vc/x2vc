@@ -25,7 +25,7 @@ class DocumentRequestTest {
 		final RequestedValue rootTextValue = new RequestedValue("rootText");
 		rootBuilder.addContentRule(new AddDataContentRule(rootUUID, rootTextValue));
 		final RequestedValue rootRawValue = new RequestedValue("rootRaw");
-		rootBuilder.addContentRule(new AddRawContentRule(rootRawValue));
+		rootBuilder.addContentRule(new AddRawContentRule(rootUUID, rootRawValue));
 		final UUID subUUID = UUID.randomUUID();
 		final Builder subBuilder = new AddElementRule.Builder(subUUID);
 		final UUID subAttribUUID = UUID.randomUUID();
@@ -34,7 +34,7 @@ class DocumentRequestTest {
 		final RequestedValue subTextValue = new RequestedValue("subText");
 		subBuilder.addContentRule(new AddDataContentRule(subUUID, subTextValue));
 		final RequestedValue subRawValue = new RequestedValue("subRaw");
-		subBuilder.addContentRule(new AddRawContentRule(subRawValue));
+		subBuilder.addContentRule(new AddRawContentRule(subUUID, subRawValue));
 		rootBuilder.addContentRule(subBuilder.build());
 		final AddElementRule rootRule = rootBuilder.build();
 

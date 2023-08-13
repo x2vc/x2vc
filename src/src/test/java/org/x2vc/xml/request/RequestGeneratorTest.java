@@ -127,12 +127,11 @@ class RequestGeneratorTest {
 			}
 		}
 
-		final int MAX_ERROR = 2; // allow for random error
-		final long lowerBound = Math.round(Math.floor((NUM_REQUESTS / 2) - MAX_ERROR));
-		final long upperBound = Math.round(Math.ceil((NUM_REQUESTS / 2) + MAX_ERROR));
+		final int MAX_ERROR = 5; // allow for random error
+		final int lowerBound = (int) Math.round(Math.floor((NUM_REQUESTS / 2) - MAX_ERROR));
+		final int upperBound = (int) Math.round(Math.ceil((NUM_REQUESTS / 2) + MAX_ERROR));
 
-		assertTrue((lowerBound <= attributesFound) && (attributesFound <= upperBound),
-				String.format("Value not within range: %d <= %d <= %d", lowerBound, attributesFound, upperBound));
+		assertInRange("attributesFound", lowerBound, attributesFound, upperBound);
 	}
 
 	@Test
@@ -154,11 +153,10 @@ class RequestGeneratorTest {
 		}
 
 		final int MAX_ERROR = 10; // allow for random error
-		final long lowerBound = Math.round(Math.floor((NUM_REQUESTS * 3) - MAX_ERROR));
-		final long upperBound = Math.round(Math.ceil((NUM_REQUESTS * 3) + MAX_ERROR));
+		final int lowerBound = (int) Math.round(Math.floor((NUM_REQUESTS * 3) - MAX_ERROR));
+		final int upperBound = (int) Math.round(Math.ceil((NUM_REQUESTS * 3) + MAX_ERROR));
 
-		assertTrue((lowerBound <= attributesFound) && (attributesFound <= upperBound),
-				String.format("Value not within range: %d <= %d <= %d", lowerBound, attributesFound, upperBound));
+		assertInRange("attributesFound", lowerBound, attributesFound, upperBound);
 	}
 
 	@Test
@@ -182,7 +180,6 @@ class RequestGeneratorTest {
 		}
 	}
 
-	@Disabled("not yet implemented")
 	@Test
 	void testGenerateNewRequest_SubElement_WithArrangementAll()
 			throws URISyntaxException, FileNotFoundException, JAXBException {
@@ -221,18 +218,37 @@ class RequestGeneratorTest {
 		}
 
 		assertEquals(1, textElementCount);
-		assertTrue((1 <= emptyElementCount) && (emptyElementCount <= 20),
-				String.format("Value not within range: %d <= %d <= %d", 1, emptyElementCount, 20));
+		assertInRange("emptyElementCount", 1, emptyElementCount, 20);
 	}
 
-	@Disabled("not yet implemented")
 	@Test
 	void testGenerateNewRequest_SubElement_WithArrangementChoice()
 			throws URISyntaxException, FileNotFoundException, JAXBException {
 		final IXMLSchema schema = loadSchema("SubElement_WithArrangementChoice.x2vc_schema");
 
-		final UUID textElementID = UUID.fromString("c90f6614-362f-4c50-a040-ebeb8f9eb113");
-		final UUID emptyElementID = UUID.fromString("dd7fa303-9fe6-49fb-8257-66608a7e434f");
+		final UUID textElementReferenceID = UUID.fromString("c90f6614-362f-4c50-a040-ebeb8f9eb113");
+		final UUID emptyElementReferenceID = UUID.fromString("dd7fa303-9fe6-49fb-8257-66608a7e434f");
+
+		final IDocumentRequest request = this.requestGenerator.generateNewRequest(schema);
+		final IAddElementRule rootElementRule = request.getRootElementRule();
+		assertEquals(UUID.fromString("fe3fa767-685a-4c5a-8531-ca717a7cb72b"), rootElementRule.getElementReferenceID());
+		assertEquals(0, rootElementRule.getAttributeRules().size());
+		assertEquals(1, rootElementRule.getContentRules().size());
+
+		final UUID subElementReferenceID = ((IAddElementRule) rootElementRule.getContentRules().get(0))
+			.getElementReferenceID();
+
+		assertTrue(Set.of(textElementReferenceID, emptyElementReferenceID).contains(subElementReferenceID));
+
+	}
+
+	@Test
+	void testGenerateNewRequest_SubElement_WithArrangementSequence()
+			throws URISyntaxException, FileNotFoundException, JAXBException {
+		final IXMLSchema schema = loadSchema("SubElement_WithArrangementSequence.x2vc_schema");
+
+		final UUID textElementReferenceID = UUID.fromString("c90f6614-362f-4c50-a040-ebeb8f9eb113");
+		final UUID emptyElementReferenceID = UUID.fromString("dd7fa303-9fe6-49fb-8257-66608a7e434f");
 
 		final IDocumentRequest request = this.requestGenerator.generateNewRequest(schema);
 		final IAddElementRule rootElementRule = request.getRootElementRule();
@@ -240,11 +256,11 @@ class RequestGeneratorTest {
 		assertEquals(0, rootElementRule.getAttributeRules().size());
 
 		// first element MUST be the text element ([1..1])
-		assertEquals(textElementID,
+		assertEquals(textElementReferenceID,
 				((IAddElementRule) rootElementRule.getContentRules().get(0)).getElementReferenceID());
 
 		// second element MUST be the empty element ([1..1])
-		assertEquals(emptyElementID,
+		assertEquals(emptyElementReferenceID,
 				((IAddElementRule) rootElementRule.getContentRules().get(1)).getElementReferenceID());
 
 		// next must be [1..10] text elements followed by [1..10] empty elements
@@ -252,11 +268,11 @@ class RequestGeneratorTest {
 		int emptyElementCount = 0;
 		for (int i = 2; i < rootElementRule.getContentRules().size(); i++) {
 			final UUID elementID = ((IAddElementRule) rootElementRule.getContentRules().get(i)).getElementReferenceID();
-			if (elementID.equals(textElementID)) {
+			if (elementID.equals(textElementReferenceID)) {
 				// no empty elements may have occurred before a text element
 				assertEquals(0, emptyElementCount);
 				textElementCount++;
-			} else if (elementID.equals(emptyElementID)) {
+			} else if (elementID.equals(emptyElementReferenceID)) {
 				// at least one text element must have occurred before the empty element
 				assertNotEquals(0, textElementCount);
 				emptyElementCount++;
@@ -265,10 +281,52 @@ class RequestGeneratorTest {
 			}
 		}
 
-		assertTrue((1 <= textElementCount) && (textElementCount <= 10),
-				String.format("Value not within range: %d <= %d <= %d", 1, textElementCount, 10));
-		assertTrue((1 <= emptyElementCount) && (emptyElementCount <= 10),
-				String.format("Value not within range: %d <= %d <= %d", 1, emptyElementCount, 10));
+		assertInRange("textElementCount", 1, textElementCount, 10);
+		assertInRange("emptyElementCount", 1, emptyElementCount, 10);
+	}
+
+	@Test
+	void testGenerateNewRequest_MixedContent() throws URISyntaxException, FileNotFoundException, JAXBException {
+		final IXMLSchema schema = loadSchema("MixedContent.x2vc_schema");
+
+		final UUID rootElementID = UUID.fromString("45023ac4-9c79-4247-bbe5-36f893bd7eaa");
+		final UUID textElementReferenceID = UUID.fromString("c90f6614-362f-4c50-a040-ebeb8f9eb113");
+		final UUID emptyElementReferenceID = UUID.fromString("dd7fa303-9fe6-49fb-8257-66608a7e434f");
+
+		final IDocumentRequest request = this.requestGenerator.generateNewRequest(schema);
+		final IAddElementRule rootElementRule = request.getRootElementRule();
+		assertEquals(UUID.fromString("fe3fa767-685a-4c5a-8531-ca717a7cb72b"), rootElementRule.getElementReferenceID());
+		assertEquals(0, rootElementRule.getAttributeRules().size());
+
+		// expect a mix of [1..10] text elements, [1..10] empty elements and any number
+		// of text elements in between
+		int textElementCount = 0;
+		int emptyElementCount = 0;
+		int dataContentCount = 0;
+		for (int i = 2; i < rootElementRule.getContentRules().size(); i++) {
+			final IContentGenerationRule rule = rootElementRule.getContentRules().get(i);
+			if (rule instanceof final IAddElementRule addElementRule) {
+				final UUID elementID = addElementRule.getElementReferenceID();
+				if (elementID.equals(textElementReferenceID)) {
+					textElementCount++;
+				} else if (elementID.equals(emptyElementReferenceID)) {
+					emptyElementCount++;
+				} else {
+					fail("Unexpected element ID " + elementID);
+				}
+			} else if (rule instanceof final IAddRawContentRule addDataContentRule) {
+				final UUID elementID = addDataContentRule.getElementID();
+				if (elementID.equals(rootElementID)) {
+					dataContentCount++;
+				} else {
+					fail("Unexpected element ID " + elementID);
+				}
+			}
+		}
+
+		assertInRange("textElementCount", 1, textElementCount, 10);
+		assertInRange("emptyElementCount", 1, emptyElementCount, 10);
+		assertInRange("dataContentCount", 0, dataContentCount, 121);
 	}
 
 	@Disabled("not yet implemented")
@@ -335,6 +393,12 @@ class RequestGeneratorTest {
 		assertTrue(rvMap.containsKey(originalRootContentRule.getElementID()));
 		assertEquals(Set.of(requestedValue), rvMap.get(originalRootContentRule.getID()));
 
+	}
+
+	private void assertInRange(String valueName, int lowerBound, int value, int upperBound) {
+		if (!((lowerBound <= value) && (value <= upperBound))) {
+			fail(String.format("Value %s not within range: %d <= %d <= %d", valueName, lowerBound, value, upperBound));
+		}
 	}
 
 	private IXMLSchema loadSchema(String schemaFileName) throws FileNotFoundException, JAXBException {

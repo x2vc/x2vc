@@ -2,6 +2,7 @@ package org.x2vc.xml.request;
 
 import java.util.Objects;
 import java.util.Optional;
+import java.util.UUID;
 
 /**
  * Standard implementation of {@link IAddRawContentRule}.
@@ -10,6 +11,7 @@ public class AddRawContentRule extends AbstractGenerationRule implements IAddRaw
 
 	private static final long serialVersionUID = 6302144710732981152L;
 
+	private UUID elementID;
 	private IRequestedValue requestedValue;
 
 	/**
@@ -17,8 +19,9 @@ public class AddRawContentRule extends AbstractGenerationRule implements IAddRaw
 	 *
 	 * @param requestedValue
 	 */
-	AddRawContentRule(IRequestedValue requestedValue) {
+	AddRawContentRule(UUID elementID, IRequestedValue requestedValue) {
 		super();
+		this.elementID = elementID;
 		this.requestedValue = requestedValue;
 	}
 
@@ -27,8 +30,14 @@ public class AddRawContentRule extends AbstractGenerationRule implements IAddRaw
 	 *
 	 * @param requestedValue
 	 */
-	AddRawContentRule() {
+	AddRawContentRule(UUID elementID) {
 		super();
+		this.elementID = elementID;
+	}
+
+	@Override
+	public UUID getElementID() {
+		return this.elementID;
 	}
 
 	@Override
@@ -47,7 +56,7 @@ public class AddRawContentRule extends AbstractGenerationRule implements IAddRaw
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + Objects.hash(this.requestedValue);
+		result = prime * result + Objects.hash(this.elementID, this.requestedValue);
 		return result;
 	}
 
@@ -63,7 +72,8 @@ public class AddRawContentRule extends AbstractGenerationRule implements IAddRaw
 			return false;
 		}
 		final AddRawContentRule other = (AddRawContentRule) obj;
-		return Objects.equals(this.requestedValue, other.requestedValue);
+		return Objects.equals(this.elementID, other.elementID)
+				&& Objects.equals(this.requestedValue, other.requestedValue);
 	}
 
 }

@@ -91,7 +91,7 @@ public class XMLElementReference extends AbstractSchemaObject implements IXMLEle
 
 	@Override
 	public Integer getMinOccurrence() {
-		return this.minOccurrence;
+		return (this.minOccurrence == null) ? 0 : this.minOccurrence;
 	}
 
 	@Override
