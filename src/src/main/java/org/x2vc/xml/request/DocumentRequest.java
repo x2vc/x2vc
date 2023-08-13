@@ -99,11 +99,14 @@ public class DocumentRequest implements IDocumentRequest {
 				addRequestedValuesToMapRecursively(addElementRule, newMap);
 			} else if (subRule instanceof final IAddRawContentRule rawContentRule) {
 				rv = rawContentRule.getRequestedValue();
+				if (rv.isPresent()) {
+					newMap.put(rawContentRule.getElementID(), rv.get());
+				}
 			} else if (subRule instanceof final IAddDataContentRule textContentRule) {
 				rv = textContentRule.getRequestedValue();
-			}
-			if (rv.isPresent()) {
-				newMap.put(rule.getElementReferenceID(), rv.get());
+				if (rv.isPresent()) {
+					newMap.put(textContentRule.getElementID(), rv.get());
+				}
 			}
 		});
 	}
