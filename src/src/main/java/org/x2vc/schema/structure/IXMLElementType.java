@@ -9,7 +9,7 @@ import java.util.Set;
  * object specifies everything but the element name, which is specified by the
  * {@link IXMLElementReference}.
  */
-public interface IXMLElementType extends IXMLSchemaObject {
+public interface IXMLElementType extends IXMLDataObject {
 
 	/**
 	 * @return the attributes that can be set for the element. May be empty!
@@ -58,53 +58,6 @@ public interface IXMLElementType extends IXMLSchemaObject {
 	 *         element content
 	 */
 	boolean hasMixedContent();
-
-	/**
-	 * @return the data type of the element content. Only set if the content type is
-	 *         {@link ContentType#DATA}.
-	 */
-	XMLDatatype getDatatype();
-
-	/**
-	 * @return the maximum length of the value. Only set if the content type is
-	 *         {@link ContentType#DATA}, only supported for
-	 *         {@link XMLDatatype#STRING}.
-	 */
-	Optional<Integer> getMaxLength();
-
-	/**
-	 * @return The minimum value of the attribute. Only set if the content type is
-	 *         {@link ContentType#DATA}. Only supported for
-	 *         {@link XMLDatatype#INTEGER}.
-	 */
-	Optional<Integer> getMinValue();
-
-	/**
-	 * @return The maximum value of the attribute. Only set if the content type is
-	 *         {@link ContentType#DATA}, only supported for
-	 *         {@link XMLDatatype#INTEGER}.
-	 */
-	Optional<Integer> getMaxValue();
-
-	/**
-	 * @return the discrete values specified for this attribute. Only set if the
-	 *         content type is {@link ContentType#DATA}. See
-	 *         {@link #isFixedValueset()} for additional information on how to
-	 *         interpret this value.
-	 */
-	Set<IXMLDiscreteValue> getDiscreteValues();
-
-	/**
-	 * Determines whether a set of discrete values specified for the attribute
-	 * represent a fixed value set (i.e. a closed list of the only valid values) or
-	 * a list of "interesting" values that should be checked to improve coverage,
-	 * but do not comprise a restriction of valid values. Only set if the content
-	 * type is {@link ContentType#DATA}.
-	 *
-	 * @return <code>true</code> if the values specified using
-	 *         {@link #getDiscreteValues()} represent a fixed value set.
-	 */
-	Boolean isFixedValueset();
 
 	/**
 	 * @return the elements that can be encountered inside this element. Only set if

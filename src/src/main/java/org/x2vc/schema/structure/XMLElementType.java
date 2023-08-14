@@ -14,7 +14,7 @@ import com.google.common.collect.Sets;
 /**
  * Standard implementation of {@link IXMLElementType}.
  */
-public class XMLElementType extends AbstractSchemaObject implements IXMLElementType {
+public class XMLElementType extends XMLDataObject implements IXMLElementType {
 
 	private static final long serialVersionUID = -1422448896072065357L;
 	private static final Logger logger = LogManager.getLogger();
@@ -24,24 +24,6 @@ public class XMLElementType extends AbstractSchemaObject implements IXMLElementT
 
 	@XmlAttribute
 	private ContentType contentType;
-
-	@XmlAttribute
-	private XMLDatatype datatype;
-
-	@XmlAttribute
-	private Integer maxLength;
-
-	@XmlAttribute
-	private Integer minValue;
-
-	@XmlAttribute
-	private Integer maxValue;
-
-	@XmlElement(type = XMLDiscreteValue.class, name = "discreteValue")
-	private Set<IXMLDiscreteValue> discreteValues;
-
-	@XmlAttribute
-	private Boolean fixedValueset;
 
 	@XmlAttribute
 	private Boolean userModifiable;
@@ -116,7 +98,7 @@ public class XMLElementType extends AbstractSchemaObject implements IXMLElementT
 	@Override
 	public XMLDatatype getDatatype() {
 		if (this.contentType == ContentType.DATA) {
-			return this.datatype;
+			return super.getDatatype();
 		} else {
 			throw logger.throwing(new IllegalStateException("Datatype is only supported for data elements"));
 		}
@@ -125,12 +107,7 @@ public class XMLElementType extends AbstractSchemaObject implements IXMLElementT
 	@Override
 	public Optional<Integer> getMaxLength() {
 		if (this.contentType == ContentType.DATA) {
-			if (this.datatype == XMLDatatype.STRING) {
-				return Optional.ofNullable(this.maxLength);
-			} else {
-				throw (logger
-					.throwing(new IllegalArgumentException("A maximum length is only supported for type STRING")));
-			}
+			return super.getMaxLength();
 		} else {
 			throw logger.throwing(new IllegalStateException("Datatype is only supported for data elements"));
 		}
@@ -139,12 +116,7 @@ public class XMLElementType extends AbstractSchemaObject implements IXMLElementT
 	@Override
 	public Optional<Integer> getMinValue() {
 		if (this.contentType == ContentType.DATA) {
-			if (this.datatype == XMLDatatype.INTEGER) {
-				return Optional.ofNullable(this.minValue);
-			} else {
-				throw (logger
-					.throwing(new IllegalArgumentException("A maximum length is only supported for type STRING")));
-			}
+			return super.getMinValue();
 		} else {
 			throw logger.throwing(new IllegalStateException("Datatype is only supported for data elements"));
 		}
@@ -153,12 +125,7 @@ public class XMLElementType extends AbstractSchemaObject implements IXMLElementT
 	@Override
 	public Optional<Integer> getMaxValue() {
 		if (this.contentType == ContentType.DATA) {
-			if (this.datatype == XMLDatatype.INTEGER) {
-				return Optional.ofNullable(this.maxValue);
-			} else {
-				throw (logger
-					.throwing(new IllegalArgumentException("A maximum length is only supported for type STRING")));
-			}
+			return super.getMaxValue();
 		} else {
 			throw logger.throwing(new IllegalStateException("Datatype is only supported for data elements"));
 		}
@@ -174,9 +141,9 @@ public class XMLElementType extends AbstractSchemaObject implements IXMLElementT
 	}
 
 	@Override
-	public Boolean isFixedValueset() {
+	public Optional<Boolean> isFixedValueset() {
 		if (this.contentType == ContentType.DATA) {
-			return this.fixedValueset;
+			return super.isFixedValueset();
 		} else {
 			throw logger.throwing(new IllegalStateException("Discrete values are only supported for data elements"));
 		}
@@ -236,7 +203,7 @@ public class XMLElementType extends AbstractSchemaObject implements IXMLElementT
 		private Integer minValue;
 		private Integer maxValue;
 		private Set<IXMLDiscreteValue> discreteValues = new HashSet<>();
-		private Boolean fixedValueset;
+		private Boolean fixedValueset = false;
 		private Boolean userModifiable;
 		private List<IXMLElementReference> elements = new ArrayList<>();
 		private ElementArrangement elementArrangement = ElementArrangement.ALL;
@@ -270,7 +237,7 @@ public class XMLElementType extends AbstractSchemaObject implements IXMLElementT
 					this.minValue = xMLElementType.getMinValue().orElse(null);
 					this.maxValue = xMLElementType.getMaxValue().orElse(null);
 				}
-				this.fixedValueset = xMLElementType.isFixedValueset();
+				this.fixedValueset = xMLElementType.isFixedValueset().orElse(false);
 			}
 			if ((this.contentType == ContentType.DATA) || (this.contentType == ContentType.MIXED)) {
 				this.userModifiable = xMLElementType.isUserModifiable().orElse(null);

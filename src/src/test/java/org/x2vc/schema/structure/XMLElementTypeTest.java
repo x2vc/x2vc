@@ -59,8 +59,8 @@ class XMLElementTypeTest {
 		assertTrue(elem.getMaxLength().isPresent());
 		assertEquals(42, elem.getMaxLength().get());
 
-		assertThrows(IllegalArgumentException.class, () -> elem.getMinValue());
-		assertThrows(IllegalArgumentException.class, () -> elem.getMaxValue());
+		assertThrows(IllegalStateException.class, () -> elem.getMinValue());
+		assertThrows(IllegalStateException.class, () -> elem.getMaxValue());
 	}
 
 	@Test
@@ -74,7 +74,7 @@ class XMLElementTypeTest {
 		assertTrue(elem.getMaxValue().isPresent());
 		assertEquals(42, elem.getMaxValue().get());
 
-		assertThrows(IllegalArgumentException.class, () -> elem.getMaxLength());
+		assertThrows(IllegalStateException.class, () -> elem.getMaxLength());
 	}
 
 	@Test

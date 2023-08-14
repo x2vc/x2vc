@@ -1,46 +1,26 @@
 package org.x2vc.schema.structure;
 
-import java.util.*;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
+import java.util.UUID;
 
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import com.google.common.collect.Sets;
 
 /**
  * Standard implementation of {@link IXMLAttribute}.
  */
-public class XMLAttribute extends AbstractSchemaObject implements IXMLAttribute {
+public class XMLAttribute extends XMLDataObject implements IXMLAttribute {
 
 	private static final long serialVersionUID = -1714282681209635316L;
-	private static final Logger logger = LogManager.getLogger();
 
 	@XmlAttribute
 	private String name;
 
 	@XmlAttribute
-	private XMLDatatype type;
-
-	@XmlAttribute
 	private Boolean optional;
-
-	@XmlAttribute
-	private Integer maxLength;
-
-	@XmlAttribute
-	private Integer minValue;
-
-	@XmlAttribute
-	private Integer maxValue;
-
-	@XmlElement(type = XMLDiscreteValue.class, name = "discreteValue")
-	private Set<IXMLDiscreteValue> discreteValues;
-
-	@XmlAttribute
-	private Boolean fixedValueset;
 
 	@XmlAttribute
 	private Boolean userModifiable;
@@ -56,7 +36,7 @@ public class XMLAttribute extends AbstractSchemaObject implements IXMLAttribute 
 		this.id = builder.id;
 		this.comment = builder.comment;
 		this.name = builder.name;
-		this.type = builder.type;
+		this.datatype = builder.datatype;
 		this.optional = builder.optional;
 		this.maxLength = builder.maxLength;
 		this.minValue = builder.minValue;
@@ -83,50 +63,8 @@ public class XMLAttribute extends AbstractSchemaObject implements IXMLAttribute 
 	}
 
 	@Override
-	public XMLDatatype getType() {
-		return this.type;
-	}
-
-	@Override
 	public boolean isOptional() {
 		return this.optional;
-	}
-
-	@Override
-	public Optional<Integer> getMaxLength() {
-		if (this.type == XMLDatatype.STRING) {
-			return Optional.ofNullable(this.maxLength);
-		} else {
-			throw (logger.throwing(new IllegalStateException("A maximum length is only supported for type STRING")));
-		}
-	}
-
-	@Override
-	public Optional<Integer> getMinValue() {
-		if (this.type == XMLDatatype.INTEGER) {
-			return Optional.ofNullable(this.minValue);
-		} else {
-			throw (logger.throwing(new IllegalStateException("A minimum value is only supported for type INTEGER")));
-		}
-	}
-
-	@Override
-	public Optional<Integer> getMaxValue() {
-		if (this.type == XMLDatatype.INTEGER) {
-			return Optional.ofNullable(this.maxValue);
-		} else {
-			throw (logger.throwing(new IllegalStateException("A maximum value is only supported for type INTEGER")));
-		}
-	}
-
-	@Override
-	public Set<IXMLDiscreteValue> getDiscreteValues() {
-		return this.discreteValues;
-	}
-
-	@Override
-	public boolean isFixedValueset() {
-		return this.fixedValueset;
 	}
 
 	@Override
@@ -152,13 +90,13 @@ public class XMLAttribute extends AbstractSchemaObject implements IXMLAttribute 
 		private UUID id;
 		private String comment;
 		private String name;
-		private XMLDatatype type;
+		private XMLDatatype datatype;
 		private Boolean optional = false;
 		private Integer maxLength;
 		private Integer minValue;
 		private Integer maxValue;
 		private Set<IXMLDiscreteValue> discreteValues = new HashSet<>();
-		private boolean fixedValueset;
+		private boolean fixedValueset = false;
 		private boolean userModifiable;
 
 		/**
@@ -186,16 +124,16 @@ public class XMLAttribute extends AbstractSchemaObject implements IXMLAttribute 
 			this.id = xMLAttribute.getID();
 			this.comment = xMLAttribute.getComment().orElse(null);
 			this.name = xMLAttribute.getName();
-			this.type = xMLAttribute.getType();
+			this.datatype = xMLAttribute.getDatatype();
 			this.optional = xMLAttribute.isOptional();
-			if (this.type == XMLDatatype.STRING) {
+			if (this.datatype == XMLDatatype.STRING) {
 				this.maxLength = xMLAttribute.getMaxLength().orElse(null);
 			}
-			if (this.type == XMLDatatype.INTEGER) {
+			if (this.datatype == XMLDatatype.INTEGER) {
 				this.minValue = xMLAttribute.getMinValue().orElse(null);
 				this.maxValue = xMLAttribute.getMaxValue().orElse(null);
 			}
-			this.fixedValueset = xMLAttribute.isFixedValueset();
+			this.fixedValueset = xMLAttribute.isFixedValueset().orElse(false);
 			this.userModifiable = xMLAttribute.isUserModifiable();
 
 			// create deep copy of discrete values
@@ -221,7 +159,7 @@ public class XMLAttribute extends AbstractSchemaObject implements IXMLAttribute 
 		 * @return builder
 		 */
 		public Builder withType(XMLDatatype type) {
-			this.type = type;
+			this.datatype = type;
 			return this;
 		}
 
@@ -330,8 +268,7 @@ public class XMLAttribute extends AbstractSchemaObject implements IXMLAttribute 
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + Objects.hash(this.discreteValues, this.fixedValueset, this.maxLength, this.maxValue,
-				this.minValue, this.name, this.optional, this.type, this.userModifiable);
+		result = prime * result + Objects.hash(this.name, this.optional, this.userModifiable);
 		return result;
 	}
 
@@ -347,11 +284,7 @@ public class XMLAttribute extends AbstractSchemaObject implements IXMLAttribute 
 			return false;
 		}
 		final XMLAttribute other = (XMLAttribute) obj;
-		return Objects.equals(this.discreteValues, other.discreteValues)
-				&& Objects.equals(this.fixedValueset, other.fixedValueset)
-				&& Objects.equals(this.maxLength, other.maxLength) && Objects.equals(this.maxValue, other.maxValue)
-				&& Objects.equals(this.minValue, other.minValue) && Objects.equals(this.name, other.name)
-				&& Objects.equals(this.optional, other.optional) && this.type == other.type
+		return Objects.equals(this.name, other.name) && Objects.equals(this.optional, other.optional)
 				&& Objects.equals(this.userModifiable, other.userModifiable);
 	}
 

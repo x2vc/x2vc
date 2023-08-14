@@ -17,7 +17,7 @@ class XMLAttributeTest {
 		assertFalse(attrib.isReference());
 		assertFalse(attrib.isValue());
 		assertEquals("aName", attrib.getName());
-		assertEquals(XMLDatatype.OTHER, attrib.getType());
+		assertEquals(XMLDatatype.OTHER, attrib.getDatatype());
 		assertFalse(attrib.getComment().isPresent());
 		assertFalse(attrib.isOptional());
 		assertThrows(IllegalStateException.class, () -> attrib.getMaxLength());
@@ -42,7 +42,7 @@ class XMLAttributeTest {
 	@Test
 	void testBuilderUnrestrictedString() {
 		final XMLAttribute attrib = new XMLAttribute.Builder("aName").withType(XMLDatatype.STRING).build();
-		assertEquals(XMLDatatype.STRING, attrib.getType());
+		assertEquals(XMLDatatype.STRING, attrib.getDatatype());
 		assertFalse(attrib.getMaxLength().isPresent());
 	}
 
@@ -50,7 +50,7 @@ class XMLAttributeTest {
 	void testBuilderLengthRestrictedString() {
 		final XMLAttribute attrib = new XMLAttribute.Builder("aName").withType(XMLDatatype.STRING).withMaxLength(42)
 			.build();
-		assertEquals(XMLDatatype.STRING, attrib.getType());
+		assertEquals(XMLDatatype.STRING, attrib.getDatatype());
 		assertTrue(attrib.getMaxLength().isPresent());
 		assertEquals(42, attrib.getMaxLength().get());
 	}
@@ -58,7 +58,7 @@ class XMLAttributeTest {
 	@Test
 	void testBuilderUnrestrictedInteger() {
 		final XMLAttribute attrib = new XMLAttribute.Builder("aName").withType(XMLDatatype.INTEGER).build();
-		assertEquals(XMLDatatype.INTEGER, attrib.getType());
+		assertEquals(XMLDatatype.INTEGER, attrib.getDatatype());
 		assertFalse(attrib.getMinValue().isPresent());
 		assertFalse(attrib.getMaxValue().isPresent());
 	}
@@ -67,7 +67,7 @@ class XMLAttributeTest {
 	void testBuilderRestrictedInteger() {
 		final XMLAttribute attrib = new XMLAttribute.Builder("aName").withType(XMLDatatype.INTEGER).withMinValue(1)
 			.withMaxValue(42).build();
-		assertEquals(XMLDatatype.INTEGER, attrib.getType());
+		assertEquals(XMLDatatype.INTEGER, attrib.getDatatype());
 		assertTrue(attrib.getMinValue().isPresent());
 		assertEquals(1, attrib.getMinValue().get());
 		assertTrue(attrib.getMaxValue().isPresent());
@@ -91,7 +91,7 @@ class XMLAttributeTest {
 
 		final XMLAttribute copy = XMLAttribute.builderFrom(attrib).build();
 
-		assertEquals(XMLDatatype.STRING, copy.getType());
+		assertEquals(XMLDatatype.STRING, copy.getDatatype());
 		assertTrue(copy.getMaxLength().isPresent());
 		assertEquals(42, copy.getMaxLength().get());
 		assertEquals(1, copy.getDiscreteValues().size());
