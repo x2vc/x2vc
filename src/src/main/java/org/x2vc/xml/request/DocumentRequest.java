@@ -1,6 +1,7 @@
 package org.x2vc.xml.request;
 
 import java.net.URI;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -22,6 +23,7 @@ public class DocumentRequest implements IDocumentRequest {
 
 	private URI schemaURI;
 	private int schemaVersion;
+	private URI stylesheetURI;
 	private IAddElementRule rootElementRule;
 	private transient ImmutableMultimap<UUID, IRequestedValue> requestedValues;
 
@@ -30,10 +32,11 @@ public class DocumentRequest implements IDocumentRequest {
 	 * @param schemaVersion
 	 * @param rootElementRule
 	 */
-	DocumentRequest(URI schemaURI, int schemaVersion, IAddElementRule rootElementRule) {
+	DocumentRequest(URI schemaURI, int schemaVersion, URI stylesheetURI, IAddElementRule rootElementRule) {
 		super();
 		this.schemaURI = schemaURI;
 		this.schemaVersion = schemaVersion;
+		this.stylesheetURI = stylesheetURI;
 		this.rootElementRule = rootElementRule;
 	}
 
@@ -44,6 +47,7 @@ public class DocumentRequest implements IDocumentRequest {
 		super();
 		this.schemaURI = schema.getURI();
 		this.schemaVersion = schema.getVersion();
+		this.stylesheetURI = schema.getStylesheetURI();
 		this.rootElementRule = rootElementRule;
 	}
 
@@ -55,6 +59,11 @@ public class DocumentRequest implements IDocumentRequest {
 	@Override
 	public int getSchemaVersion() {
 		return this.schemaVersion;
+	}
+
+	@Override
+	public URI getStylesheeURI() {
+		return this.stylesheetURI;
 	}
 
 	@Override
@@ -109,6 +118,28 @@ public class DocumentRequest implements IDocumentRequest {
 				}
 			}
 		});
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(this.rootElementRule, this.schemaURI, this.schemaVersion, this.stylesheetURI);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final DocumentRequest other = (DocumentRequest) obj;
+		return Objects.equals(this.rootElementRule, other.rootElementRule)
+				&& Objects.equals(this.schemaURI, other.schemaURI) && this.schemaVersion == other.schemaVersion
+				&& Objects.equals(this.stylesheetURI, other.stylesheetURI);
 	}
 
 }

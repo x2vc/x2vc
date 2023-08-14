@@ -43,6 +43,11 @@ public interface IDocumentRequest extends Serializable {
 	int getSchemaVersion();
 
 	/**
+	 * @return the ID of the stylesheet for which this input document was generated
+	 */
+	URI getStylesheeURI();
+
+	/**
 	 * @return the rule that is execute to generate the root element
 	 */
 	IAddElementRule getRootElementRule();

@@ -48,10 +48,12 @@ class DocumentRequestTest {
 		rootBuilder.addContentRule(subBuilder.build());
 		final AddElementRule rootRule = rootBuilder.build();
 
+		final URI stylesheetURI = URI.create("bar:foo");
 		final URI schemaURI = URI.create("foo:bar");
-		final IDocumentRequest request = new DocumentRequest(schemaURI, 1, rootRule);
+		final IDocumentRequest request = new DocumentRequest(schemaURI, 1, stylesheetURI, rootRule);
 		assertEquals(schemaURI, request.getSchemaURI());
 		assertEquals(1, request.getSchemaVersion());
+		assertEquals(stylesheetURI, request.getStylesheeURI());
 		assertSame(rootRule, request.getRootElementRule());
 
 		final ImmutableMultimap<UUID, IRequestedValue> requestedValues = request.getRequestedValues();
