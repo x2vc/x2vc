@@ -1,5 +1,6 @@
 package org.x2vc.xml.document;
 
+import java.io.Serializable;
 import java.net.URI;
 
 import org.x2vc.xml.request.IDocumentRequest;
@@ -10,7 +11,7 @@ import org.x2vc.xml.request.IDocumentRequest;
  * document. The container also references the XML schema version used to
  * generate the document.
  */
-public interface IXMLDocumentContainer {
+public interface IXMLDocumentContainer extends Serializable {
 
 	/**
 	 * @return the URI of the schema that was used to generate this document
@@ -23,8 +24,6 @@ public interface IXMLDocumentContainer {
 	int getSchemaVersion();
 
 	/**
-	 * Shortcut for <code>getSchema().getStylesheet()</code>
-	 *
 	 * @return the ID of the stylesheet for which this input document was generated
 	 */
 	URI getStylesheeURI();
