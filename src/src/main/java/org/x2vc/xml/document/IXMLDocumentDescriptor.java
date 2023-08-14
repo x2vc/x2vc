@@ -3,6 +3,8 @@ package org.x2vc.xml.document;
 import java.io.Serializable;
 import java.util.Optional;
 
+import org.x2vc.xml.value.IValueDescriptor;
+
 import com.google.common.collect.ImmutableSet;
 
 /**
@@ -32,7 +34,7 @@ public interface IXMLDocumentDescriptor extends Serializable {
 	 * @param value the value to determine the source descriptor for.
 	 * @return the set of value descriptors that may have contributed the value
 	 */
-	Optional<ImmutableSet<IDocumentValueDescriptor>> getValueDescriptors(String value);
+	Optional<ImmutableSet<IValueDescriptor>> getValueDescriptors(String value);
 
 	/**
 	 * @return the modifier that was used to generate the document, or an empty

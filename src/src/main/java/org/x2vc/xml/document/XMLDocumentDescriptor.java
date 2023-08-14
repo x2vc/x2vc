@@ -1,6 +1,9 @@
 package org.x2vc.xml.document;
 
+import java.util.Objects;
 import java.util.Optional;
+
+import org.x2vc.xml.value.IValueDescriptor;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableSet;
@@ -13,7 +16,7 @@ public class XMLDocumentDescriptor implements IXMLDocumentDescriptor {
 	private static final long serialVersionUID = -5704343410391161375L;
 	private String valuePrefix;
 	private int valueLength;
-	private HashMultimap<String, IDocumentValueDescriptor> valueDescriptors;
+	private HashMultimap<String, IValueDescriptor> valueDescriptors;
 	private IDocumentModifier modifier;
 
 	XMLDocumentDescriptor(Builder builder) {
@@ -34,7 +37,7 @@ public class XMLDocumentDescriptor implements IXMLDocumentDescriptor {
 	}
 
 	@Override
-	public Optional<ImmutableSet<IDocumentValueDescriptor>> getValueDescriptors(String value) {
+	public Optional<ImmutableSet<IValueDescriptor>> getValueDescriptors(String value) {
 		if (this.valueDescriptors.containsKey(value)) {
 			return Optional.empty();
 		}
@@ -52,7 +55,7 @@ public class XMLDocumentDescriptor implements IXMLDocumentDescriptor {
 	public static final class Builder {
 		private String valuePrefix;
 		private int valueLength;
-		private HashMultimap<String, IDocumentValueDescriptor> valueDescriptors = HashMultimap.create();
+		private HashMultimap<String, IValueDescriptor> valueDescriptors = HashMultimap.create();
 		private IDocumentModifier modifier;
 
 		/**
@@ -72,7 +75,7 @@ public class XMLDocumentDescriptor implements IXMLDocumentDescriptor {
 		 * @param valueDescriptor the descriptor to add
 		 * @return builder
 		 */
-		public Builder addValueDescriptors(IDocumentValueDescriptor valueDescriptor) {
+		public Builder addValueDescriptors(IValueDescriptor valueDescriptor) {
 			this.valueDescriptors.put(valueDescriptor.getValue(), valueDescriptor);
 			return this;
 		}
@@ -96,5 +99,27 @@ public class XMLDocumentDescriptor implements IXMLDocumentDescriptor {
 		public XMLDocumentDescriptor build() {
 			return new XMLDocumentDescriptor(this);
 		}
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(this.modifier, this.valueDescriptors, this.valueLength, this.valuePrefix);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (obj == null) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final XMLDocumentDescriptor other = (XMLDocumentDescriptor) obj;
+		return Objects.equals(this.modifier, other.modifier)
+				&& Objects.equals(this.valueDescriptors, other.valueDescriptors)
+				&& this.valueLength == other.valueLength && Objects.equals(this.valuePrefix, other.valuePrefix);
 	}
 }

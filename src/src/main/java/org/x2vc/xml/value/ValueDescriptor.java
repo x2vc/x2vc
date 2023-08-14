@@ -1,12 +1,12 @@
-package org.x2vc.xml.document;
+package org.x2vc.xml.value;
 
 import java.util.Objects;
 import java.util.UUID;
 
 /**
- * Standard implementation of {@link IDocumentValueDescriptor}.
+ * Standard implementation of {@link IValueDescriptor}.
  */
-public class DocumentValueDescriptor implements IDocumentValueDescriptor {
+public class ValueDescriptor implements IValueDescriptor {
 
 	private static final long serialVersionUID = 8574714365246157772L;
 	private UUID schemaElementID;
@@ -20,7 +20,7 @@ public class DocumentValueDescriptor implements IDocumentValueDescriptor {
 	 * @param value
 	 * @param mutated
 	 */
-	DocumentValueDescriptor(UUID schemaElementID, UUID generationRuleID, String value, boolean mutated) {
+	ValueDescriptor(UUID schemaElementID, UUID generationRuleID, String value, boolean mutated) {
 		super();
 		this.schemaElementID = schemaElementID;
 		this.generationRuleID = generationRuleID;
@@ -33,7 +33,7 @@ public class DocumentValueDescriptor implements IDocumentValueDescriptor {
 	 * @param generationRuleID
 	 * @param value
 	 */
-	DocumentValueDescriptor(UUID schemaElementID, UUID generationRuleID, String value) {
+	ValueDescriptor(UUID schemaElementID, UUID generationRuleID, String value) {
 		super();
 		this.schemaElementID = schemaElementID;
 		this.generationRuleID = generationRuleID;
@@ -76,7 +76,7 @@ public class DocumentValueDescriptor implements IDocumentValueDescriptor {
 		if (getClass() != obj.getClass()) {
 			return false;
 		}
-		final DocumentValueDescriptor other = (DocumentValueDescriptor) obj;
+		final ValueDescriptor other = (ValueDescriptor) obj;
 		return Objects.equals(this.generationRuleID, other.generationRuleID) && this.mutated == other.mutated
 				&& Objects.equals(this.schemaElementID, other.schemaElementID)
 				&& Objects.equals(this.value, other.value);

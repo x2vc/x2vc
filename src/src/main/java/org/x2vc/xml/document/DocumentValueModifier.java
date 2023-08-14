@@ -7,6 +7,8 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
 
+import org.x2vc.xml.value.IValueDescriptor;
+
 /**
  * Standard implementation of {@link IDocumentValueModifier}.
  */
@@ -76,7 +78,7 @@ public class DocumentValueModifier implements IDocumentValueModifier {
 		 *
 		 * @param valueDescriptor the descriptor of the value to modify
 		 */
-		public Builder(IDocumentValueDescriptor valueDescriptor) {
+		public Builder(IValueDescriptor valueDescriptor) {
 			this.schemaElementID = valueDescriptor.getSchemaElementID();
 			this.generationRuleID = valueDescriptor.getGenerationRuleID();
 		}

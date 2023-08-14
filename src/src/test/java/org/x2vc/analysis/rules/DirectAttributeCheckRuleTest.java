@@ -23,9 +23,9 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.x2vc.xml.document.IDocumentModifier;
-import org.x2vc.xml.document.IDocumentValueDescriptor;
 import org.x2vc.xml.document.IDocumentValueModifier;
 import org.x2vc.xml.document.IXMLDocumentDescriptor;
+import org.x2vc.xml.value.IValueDescriptor;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
@@ -68,7 +68,7 @@ class DirectAttributeCheckRuleTest {
 	void testCheckNode(String html, String prefix, String value, int length) {
 		// prepare a value descriptor to return a known ID
 		final UUID valueID = UUID.randomUUID();
-		final IDocumentValueDescriptor valueDescriptor = mock(IDocumentValueDescriptor.class);
+		final IValueDescriptor valueDescriptor = mock(IValueDescriptor.class);
 		when(valueDescriptor.getSchemaElementID()).thenReturn(valueID);
 
 		final Element node = parseToElement(html);

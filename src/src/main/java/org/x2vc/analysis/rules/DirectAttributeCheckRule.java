@@ -14,6 +14,7 @@ import org.jsoup.nodes.Node;
 import org.x2vc.analysis.IVulnerabilityReport;
 import org.x2vc.analysis.VulnerabilityReport;
 import org.x2vc.xml.document.*;
+import org.x2vc.xml.value.IValueDescriptor;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -56,7 +57,7 @@ public class DirectAttributeCheckRule extends AbstractAttributeRule {
 		final String attributeName = attribute.getKey();
 
 		// shortcut - if entire attribute name matches a data value
-		Optional<ImmutableSet<IDocumentValueDescriptor>> valueDescriptors = descriptor
+		Optional<ImmutableSet<IValueDescriptor>> valueDescriptors = descriptor
 			.getValueDescriptors(attributeName);
 		if (valueDescriptors.isPresent()) {
 			handleFullMatch(elementPath, attributeName, valueDescriptors.get(), collector);
@@ -83,12 +84,12 @@ public class DirectAttributeCheckRule extends AbstractAttributeRule {
 	 * @param collector
 	 */
 	private void handleFullMatch(final String elementSelector, final String attributeName,
-			ImmutableSet<IDocumentValueDescriptor> valueDescriptors, Consumer<IDocumentModifier> collector) {
+			ImmutableSet<IValueDescriptor> valueDescriptors, Consumer<IDocumentModifier> collector) {
 		logger.traceEntry();
 
 		// TODO XSS Rule A.1: add payload for later handling
 
-		for (final IDocumentValueDescriptor valueDescriptor : valueDescriptors) {
+		for (final IValueDescriptor valueDescriptor : valueDescriptors) {
 			// try to replace the entire attribute with style attribute
 			new DocumentValueModifier.Builder(valueDescriptor).withAnalyzerRuleID(RULE_ID)
 				.withOriginalValue(attributeName).withReplacementValue("style")
@@ -107,10 +108,10 @@ public class DirectAttributeCheckRule extends AbstractAttributeRule {
 	 * @param collector
 	 */
 	private void handlePartialMatch(final String elementSelector, String candidate,
-			ImmutableSet<IDocumentValueDescriptor> valueDescriptors, Consumer<IDocumentModifier> collector) {
+			ImmutableSet<IValueDescriptor> valueDescriptors, Consumer<IDocumentModifier> collector) {
 		logger.traceEntry();
 
-		for (final IDocumentValueDescriptor valueDescriptor : valueDescriptors) {
+		for (final IValueDescriptor valueDescriptor : valueDescriptors) {
 			// try to introduce new attribute by breaking the encoding
 			new DocumentValueModifier.Builder(valueDescriptor).withAnalyzerRuleID(RULE_ID).withOriginalValue(candidate)
 				.withReplacementValue("=\"\" style=\"test\" rest")
