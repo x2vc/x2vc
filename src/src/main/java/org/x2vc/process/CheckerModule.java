@@ -22,6 +22,8 @@ import org.x2vc.stylesheet.structure.IStylesheetStructureExtractor;
 import org.x2vc.stylesheet.structure.StylesheetStructureExtractor;
 import org.x2vc.xml.request.IRequestGenerator;
 import org.x2vc.xml.request.RequestGenerator;
+import org.x2vc.xml.value.IPrefixSelector;
+import org.x2vc.xml.value.PrefixSelector;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
@@ -37,12 +39,13 @@ public class CheckerModule extends AbstractModule {
 	@Override
 	protected void configure() {
 
-		// use a multibinder for the analyzer rules (plugin-like structure)
-		final Multibinder<IAnalyzerRule> ruleBinder = Multibinder.newSetBinder(binder(), IAnalyzerRule.class);
-		ruleBinder.addBinding().to(DirectAttributeCheckRule.class);
-
 		// analysis
 		bind(IDocumentAnalyzer.class).to(DocumentAnalyzer.class);
+
+		// analysis rules: use a multibinder for the analyzer rules (plugin-like
+		// structure)
+		final Multibinder<IAnalyzerRule> ruleBinder = Multibinder.newSetBinder(binder(), IAnalyzerRule.class);
+		ruleBinder.addBinding().to(DirectAttributeCheckRule.class);
 
 		// process
 
@@ -57,11 +60,22 @@ public class CheckerModule extends AbstractModule {
 		// stylesheet
 		bind(IStylesheetManager.class).to(StylesheetManager.class);
 		bind(IStylesheetPreprocessor.class).to(StylesheetPreprocessor.class);
+
+		// stylesheet coverage
+
+		// stylesheet extension
 		bind(IStylesheetExtender.class).to(StylesheetExtender.class);
+
+		// stylesheet structture
 		bind(IStylesheetStructureExtractor.class).to(StylesheetStructureExtractor.class);
 
-		// xmldoc
+		// xml document
+
+		// xml request
 		bind(IRequestGenerator.class).to(RequestGenerator.class);
+
+		// xml value
+		bind(IPrefixSelector.class).to(PrefixSelector.class);
 
 	}
 
