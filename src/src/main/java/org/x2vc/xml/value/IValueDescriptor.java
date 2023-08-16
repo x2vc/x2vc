@@ -31,6 +31,6 @@ public interface IValueDescriptor extends Serializable {
 	/**
 	 * @return <code>true</code> if the value was requested by another component
 	 */
-	boolean isMutated();
+	boolean isRequested();
 
 }

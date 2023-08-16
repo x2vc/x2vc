@@ -12,20 +12,20 @@ public class ValueDescriptor implements IValueDescriptor {
 	private UUID schemaElementID;
 	private UUID generationRuleID;
 	private String value;
-	private boolean mutated = false;
+	private boolean requested = false;
 
 	/**
 	 * @param schemaElementID
 	 * @param generationRuleID
 	 * @param value
-	 * @param mutated
+	 * @param requested
 	 */
-	ValueDescriptor(UUID schemaElementID, UUID generationRuleID, String value, boolean mutated) {
+	ValueDescriptor(UUID schemaElementID, UUID generationRuleID, String value, boolean requested) {
 		super();
 		this.schemaElementID = schemaElementID;
 		this.generationRuleID = generationRuleID;
 		this.value = value;
-		this.mutated = mutated;
+		this.requested = requested;
 	}
 
 	/**
@@ -56,13 +56,13 @@ public class ValueDescriptor implements IValueDescriptor {
 	}
 
 	@Override
-	public boolean isMutated() {
-		return this.mutated;
+	public boolean isRequested() {
+		return this.requested;
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(this.generationRuleID, this.mutated, this.schemaElementID, this.value);
+		return Objects.hash(this.generationRuleID, this.requested, this.schemaElementID, this.value);
 	}
 
 	@Override
@@ -77,7 +77,7 @@ public class ValueDescriptor implements IValueDescriptor {
 			return false;
 		}
 		final ValueDescriptor other = (ValueDescriptor) obj;
-		return Objects.equals(this.generationRuleID, other.generationRuleID) && this.mutated == other.mutated
+		return Objects.equals(this.generationRuleID, other.generationRuleID) && this.requested == other.requested
 				&& Objects.equals(this.schemaElementID, other.schemaElementID)
 				&& Objects.equals(this.value, other.value);
 	}
