@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<schema stylesheetURI="file://somewhere/SampleStylesheet.xslt" schemaURI="memory:schema/bar" version="1">
+    <elementTypes>
+        <elementType contentType="EMPTY" id="270055b5-074a-4e84-b3b2-3184839e9090">
+            <comment>root element</comment>
+            <attribute name="someAttribute" type="STRING" optional="false" id="73a9b784-7a61-48c4-8110-9855cef81cef">
+                <comment>attribute of root element</comment>
+            </attribute>
+        </elementType>
+    </elementTypes>
+    <rootElements>
+        <rootElement name="root" elementID="270055b5-074a-4e84-b3b2-3184839e9090" minOccurrence="0" id="3a76139c-f642-46e5-b646-e701d871968d">
+            <comment>reference to root element</comment>
+        </rootElement>
+    </rootElements>
+    <URI>memory:schema/bar</URI>
+</schema>

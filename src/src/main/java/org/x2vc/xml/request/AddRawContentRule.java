@@ -17,9 +17,11 @@ public class AddRawContentRule extends AbstractGenerationRule implements IAddRaw
 	/**
 	 * Create a new rule with a specified ID and a requested value specified.
 	 *
+	 * @param ruleID
+	 * @param elementID
 	 * @param requestedValue
 	 */
-	AddRawContentRule(UUID ruleID, UUID elementID, IRequestedValue requestedValue) {
+	public AddRawContentRule(UUID ruleID, UUID elementID, IRequestedValue requestedValue) {
 		super(ruleID);
 		this.elementID = elementID;
 		this.requestedValue = requestedValue;
@@ -28,9 +30,10 @@ public class AddRawContentRule extends AbstractGenerationRule implements IAddRaw
 	/**
 	 * Create a new rule with a random ID and a requested value specified.
 	 *
+	 * @param elementID
 	 * @param requestedValue
 	 */
-	AddRawContentRule(UUID elementID, IRequestedValue requestedValue) {
+	public AddRawContentRule(UUID elementID, IRequestedValue requestedValue) {
 		super();
 		this.elementID = elementID;
 		this.requestedValue = requestedValue;
@@ -40,9 +43,10 @@ public class AddRawContentRule extends AbstractGenerationRule implements IAddRaw
 	 * Create a new rule with a specified ID and without a requested value
 	 * specified.
 	 *
-	 * @param requestedValue
+	 * @param ruleID
+	 * @param elementID
 	 */
-	AddRawContentRule(UUID ruleID, UUID elementID) {
+	public AddRawContentRule(UUID ruleID, UUID elementID) {
 		super(ruleID);
 		this.elementID = elementID;
 	}
@@ -50,9 +54,9 @@ public class AddRawContentRule extends AbstractGenerationRule implements IAddRaw
 	/**
 	 * Create a new rule with a random ID and without a requested value specified.
 	 *
-	 * @param requestedValue
+	 * @param elementID
 	 */
-	AddRawContentRule(UUID elementID) {
+	public AddRawContentRule(UUID elementID) {
 		super();
 		this.elementID = elementID;
 	}

@@ -17,9 +17,11 @@ public class AddDataContentRule extends AbstractGenerationRule implements IAddDa
 	/**
 	 * Create a new rule with a specified ID and a requested value specified.
 	 *
+	 * @param ruleID
+	 * @param elementID
 	 * @param requestedValue
 	 */
-	AddDataContentRule(UUID ruleID, UUID elementID, IRequestedValue requestedValue) {
+	public AddDataContentRule(UUID ruleID, UUID elementID, IRequestedValue requestedValue) {
 		super(ruleID);
 		this.elementID = elementID;
 		this.requestedValue = requestedValue;
@@ -28,9 +30,10 @@ public class AddDataContentRule extends AbstractGenerationRule implements IAddDa
 	/**
 	 * Create a new rule with a random ID and a requested value specified.
 	 *
+	 * @param elementID
 	 * @param requestedValue
 	 */
-	AddDataContentRule(UUID elementID, IRequestedValue requestedValue) {
+	public AddDataContentRule(UUID elementID, IRequestedValue requestedValue) {
 		super();
 		this.elementID = elementID;
 		this.requestedValue = requestedValue;
@@ -40,9 +43,10 @@ public class AddDataContentRule extends AbstractGenerationRule implements IAddDa
 	 * Create a new rule with a specified ID and without a requested value
 	 * specified.
 	 *
-	 * @param requestedValue
+	 * @param ruleID
+	 * @param elementID
 	 */
-	AddDataContentRule(UUID ruleID, UUID elementID) {
+	public AddDataContentRule(UUID ruleID, UUID elementID) {
 		super(ruleID);
 		this.elementID = elementID;
 	}
@@ -50,9 +54,9 @@ public class AddDataContentRule extends AbstractGenerationRule implements IAddDa
 	/**
 	 * Create a new rule with a random ID and without a requested value specified.
 	 *
-	 * @param requestedValue
+	 * @param elementID
 	 */
-	AddDataContentRule(UUID elementID) {
+	public AddDataContentRule(UUID elementID) {
 		super();
 		this.elementID = elementID;
 	}

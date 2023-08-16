@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<schema stylesheetURI="file://somewhere/SampleStylesheet.xslt" schemaURI="memory:schema/bar" version="1">
+    <elementTypes>
+        <elementType contentType="MIXED" id="bc25c48f-b7ff-4ee9-9d8d-a1ef8e106be1">
+            <comment>root element with mixed content</comment>
+        </elementType>
+    </elementTypes>
+    <rootElements>
+        <rootElement name="root" elementID="bc25c48f-b7ff-4ee9-9d8d-a1ef8e106be1" minOccurrence="0" id="fe3fa767-685a-4c5a-8531-ca717a7cb72b">
+            <comment>reference to root element</comment>
+        </rootElement>
+    </rootElements>
+    <URI>memory:schema/bar</URI>
+</schema>

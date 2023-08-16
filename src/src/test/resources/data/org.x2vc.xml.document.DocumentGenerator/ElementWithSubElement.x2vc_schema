@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<schema stylesheetURI="file://somewhere/SampleStylesheet.xslt" schemaURI="memory:schema/bar" version="1">
+    <elementTypes>
+        <elementType contentType="EMPTY" id="bc25c48f-b7ff-4ee9-9d8d-a1ef8e106be1">
+            <comment>sub-element</comment>
+        </elementType>
+        <elementType contentType="ELEMENT" elementArrangement="SEQUENCE" id="270055b5-074a-4e84-b3b2-3184839e9090">
+            <comment>root element</comment>
+            <subElement name="item" elementID="bc25c48f-b7ff-4ee9-9d8d-a1ef8e106be1" minOccurrence="0" id="13e0dfb0-3a38-4b09-bd04-a1ffd43293c9">
+                <comment>reference to sub-element</comment>
+            </subElement>
+        </elementType>
+    </elementTypes>
+    <rootElements>
+        <rootElement name="root" elementID="270055b5-074a-4e84-b3b2-3184839e9090" minOccurrence="0" id="3a76139c-f642-46e5-b646-e701d871968d">
+            <comment>reference to root element</comment>
+        </rootElement>
+    </rootElements>
+    <URI>memory:schema/bar</URI>
+</schema>

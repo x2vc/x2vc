@@ -20,6 +20,8 @@ import org.x2vc.stylesheet.extension.IStylesheetExtender;
 import org.x2vc.stylesheet.extension.StylesheetExtender;
 import org.x2vc.stylesheet.structure.IStylesheetStructureExtractor;
 import org.x2vc.stylesheet.structure.StylesheetStructureExtractor;
+import org.x2vc.xml.document.DocumentGenerator;
+import org.x2vc.xml.document.IDocumentGenerator;
 import org.x2vc.xml.request.IRequestGenerator;
 import org.x2vc.xml.request.RequestGenerator;
 import org.x2vc.xml.value.IPrefixSelector;
@@ -72,6 +74,7 @@ public class CheckerModule extends AbstractModule {
 		bind(IStylesheetStructureExtractor.class).to(StylesheetStructureExtractor.class);
 
 		// xml document
+		bind(IDocumentGenerator.class).to(DocumentGenerator.class);
 
 		// xml request
 		bind(IRequestGenerator.class).to(RequestGenerator.class);

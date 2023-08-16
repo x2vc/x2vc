@@ -19,10 +19,11 @@ public class SetAttributeRule extends AbstractGenerationRule implements ISetAttr
 	 * Creates a new attribute rule with a specified ID and a requested value
 	 * specified.
 	 *
+	 * @param ruleID
 	 * @param attributeID
 	 * @param requestedValue
 	 */
-	SetAttributeRule(UUID ruleID, UUID attributeID, IRequestedValue requestedValue) {
+	public SetAttributeRule(UUID ruleID, UUID attributeID, IRequestedValue requestedValue) {
 		super(ruleID);
 		this.attributeID = attributeID;
 		this.requestedValue = requestedValue;
@@ -35,7 +36,7 @@ public class SetAttributeRule extends AbstractGenerationRule implements ISetAttr
 	 * @param attributeID
 	 * @param requestedValue
 	 */
-	SetAttributeRule(UUID attributeID, IRequestedValue requestedValue) {
+	public SetAttributeRule(UUID attributeID, IRequestedValue requestedValue) {
 		super();
 		this.attributeID = attributeID;
 		this.requestedValue = requestedValue;
@@ -45,10 +46,11 @@ public class SetAttributeRule extends AbstractGenerationRule implements ISetAttr
 	 * Creates a new attribute rule with a specified ID and a requested value
 	 * specified.
 	 *
-	 * @param attributeID
+	 * @param ruleID
+	 * @param attribute
 	 * @param requestedValue
 	 */
-	SetAttributeRule(UUID ruleID, IXMLAttribute attribute, IRequestedValue requestedValue) {
+	public SetAttributeRule(UUID ruleID, IXMLAttribute attribute, IRequestedValue requestedValue) {
 		super(ruleID);
 		this.attributeID = attribute.getID();
 		this.requestedValue = requestedValue;
@@ -58,10 +60,10 @@ public class SetAttributeRule extends AbstractGenerationRule implements ISetAttr
 	 * Creates a new attribute rule with a random ID and a requested value
 	 * specified.
 	 *
-	 * @param attributeID
+	 * @param attribute
 	 * @param requestedValue
 	 */
-	SetAttributeRule(IXMLAttribute attribute, IRequestedValue requestedValue) {
+	public SetAttributeRule(IXMLAttribute attribute, IRequestedValue requestedValue) {
 		super();
 		this.attributeID = attribute.getID();
 		this.requestedValue = requestedValue;
@@ -71,9 +73,10 @@ public class SetAttributeRule extends AbstractGenerationRule implements ISetAttr
 	 * Creates a new attribute rule with a specified ID and without a requested
 	 * value specified.
 	 *
-	 * @param attribute
+	 * @param ruleID
+	 * @param attributeID
 	 */
-	SetAttributeRule(UUID ruleID, UUID attributeID) {
+	public SetAttributeRule(UUID ruleID, UUID attributeID) {
 		super(ruleID);
 		this.attributeID = attributeID;
 	}
@@ -82,9 +85,9 @@ public class SetAttributeRule extends AbstractGenerationRule implements ISetAttr
 	 * Creates a new attribute rule with a random ID and without a requested value
 	 * specified.
 	 *
-	 * @param attribute
+	 * @param attributeID
 	 */
-	SetAttributeRule(UUID attributeID) {
+	public SetAttributeRule(UUID attributeID) {
 		super();
 		this.attributeID = attributeID;
 	}
@@ -93,9 +96,10 @@ public class SetAttributeRule extends AbstractGenerationRule implements ISetAttr
 	 * Creates a new attribute rule with a specified ID and without a requested
 	 * value specified.
 	 *
+	 * @param ruleID
 	 * @param attribute
 	 */
-	SetAttributeRule(UUID ruleID, IXMLAttribute attribute) {
+	public SetAttributeRule(UUID ruleID, IXMLAttribute attribute) {
 		super(ruleID);
 		this.attributeID = attribute.getID();
 	}
@@ -106,7 +110,7 @@ public class SetAttributeRule extends AbstractGenerationRule implements ISetAttr
 	 *
 	 * @param attribute
 	 */
-	SetAttributeRule(IXMLAttribute attribute) {
+	public SetAttributeRule(IXMLAttribute attribute) {
 		super();
 		this.attributeID = attribute.getID();
 	}
