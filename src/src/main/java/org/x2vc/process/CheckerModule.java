@@ -23,7 +23,9 @@ import org.x2vc.stylesheet.structure.StylesheetStructureExtractor;
 import org.x2vc.xml.request.IRequestGenerator;
 import org.x2vc.xml.request.RequestGenerator;
 import org.x2vc.xml.value.IPrefixSelector;
+import org.x2vc.xml.value.IValueGeneratorFactory;
 import org.x2vc.xml.value.PrefixSelector;
+import org.x2vc.xml.value.ValueGeneratorFactory;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
@@ -66,7 +68,7 @@ public class CheckerModule extends AbstractModule {
 		// stylesheet extension
 		bind(IStylesheetExtender.class).to(StylesheetExtender.class);
 
-		// stylesheet structture
+		// stylesheet structure
 		bind(IStylesheetStructureExtractor.class).to(StylesheetStructureExtractor.class);
 
 		// xml document
@@ -76,6 +78,7 @@ public class CheckerModule extends AbstractModule {
 
 		// xml value
 		bind(IPrefixSelector.class).to(PrefixSelector.class);
+		bind(IValueGeneratorFactory.class).to(ValueGeneratorFactory.class);
 
 	}
 
