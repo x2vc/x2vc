@@ -235,7 +235,7 @@ public class RequestGenerator implements IRequestGenerator {
 					String.format("Unknown modifier type %s", modifier.getClass().toString())));
 		}
 
-		final DocumentRequest request = new DocumentRequest(schema, rootElementRule);
+		final DocumentRequest request = new DocumentRequest(schema, rootElementRule, modifier);
 		return logger.traceExit(request);
 	}
 

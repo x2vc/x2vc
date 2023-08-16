@@ -66,6 +66,8 @@ class RequestGeneratorTest {
 		assertEquals(UUID.fromString("fe3fa767-685a-4c5a-8531-ca717a7cb72b"), rootElementRule.getElementReferenceID());
 		assertEquals(0, rootElementRule.getAttributeRules().size());
 		assertEquals(0, rootElementRule.getContentRules().size());
+
+		assertFalse(request.getModifier().isPresent());
 	}
 
 	@Test
@@ -82,6 +84,8 @@ class RequestGeneratorTest {
 
 		final IAddElementRule rootElementRule = request.getRootElementRule();
 		assertTrue(rootElementReferenceIDs.contains(rootElementRule.getElementReferenceID()));
+
+		assertFalse(request.getModifier().isPresent());
 	}
 
 	@Test
@@ -102,6 +106,8 @@ class RequestGeneratorTest {
 		final ISetAttributeRule rootAttributeRule = rootElementRule.getAttributeRules()
 			.toArray(new ISetAttributeRule[0])[0];
 		assertEquals(UUID.fromString("73a9b784-7a61-48c4-8110-9855cef81cef"), rootAttributeRule.getAttributeID());
+
+		assertFalse(request.getModifier().isPresent());
 	}
 
 	@Test
@@ -126,6 +132,7 @@ class RequestGeneratorTest {
 						rootAttributeRule.getAttributeID());
 				attributesFound += 1;
 			}
+			assertFalse(request.getModifier().isPresent());
 		}
 
 		final int MAX_ERROR = 5; // allow for random error
@@ -151,6 +158,7 @@ class RequestGeneratorTest {
 			final IDocumentRequest request = this.requestGenerator.generateNewRequest(schema);
 			final IAddElementRule rootElementRule = request.getRootElementRule();
 			attributesFound += rootElementRule.getAttributeRules().size();
+			assertFalse(request.getModifier().isPresent());
 		}
 
 		final int MAX_ERROR = 10; // allow for random error
@@ -179,6 +187,8 @@ class RequestGeneratorTest {
 		if (rootContentRule instanceof final IAddDataContentRule addDataContentRule) {
 			assertEquals(UUID.fromString("45023ac4-9c79-4247-bbe5-36f893bd7eaa"), addDataContentRule.getElementID());
 		}
+
+		assertFalse(request.getModifier().isPresent());
 	}
 
 	@Test
@@ -220,6 +230,8 @@ class RequestGeneratorTest {
 
 		assertEquals(1, textElementCount);
 		assertInRange("emptyElementCount", 1, emptyElementCount, 20);
+
+		assertFalse(request.getModifier().isPresent());
 	}
 
 	@Test
@@ -241,6 +253,7 @@ class RequestGeneratorTest {
 
 		assertTrue(Set.of(textElementReferenceID, emptyElementReferenceID).contains(subElementReferenceID));
 
+		assertFalse(request.getModifier().isPresent());
 	}
 
 	@Test
@@ -284,6 +297,8 @@ class RequestGeneratorTest {
 
 		assertInRange("textElementCount", 1, textElementCount, 10);
 		assertInRange("emptyElementCount", 1, emptyElementCount, 10);
+
+		assertFalse(request.getModifier().isPresent());
 	}
 
 	@Test
@@ -328,6 +343,8 @@ class RequestGeneratorTest {
 		assertInRange("textElementCount", 0, textElementCount, 10);
 		assertInRange("emptyElementCount", 1, emptyElementCount, 10);
 		assertInRange("dataContentCount", 0, dataContentCount, 121);
+
+		assertFalse(request.getModifier().isPresent());
 	}
 
 	@Test
@@ -370,6 +387,8 @@ class RequestGeneratorTest {
 		assertEquals(1, valuesFromMap.size());
 		assertSame(requestedValue, valuesFromMap.iterator().next());
 
+		assertTrue(modifiedRequest.getModifier().isPresent());
+		assertSame(this.valueModifier, modifiedRequest.getModifier().get());
 	}
 
 	@Test
@@ -412,6 +431,8 @@ class RequestGeneratorTest {
 		assertEquals(1, valuesFromMap.size());
 		assertSame(requestedValue, valuesFromMap.iterator().next());
 
+		assertTrue(modifiedRequest.getModifier().isPresent());
+		assertSame(this.valueModifier, modifiedRequest.getModifier().get());
 	}
 
 	private void assertInRange(String valueName, int lowerBound, int value, int upperBound) {

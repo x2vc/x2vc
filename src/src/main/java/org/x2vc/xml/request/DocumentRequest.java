@@ -8,6 +8,7 @@ import java.util.UUID;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.x2vc.schema.structure.IXMLSchema;
+import org.x2vc.xml.document.IDocumentModifier;
 
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
@@ -25,6 +26,7 @@ public class DocumentRequest implements IDocumentRequest {
 	private int schemaVersion;
 	private URI stylesheetURI;
 	private IAddElementRule rootElementRule;
+	private IDocumentModifier modifier;
 	private transient ImmutableMultimap<UUID, IRequestedValue> requestedValues;
 
 	/**
@@ -41,6 +43,21 @@ public class DocumentRequest implements IDocumentRequest {
 	}
 
 	/**
+	 * @param schemaURI
+	 * @param schemaVersion
+	 * @param rootElementRule
+	 */
+	DocumentRequest(URI schemaURI, int schemaVersion, URI stylesheetURI, IAddElementRule rootElementRule,
+			IDocumentModifier modifier) {
+		super();
+		this.schemaURI = schemaURI;
+		this.schemaVersion = schemaVersion;
+		this.stylesheetURI = stylesheetURI;
+		this.rootElementRule = rootElementRule;
+		this.modifier = modifier;
+	}
+
+	/**
 	 * @param rootElementRule
 	 */
 	DocumentRequest(IXMLSchema schema, IAddElementRule rootElementRule) {
@@ -49,6 +66,18 @@ public class DocumentRequest implements IDocumentRequest {
 		this.schemaVersion = schema.getVersion();
 		this.stylesheetURI = schema.getStylesheetURI();
 		this.rootElementRule = rootElementRule;
+	}
+
+	/**
+	 * @param rootElementRule
+	 */
+	DocumentRequest(IXMLSchema schema, IAddElementRule rootElementRule, IDocumentModifier modifier) {
+		super();
+		this.schemaURI = schema.getURI();
+		this.schemaVersion = schema.getVersion();
+		this.stylesheetURI = schema.getStylesheetURI();
+		this.rootElementRule = rootElementRule;
+		this.modifier = modifier;
 	}
 
 	@Override
@@ -77,6 +106,11 @@ public class DocumentRequest implements IDocumentRequest {
 			buildRequestedValues();
 		}
 		return this.requestedValues;
+	}
+
+	@Override
+	public Optional<IDocumentModifier> getModifier() {
+		return Optional.ofNullable(this.modifier);
 	}
 
 	/**

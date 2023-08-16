@@ -2,7 +2,10 @@ package org.x2vc.xml.request;
 
 import java.io.Serializable;
 import java.net.URI;
+import java.util.Optional;
 import java.util.UUID;
+
+import org.x2vc.xml.document.IDocumentModifier;
 
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
@@ -63,6 +66,11 @@ public interface IDocumentRequest extends Serializable {
 	 *         or attributes, organized by model element ID.
 	 */
 	ImmutableMultimap<UUID, IRequestedValue> getRequestedValues();
+
+	/**
+	 * @return the modifier that was used to generate the request, if any
+	 */
+	Optional<IDocumentModifier> getModifier();
 
 	// TODO XML Document Generator: add method to normalize request
 
