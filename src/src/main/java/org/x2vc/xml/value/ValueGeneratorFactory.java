@@ -1,7 +1,6 @@
 package org.x2vc.xml.value;
 
 import org.x2vc.schema.ISchemaManager;
-import org.x2vc.stylesheet.IStylesheetManager;
 import org.x2vc.xml.request.IDocumentRequest;
 
 import com.github.racc.tscg.TypesafeConfig;
@@ -12,7 +11,6 @@ import com.google.inject.Inject;
  */
 public class ValueGeneratorFactory implements IValueGeneratorFactory {
 
-	private IStylesheetManager stylesheetManager;
 	private ISchemaManager schemaManager;
 	private IPrefixSelector prefixSelector;
 	private double discreteValueSelectionRatio;
@@ -23,14 +21,12 @@ public class ValueGeneratorFactory implements IValueGeneratorFactory {
 	 * @param prefixSelector
 	 */
 	@Inject
-	ValueGeneratorFactory(IStylesheetManager stylesheetManager, ISchemaManager schemaManager,
-			IPrefixSelector prefixSelector,
+	ValueGeneratorFactory(ISchemaManager schemaManager, IPrefixSelector prefixSelector,
 			@TypesafeConfig("x2vc.xml.value.discrete_value_selection_ratio") Double discreteValueSelectionRatio,
 			@TypesafeConfig("x2vc.xml.value.string_min_word_count") Integer stringMinWordCount,
 			@TypesafeConfig("x2vc.xml.value.string_max_word_count") Integer stringMaxWordCount) {
 
 		super();
-		this.stylesheetManager = stylesheetManager;
 		this.schemaManager = schemaManager;
 		this.prefixSelector = prefixSelector;
 		this.discreteValueSelectionRatio = discreteValueSelectionRatio;
@@ -40,8 +36,8 @@ public class ValueGeneratorFactory implements IValueGeneratorFactory {
 
 	@Override
 	public IValueGenerator createValueGenerator(IDocumentRequest request) {
-		return new ValueGenerator(this.stylesheetManager, this.schemaManager, this.prefixSelector, request,
-				this.discreteValueSelectionRatio, this.stringMinWordCount, this.stringMaxWordCount);
+		return new ValueGenerator(this.schemaManager, this.prefixSelector, request, this.discreteValueSelectionRatio,
+				this.stringMinWordCount, this.stringMaxWordCount);
 	}
 
 }

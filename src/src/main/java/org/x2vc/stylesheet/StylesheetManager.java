@@ -32,16 +32,28 @@ public class StylesheetManager implements IStylesheetManager {
 
 	private IStylesheetPreprocessor preprocessor;
 
+	private Integer cacheSize;
+
 	@Inject
 	StylesheetManager(IStylesheetPreprocessor preprocessor,
 			@TypesafeConfig("x2vc.stylesheet.prepared.cachesize") Integer cacheSize) {
 		this.preprocessor = preprocessor;
-		logger.debug("Initializing stylesheet cache (max. {} entries)", cacheSize);
-		this.stylesheetCache = CacheBuilder.newBuilder().maximumSize(cacheSize).build(new StylesheetCacheLoader());
+		this.cacheSize = cacheSize;
+	}
+
+	private void initializeCache() {
+		logger.traceEntry();
+		if (this.stylesheetCache == null) {
+			logger.debug("Initializing stylesheet cache (max. {} entries)", this.cacheSize);
+			this.stylesheetCache = CacheBuilder.newBuilder().maximumSize(this.cacheSize)
+				.build(new StylesheetCacheLoader());
+		}
+		logger.traceExit();
 	}
 
 	@Override
 	public IStylesheetInformation get(URI uri) {
+		initializeCache();
 		try {
 			return this.stylesheetCache.get(uri);
 		} catch (final ExecutionException | UncheckedExecutionException e) {
@@ -59,6 +71,7 @@ public class StylesheetManager implements IStylesheetManager {
 	@Override
 	public URI insert(String source) {
 		logger.traceEntry();
+		initializeCache();
 		final URI newURI = URIHandling.makeMemoryURI(ObjectType.STYLESHEET, UUID.randomUUID().toString());
 		logger.debug("URI for inserted stylesheet is {}", newURI);
 		final IStylesheetInformation stylesheet = this.preprocessor.prepareStylesheet(newURI, source);

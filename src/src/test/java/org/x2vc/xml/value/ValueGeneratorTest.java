@@ -23,7 +23,6 @@ import org.x2vc.common.URIHandling.ObjectType;
 import org.x2vc.schema.ISchemaManager;
 import org.x2vc.schema.structure.*;
 import org.x2vc.stylesheet.IStylesheetInformation;
-import org.x2vc.stylesheet.IStylesheetManager;
 import org.x2vc.xml.request.*;
 import org.x2vc.xml.value.IPrefixSelector.PrefixData;
 
@@ -35,7 +34,6 @@ class ValueGeneratorTest {
 
 	// stylesheet
 	@Mock
-	private IStylesheetManager stylesheetManager;
 	private URI stylesheetURI;
 	@Mock
 	private IStylesheetInformation stylesheet;
@@ -91,7 +89,6 @@ class ValueGeneratorTest {
 	void setUp() throws Exception {
 		// stylesheet
 		this.stylesheetURI = URIHandling.makeMemoryURI(ObjectType.STYLESHEET, "foo");
-		lenient().when(this.stylesheetManager.get(this.stylesheetURI)).thenReturn(this.stylesheet);
 		lenient().when(this.stylesheet.getURI()).thenReturn(this.stylesheetURI);
 
 		// schema
@@ -126,8 +123,7 @@ class ValueGeneratorTest {
 		this.ruleID = UUID.randomUUID();
 
 		// value generator under test
-		this.valueGenerator = new ValueGenerator(this.stylesheetManager, this.schemaManager, this.prefixSelector,
-				this.request, 0.75, 10, 50);
+		this.valueGenerator = new ValueGenerator(this.schemaManager, this.prefixSelector, this.request, 0.75, 10, 50);
 
 	}
 

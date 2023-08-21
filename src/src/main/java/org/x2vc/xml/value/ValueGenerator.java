@@ -9,8 +9,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.x2vc.schema.ISchemaManager;
 import org.x2vc.schema.structure.*;
-import org.x2vc.stylesheet.IStylesheetInformation;
-import org.x2vc.stylesheet.IStylesheetManager;
 import org.x2vc.xml.request.*;
 import org.x2vc.xml.value.IPrefixSelector.PrefixData;
 
@@ -42,8 +40,9 @@ public class ValueGenerator implements IValueGenerator {
 
 	private static final Logger logger = LogManager.getLogger();
 
+	private ISchemaManager schemaManager;
+	private IDocumentRequest request;
 	private IPrefixSelector prefixSelector;
-	private IStylesheetInformation stylesheet;
 	private IXMLSchema schema;
 
 	private String valuePrefix;
@@ -55,7 +54,6 @@ public class ValueGenerator implements IValueGenerator {
 	/**
 	 * Creates a new value generator.
 	 *
-	 * @param stylesheetManager
 	 * @param schemaManager
 	 * @param prefixSelector
 	 * @param request
@@ -63,15 +61,14 @@ public class ValueGenerator implements IValueGenerator {
 	 * @param stringMinWordCount
 	 * @param stringMaxWordCount
 	 */
-	public ValueGenerator(IStylesheetManager stylesheetManager, ISchemaManager schemaManager,
-			IPrefixSelector prefixSelector, IDocumentRequest request, Double discreteValueSelectionRatio,
-			Integer stringMinWordCount, Integer stringMaxWordCount) {
+	public ValueGenerator(ISchemaManager schemaManager, IPrefixSelector prefixSelector, IDocumentRequest request,
+			Double discreteValueSelectionRatio, Integer stringMinWordCount, Integer stringMaxWordCount) {
+		this.schemaManager = schemaManager;
 		this.prefixSelector = prefixSelector;
+		this.request = request;
 		this.discreteValueSelectionRatio = discreteValueSelectionRatio;
 		this.stringMinWordCount = stringMinWordCount;
 		this.stringMaxWordCount = stringMaxWordCount;
-		this.stylesheet = stylesheetManager.get(request.getStylesheeURI());
-		this.schema = schemaManager.getSchema(request.getSchemaURI(), request.getSchemaVersion());
 		this.valueDescriptors = Lists.newArrayList();
 		this.textGenerator = LoremIpsum.getInstance();
 	}
@@ -79,6 +76,7 @@ public class ValueGenerator implements IValueGenerator {
 	@Override
 	public String generateValue(ISetAttributeRule rule) {
 		logger.traceEntry("for attribute {}", rule.getAttributeID());
+		loadSchema();
 		final IXMLAttribute attribute = this.schema.getObjectByID(rule.getAttributeID()).asAttribute();
 		final Optional<IRequestedValue> requestedValue = rule.getRequestedValue();
 		final GeneratedValue genValue = generateValueForDataObject(attribute, requestedValue);
@@ -87,9 +85,19 @@ public class ValueGenerator implements IValueGenerator {
 		return logger.traceExit("with generated value \"{}\"", genValue.value);
 	}
 
+	/**
+	 * @throws IllegalStateException
+	 */
+	private void loadSchema() throws IllegalStateException {
+		if (this.schema == null) {
+			this.schema = this.schemaManager.getSchema(this.request.getSchemaURI(), this.request.getSchemaVersion());
+		}
+	}
+
 	@Override
 	public String generateValue(IAddDataContentRule rule) {
 		logger.traceEntry("for element {}", rule.getElementID());
+		loadSchema();
 		final IXMLElementType element = this.schema.getObjectByID(rule.getElementID()).asElement();
 		final Optional<IRequestedValue> requestedValue = rule.getRequestedValue();
 		final GeneratedValue genValue = generateValueForDataObject(element, requestedValue);
@@ -370,7 +378,7 @@ public class ValueGenerator implements IValueGenerator {
 	 */
 	private void selectPrefixAndLength() {
 		logger.traceEntry();
-		final PrefixData data = this.prefixSelector.selectPrefix(this.stylesheet.getURI());
+		final PrefixData data = this.prefixSelector.selectPrefix(this.request.getStylesheeURI());
 		logger.debug("will use prefix {} and a length {} to generate values", data.prefix(), data.valueLength());
 		this.valuePrefix = data.prefix();
 		this.valueLength = data.valueLength();

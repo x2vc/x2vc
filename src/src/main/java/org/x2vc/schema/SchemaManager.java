@@ -50,9 +50,7 @@ public class SchemaManager implements ISchemaManager {
 	private IStylesheetManager stylesheetManager;
 	private IInitialSchemaGenerator schemaGenerator;
 
-	private JAXBContext context;
-//	private Marshaller marshaller;
-	private Unmarshaller unmarshaller;
+	private Integer cacheSize;
 
 	/**
 	 * @param stylesheetManager
@@ -64,15 +62,16 @@ public class SchemaManager implements ISchemaManager {
 		super();
 		this.stylesheetManager = stylesheetManager;
 		this.schemaGenerator = schemaGenerator;
-		logger.debug("Initializing schema cache (max. {} entries)", cacheSize);
-		this.schemaCache = CacheBuilder.newBuilder().maximumSize(cacheSize).build(new SchemaCacheLoader());
-		try {
-			this.context = JAXBContext.newInstance(XMLSchema.class);
-//			this.marshaller = this.context.createMarshaller();
-			this.unmarshaller = this.context.createUnmarshaller();
-		} catch (final JAXBException e) {
-			throw logger.throwing(new RuntimeException("Unable to initialize JAXB for schema handling", e));
+		this.cacheSize = cacheSize;
+	}
+
+	private void initializeCache() {
+		logger.traceEntry();
+		if (this.schemaCache == null) {
+			logger.debug("Initializing schema cache (max. {} entries)", this.cacheSize);
+			this.schemaCache = CacheBuilder.newBuilder().maximumSize(this.cacheSize).build(new SchemaCacheLoader());
 		}
+		logger.traceExit();
 	}
 
 	@Override
@@ -90,6 +89,7 @@ public class SchemaManager implements ISchemaManager {
 	@Override
 	public IXMLSchema getSchema(URI stylesheetURI, int schemaVersion) {
 		logger.traceEntry();
+		initializeCache();
 		// determine the schema URI with version number
 		final URI schemaURI = URIHandling.makeMemoryURI(ObjectType.SCHEMA, determineSchemaIdentifier(stylesheetURI),
 				schemaVersion);
@@ -136,6 +136,7 @@ public class SchemaManager implements ISchemaManager {
 	 * @return
 	 */
 	private IXMLSchema getSchemaByURI(URI schemaURI) {
+		initializeCache();
 		try {
 			return this.schemaCache.get(schemaURI);
 		} catch (final ExecutionException | UncheckedExecutionException e) {
@@ -151,6 +152,29 @@ public class SchemaManager implements ISchemaManager {
 	}
 
 	class SchemaCacheLoader extends CacheLoader<URI, IXMLSchema> {
+
+		private JAXBContext context;
+//		private Marshaller marshaller;
+		private Unmarshaller unmarshaller;
+
+		/**
+		 * @throws RuntimeException
+		 */
+		private void initializeJAXB() throws RuntimeException {
+			logger.traceEntry();
+			try {
+				if (this.context == null) {
+					this.context = JAXBContext.newInstance(XMLSchema.class);
+				}
+//				this.marshaller = this.context.createMarshaller();
+				if (this.unmarshaller == null) {
+					this.unmarshaller = this.context.createUnmarshaller();
+				}
+			} catch (final JAXBException e) {
+				throw logger.throwing(new RuntimeException("Unable to initialize JAXB for schema handling", e));
+			}
+			logger.traceExit();
+		}
 
 		@Override
 		public IXMLSchema load(URI schemaURI) throws Exception {
@@ -217,6 +241,7 @@ public class SchemaManager implements ISchemaManager {
 		 */
 		private Optional<IXMLSchema> loadSchemaIfExists(URI schemaURI, URI stylesheetURI) {
 			logger.traceEntry();
+			initializeJAXB();
 			final File stylesheetFile = new File(stylesheetURI);
 			final String schemaFilename = stylesheetFile.getParent() + File.separator
 					+ Files.getNameWithoutExtension(stylesheetFile.getName()) + ".x2vc_schema";
@@ -227,7 +252,7 @@ public class SchemaManager implements ISchemaManager {
 				XMLSchema schema = null;
 				logger.debug("schema file {} found, will attempt to load", schemaFilename);
 				try {
-					schema = (XMLSchema) SchemaManager.this.unmarshaller
+					schema = (XMLSchema) this.unmarshaller
 						.unmarshal(Files.newReader(schemaFile, StandardCharsets.UTF_8));
 					schema.setURI(schemaURI);
 					schema.setStylesheetURI(stylesheetURI);

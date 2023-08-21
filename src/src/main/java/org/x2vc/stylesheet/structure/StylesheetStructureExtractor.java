@@ -12,11 +12,7 @@ import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.events.Attribute;
-import javax.xml.stream.events.Characters;
-import javax.xml.stream.events.EndElement;
-import javax.xml.stream.events.StartElement;
-import javax.xml.stream.events.XMLEvent;
+import javax.xml.stream.events.*;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -38,14 +34,17 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 	 */
 	@Inject
 	public StylesheetStructureExtractor() {
-		this.inputFactory = XMLInputFactory.newFactory();
-		// have the reader combine adjacent text nodes
-		this.inputFactory.setProperty(XMLInputFactory.IS_COALESCING, true);
+		// nothing to do at the moment
 	}
 
 	@Override
 	public IStylesheetStructure extractStructure(String source) {
 		logger.traceEntry();
+		if (this.inputFactory == null) {
+			this.inputFactory = XMLInputFactory.newFactory();
+			// have the reader combine adjacent text nodes
+			this.inputFactory.setProperty(XMLInputFactory.IS_COALESCING, true);
+		}
 		try {
 			final StylesheetStructure structure = new StylesheetStructure();
 			final XMLEventReader xmlReader = this.inputFactory.createXMLEventReader(new StringReader(source));
@@ -173,7 +172,7 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 				}
 			}
 			throw logger
-					.throwing(new IllegalArgumentException("End of event stream reached before end of document event"));
+				.throwing(new IllegalArgumentException("End of event stream reached before end of document event"));
 		}
 
 		/**
@@ -215,8 +214,8 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 			logger.traceEntry();
 			final Optional<String> attribName = getAttributeValue(element, "name");
 			if (attribName.isEmpty()) {
-				throw logger.throwing(
-						new IllegalArgumentException("Parameter element without name attribute encountered."));
+				throw logger
+					.throwing(new IllegalArgumentException("Parameter element without name attribute encountered."));
 			}
 			final Optional<String> attribSelect = getAttributeValue(element, "select");
 			logger.trace("start of parameter ({}) {}", element.getName().getLocalPart(), attribName.get());
@@ -381,7 +380,7 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 			// end-of-document event
 			if (this.builderChain.size() > 1) {
 				final XSLTDirectiveNode.Builder directiveBuilder = (XSLTDirectiveNode.Builder) this.builderChain
-						.removeLast();
+					.removeLast();
 				final XSLTDirectiveNode directiveNode = directiveBuilder.build();
 				logger.trace("end of XSLT directive {}", directiveNode.getName());
 				addChildNodeToLastBuilder(directiveNode);
@@ -433,8 +432,8 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 			} else if (parentBuilder instanceof final XSLTParameterNode.Builder paramBuilder) {
 				paramBuilder.addChildElement(node);
 			} else {
-				throw logger.throwing(
-						new IllegalStateException("The child element cannot be added to this parent element"));
+				throw logger
+					.throwing(new IllegalStateException("The child element cannot be added to this parent element"));
 			}
 			logger.traceExit();
 		}

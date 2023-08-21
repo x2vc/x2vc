@@ -34,6 +34,7 @@ public class XSLTProcessor implements IXSLTProcessor {
 	private IStylesheetManager stylesheetManager;
 	private Processor processor;
 	private IHTMLDocumentFactory documentFactory;
+	private Integer cacheSize;
 
 	private LoadingCache<URI, XsltExecutable> stylesheetCache;
 
@@ -43,13 +44,13 @@ public class XSLTProcessor implements IXSLTProcessor {
 		this.stylesheetManager = stylesheetManager;
 		this.processor = processor;
 		this.documentFactory = documentFactory;
-		this.stylesheetCache = CacheBuilder.newBuilder().maximumSize(cacheSize)
-			.build(new StylesheetCacheLoader(processor));
+		this.cacheSize = cacheSize;
 	}
 
 	@Override
 	public IHTMLDocumentContainer processDocument(IXMLDocumentContainer xmlDocument) {
 		logger.traceEntry();
+		initializeCache();
 		final Builder builder = this.documentFactory.newBuilder(xmlDocument);
 		XsltExecutable stylesheet = null;
 		try {
@@ -75,6 +76,16 @@ public class XSLTProcessor implements IXSLTProcessor {
 		}
 		final IHTMLDocumentContainer container = builder.build();
 		return logger.traceExit(container);
+	}
+
+	private void initializeCache() {
+		logger.traceEntry();
+		if (this.stylesheetCache == null) {
+			logger.debug("Initializing compiled stylesheet cache (max. {} entries)", this.cacheSize);
+			this.stylesheetCache = CacheBuilder.newBuilder().maximumSize(this.cacheSize)
+				.build(new StylesheetCacheLoader(this.processor));
+		}
+		logger.traceExit();
 	}
 
 	/**
