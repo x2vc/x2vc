@@ -22,6 +22,7 @@ import org.x2vc.schema.structure.XMLSchema;
 import org.x2vc.stylesheet.IStylesheetInformation;
 import org.x2vc.stylesheet.IStylesheetManager;
 
+import com.github.racc.tscg.TypesafeConfig;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -58,12 +59,13 @@ public class SchemaManager implements ISchemaManager {
 	 * @param schemaGenerator
 	 */
 	@Inject
-	SchemaManager(IStylesheetManager stylesheetManager, IInitialSchemaGenerator schemaGenerator) {
+	SchemaManager(IStylesheetManager stylesheetManager, IInitialSchemaGenerator schemaGenerator,
+			@TypesafeConfig("x2vc.schema.cachesize") Integer cacheSize) {
 		super();
 		this.stylesheetManager = stylesheetManager;
 		this.schemaGenerator = schemaGenerator;
-		// TODO Infrastructure: make cache sizes configurable
-		this.schemaCache = CacheBuilder.newBuilder().maximumSize(100).build(new SchemaCacheLoader());
+		logger.debug("Initializing schema cache (max. {} entries)", cacheSize);
+		this.schemaCache = CacheBuilder.newBuilder().maximumSize(cacheSize).build(new SchemaCacheLoader());
 		try {
 			this.context = JAXBContext.newInstance(XMLSchema.class);
 //			this.marshaller = this.context.createMarshaller();

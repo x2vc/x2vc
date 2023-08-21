@@ -19,6 +19,7 @@ import org.x2vc.xml.document.IDocumentModifier;
 import org.x2vc.xml.document.IDocumentValueModifier;
 import org.x2vc.xml.request.AddElementRule.Builder;
 
+import com.github.racc.tscg.TypesafeConfig;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 
@@ -29,8 +30,7 @@ public class RequestGenerator implements IRequestGenerator {
 
 	private static final Logger logger = LogManager.getLogger();
 
-	// TODO Infrastructure: make maximum element count configurable
-	private static final int MAX_ELEMENT_COUNT = 42;
+	private int maxElements;
 
 	private ISchemaManager schemaManager;
 
@@ -38,9 +38,11 @@ public class RequestGenerator implements IRequestGenerator {
 	 * @param schemaManager
 	 */
 	@Inject
-	RequestGenerator(ISchemaManager schemaManager) {
+	RequestGenerator(ISchemaManager schemaManager,
+			@TypesafeConfig("x2vc.xml.request.max_elements") Integer maxElements) {
 		super();
 		this.schemaManager = schemaManager;
+		this.maxElements = maxElements;
 	}
 
 	// ===== initial request generation ==========
@@ -146,7 +148,7 @@ public class RequestGenerator implements IRequestGenerator {
 			for (final IXMLElementReference elementReference : element.getElements()) {
 				// determine number of element instances
 				final int elementCount = ThreadLocalRandom.current().nextInt(elementReference.getMinOccurrence(),
-						elementReference.getMaxOccurrence().orElse(MAX_ELEMENT_COUNT) + 1);
+						elementReference.getMaxOccurrence().orElse(this.maxElements) + 1);
 				logger.debug("generating {} instances of element reference {}", elementCount, elementReference.getID());
 				for (int i = 0; i < elementCount; i++) {
 					result.add(generateSingleRuleForElementReference(elementReference));

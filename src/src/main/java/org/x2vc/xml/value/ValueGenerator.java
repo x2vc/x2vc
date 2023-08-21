@@ -31,16 +31,14 @@ public class ValueGenerator implements IValueGenerator {
 	 * What should be the ratio of the discrete values selected as opposed to
 	 * randomly generated values?
 	 */
-	private static final double DISCRETE_VALUE_SELECTION_RATIO = 0.75;
+	private double discreteValueSelectionRatio;
 
 	/**
 	 * When a string value is generated, how many words should be generated
 	 * randomly?
 	 */
-	private static final int DEFAULT_STRING_WORD_COUNT_MIN = 10;
-	private static final int DEFAULT_STRING_WORD_COUNT_MAX = 50;
-
-	// TODO Infrastructure: Make these values configurable.
+	private int stringMinWordCount;
+	private int stringMaxWordCount;
 
 	private static final Logger logger = LogManager.getLogger();
 
@@ -61,10 +59,17 @@ public class ValueGenerator implements IValueGenerator {
 	 * @param schemaManager
 	 * @param prefixSelector
 	 * @param request
+	 * @param discreteValueSelectionRatio
+	 * @param stringMinWordCount
+	 * @param stringMaxWordCount
 	 */
 	public ValueGenerator(IStylesheetManager stylesheetManager, ISchemaManager schemaManager,
-			IPrefixSelector prefixSelector, IDocumentRequest request) {
+			IPrefixSelector prefixSelector, IDocumentRequest request, Double discreteValueSelectionRatio,
+			Integer stringMinWordCount, Integer stringMaxWordCount) {
 		this.prefixSelector = prefixSelector;
+		this.discreteValueSelectionRatio = discreteValueSelectionRatio;
+		this.stringMinWordCount = stringMinWordCount;
+		this.stringMaxWordCount = stringMaxWordCount;
 		this.stylesheet = stylesheetManager.get(request.getStylesheeURI());
 		this.schema = schemaManager.getSchema(request.getSchemaURI(), request.getSchemaVersion());
 		this.valueDescriptors = Lists.newArrayList();
@@ -249,7 +254,7 @@ public class ValueGenerator implements IValueGenerator {
 			} else {
 				// no, the values are just "interesting" values - select one of these, but not
 				// all of the time
-				selectDiscreteValue = (ThreadLocalRandom.current().nextDouble() < DISCRETE_VALUE_SELECTION_RATIO);
+				selectDiscreteValue = (ThreadLocalRandom.current().nextDouble() < this.discreteValueSelectionRatio);
 			}
 			if (selectDiscreteValue) {
 				final int index = ThreadLocalRandom.current().nextInt(discreteValues.length);
@@ -287,7 +292,7 @@ public class ValueGenerator implements IValueGenerator {
 			} else {
 				// no, the values are just "interesting" values - select one of these, but not
 				// all of the time
-				selectDiscreteValue = (ThreadLocalRandom.current().nextDouble() < DISCRETE_VALUE_SELECTION_RATIO);
+				selectDiscreteValue = (ThreadLocalRandom.current().nextDouble() < this.discreteValueSelectionRatio);
 			}
 			if (selectDiscreteValue) {
 				final int index = ThreadLocalRandom.current().nextInt(discreteValues.length);
@@ -302,8 +307,7 @@ public class ValueGenerator implements IValueGenerator {
 			final int counterLength = this.getValueLength() - this.getValuePrefix().length();
 			final String format = "%s%0" + counterLength + "d";
 			final String prefixValue = String.format(format, this.valuePrefix, this.nextGeneratedValueCounter++);
-			final String text = this.textGenerator.getWords(DEFAULT_STRING_WORD_COUNT_MIN,
-					DEFAULT_STRING_WORD_COUNT_MAX);
+			final String text = this.textGenerator.getWords(this.stringMinWordCount, this.stringMaxWordCount);
 			result = prefixValue + " " + text;
 
 			// ensure the length restriction is met, if any is specified

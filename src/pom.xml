@@ -75,6 +75,16 @@
 			<artifactId>lorem</artifactId>
 			<version>2.1</version>
 		</dependency>
+		<dependency>
+			<groupId>com.typesafe</groupId>
+			<artifactId>config</artifactId>
+			<version>1.4.2</version>
+		</dependency>
+		<dependency>
+			<groupId>com.github.racc</groupId>
+			<artifactId>typesafeconfig-guice</artifactId>
+			<version>0.1.0</version>
+		</dependency>
 		<!-- test-only depencencies -->
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>

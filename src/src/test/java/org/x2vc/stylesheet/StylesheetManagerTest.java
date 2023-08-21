@@ -31,7 +31,7 @@ class StylesheetManagerTest {
 
 	@BeforeEach
 	void setUp() throws Exception {
-		this.manager = new StylesheetManager(this.preprocessor);
+		this.manager = new StylesheetManager(this.preprocessor, 10);
 	}
 
 	/**

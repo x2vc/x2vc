@@ -12,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 import org.x2vc.common.URIHandling;
 import org.x2vc.common.URIHandling.ObjectType;
 
+import com.github.racc.tscg.TypesafeConfig;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -32,10 +33,11 @@ public class StylesheetManager implements IStylesheetManager {
 	private IStylesheetPreprocessor preprocessor;
 
 	@Inject
-	StylesheetManager(IStylesheetPreprocessor preprocessor) {
+	StylesheetManager(IStylesheetPreprocessor preprocessor,
+			@TypesafeConfig("x2vc.stylesheet.prepared.cachesize") Integer cacheSize) {
 		this.preprocessor = preprocessor;
-		// TODO Infrastructure: make cache sizes configurable
-		this.stylesheetCache = CacheBuilder.newBuilder().maximumSize(100).build(new StylesheetCacheLoader());
+		logger.debug("Initializing stylesheet cache (max. {} entries)", cacheSize);
+		this.stylesheetCache = CacheBuilder.newBuilder().maximumSize(cacheSize).build(new StylesheetCacheLoader());
 	}
 
 	@Override
@@ -68,7 +70,7 @@ public class StylesheetManager implements IStylesheetManager {
 
 		@Override
 		public IStylesheetInformation load(URI uri) throws Exception {
-			logger.traceEntry();
+			logger.traceEntry("for stylesheet {}", uri);
 			if (URIHandling.isMemoryURI(uri)) {
 				throw logger.throwing(new IllegalArgumentException(
 						"temporary stylesheets have to be inserted explicitly before use"));

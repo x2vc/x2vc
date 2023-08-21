@@ -50,7 +50,7 @@ class RequestGeneratorTest {
 	void setUp() throws Exception {
 		this.context = JAXBContext.newInstance(XMLSchema.class);
 		this.unmarshaller = this.context.createUnmarshaller();
-		this.requestGenerator = new RequestGenerator(this.schemaManager);
+		this.requestGenerator = new RequestGenerator(this.schemaManager, 42);
 	}
 
 	@Test

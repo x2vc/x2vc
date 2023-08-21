@@ -55,7 +55,7 @@ class XSLTProcessorTest {
 	void setUp() throws Exception {
 		this.saxonProcessor = new Processor();
 		this.documentFactory = new HTMLDocumentFactory(this.stylesheetManager);
-		this.wrapper = new XSLTProcessor(this.stylesheetManager, this.saxonProcessor, this.documentFactory);
+		this.wrapper = new XSLTProcessor(this.stylesheetManager, this.saxonProcessor, this.documentFactory, 25);
 
 		this.stylesheetURI = URIHandling.makeMemoryURI(ObjectType.STYLESHEET, "foo");
 		lenient().when(this.xmlDocument.getStylesheeURI()).thenReturn(this.stylesheetURI);

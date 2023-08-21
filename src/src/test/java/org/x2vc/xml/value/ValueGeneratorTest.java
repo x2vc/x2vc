@@ -127,7 +127,7 @@ class ValueGeneratorTest {
 
 		// value generator under test
 		this.valueGenerator = new ValueGenerator(this.stylesheetManager, this.schemaManager, this.prefixSelector,
-				this.request);
+				this.request, 0.75, 10, 50);
 
 	}
 

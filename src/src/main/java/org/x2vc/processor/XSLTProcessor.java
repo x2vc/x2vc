@@ -14,6 +14,7 @@ import org.x2vc.stylesheet.IStylesheetInformation;
 import org.x2vc.stylesheet.IStylesheetManager;
 import org.x2vc.xml.document.IXMLDocumentContainer;
 
+import com.github.racc.tscg.TypesafeConfig;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -37,12 +38,13 @@ public class XSLTProcessor implements IXSLTProcessor {
 	private LoadingCache<URI, XsltExecutable> stylesheetCache;
 
 	@Inject
-	XSLTProcessor(IStylesheetManager stylesheetManager, Processor processor, IHTMLDocumentFactory documentFactory) {
+	XSLTProcessor(IStylesheetManager stylesheetManager, Processor processor, IHTMLDocumentFactory documentFactory,
+			@TypesafeConfig("x2vc.stylesheet.compiled.cachesize") Integer cacheSize) {
 		this.stylesheetManager = stylesheetManager;
 		this.processor = processor;
 		this.documentFactory = documentFactory;
-		// TODO Infrastructure: make cache sizes configurable
-		this.stylesheetCache = CacheBuilder.newBuilder().maximumSize(25).build(new StylesheetCacheLoader(processor));
+		this.stylesheetCache = CacheBuilder.newBuilder().maximumSize(cacheSize)
+			.build(new StylesheetCacheLoader(processor));
 	}
 
 	@Override

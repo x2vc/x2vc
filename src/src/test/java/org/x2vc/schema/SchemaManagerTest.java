@@ -44,7 +44,7 @@ class SchemaManagerTest {
 	 */
 	@BeforeEach
 	void setUp() throws Exception {
-		this.schemaManager = new SchemaManager(this.stylesheetManager, this.schemaGenerator);
+		this.schemaManager = new SchemaManager(this.stylesheetManager, this.schemaGenerator, 100);
 	}
 
 	@Test

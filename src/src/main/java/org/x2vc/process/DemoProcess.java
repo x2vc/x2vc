@@ -5,6 +5,7 @@ import java.util.concurrent.Callable;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.x2vc.schema.ISchemaManager;
 import org.x2vc.stylesheet.IStylesheetManager;
 
 import com.google.inject.Inject;
@@ -30,7 +31,7 @@ public class DemoProcess implements Callable<Integer> {
 	private IStylesheetManager stylesheetManager;
 
 	@Inject
-	DemoProcess(IStylesheetManager stylesheetManager) {
+	DemoProcess(IStylesheetManager stylesheetManager, ISchemaManager schemaManager) {
 		this.stylesheetManager = stylesheetManager;
 	}
 

@@ -4,6 +4,9 @@ import org.x2vc.process.CheckerFactory;
 import org.x2vc.process.DemoProcess;
 import org.x2vc.process.LoggingMixin;
 
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
+
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Mixin;
@@ -28,8 +31,10 @@ public class Checker {
 	 * @param args the command line parameters
 	 */
 	public static void main(String[] args) {
-		final int exitCode = new CommandLine(Checker.class, new CheckerFactory())
-				.setExecutionStrategy(LoggingMixin::executionStrategy).execute(args);
+		final Config config = ConfigFactory.load();
+		config.checkValid(ConfigFactory.defaultReference());
+		final int exitCode = new CommandLine(Checker.class, new CheckerFactory(config))
+			.setExecutionStrategy(LoggingMixin::executionStrategy).execute(args);
 		System.exit(exitCode);
 	}
 
