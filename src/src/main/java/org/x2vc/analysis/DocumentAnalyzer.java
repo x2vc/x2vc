@@ -43,6 +43,7 @@ public class DocumentAnalyzer implements IDocumentAnalyzer {
 			Consumer<IVulnerabilityReport> vulnerabilityCollector) {
 		checkArgument(!document.isFailed());
 		logger.traceEntry();
+		logger.debug("analyzing document using a set of {} rules", this.rules.size());
 		final IXMLDocumentDescriptor descriptor = document.getSource().getDocumentDescriptor();
 		final Optional<IDocumentModifier> modifier = descriptor.getModifier();
 		// if the document was not modified by an analyzer rule, perform a first pass

@@ -51,7 +51,7 @@ class TraceMessageCollector implements Consumer<Message> {
 				if (nodeKind == XdmNodeKind.ELEMENT) {
 					processMessageElement(node);
 				} else {
-					logger.debug("ignoring message content: {}", node);
+					logger.trace("ignoring message content: {}", node);
 				}
 			}
 		}
@@ -70,21 +70,21 @@ class TraceMessageCollector implements Consumer<Message> {
 			final String localName = nodeName.getLocalName();
 			if (ExtendedXSLTConstants.Elements.TRACE.equals(localName)) {
 				final int traceID = Integer
-						.parseInt(node.getAttributeValue(new QName(ExtendedXSLTConstants.Attributes.TRACE_ID)));
+					.parseInt(node.getAttributeValue(new QName(ExtendedXSLTConstants.Attributes.TRACE_ID)));
 				final String elementName = node.getAttributeValue(new QName(ExtendedXSLTConstants.Attributes.ELEMENT));
 				this.traceEvents.add(new TraceEvent(traceID, elementName));
 			} else {
-				logger.debug("ignoring unknown trace element: {}", node);
+				logger.trace("ignoring unknown trace element: {}", node);
 			}
 		} else {
-			logger.debug("ignoring foreign XML element: {}", node);
+			logger.trace("ignoring foreign XML element: {}", node);
 		}
 		logger.traceExit();
 	}
 
 	@Override
 	public void accept(Message t) {
-		logger.debug("Accepted tracing message {}", t);
+		logger.trace("Accepted tracing message {}", t);
 		this.messages.addLast(t);
 	}
 
