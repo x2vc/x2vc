@@ -15,6 +15,8 @@ import org.x2vc.stylesheet.IStylesheetManager;
 import org.x2vc.xml.document.IXMLDocumentContainer;
 
 import com.github.racc.tscg.TypesafeConfig;
+import com.google.common.base.Supplier;
+import com.google.common.base.Suppliers;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -36,8 +38,6 @@ public class XSLTProcessor implements IXSLTProcessor {
 	private IHTMLDocumentFactory documentFactory;
 	private Integer cacheSize;
 
-	private LoadingCache<URI, XsltExecutable> stylesheetCache;
-
 	@Inject
 	XSLTProcessor(IStylesheetManager stylesheetManager, Processor processor, IHTMLDocumentFactory documentFactory,
 			@TypesafeConfig("x2vc.stylesheet.compiled.cachesize") Integer cacheSize) {
@@ -47,14 +47,21 @@ public class XSLTProcessor implements IXSLTProcessor {
 		this.cacheSize = cacheSize;
 	}
 
+	Supplier<LoadingCache<URI, XsltExecutable>> stylesheetCacheSupplier = Suppliers.memoize(() -> {
+		logger.traceEntry();
+		logger.debug("Initializing compiled stylesheet cache (max. {} entries)", this.cacheSize);
+		final LoadingCache<URI, XsltExecutable> stylesheetCache = CacheBuilder.newBuilder().maximumSize(this.cacheSize)
+			.build(new StylesheetCacheLoader(this.processor));
+		return logger.traceExit(stylesheetCache);
+	});
+
 	@Override
 	public IHTMLDocumentContainer processDocument(IXMLDocumentContainer xmlDocument) {
 		logger.traceEntry();
-		initializeCache();
 		final Builder builder = this.documentFactory.newBuilder(xmlDocument);
 		XsltExecutable stylesheet = null;
 		try {
-			stylesheet = this.stylesheetCache.get(xmlDocument.getStylesheeURI());
+			stylesheet = this.stylesheetCacheSupplier.get().get(xmlDocument.getStylesheeURI());
 		} catch (final ExecutionException e) {
 			logger.error("Error retrieving compiled stylesheet from cache", e);
 			builder.withCompilationError((SaxonApiException) e.getCause());
@@ -76,16 +83,6 @@ public class XSLTProcessor implements IXSLTProcessor {
 		}
 		final IHTMLDocumentContainer container = builder.build();
 		return logger.traceExit(container);
-	}
-
-	private void initializeCache() {
-		logger.traceEntry();
-		if (this.stylesheetCache == null) {
-			logger.debug("Initializing compiled stylesheet cache (max. {} entries)", this.cacheSize);
-			this.stylesheetCache = CacheBuilder.newBuilder().maximumSize(this.cacheSize)
-				.build(new StylesheetCacheLoader(this.processor));
-		}
-		logger.traceExit();
 	}
 
 	/**

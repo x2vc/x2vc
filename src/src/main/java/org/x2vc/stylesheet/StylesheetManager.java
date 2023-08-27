@@ -13,6 +13,8 @@ import org.x2vc.common.URIHandling;
 import org.x2vc.common.URIHandling.ObjectType;
 
 import com.github.racc.tscg.TypesafeConfig;
+import com.google.common.base.Supplier;
+import com.google.common.base.Suppliers;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -28,8 +30,6 @@ public class StylesheetManager implements IStylesheetManager {
 
 	private static final Logger logger = LogManager.getLogger();
 
-	private LoadingCache<URI, IStylesheetInformation> stylesheetCache;
-
 	private IStylesheetPreprocessor preprocessor;
 
 	private Integer cacheSize;
@@ -41,21 +41,18 @@ public class StylesheetManager implements IStylesheetManager {
 		this.cacheSize = cacheSize;
 	}
 
-	private void initializeCache() {
+	Supplier<LoadingCache<URI, IStylesheetInformation>> stylesheetCacheSupplier = Suppliers.memoize(() -> {
 		logger.traceEntry();
-		if (this.stylesheetCache == null) {
-			logger.debug("Initializing stylesheet cache (max. {} entries)", this.cacheSize);
-			this.stylesheetCache = CacheBuilder.newBuilder().maximumSize(this.cacheSize)
-				.build(new StylesheetCacheLoader());
-		}
-		logger.traceExit();
-	}
+		logger.debug("Initializing stylesheet cache (max. {} entries)", this.cacheSize);
+		final LoadingCache<URI, IStylesheetInformation> stylesheetCache = CacheBuilder.newBuilder()
+			.maximumSize(this.cacheSize).build(new StylesheetCacheLoader());
+		return logger.traceExit(stylesheetCache);
+	});
 
 	@Override
 	public IStylesheetInformation get(URI uri) {
-		initializeCache();
 		try {
-			return this.stylesheetCache.get(uri);
+			return this.stylesheetCacheSupplier.get().get(uri);
 		} catch (final ExecutionException | UncheckedExecutionException e) {
 			final Throwable cause = e.getCause();
 			if (cause instanceof final RuntimeException rte) {
@@ -71,11 +68,10 @@ public class StylesheetManager implements IStylesheetManager {
 	@Override
 	public URI insert(String source) {
 		logger.traceEntry();
-		initializeCache();
 		final URI newURI = URIHandling.makeMemoryURI(ObjectType.STYLESHEET, UUID.randomUUID().toString());
 		logger.debug("URI for inserted stylesheet is {}", newURI);
 		final IStylesheetInformation stylesheet = this.preprocessor.prepareStylesheet(newURI, source);
-		this.stylesheetCache.put(newURI, stylesheet);
+		this.stylesheetCacheSupplier.get().put(newURI, stylesheet);
 		return logger.traceExit(newURI);
 	}
 

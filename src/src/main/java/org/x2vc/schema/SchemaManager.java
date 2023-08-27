@@ -23,6 +23,8 @@ import org.x2vc.stylesheet.IStylesheetInformation;
 import org.x2vc.stylesheet.IStylesheetManager;
 
 import com.github.racc.tscg.TypesafeConfig;
+import com.google.common.base.Supplier;
+import com.google.common.base.Suppliers;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -39,8 +41,6 @@ import com.google.inject.Singleton;
 public class SchemaManager implements ISchemaManager {
 
 	private static final Logger logger = LogManager.getLogger();
-
-	private LoadingCache<URI, IXMLSchema> schemaCache;
 
 	/**
 	 * This is a map of schema URI to stylesheet URI to be used by the loader.
@@ -65,14 +65,13 @@ public class SchemaManager implements ISchemaManager {
 		this.cacheSize = cacheSize;
 	}
 
-	private void initializeCache() {
+	Supplier<LoadingCache<URI, IXMLSchema>> schemaCacheSupplier = Suppliers.memoize(() -> {
 		logger.traceEntry();
-		if (this.schemaCache == null) {
-			logger.debug("Initializing schema cache (max. {} entries)", this.cacheSize);
-			this.schemaCache = CacheBuilder.newBuilder().maximumSize(this.cacheSize).build(new SchemaCacheLoader());
-		}
-		logger.traceExit();
-	}
+		logger.debug("Initializing schema cache (max. {} entries)", this.cacheSize);
+		final LoadingCache<URI, IXMLSchema> schemaCache = CacheBuilder.newBuilder().maximumSize(this.cacheSize)
+			.build(new SchemaCacheLoader());
+		return logger.traceExit(schemaCache);
+	});
 
 	@Override
 	public IXMLSchema getSchema(URI stylesheetURI) {
@@ -89,14 +88,13 @@ public class SchemaManager implements ISchemaManager {
 	@Override
 	public IXMLSchema getSchema(URI stylesheetURI, int schemaVersion) {
 		logger.traceEntry();
-		initializeCache();
 		// determine the schema URI with version number
 		final URI schemaURI = URIHandling.makeMemoryURI(ObjectType.SCHEMA, determineSchemaIdentifier(stylesheetURI),
 				schemaVersion);
 		// except for the special case of "version 1", which is in Part handled by the
 		// cache loader, versioned schema instances have to be inserted
 		// by the schema evolution process, so do NOT auto-load these instances
-		final IXMLSchema schema = this.schemaCache.getIfPresent(schemaURI);
+		final IXMLSchema schema = this.schemaCacheSupplier.get().getIfPresent(schemaURI);
 		if (schema != null) {
 			return logger.traceExit(schema);
 		} else {
@@ -136,9 +134,8 @@ public class SchemaManager implements ISchemaManager {
 	 * @return
 	 */
 	private IXMLSchema getSchemaByURI(URI schemaURI) {
-		initializeCache();
 		try {
-			return this.schemaCache.get(schemaURI);
+			return this.schemaCacheSupplier.get().get(schemaURI);
 		} catch (final ExecutionException | UncheckedExecutionException e) {
 			final Throwable cause = e.getCause();
 			if (cause instanceof final RuntimeException rte) {
