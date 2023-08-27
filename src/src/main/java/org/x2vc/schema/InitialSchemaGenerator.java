@@ -13,7 +13,7 @@ public class InitialSchemaGenerator implements IInitialSchemaGenerator {
 	@Override
 	public IXMLSchema generateSchema(IStylesheetInformation stylesheet, URI schemaURI) {
 		// TODO XML Schema: implement InitialSchemaGenerator
-		return null;
+		throw new UnsupportedOperationException("initial stylesheet generation not yet implemented");
 	}
 
 }
