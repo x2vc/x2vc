@@ -176,11 +176,11 @@ public class LoggingMixin {
 		builder.setConfigurationName("QuickAndDirtySetup");
 		final AppenderComponentBuilder appenderBuilder = builder.newAppender("Stdout", "CONSOLE").addAttribute("target",
 				ConsoleAppender.Target.SYSTEM_OUT);
-		appenderBuilder
-				.add(builder.newLayout("PatternLayout").addAttribute("pattern", "%d [%t] %-5level: %msg%n%throwable"));
+		appenderBuilder.add(builder.newLayout("PatternLayout").addAttribute("pattern",
+				"%date{HH:mm:ss.SSS} [%tn] %level{WARN=WRN, DEBUG=DBG, ERROR=ERR, TRACE=TRC, INFO=INF} %30.30logger{1.1.*}#%M: %msg%n%throwable"));
 		builder.add(appenderBuilder);
 		builder.add(builder.newRootLogger(Level.ERROR)
-				.add(builder.newAppenderRef("Stdout").addAttribute("level", Level.WARN)));
+			.add(builder.newAppenderRef("Stdout").addAttribute("level", Level.WARN)));
 		return Configurator.initialize(builder.build());
 	}
 }

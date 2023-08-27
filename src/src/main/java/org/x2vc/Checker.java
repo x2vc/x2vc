@@ -1,8 +1,10 @@
 package org.x2vc;
 
 import org.x2vc.process.CheckerFactory;
-import org.x2vc.process.DemoProcess;
 import org.x2vc.process.LoggingMixin;
+import org.x2vc.process.commands.FullProcessCommand;
+import org.x2vc.process.commands.SchemaProcessCommand;
+import org.x2vc.process.commands.XSSProcessCommand;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
@@ -14,7 +16,7 @@ import picocli.CommandLine.Mixin;
 /**
  * The main entry point of the command line application.
  */
-@Command(name = "x2vc", subcommands = { DemoProcess.class })
+@Command(name = "x2vc", subcommands = { FullProcessCommand.class, SchemaProcessCommand.class, XSSProcessCommand.class })
 public class Checker {
 	static {
 		LoggingMixin.initializeLog4j(); // programmatic initialization; must be done before calling

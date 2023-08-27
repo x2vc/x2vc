@@ -13,7 +13,10 @@ import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.x2vc.analysis.IVulnerabilityReport;
 import org.x2vc.analysis.VulnerabilityReport;
-import org.x2vc.xml.document.*;
+import org.x2vc.xml.document.DocumentValueModifier;
+import org.x2vc.xml.document.IDocumentModifier;
+import org.x2vc.xml.document.IModifierPayload;
+import org.x2vc.xml.document.IXMLDocumentDescriptor;
 import org.x2vc.xml.value.IValueDescriptor;
 
 import com.google.common.collect.ImmutableSet;
@@ -56,9 +59,10 @@ public class DirectAttributeCheckRule extends AbstractAttributeRule {
 		final String elementPath = getPathToNode(element);
 		final String attributeName = attribute.getKey();
 
+		// FIXME why are the value descriptors empty here???
+
 		// shortcut - if entire attribute name matches a data value
-		Optional<ImmutableSet<IValueDescriptor>> valueDescriptors = descriptor
-			.getValueDescriptors(attributeName);
+		Optional<ImmutableSet<IValueDescriptor>> valueDescriptors = descriptor.getValueDescriptors(attributeName);
 		if (valueDescriptors.isPresent()) {
 			handleFullMatch(elementPath, attributeName, valueDescriptors.get(), collector);
 		} else {
