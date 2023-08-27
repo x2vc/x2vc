@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -45,7 +46,7 @@ public class SchemaManager implements ISchemaManager {
 	/**
 	 * This is a map of schema URI to stylesheet URI to be used by the loader.
 	 */
-	private Map<URI, URI> stylesheetURIRegister = new HashMap<>();
+	private Map<URI, URI> stylesheetURIRegister = Collections.synchronizedMap(new HashMap<>());
 
 	private IStylesheetManager stylesheetManager;
 	private IInitialSchemaGenerator schemaGenerator;
@@ -195,6 +196,11 @@ public class SchemaManager implements ISchemaManager {
 				schema = generateInitialSchema(schemaURI, stylesheetURI);
 			}
 
+			if (schema == null) {
+				throw logger.throwing(new IllegalArgumentException(
+						String.format("Unable to either load or generate schema for stylesheet %s", stylesheetURI)));
+			}
+
 			// also store the "version 1" URI in the register in case someone requests the
 			// first version by number
 			final URI schemaURIv1 = URI.create(schemaURI.toString() + "#v1");
@@ -225,7 +231,7 @@ public class SchemaManager implements ISchemaManager {
 		 */
 		private IXMLSchema generateInitialSchema(URI schemaURI, final URI stylesheetURI) {
 			logger.traceEntry();
-			logger.debug("generating stylesheet {} for schema {}", stylesheetURI, schemaURI);
+			logger.debug("generating initial schema {} for stylesheet {}", schemaURI, stylesheetURI);
 			final IStylesheetInformation stylesheet = SchemaManager.this.stylesheetManager.get(stylesheetURI);
 			final IXMLSchema schema = SchemaManager.this.schemaGenerator.generateSchema(stylesheet, schemaURI);
 			return logger.traceExit(schema);
