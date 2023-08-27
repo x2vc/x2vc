@@ -3,7 +3,7 @@
     <elementTypes>
         <elementType contentType="EMPTY" elementArrangement="ALL" id="45023ac4-9c79-4247-bbe5-36f893bd7eaa">
             <comment>root element</comment>
-            <attribute name="intAttribute" type="INTEGER" optional="false" minValue="1" maxValue="42" fixedValueset="false" userModifiable="true" id="73a9b784-7a61-48c4-8110-9855cef81cef">
+            <attribute name="intAttribute" datatype="INTEGER" optional="false" minValue="1" maxValue="42" fixedValueset="false" userModifiable="true" id="73a9b784-7a61-48c4-8110-9855cef81cef">
                 <comment>required int attribute of root element</comment>
             </attribute>
         </elementType>

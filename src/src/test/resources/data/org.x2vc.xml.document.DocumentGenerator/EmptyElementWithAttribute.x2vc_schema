@@ -3,7 +3,7 @@
     <elementTypes>
         <elementType contentType="EMPTY" id="270055b5-074a-4e84-b3b2-3184839e9090">
             <comment>root element</comment>
-            <attribute name="someAttribute" type="STRING" optional="false" id="73a9b784-7a61-48c4-8110-9855cef81cef">
+            <attribute name="someAttribute" datatype="STRING" optional="false" id="73a9b784-7a61-48c4-8110-9855cef81cef">
                 <comment>attribute of root element</comment>
             </attribute>
         </elementType>

@@ -3,7 +3,7 @@
     <elementTypes>
         <elementType contentType="ELEMENT" elementArrangement="ALL" id="c9fdfe14-1c10-4f9f-b42e-5e72b157b262">
             <comment>choice element with int value</comment>
-            <attribute name="intAttribute" type="INTEGER" optional="false" minValue="1" maxValue="42" fixedValueset="false" userModifiable="true" id="73a9b784-7a61-48c4-8110-9855cef81cef">
+            <attribute name="intAttribute" datatype="INTEGER" optional="false" minValue="1" maxValue="42" fixedValueset="false" userModifiable="true" id="73a9b784-7a61-48c4-8110-9855cef81cef">
                 <comment>int attribute of choice element</comment>
             </attribute>
         </elementType>
@@ -12,15 +12,15 @@
         </elementType>
         <elementType contentType="ELEMENT" elementArrangement="ALL" id="3b5123d0-ea2c-4066-a29c-cd179dd2159b">
             <comment>choice element with bool value</comment>
-            <attribute name="boolAttribute" type="BOOLEAN" optional="false" fixedValueset="false" userModifiable="false" id="2e43dd5e-48a2-483d-a14f-805cbdb7a996">
+            <attribute name="boolAttribute" datatype="BOOLEAN" optional="false" fixedValueset="false" userModifiable="false" id="2e43dd5e-48a2-483d-a14f-805cbdb7a996">
                 <comment>bool attribute of choice element</comment>
             </attribute>
         </elementType>
         <elementType contentType="ELEMENT" elementArrangement="ALL" id="f222aa20-1b8a-438a-a2f6-5e573320b66f">
             <comment>choice element with string value</comment>
-            <attribute name="stringAttribute" type="STRING" optional="false" maxLength="42" fixedValueset="true" userModifiable="true" id="68a174ff-ef1d-48ae-aa09-accf2566f390">
+            <attribute name="stringAttribute" datatype="STRING" optional="false" maxLength="42" fixedValueset="true" userModifiable="true" id="68a174ff-ef1d-48ae-aa09-accf2566f390">
                 <comment>string attribute of choice element</comment>
-                <discreteValue type="STRING" stringValue="foo" id="2c756514-c092-43da-91dc-493a62db88bd">
+                <discreteValue datatype="STRING" stringValue="foo" id="2c756514-c092-43da-91dc-493a62db88bd">
                     <comment>first choice</comment>
                 </discreteValue>
             </attribute>
