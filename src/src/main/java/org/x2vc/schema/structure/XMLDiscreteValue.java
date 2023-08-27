@@ -17,7 +17,7 @@ public class XMLDiscreteValue extends AbstractSchemaObject implements IXMLDiscre
 	private static final Logger logger = LogManager.getLogger();
 
 	@XmlAttribute
-	private XMLDatatype type;
+	private XMLDatatype datatype;
 
 	@XmlAttribute
 	private String stringValue;
@@ -41,13 +41,13 @@ public class XMLDiscreteValue extends AbstractSchemaObject implements IXMLDiscre
 		this.booleanValue = builder.booleanValue;
 		this.integerValue = builder.integerValue;
 		if (this.stringValue != null) {
-			this.type = XMLDatatype.STRING;
+			this.datatype = XMLDatatype.STRING;
 		} else if (this.booleanValue != null) {
-			this.type = XMLDatatype.BOOLEAN;
+			this.datatype = XMLDatatype.BOOLEAN;
 		} else if (this.integerValue != null) {
-			this.type = XMLDatatype.INTEGER;
+			this.datatype = XMLDatatype.INTEGER;
 		} else {
-			this.type = XMLDatatype.OTHER;
+			this.datatype = XMLDatatype.OTHER;
 		}
 	}
 
@@ -62,13 +62,13 @@ public class XMLDiscreteValue extends AbstractSchemaObject implements IXMLDiscre
 	}
 
 	@Override
-	public XMLDatatype getType() {
-		return this.type;
+	public XMLDatatype getDatatype() {
+		return this.datatype;
 	}
 
 	@Override
 	public String asString() {
-		if (this.type == XMLDatatype.STRING) {
+		if (this.datatype == XMLDatatype.STRING) {
 			return this.stringValue;
 		} else {
 			throw logger.throwing(new IllegalStateException("Attempt to retrieve non-string value as string"));
@@ -77,7 +77,7 @@ public class XMLDiscreteValue extends AbstractSchemaObject implements IXMLDiscre
 
 	@Override
 	public Boolean asBoolean() {
-		if (this.type == XMLDatatype.BOOLEAN) {
+		if (this.datatype == XMLDatatype.BOOLEAN) {
 			return this.booleanValue;
 		} else {
 			throw logger.throwing(new IllegalStateException("attempt to retrieve non-boolean value as boolean"));
@@ -86,7 +86,7 @@ public class XMLDiscreteValue extends AbstractSchemaObject implements IXMLDiscre
 
 	@Override
 	public Integer asInteger() {
-		if (this.type == XMLDatatype.INTEGER) {
+		if (this.datatype == XMLDatatype.INTEGER) {
 			return this.integerValue;
 		} else {
 			throw logger.throwing(new IllegalStateException("attempt to retrieve non-integer value as integer"));
@@ -133,11 +133,11 @@ public class XMLDiscreteValue extends AbstractSchemaObject implements IXMLDiscre
 		private Builder(IXMLDiscreteValue xMLDiscreteValue) {
 			this.id = xMLDiscreteValue.getID();
 			this.comment = xMLDiscreteValue.getComment().orElse(null);
-			if (xMLDiscreteValue.getType() == XMLDatatype.STRING) {
+			if (xMLDiscreteValue.getDatatype() == XMLDatatype.STRING) {
 				this.stringValue = xMLDiscreteValue.asString();
-			} else if (xMLDiscreteValue.getType() == XMLDatatype.BOOLEAN) {
+			} else if (xMLDiscreteValue.getDatatype() == XMLDatatype.BOOLEAN) {
 				this.booleanValue = xMLDiscreteValue.asBoolean();
-			} else if (xMLDiscreteValue.getType() == XMLDatatype.INTEGER) {
+			} else if (xMLDiscreteValue.getDatatype() == XMLDatatype.INTEGER) {
 				this.integerValue = xMLDiscreteValue.asInteger();
 			}
 		}
@@ -229,7 +229,7 @@ public class XMLDiscreteValue extends AbstractSchemaObject implements IXMLDiscre
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + Objects.hash(this.booleanValue, this.integerValue, this.stringValue, this.type);
+		result = prime * result + Objects.hash(this.booleanValue, this.integerValue, this.stringValue, this.datatype);
 		return result;
 	}
 
@@ -247,7 +247,7 @@ public class XMLDiscreteValue extends AbstractSchemaObject implements IXMLDiscre
 		final XMLDiscreteValue other = (XMLDiscreteValue) obj;
 		return Objects.equals(this.booleanValue, other.booleanValue)
 				&& Objects.equals(this.integerValue, other.integerValue)
-				&& Objects.equals(this.stringValue, other.stringValue) && this.type == other.type;
+				&& Objects.equals(this.stringValue, other.stringValue) && this.datatype == other.datatype;
 	}
 
 }

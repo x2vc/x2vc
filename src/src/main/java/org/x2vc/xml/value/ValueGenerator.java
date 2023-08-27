@@ -183,7 +183,7 @@ public class ValueGenerator implements IValueGenerator {
 			}
 			final Set<IXMLDiscreteValue> discreteValues = schemaObject.getDiscreteValues();
 			if (!discreteValues.isEmpty() && schemaObject.isFixedValueset().orElse(false) && (discreteValues.stream()
-				.noneMatch(dv -> (dv.getType() == XMLDatatype.INTEGER) && (dv.asInteger() == intValue)))) {
+				.noneMatch(dv -> (dv.getDatatype() == XMLDatatype.INTEGER) && (dv.asInteger() == intValue)))) {
 				logger.warn("requested value {} is not part of the fixed value set", value);
 				result = false;
 
@@ -213,7 +213,7 @@ public class ValueGenerator implements IValueGenerator {
 		}
 		final Set<IXMLDiscreteValue> discreteValues = schemaObject.getDiscreteValues();
 		if (!discreteValues.isEmpty() && schemaObject.isFixedValueset().orElse(false) && (discreteValues.stream()
-			.noneMatch(dv -> (dv.getType() == XMLDatatype.STRING) && (dv.asString().equals(value))))) {
+			.noneMatch(dv -> (dv.getDatatype() == XMLDatatype.STRING) && (dv.asString().equals(value))))) {
 			logger.warn("requested value {} is not part of the fixed value set", value);
 			result = false;
 
@@ -228,7 +228,12 @@ public class ValueGenerator implements IValueGenerator {
 	 * @return
 	 */
 	private String generateValueForDataObject(IXMLDataObject schemaObject) {
-		switch (schemaObject.getDatatype()) {
+		final XMLDatatype datatype = schemaObject.getDatatype();
+		if (datatype == null) {
+			throw logger.throwing(new IllegalStateException(
+					String.format("schema object %s has no valid datatype set", schemaObject.getID())));
+		}
+		switch (datatype) {
 		case BOOLEAN:
 			return (ThreadLocalRandom.current().nextBoolean()) ? "true" : "false";
 		case INTEGER:

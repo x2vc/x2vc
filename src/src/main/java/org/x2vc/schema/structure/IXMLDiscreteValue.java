@@ -9,7 +9,7 @@ public interface IXMLDiscreteValue extends IXMLSchemaObject {
 	/**
 	 * @return the data type of the value, represented as {@link XMLDatatype}.
 	 */
-	XMLDatatype getType();
+	XMLDatatype getDatatype();
 
 	/**
 	 * @return the value represented as String, if supported
