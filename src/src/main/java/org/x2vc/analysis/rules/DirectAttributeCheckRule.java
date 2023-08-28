@@ -13,13 +13,18 @@ import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.x2vc.analysis.IVulnerabilityReport;
 import org.x2vc.analysis.VulnerabilityReport;
+import org.x2vc.schema.ISchemaManager;
+import org.x2vc.schema.structure.IXMLAttribute;
+import org.x2vc.schema.structure.IXMLSchema;
+import org.x2vc.schema.structure.XMLDatatype;
 import org.x2vc.xml.document.DocumentValueModifier;
 import org.x2vc.xml.document.IDocumentModifier;
 import org.x2vc.xml.document.IModifierPayload;
-import org.x2vc.xml.document.IXMLDocumentDescriptor;
+import org.x2vc.xml.document.IXMLDocumentContainer;
 import org.x2vc.xml.value.IValueDescriptor;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.inject.Inject;
 
 /**
  * Rule A.1: Check every attribute that contains the prefix used to generate he
@@ -35,117 +40,145 @@ public class DirectAttributeCheckRule extends AbstractAttributeRule {
 
 	private static final Logger logger = LogManager.getLogger();
 
+	private ISchemaManager schemaManager;
+
+	/**
+	 * @param schemaManager
+	 */
+	@Inject
+	DirectAttributeCheckRule(ISchemaManager schemaManager) {
+		super();
+		this.schemaManager = schemaManager;
+	}
+
 	@Override
 	public String getRuleID() {
 		return RULE_ID;
 	}
 
 	@Override
-	protected boolean isApplicableTo(Element element, IXMLDocumentDescriptor descriptor) {
+	protected boolean isApplicableTo(Element element, IXMLDocumentContainer xmlContainer) {
 		// check every element
 		return true;
 	}
 
 	@Override
-	protected boolean isApplicableTo(Element element, Attribute attribute, IXMLDocumentDescriptor descriptor) {
+	protected boolean isApplicableTo(Element element, Attribute attribute, IXMLDocumentContainer xmlContainer) {
 		// check every attribute of element
 		return true;
 	}
 
 	@Override
-	protected void performCheckOn(Element element, Attribute attribute, IXMLDocumentDescriptor descriptor,
+	protected void performCheckOn(Element element, Attribute attribute, IXMLDocumentContainer xmlContainer,
 			Consumer<IDocumentModifier> collector) {
 		logger.traceEntry("element {}, attribute {}", element, attribute);
 		final String elementPath = getPathToNode(element);
 		final String attributeName = attribute.getKey();
+		final IXMLSchema schema = this.schemaManager.getSchema(xmlContainer.getStylesheeURI());
 
-		// FIXME why are the value descriptors empty here???
-
-		// shortcut - if entire attribute name matches a data value
-		Optional<ImmutableSet<IValueDescriptor>> valueDescriptors = descriptor.getValueDescriptors(attributeName);
+		final Optional<ImmutableSet<IValueDescriptor>> valueDescriptors = xmlContainer.getDocumentDescriptor()
+			.getValueDescriptors(attributeName);
 		if (valueDescriptors.isPresent()) {
-			handleFullMatch(elementPath, attributeName, valueDescriptors.get(), collector);
-		} else {
-			// check for containment
-			final String valuePrefix = descriptor.getValuePrefix();
-			final int valueLength = descriptor.getValueLength();
-			int position = attributeName.indexOf(valuePrefix, 0);
-			while (position >= 0) {
-				final String candidate = attributeName.substring(position, position + valueLength);
-				valueDescriptors = descriptor.getValueDescriptors(candidate);
-				if (valueDescriptors.isPresent()) {
-					handlePartialMatch(elementPath, candidate, valueDescriptors.get(), collector);
+			for (final IValueDescriptor valueDescriptor : valueDescriptors.get()) {
+				if (valueDescriptor.getValue().equals(attributeName)) {
+					handleFullMatch(schema, elementPath, attributeName, valueDescriptors.get(), collector);
+				} else {
+					handlePartialMatch(schema, elementPath, valueDescriptor.getValue(), valueDescriptors.get(),
+							collector);
 				}
-				position = attributeName.indexOf(valuePrefix, position + valueLength - 1);
 			}
 		}
 		logger.traceExit();
 	}
 
 	/**
+	 * Performs a check on an attribute that appears as an exact input value.
+	 *
+	 * @param schema
+	 * @param elementSelector
 	 * @param attributeName
 	 * @param valueDescriptors
 	 * @param collector
 	 */
-	private void handleFullMatch(final String elementSelector, final String attributeName,
+	private void handleFullMatch(IXMLSchema schema, final String elementSelector, final String attributeName,
 			ImmutableSet<IValueDescriptor> valueDescriptors, Consumer<IDocumentModifier> collector) {
 		logger.traceEntry();
-
-		// TODO XSS Rule A.1: add payload for later handling
-
 		for (final IValueDescriptor valueDescriptor : valueDescriptors) {
 			// try to replace the entire attribute with style attribute
-			new DocumentValueModifier.Builder(valueDescriptor).withAnalyzerRuleID(RULE_ID)
-				.withOriginalValue(attributeName).withReplacementValue("style")
-				.withPayload(new DirectAttributeCheckPayload(elementSelector, "style")).sendTo(collector);
+			requestModification(schema, valueDescriptor, attributeName, "style",
+					new DirectAttributeCheckPayload(elementSelector, "style"), collector);
 			// try to replace the entire Attribute with a Javascript event handler
-			new DocumentValueModifier.Builder(valueDescriptor).withAnalyzerRuleID(RULE_ID)
-				.withOriginalValue(attributeName).withReplacementValue("onerror")
-				.withPayload(new DirectAttributeCheckPayload(elementSelector, "onerror")).sendTo(collector);
+			requestModification(schema, valueDescriptor, attributeName, "onerror",
+					new DirectAttributeCheckPayload(elementSelector, "onerror"), collector);
 		}
 		logger.traceExit();
 	}
 
 	/**
+	 * Performs a check on a partial attribute match.
+	 *
+	 * @param schema
+	 * @param elementSelector
 	 * @param candidate
-	 * @param immutableSet
+	 * @param valueDescriptors
 	 * @param collector
 	 */
-	private void handlePartialMatch(final String elementSelector, String candidate,
+	private void handlePartialMatch(IXMLSchema schema, final String elementSelector, String candidate,
 			ImmutableSet<IValueDescriptor> valueDescriptors, Consumer<IDocumentModifier> collector) {
 		logger.traceEntry();
-
 		for (final IValueDescriptor valueDescriptor : valueDescriptors) {
 			// try to introduce new attribute by breaking the encoding
-			new DocumentValueModifier.Builder(valueDescriptor).withAnalyzerRuleID(RULE_ID).withOriginalValue(candidate)
-				.withReplacementValue("=\"\" style=\"test\" rest")
-				.withPayload(new DirectAttributeCheckPayload(elementSelector, "style", "test")).sendTo(collector);
-			new DocumentValueModifier.Builder(valueDescriptor).withAnalyzerRuleID(RULE_ID).withOriginalValue(candidate)
-				.withReplacementValue("=\"\" onerror=\"test\" rest")
-				.withPayload(new DirectAttributeCheckPayload(elementSelector, "onerror", "test")).sendTo(collector);
-			new DocumentValueModifier.Builder(valueDescriptor).withAnalyzerRuleID(RULE_ID).withOriginalValue(candidate)
-				.withReplacementValue("=&quot;&quot; style=&quot;foo&quot; rest")
-				.withPayload(new DirectAttributeCheckPayload(elementSelector, "style", "foo")).sendTo(collector);
-			new DocumentValueModifier.Builder(valueDescriptor).withAnalyzerRuleID(RULE_ID).withOriginalValue(candidate)
-				.withReplacementValue("=&quot;&quot; onerror=&quot;foo&quot; rest")
-				.withPayload(new DirectAttributeCheckPayload(elementSelector, "onerror", "foo")).sendTo(collector);
-
+			requestModification(schema, valueDescriptor, candidate, "=\"\" style=\"test\" rest",
+					new DirectAttributeCheckPayload(elementSelector, "style", "test"), collector);
+			requestModification(schema, valueDescriptor, candidate, "=\"\" onerror=\"test\" rest",
+					new DirectAttributeCheckPayload(elementSelector, "onerror", "test"), collector);
+			requestModification(schema, valueDescriptor, candidate, "=&quot;&quot; style=&quot;foo&quot; rest",
+					new DirectAttributeCheckPayload(elementSelector, "style", "foo"), collector);
+			requestModification(schema, valueDescriptor, candidate, "=&quot;&quot; onerror=&quot;foo&quot; rest",
+					new DirectAttributeCheckPayload(elementSelector, "onerror", "foo"), collector);
 			// TODO XSS Rule A.1: test for additional vectors with partial matches
 		}
 		logger.traceExit();
 	}
 
+	/**
+	 * Issues a modification request if the requested value is valid for the
+	 * attribute in question.
+	 *
+	 * @param schema
+	 * @param valueDescriptor
+	 * @param originalValue
+	 * @param replacementValue
+	 * @param payload
+	 * @param collector
+	 */
+	private void requestModification(IXMLSchema schema, IValueDescriptor valueDescriptor, String originalValue,
+			String replacementValue, IModifierPayload payload, Consumer<IDocumentModifier> collector) {
+		// check whether the requested value is valid (the attribute has to be a string
+		// and the max length may not be exceeded) - otherwise we can just skip the
+		// request
+		final IXMLAttribute attribute = schema.getObjectByID(valueDescriptor.getSchemaElementID()).asAttribute();
+		if (attribute.getDatatype() == XMLDatatype.STRING) {
+			final Integer maxLength = attribute.getMaxLength().orElse(Integer.MAX_VALUE);
+			if (replacementValue.length() <= maxLength) {
+				new DocumentValueModifier.Builder(valueDescriptor).withAnalyzerRuleID(RULE_ID)
+					.withOriginalValue(originalValue).withReplacementValue(replacementValue).withPayload(payload)
+					.sendTo(collector);
+			}
+		}
+	}
+
 	@Override
-	public Set<String> getElementSelectors(IXMLDocumentDescriptor descriptor) {
+	public Set<String> getElementSelectors(IXMLDocumentContainer xmlContainer) {
 		logger.traceEntry();
-		final DirectAttributeCheckPayload payload = getPayloadChecked(descriptor, DirectAttributeCheckPayload.class);
+		final DirectAttributeCheckPayload payload = getPayloadChecked(xmlContainer, DirectAttributeCheckPayload.class);
 		return logger.traceExit(Set.of(payload.getElementSelector()));
 	}
 
 	@Override
-	public void verifyNode(Node node, IXMLDocumentDescriptor descriptor, Consumer<IVulnerabilityReport> collector) {
+	public void verifyNode(Node node, IXMLDocumentContainer xmlContainer, Consumer<IVulnerabilityReport> collector) {
 		logger.traceEntry();
-		final DirectAttributeCheckPayload payload = getPayloadChecked(descriptor, DirectAttributeCheckPayload.class);
+		final DirectAttributeCheckPayload payload = getPayloadChecked(xmlContainer, DirectAttributeCheckPayload.class);
 		if (node instanceof final Element element) {
 			final String attributeName = payload.getInjectedAttribute();
 			final String injectedValue = payload.getInjectedValue();
@@ -171,9 +204,9 @@ public class DirectAttributeCheckRule extends AbstractAttributeRule {
 	}
 
 	@SuppressWarnings("unchecked")
-	protected <T extends IModifierPayload> T getPayloadChecked(IXMLDocumentDescriptor descriptor,
+	protected <T extends IModifierPayload> T getPayloadChecked(IXMLDocumentContainer xmlContainer,
 			Class<T> expectedType) {
-		final Optional<IDocumentModifier> oModifier = descriptor.getModifier();
+		final Optional<IDocumentModifier> oModifier = xmlContainer.getDocumentDescriptor().getModifier();
 		checkArgument(oModifier.isPresent());
 		final Optional<IModifierPayload> oPayload = oModifier.get().getPayload();
 		checkArgument(oPayload.isPresent());

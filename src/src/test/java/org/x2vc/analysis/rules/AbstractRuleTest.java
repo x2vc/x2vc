@@ -13,7 +13,7 @@ import org.jsoup.select.Elements;
 import org.junit.jupiter.api.Test;
 import org.x2vc.analysis.IVulnerabilityReport;
 import org.x2vc.xml.document.IDocumentModifier;
-import org.x2vc.xml.document.IXMLDocumentDescriptor;
+import org.x2vc.xml.document.IXMLDocumentContainer;
 
 import com.google.common.collect.ImmutableSet;
 
@@ -26,17 +26,17 @@ class AbstractRuleTest {
 		}
 
 		@Override
-		public void checkNode(Node node, IXMLDocumentDescriptor descriptor, Consumer<IDocumentModifier> collector) {
+		public void checkNode(Node node, IXMLDocumentContainer container, Consumer<IDocumentModifier> collector) {
 			throw new UnsupportedOperationException();
 		}
 
 		@Override
-		public ImmutableSet<String> getElementSelectors(IXMLDocumentDescriptor descriptor) {
+		public ImmutableSet<String> getElementSelectors(IXMLDocumentContainer container) {
 			throw new UnsupportedOperationException();
 		}
 
 		@Override
-		public void verifyNode(Node node, IXMLDocumentDescriptor descriptor, Consumer<IVulnerabilityReport> collector) {
+		public void verifyNode(Node node, IXMLDocumentContainer container, Consumer<IVulnerabilityReport> collector) {
 			throw new UnsupportedOperationException();
 		}
 	};

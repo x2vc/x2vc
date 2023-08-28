@@ -8,7 +8,7 @@ import org.jsoup.nodes.Attribute;
 import org.jsoup.nodes.Element;
 import org.x2vc.analysis.IAnalyzerRule;
 import org.x2vc.xml.document.IDocumentModifier;
-import org.x2vc.xml.document.IXMLDocumentDescriptor;
+import org.x2vc.xml.document.IXMLDocumentContainer;
 
 /**
  * An {@link IAnalyzerRule} that performs a check on an attribute level.
@@ -18,12 +18,12 @@ public abstract class AbstractAttributeRule extends AbstractElementRule {
 	private static final Logger logger = LogManager.getLogger();
 
 	@Override
-	protected final void performCheckOn(Element element, IXMLDocumentDescriptor descriptor,
+	protected final void performCheckOn(Element element, IXMLDocumentContainer xmlContainer,
 			Consumer<IDocumentModifier> collector) {
 		logger.traceEntry();
 		for (final Attribute attribute : element.attributes()) {
-			if (isApplicableTo(element, attribute, descriptor)) {
-				performCheckOn(element, attribute, descriptor, collector);
+			if (isApplicableTo(element, attribute, xmlContainer)) {
+				performCheckOn(element, attribute, xmlContainer, collector);
 			}
 		}
 		logger.traceExit();
@@ -33,22 +33,24 @@ public abstract class AbstractAttributeRule extends AbstractElementRule {
 	 * Determines whether the entire rule can be applied to the attribute in
 	 * question.
 	 *
-	 * @param element    the element the attribute belongs to
-	 * @param attribute  the attribute to check
-	 * @param descriptor the input document descriptor
+	 * @param element              the element the attribute belongs to
+	 * @param attribute            the attribute to check
+	 * @param xmlContainer the input document container
 	 * @return <code>true</code> if the rule should be checked further
 	 */
-	protected abstract boolean isApplicableTo(Element element, Attribute attribute, IXMLDocumentDescriptor descriptor);
+	protected abstract boolean isApplicableTo(Element element, Attribute attribute,
+			IXMLDocumentContainer xmlContainer);
 
 	/**
 	 * Performs the actual check on the element in question.
 	 *
-	 * @param element    the element the attribute belongs to
-	 * @param attribute  the attribute to check
-	 * @param descriptor the input document descriptor
-	 * @param collector  a sink to send any resulting modification requests to
+	 * @param element              the element the attribute belongs to
+	 * @param attribute            the attribute to check
+	 * @param xmlContainer the input document container
+	 * @param collector            a sink to send any resulting modification
+	 *                             requests to
 	 */
-	protected abstract void performCheckOn(Element element, Attribute attribute, IXMLDocumentDescriptor descriptor,
-			Consumer<IDocumentModifier> collector);
+	protected abstract void performCheckOn(Element element, Attribute attribute,
+			IXMLDocumentContainer xmlContainer, Consumer<IDocumentModifier> collector);
 
 }

@@ -2,12 +2,7 @@ package org.x2vc.analysis;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.same;
-import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -100,11 +95,11 @@ class DocumentAnalyzerTest {
 			final Consumer<IDocumentModifier> argCollector = invocation.getArgument(2);
 			argCollector.accept(mock(IDocumentModifier.class));
 			return null;
-		}).when(this.rule).checkNode(any(Node.class), same(this.descriptor), any());
+		}).when(this.rule).checkNode(any(Node.class), same(this.source), any());
 
 		this.analyzer.analyzeDocument(this.container, this.modifierCollector, this.vulnerabilityCollector);
 
-		verify(this.rule, times(30)).checkNode(any(Node.class), same(this.descriptor), any());
+		verify(this.rule, times(30)).checkNode(any(Node.class), same(this.source), any());
 		verify(this.modifierCollector, times(30)).accept(any());
 	}
 
@@ -146,18 +141,18 @@ class DocumentAnalyzerTest {
 		when(this.modifier.getAnalyzerRuleID()).thenReturn(Optional.of("FOO-RULE"));
 
 		// rule does not provide filter for this test
-		when(this.rule.getElementSelectors(this.descriptor)).thenReturn(ImmutableSet.of());
+		when(this.rule.getElementSelectors(this.source)).thenReturn(ImmutableSet.of());
 
 		// mock up rule to produce reports for collector wiring test
 		doAnswer(invocation -> {
 			final Consumer<IVulnerabilityReport> argCollector = invocation.getArgument(2);
 			argCollector.accept(mock(IVulnerabilityReport.class));
 			return null;
-		}).when(this.rule).verifyNode(any(Node.class), same(this.descriptor), any());
+		}).when(this.rule).verifyNode(any(Node.class), same(this.source), any());
 
 		this.analyzer.analyzeDocument(this.container, this.modifierCollector, this.vulnerabilityCollector);
 
-		verify(this.rule, times(30)).verifyNode(any(Node.class), same(this.descriptor), any());
+		verify(this.rule, times(30)).verifyNode(any(Node.class), same(this.source), any());
 		verify(this.vulnerabilityCollector, times(30)).accept(any());
 	}
 
@@ -203,18 +198,18 @@ class DocumentAnalyzerTest {
 		when(this.modifier.getAnalyzerRuleID()).thenReturn(Optional.of("FOO-RULE"));
 
 		// rule does provide filter for this test
-		when(this.rule.getElementSelectors(this.descriptor)).thenReturn(ImmutableSet.of("/html/body/p"));
+		when(this.rule.getElementSelectors(this.source)).thenReturn(ImmutableSet.of("/html/body/p"));
 
 		// mock up rule to produce reports for collector wiring test
 		doAnswer(invocation -> {
 			final Consumer<IVulnerabilityReport> argCollector = invocation.getArgument(2);
 			argCollector.accept(mock(IVulnerabilityReport.class));
 			return null;
-		}).when(this.rule).verifyNode(any(Node.class), same(this.descriptor), any());
+		}).when(this.rule).verifyNode(any(Node.class), same(this.source), any());
 
 		this.analyzer.analyzeDocument(this.container, this.modifierCollector, this.vulnerabilityCollector);
 
-		verify(this.rule, times(3)).verifyNode(any(Node.class), same(this.descriptor), any());
+		verify(this.rule, times(3)).verifyNode(any(Node.class), same(this.source), any());
 		verify(this.vulnerabilityCollector, times(3)).accept(any());
 	}
 

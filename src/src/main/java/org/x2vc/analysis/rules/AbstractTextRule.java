@@ -8,23 +8,24 @@ import org.jsoup.nodes.Node;
 import org.jsoup.nodes.TextNode;
 import org.x2vc.analysis.IAnalyzerRule;
 import org.x2vc.xml.document.IDocumentModifier;
-import org.x2vc.xml.document.IXMLDocumentDescriptor;
+import org.x2vc.xml.document.IXMLDocumentContainer;
 
 /**
  * An {@link IAnalyzerRule} that performs a check on text nodes. Note that blank
  * text nodes (see {@link TextNode#isBlank()}) will be skipped without further
  * notice.
  */
-public abstract class AbstractTextRule extends AbstractRule implements IAnalyzerRule {
+public abstract class AbstractTextRule extends AbstractRule {
 
 	private static final Logger logger = LogManager.getLogger();
 
 	@Override
-	public final void checkNode(Node node, IXMLDocumentDescriptor descriptor, Consumer<IDocumentModifier> collector) {
+	public final void checkNode(Node node, IXMLDocumentContainer xmlContainer,
+			Consumer<IDocumentModifier> collector) {
 		logger.traceEntry();
 		if (node instanceof final TextNode textNode && (!textNode.isBlank())
-				&& (isApplicableTo(textNode, descriptor))) {
-			performCheckOn(textNode, descriptor, collector);
+				&& (isApplicableTo(textNode, xmlContainer))) {
+			performCheckOn(textNode, xmlContainer, collector);
 		}
 		logger.traceExit();
 	}
@@ -32,20 +33,21 @@ public abstract class AbstractTextRule extends AbstractRule implements IAnalyzer
 	/**
 	 * Determines whether the entire rule can be applied to the node at all.
 	 *
-	 * @param textNode   the text node to check
-	 * @param descriptor the input document descriptor
+	 * @param textNode             the text node to check
+	 * @param xmlContainer the input document container
 	 * @return <code>true</code> if the rule should be checked further
 	 */
-	protected abstract boolean isApplicableTo(TextNode textNode, IXMLDocumentDescriptor descriptor);
+	protected abstract boolean isApplicableTo(TextNode textNode, IXMLDocumentContainer xmlContainer);
 
 	/**
 	 * Performs the actual check on the text node in question.
 	 *
-	 * @param textNode   the text node to check
-	 * @param descriptor the input document descriptor
-	 * @param collector  a sink to send any resulting modification requests to
+	 * @param textNode             the text node to check
+	 * @param xmlContainer the input document container
+	 * @param collector            a sink to send any resulting modification
+	 *                             requests to
 	 */
-	protected abstract void performCheckOn(TextNode textNode, IXMLDocumentDescriptor descriptor,
+	protected abstract void performCheckOn(TextNode textNode, IXMLDocumentContainer xmlContainer,
 			Consumer<IDocumentModifier> collector);
 
 }

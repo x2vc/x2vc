@@ -15,7 +15,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.x2vc.processor.IHTMLDocumentContainer;
 import org.x2vc.xml.document.IDocumentModifier;
-import org.x2vc.xml.document.IXMLDocumentDescriptor;
+import org.x2vc.xml.document.IXMLDocumentContainer;
 
 import com.google.inject.Inject;
 
@@ -44,13 +44,13 @@ public class DocumentAnalyzer implements IDocumentAnalyzer {
 		checkArgument(!document.isFailed());
 		logger.traceEntry();
 		logger.debug("analyzing document using a set of {} rules", this.rules.size());
-		final IXMLDocumentDescriptor descriptor = document.getSource().getDocumentDescriptor();
-		final Optional<IDocumentModifier> modifier = descriptor.getModifier();
+		final IXMLDocumentContainer xmlContainer = document.getSource();
+		final Optional<IDocumentModifier> modifier = xmlContainer.getDocumentDescriptor().getModifier();
 		// if the document was not modified by an analyzer rule, perform a first pass
 		if (modifier.isEmpty() || modifier.get().getAnalyzerRuleID().isEmpty()) {
-			performFirstPass(document, descriptor, modifierCollector);
+			performFirstPass(document, xmlContainer, modifierCollector);
 		} else {
-			performFollowUpPass(document, descriptor, modifier.get(), vulnerabilityCollector);
+			performFollowUpPass(document, xmlContainer, modifier.get(), vulnerabilityCollector);
 		}
 		logger.traceExit();
 	}
@@ -59,7 +59,7 @@ public class DocumentAnalyzer implements IDocumentAnalyzer {
 	 * @param document
 	 * @param descriptor
 	 */
-	private void performFirstPass(IHTMLDocumentContainer container, IXMLDocumentDescriptor descriptor,
+	private void performFirstPass(IHTMLDocumentContainer container, IXMLDocumentContainer xmlContainer,
 			Consumer<IDocumentModifier> modifierCollector) {
 		logger.traceEntry();
 		final Optional<String> doc = container.getDocument();
@@ -68,7 +68,7 @@ public class DocumentAnalyzer implements IDocumentAnalyzer {
 		final Document parsedDocument = Jsoup.parse(doc.get());
 		parsedDocument.traverse((node, depth) -> {
 			for (final IAnalyzerRule rule : DocumentAnalyzer.this.rules) {
-				rule.checkNode(node, descriptor, modifier -> {
+				rule.checkNode(node, xmlContainer, modifier -> {
 					logger.debug("rule {} produced modifier {} at depth {}", rule.getRuleID(), modifier, depth);
 					modifierCollector.accept(modifier);
 				});
@@ -83,7 +83,7 @@ public class DocumentAnalyzer implements IDocumentAnalyzer {
 	 * @param iDocumentModifier
 	 * @param vulnerabilityCollector
 	 */
-	private void performFollowUpPass(IHTMLDocumentContainer container, IXMLDocumentDescriptor descriptor,
+	private void performFollowUpPass(IHTMLDocumentContainer container, IXMLDocumentContainer xmlContainer,
 			IDocumentModifier modifier, Consumer<IVulnerabilityReport> vulnerabilityCollector) {
 		logger.traceEntry();
 		final IAnalyzerRule rule = filterCorrespondingRule(modifier);
@@ -93,10 +93,10 @@ public class DocumentAnalyzer implements IDocumentAnalyzer {
 		logger.debug("parsing HTML document");
 		final Document parsedDocument = Jsoup.parse(doc.get());
 
-		final Set<String> selectors = rule.getElementSelectors(descriptor);
+		final Set<String> selectors = rule.getElementSelectors(xmlContainer);
 		if (selectors.isEmpty()) {
 			logger.debug("rule requires checking of entire DOM tree");
-			parsedDocument.traverse((node, depth) -> rule.verifyNode(node, descriptor, report -> {
+			parsedDocument.traverse((node, depth) -> rule.verifyNode(node, xmlContainer, report -> {
 				logger.debug("rule {} produced report {}", rule.getRuleID(), report);
 				vulnerabilityCollector.accept(report);
 			}));
@@ -108,7 +108,7 @@ public class DocumentAnalyzer implements IDocumentAnalyzer {
 				elements.forEach(consumer);
 			}).distinct().toList();
 			logger.debug("identified {} nodes to check for follow-up pass", filteredNodes.size());
-			filteredNodes.forEach(node -> rule.verifyNode(node, descriptor, report -> {
+			filteredNodes.forEach(node -> rule.verifyNode(node, xmlContainer, report -> {
 				logger.debug("rule {} produced report {}", rule.getRuleID(), report);
 				vulnerabilityCollector.accept(report);
 			}));

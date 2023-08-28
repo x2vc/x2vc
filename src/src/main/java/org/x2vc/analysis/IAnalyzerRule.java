@@ -8,7 +8,7 @@ import org.x2vc.analysis.rules.AbstractAttributeRule;
 import org.x2vc.analysis.rules.AbstractElementRule;
 import org.x2vc.analysis.rules.AbstractTextRule;
 import org.x2vc.xml.document.IDocumentModifier;
-import org.x2vc.xml.document.IXMLDocumentDescriptor;
+import org.x2vc.xml.document.IXMLDocumentContainer;
 
 /**
  * A rule that checks for a certain condition that might be exploited in order
@@ -29,33 +29,35 @@ public interface IAnalyzerRule {
 	 * This method is called once for each DOM node during the first pass and may
 	 * emit any number of data modification requests to perform follow-up checks.
 	 *
-	 * @param node       the DOM node to check
-	 * @param descriptor the input document descriptor
-	 * @param collector  a sink to send any resulting modification requests to
+	 * @param node                 the DOM node to check
+	 * @param xmlContainer the input document container
+	 * @param collector            a sink to send any resulting modification
+	 *                             requests to
 	 */
-	void checkNode(Node node, IXMLDocumentDescriptor descriptor, Consumer<IDocumentModifier> collector);
+	void checkNode(Node node, IXMLDocumentContainer xmlContainer, Consumer<IDocumentModifier> collector);
 
 	/**
 	 * If the rule needs to examine the entire document for the follow-up pass, emit
 	 * an empty set here. Otherwise, emit a set of XPath expressions and only the
 	 * corresponding values will be presented to
-	 * {@link #verifyNode(Node, IXMLDocumentDescriptor, Consumer)}
+	 * {@link #verifyNode(Node, IXMLDocumentContainer, Consumer)}
 	 *
-	 * @param descriptor the input document descriptor
+	 * @param xmlContainer the input document container
 	 * @return a set of XPath expressions to identify the entities to filter, or an
 	 *         empty set for no filtering
 	 */
-	Set<String> getElementSelectors(IXMLDocumentDescriptor descriptor);
+	Set<String> getElementSelectors(IXMLDocumentContainer xmlContainer);
 
 	/**
 	 * This method is called once for each DOM node - possibly filtered, see
-	 * {@link #getElementSelectors(IXMLDocumentDescriptor)} - during the follow-up
+	 * {@link #getElementSelectors(IXMLDocumentContainer)} - during the follow-up
 	 * pass and may emit any number of vulnerability reports.
 	 *
-	 * @param node       the DOM node to check
-	 * @param descriptor the input document descriptor
-	 * @param collector  a sink to send any resulting vulnerability reports to
+	 * @param node                 the DOM node to check
+	 * @param xmlContainer the input document container
+	 * @param collector            a sink to send any resulting vulnerability
+	 *                             reports to
 	 */
-	void verifyNode(Node node, IXMLDocumentDescriptor descriptor, Consumer<IVulnerabilityReport> collector);
+	void verifyNode(Node node, IXMLDocumentContainer xmlContainer, Consumer<IVulnerabilityReport> collector);
 
 }
