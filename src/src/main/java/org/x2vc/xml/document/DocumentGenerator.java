@@ -67,7 +67,7 @@ public class DocumentGenerator implements IDocumentGenerator {
 		logger.traceEntry();
 		final Builder builder = new XMLDocumentDescriptor.Builder(valueGenerator.getValuePrefix(),
 				valueGenerator.getValueLength());
-		// TODO XML Document Generator: add value descriptor
+		valueGenerator.getValueDescriptors().forEach(builder::addValueDescriptor);
 		final Optional<IDocumentModifier> modifier = request.getModifier();
 		if (modifier.isPresent()) {
 			builder.withModifier(modifier.get());

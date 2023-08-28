@@ -3,6 +3,7 @@ package org.x2vc.xml.document;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
@@ -10,6 +11,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
+import java.util.HashSet;
+import java.util.Optional;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -31,11 +34,13 @@ import org.x2vc.xml.request.*;
 import org.x2vc.xml.value.IValueDescriptor;
 import org.x2vc.xml.value.IValueGenerator;
 import org.x2vc.xml.value.IValueGeneratorFactory;
+import org.x2vc.xml.value.ValueDescriptor;
 import org.xmlunit.builder.DiffBuilder;
 import org.xmlunit.builder.Input;
 import org.xmlunit.diff.Diff;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 
 @ExtendWith(MockitoExtension.class)
@@ -58,8 +63,7 @@ class DocumentGeneratorTest {
 	private IValueGeneratorFactory valueGeneratorFactory;
 	@Mock
 	private IValueGenerator valueGenerator;
-	@Mock
-	private ImmutableSet<IValueDescriptor> valueDescriptors;
+	private HashSet<Object> valueDescriptors;
 
 	// request and associated objects
 	@Mock
@@ -85,7 +89,9 @@ class DocumentGeneratorTest {
 		lenient().when(this.valueGeneratorFactory.createValueGenerator(this.request)).thenReturn(this.valueGenerator);
 		lenient().when(this.valueGenerator.getValuePrefix()).thenReturn(VALUE_PREFIX);
 		lenient().when(this.valueGenerator.getValueLength()).thenReturn(VALUE_LENGTH);
-		lenient().when(this.valueGenerator.getValueDescriptors()).thenAnswer(a -> this.valueDescriptors);
+		this.valueDescriptors = Sets.newHashSet();
+		lenient().when(this.valueGenerator.getValueDescriptors())
+			.thenAnswer(a -> ImmutableSet.copyOf(this.valueDescriptors));
 
 		// request
 		lenient().when(this.request.getSchemaURI()).thenReturn(this.schemaURI);
@@ -110,6 +116,8 @@ class DocumentGeneratorTest {
 
 		// prepare value generator
 		when(this.valueGenerator.generateValue(rootAttributeRule)).thenReturn("foobar");
+		this.valueDescriptors
+			.add(new ValueDescriptor(rootAttribute.getID(), rootAttributeRule.getID(), "foobar", false));
 
 		final IXMLDocumentContainer document = this.documentGenerator.generateDocument(this.request);
 		assertNotNull(document);
@@ -122,7 +130,13 @@ class DocumentGeneratorTest {
 		final IXMLDocumentDescriptor descriptor = document.getDocumentDescriptor();
 		assertEquals(VALUE_PREFIX, descriptor.getValuePrefix());
 		assertEquals(VALUE_LENGTH, descriptor.getValueLength());
-		// TODO test descriptor.getValueDescriptors
+
+		final Optional<ImmutableSet<IValueDescriptor>> valDescSet = descriptor.getValueDescriptors("foobar");
+		assertTrue(valDescSet.isPresent());
+		assertEquals(1, valDescSet.get().size());
+		final IValueDescriptor valDesc = valDescSet.get().iterator().next();
+		assertEquals(rootAttribute.getID(), valDesc.getSchemaElementID());
+		assertEquals(rootAttributeRule.getID(), valDesc.getGenerationRuleID());
 	}
 
 	@Test
@@ -137,6 +151,8 @@ class DocumentGeneratorTest {
 
 		// prepare value generator
 		when(this.valueGenerator.generateValue(dataContentRule)).thenReturn("foobar");
+		this.valueDescriptors
+			.add(new ValueDescriptor(rootElementReference.getID(), dataContentRule.getID(), "foobar", false));
 
 		final IXMLDocumentContainer document = this.documentGenerator.generateDocument(this.request);
 		assertNotNull(document);
@@ -149,7 +165,13 @@ class DocumentGeneratorTest {
 		final IXMLDocumentDescriptor descriptor = document.getDocumentDescriptor();
 		assertEquals(VALUE_PREFIX, descriptor.getValuePrefix());
 		assertEquals(VALUE_LENGTH, descriptor.getValueLength());
-		// TODO test descriptor.getValueDescriptors
+
+		final Optional<ImmutableSet<IValueDescriptor>> valDescSet = descriptor.getValueDescriptors("foobar");
+		assertTrue(valDescSet.isPresent());
+		assertEquals(1, valDescSet.get().size());
+		final IValueDescriptor valDesc = valDescSet.get().iterator().next();
+		assertEquals(rootElementReference.getID(), valDesc.getSchemaElementID());
+		assertEquals(dataContentRule.getID(), valDesc.getGenerationRuleID());
 	}
 
 	@Test
@@ -191,6 +213,8 @@ class DocumentGeneratorTest {
 
 		// prepare value generator
 		when(this.valueGenerator.generateValue(rawContentRule)).thenReturn("<b>foo</b><i>bar</i>");
+		this.valueDescriptors.add(new ValueDescriptor(rootElementReference.getID(), rawContentRule.getID(),
+				"<b>foo</b><i>bar</i>", false));
 
 		final IXMLDocumentContainer document = this.documentGenerator.generateDocument(this.request);
 		assertNotNull(document);
@@ -203,7 +227,14 @@ class DocumentGeneratorTest {
 		final IXMLDocumentDescriptor descriptor = document.getDocumentDescriptor();
 		assertEquals(VALUE_PREFIX, descriptor.getValuePrefix());
 		assertEquals(VALUE_LENGTH, descriptor.getValueLength());
-		// TODO test descriptor.getValueDescriptors
+
+		final Optional<ImmutableSet<IValueDescriptor>> valDescSet = descriptor
+			.getValueDescriptors("<b>foo</b><i>bar</i>");
+		assertTrue(valDescSet.isPresent());
+		assertEquals(1, valDescSet.get().size());
+		final IValueDescriptor valDesc = valDescSet.get().iterator().next();
+		assertEquals(rootElementReference.getID(), valDesc.getSchemaElementID());
+		assertEquals(rawContentRule.getID(), valDesc.getGenerationRuleID());
 	}
 
 	private IXMLSchema loadSchema(String schemaFileName) throws FileNotFoundException, JAXBException {

@@ -20,7 +20,7 @@ public class ValueDescriptor implements IValueDescriptor {
 	 * @param value
 	 * @param requested
 	 */
-	ValueDescriptor(UUID schemaElementID, UUID generationRuleID, String value, boolean requested) {
+	public ValueDescriptor(UUID schemaElementID, UUID generationRuleID, String value, boolean requested) {
 		super();
 		this.schemaElementID = schemaElementID;
 		this.generationRuleID = generationRuleID;
@@ -33,7 +33,7 @@ public class ValueDescriptor implements IValueDescriptor {
 	 * @param generationRuleID
 	 * @param value
 	 */
-	ValueDescriptor(UUID schemaElementID, UUID generationRuleID, String value) {
+	public ValueDescriptor(UUID schemaElementID, UUID generationRuleID, String value) {
 		super();
 		this.schemaElementID = schemaElementID;
 		this.generationRuleID = generationRuleID;

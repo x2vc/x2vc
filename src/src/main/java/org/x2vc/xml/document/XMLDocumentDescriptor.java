@@ -1,5 +1,6 @@
 package org.x2vc.xml.document;
 
+import java.util.HashSet;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -38,10 +39,27 @@ public class XMLDocumentDescriptor implements IXMLDocumentDescriptor {
 
 	@Override
 	public Optional<ImmutableSet<IValueDescriptor>> getValueDescriptors(String value) {
-		if (this.valueDescriptors.containsKey(value)) {
-			return Optional.empty();
+		final String searchKey = value;
+		final HashSet<IValueDescriptor> result = new HashSet<>();
+		if (this.valueDescriptors.containsKey(searchKey)) {
+			result.addAll(this.valueDescriptors.get(searchKey));
 		}
-		return Optional.of(ImmutableSet.copyOf(this.valueDescriptors.get(value)));
+		// check for substring matches
+		if (value.length() > this.valueLength) {
+			int position = value.indexOf(this.valuePrefix, 0);
+			while (position >= 0) {
+				final String candidate = value.substring(position, position + this.valueLength);
+				if (this.valueDescriptors.containsKey(candidate)) {
+					result.addAll(this.valueDescriptors.get(candidate));
+				}
+				position = value.indexOf(this.valuePrefix, position + this.valueLength - 1);
+			}
+		}
+		if (result.isEmpty()) {
+			return Optional.empty();
+		} else {
+			return Optional.of(ImmutableSet.copyOf(result));
+		}
 	}
 
 	@Override
@@ -75,8 +93,18 @@ public class XMLDocumentDescriptor implements IXMLDocumentDescriptor {
 		 * @param valueDescriptor the descriptor to add
 		 * @return builder
 		 */
-		public Builder addValueDescriptors(IValueDescriptor valueDescriptor) {
-			this.valueDescriptors.put(valueDescriptor.getValue(), valueDescriptor);
+		public Builder addValueDescriptor(IValueDescriptor valueDescriptor) {
+			final String value = valueDescriptor.getValue();
+			this.valueDescriptors.put(value, valueDescriptor);
+			if (value.length() > this.valueLength) {
+				// add prefixed substrings to index
+				int position = value.indexOf(this.valuePrefix, 0);
+				while (position >= 0) {
+					final String candidate = value.substring(position, position + this.valueLength);
+					this.valueDescriptors.put(candidate, valueDescriptor);
+					position = value.indexOf(this.valuePrefix, position + this.valueLength - 1);
+				}
+			}
 			return this;
 		}
 
