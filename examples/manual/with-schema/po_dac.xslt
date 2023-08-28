@@ -113,7 +113,7 @@
 		</xsl:comment>
 		<!-- BAD EXAMPLE: this should trigger the DirectAttributeCheckRule because it allows for insertion of an arbitrary attribute -->
 		<xsl:element name="bad_example">
-			<xsl:attribute name="{@partNum}">
+			<xsl:attribute name="{translate(@partNum, ' ', '_')}">
 				<xsl:value-of select="productName"/>
 			</xsl:attribute>
 		</xsl:element>

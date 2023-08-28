@@ -220,7 +220,7 @@
 
 		<elementType contentType="ELEMENT" elementArrangement="SEQUENCE" id="73ac44e5-0f0c-4d2d-9e60-682651d93f0a">
 			<comment>purchase order item</comment>
-			<attribute name="partNum" datatype="STRING" optional="false" fixedValueset="false" maxLength="10" userModifiable="true" id="4fca3382-050a-481d-a4c4-c57d92e5deb0" />
+			<attribute name="partNum" datatype="STRING" optional="false" fixedValueset="false" maxLength="50" userModifiable="true" id="4fca3382-050a-481d-a4c4-c57d92e5deb0" />
 			<subElement name="productName" elementID="3f422f94-d15c-4771-aa97-d6cb93d92cd4" minOccurrence="1" maxOccurrence="1" id="2429c442-dbe0-4e45-bca5-bf6a8c2df56c" />
 			<subElement name="quantity" elementID="48805800-abed-4c0b-88d8-b296033f3c20" minOccurrence="1" maxOccurrence="1" id="e2e04b6a-d467-45e5-8171-8bf13d86b683" />
 			<subElement name="USPrice" elementID="aef408bf-04fc-417c-bc82-3d66adc3597a" minOccurrence="1" maxOccurrence="1" id="84de9f86-b704-422e-abb4-f5ff7fb99284" />
