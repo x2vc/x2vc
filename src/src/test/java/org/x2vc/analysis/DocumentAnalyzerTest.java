@@ -1,5 +1,6 @@
 package org.x2vc.analysis;
 
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.*;
@@ -154,6 +155,40 @@ class DocumentAnalyzerTest {
 
 		verify(this.rule, times(30)).verifyNode(any(Node.class), same(this.source), any());
 		verify(this.vulnerabilityCollector, times(30)).accept(any());
+	}
+
+	/**
+	 * Test method for
+	 * {@link org.x2vc.analysis.DocumentAnalyzer#verifyDocument}.
+	 */
+	@Test
+	void testFollowUpPassWithUnknownRuleID() {
+		// connect rule and modifier
+		when(this.source.getDocumentDescriptor().getModifier()).thenReturn(Optional.of(this.modifier));
+		when(this.rule.getRuleID()).thenReturn("FOO-RULE");
+		when(this.modifier.getAnalyzerRuleID()).thenReturn(Optional.of("BAR-RULE")); // does not match the line above
+
+		assertThrows(IllegalArgumentException.class, () -> this.analyzer.analyzeDocument(this.container,
+				this.modifierCollector, this.vulnerabilityCollector));
+	}
+
+	/**
+	 * Test method for
+	 * {@link org.x2vc.analysis.DocumentAnalyzer#verifyDocument}.
+	 */
+	@Test
+	void testFollowUpPassWithDuplicateID() {
+		// connect rules with same ID
+		when(this.source.getDocumentDescriptor().getModifier()).thenReturn(Optional.of(this.modifier));
+		when(this.modifier.getAnalyzerRuleID()).thenReturn(Optional.of("FOO-RULE"));
+		final IAnalyzerRule rule1 = mock(IAnalyzerRule.class);
+		final IAnalyzerRule rule2 = mock(IAnalyzerRule.class);
+		when(rule1.getRuleID()).thenReturn("FOO-RULE");
+		when(rule2.getRuleID()).thenReturn("FOO-RULE"); // must trigger an exception because rule IDs have to be unique
+		this.analyzer = new DocumentAnalyzer(Sets.newSet(rule1, rule2));
+
+		assertThrows(IllegalArgumentException.class, () -> this.analyzer.analyzeDocument(this.container,
+				this.modifierCollector, this.vulnerabilityCollector));
 	}
 
 	/**

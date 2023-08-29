@@ -1,7 +1,5 @@
 package org.x2vc.analysis.rules;
 
-import static com.google.common.base.Preconditions.checkArgument;
-
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -23,6 +21,7 @@ import org.x2vc.xml.document.IModifierPayload;
 import org.x2vc.xml.document.IXMLDocumentContainer;
 import org.x2vc.xml.value.IValueDescriptor;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
 
@@ -183,7 +182,7 @@ public class DirectAttributeCheckRule extends AbstractAttributeRule {
 			final String attributeName = payload.getInjectedAttribute();
 			final String injectedValue = payload.getInjectedValue();
 			final String actualValue = element.attr(attributeName);
-			if (actualValue == null) {
+			if (Strings.isNullOrEmpty(actualValue)) {
 				logger.debug("attribute \"{}\" not found, follow-up check negative", attributeName);
 			} else {
 				if (actualValue.equalsIgnoreCase(injectedValue)) {
@@ -201,75 +200,6 @@ public class DirectAttributeCheckRule extends AbstractAttributeRule {
 			logger.warn("follow-up check called for non-element node");
 		}
 		logger.traceExit();
-	}
-
-	@SuppressWarnings("unchecked")
-	protected <T extends IModifierPayload> T getPayloadChecked(IXMLDocumentContainer xmlContainer,
-			Class<T> expectedType) {
-		final Optional<IDocumentModifier> oModifier = xmlContainer.getDocumentDescriptor().getModifier();
-		checkArgument(oModifier.isPresent());
-		final Optional<IModifierPayload> oPayload = oModifier.get().getPayload();
-		checkArgument(oPayload.isPresent());
-		if (expectedType.isInstance(oPayload.get())) {
-			return (T) oPayload.get();
-		} else {
-			throw logger.throwing(new IllegalArgumentException(
-					String.format("payload of document modifier has the wrong type %s, expected %s",
-							oPayload.get().getClass().getName(), expectedType.getName())));
-		}
-
-	}
-
-	private class DirectAttributeCheckPayload implements IModifierPayload {
-
-		private static final long serialVersionUID = -176115350310411970L;
-
-		String elementSelector;
-		String injectedAttribute;
-		String injectedValue;
-
-		/**
-		 * @param elementSelector
-		 * @param injectedAttribute
-		 * @param injectedValue
-		 */
-		public DirectAttributeCheckPayload(String elementSelector, String injectedAttribute, String injectedValue) {
-			super();
-			this.elementSelector = elementSelector;
-			this.injectedAttribute = injectedAttribute;
-			this.injectedValue = injectedValue;
-		}
-
-		/**
-		 * @param elementSelector
-		 * @param injectedAttribute
-		 */
-		public DirectAttributeCheckPayload(String elementSelector, String injectedAttribute) {
-			super();
-			this.elementSelector = elementSelector;
-			this.injectedAttribute = injectedAttribute;
-		}
-
-		/**
-		 * @return the elementSelector
-		 */
-		public String getElementSelector() {
-			return this.elementSelector;
-		}
-
-		/**
-		 * @return the injectedAttribute
-		 */
-		public String getInjectedAttribute() {
-			return this.injectedAttribute;
-		}
-
-		/**
-		 * @return the injectedValue
-		 */
-		public String getInjectedValue() {
-			return this.injectedValue;
-		}
 	}
 
 }

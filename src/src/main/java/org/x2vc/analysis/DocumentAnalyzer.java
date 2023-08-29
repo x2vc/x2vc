@@ -124,9 +124,7 @@ public class DocumentAnalyzer implements IDocumentAnalyzer {
 	private IAnalyzerRule filterCorrespondingRule(IDocumentModifier modifier) throws IllegalArgumentException {
 		logger.traceEntry();
 		final Optional<String> analyzerRuleID = modifier.getAnalyzerRuleID();
-		if (analyzerRuleID.isEmpty()) {
-			throw logger.throwing(new IllegalArgumentException("Follow-up pass attempted without rule ID"));
-		}
+		checkArgument(analyzerRuleID.isPresent());
 		final String ruleID = analyzerRuleID.get();
 		final List<IAnalyzerRule> filteredRules = this.rules.stream().filter(r -> r.getRuleID().equals(ruleID))
 			.toList();

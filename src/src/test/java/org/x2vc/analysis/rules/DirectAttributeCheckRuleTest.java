@@ -2,6 +2,7 @@ package org.x2vc.analysis.rules;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.lenient;
@@ -11,6 +12,7 @@ import static org.mockito.Mockito.when;
 import java.net.URI;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -18,21 +20,20 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.x2vc.analysis.IVulnerabilityReport;
 import org.x2vc.common.URIHandling;
 import org.x2vc.common.URIHandling.ObjectType;
 import org.x2vc.schema.ISchemaManager;
 import org.x2vc.schema.structure.IXMLAttribute;
 import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.schema.structure.XMLDatatype;
-import org.x2vc.xml.document.IDocumentModifier;
-import org.x2vc.xml.document.IDocumentValueModifier;
-import org.x2vc.xml.document.IXMLDocumentContainer;
-import org.x2vc.xml.document.IXMLDocumentDescriptor;
+import org.x2vc.xml.document.*;
 import org.x2vc.xml.value.IValueDescriptor;
 
 import com.google.common.collect.ImmutableSet;
@@ -41,7 +42,7 @@ import com.google.common.collect.Lists;
 @ExtendWith(MockitoExtension.class)
 class DirectAttributeCheckRuleTest {
 
-	private DirectAttributeCheckRule rule;
+	private AbstractRule rule;
 
 	@Mock
 	private ISchemaManager schemaManager;
@@ -58,12 +59,24 @@ class DirectAttributeCheckRuleTest {
 	@Mock
 	private IXMLDocumentContainer documentContainer;
 
+	@Mock
+	private IDocumentModifier modifier;
+
 	private List<IDocumentModifier> modifiers;
 
-	private Consumer<IDocumentModifier> collector = new Consumer<IDocumentModifier>() {
+	private Consumer<IDocumentModifier> modifierCollector = new Consumer<IDocumentModifier>() {
 		@Override
 		public void accept(IDocumentModifier t) {
 			DirectAttributeCheckRuleTest.this.modifiers.add(t);
+		}
+	};
+
+	private List<IVulnerabilityReport> vulnerabilities;
+
+	private Consumer<IVulnerabilityReport> vulnerabilityCollector = new Consumer<IVulnerabilityReport>() {
+		@Override
+		public void accept(IVulnerabilityReport t) {
+			DirectAttributeCheckRuleTest.this.vulnerabilities.add(t);
 		}
 	};
 
@@ -74,6 +87,17 @@ class DirectAttributeCheckRuleTest {
 	void setUp() throws Exception {
 		this.rule = new DirectAttributeCheckRule(this.schemaManager);
 		this.modifiers = Lists.newLinkedList();
+		this.vulnerabilities = Lists.newLinkedList();
+		lenient().when(this.documentContainer.getDocumentDescriptor()).thenReturn(this.documentDescriptor);
+	}
+
+	/**
+	 * Test method for
+	 * {@link org.x2vc.analysis.rules.AbstractElementRule#getRuleID()}.
+	 */
+	@Test
+	void testRuleID() {
+		assertEquals(DirectAttributeCheckRule.RULE_ID, this.rule.getRuleID());
 	}
 
 	/**
@@ -111,9 +135,7 @@ class DirectAttributeCheckRuleTest {
 		when(this.documentDescriptor.getValueDescriptors(query))
 			.thenReturn(Optional.of(ImmutableSet.of(valueDescriptor)));
 
-		lenient().when(this.documentContainer.getDocumentDescriptor()).thenReturn(this.documentDescriptor);
-
-		this.rule.checkNode(node, this.documentContainer, this.collector);
+		this.rule.checkNode(node, this.documentContainer, this.modifierCollector);
 
 		assertFalse(this.modifiers.isEmpty());
 		this.modifiers.forEach(m -> {
@@ -123,6 +145,75 @@ class DirectAttributeCheckRuleTest {
 				assertEquals(value, vm.getOriginalValue().get());
 			}
 		});
+	}
+
+	/**
+	 * Test method for
+	 * {@link org.x2vc.analysis.rules.DirectAttributeCheckRule#getElementSelectors(org.x2vc.xml.document.IXMLDocumentContainer)}.
+	 */
+	@Test
+	void testGetElementSelectors_NoModifier() {
+		when(this.documentDescriptor.getModifier()).thenReturn(Optional.empty());
+		assertThrows(IllegalArgumentException.class, () -> this.rule.getElementSelectors(this.documentContainer));
+	}
+
+	/**
+	 * Test method for
+	 * {@link org.x2vc.analysis.rules.DirectAttributeCheckRule#getElementSelectors(org.x2vc.xml.document.IXMLDocumentContainer)}.
+	 */
+	@Test
+	void testGetElementSelectors_NoPayload() {
+		when(this.documentDescriptor.getModifier()).thenReturn(Optional.of(this.modifier));
+		when(this.modifier.getPayload()).thenReturn(Optional.empty());
+		assertThrows(IllegalArgumentException.class, () -> this.rule.getElementSelectors(this.documentContainer));
+	}
+
+	/**
+	 * Test method for
+	 * {@link org.x2vc.analysis.rules.DirectAttributeCheckRule#getElementSelectors(org.x2vc.xml.document.IXMLDocumentContainer)}.
+	 */
+	@Test
+	void testGetElementSelectors_WrongType() {
+		when(this.documentDescriptor.getModifier()).thenReturn(Optional.of(this.modifier));
+		when(this.modifier.getPayload()).thenReturn(Optional.of(new IModifierPayload() {
+			private static final long serialVersionUID = -6630813475107736706L;
+		}));
+		assertThrows(IllegalArgumentException.class, () -> this.rule.getElementSelectors(this.documentContainer));
+	}
+
+	/**
+	 * Test method for
+	 * {@link org.x2vc.analysis.rules.DirectAttributeCheckRule#getElementSelectors(org.x2vc.xml.document.IXMLDocumentContainer)}.
+	 */
+	@Test
+	void testGetElementSelectors() {
+		when(this.documentDescriptor.getModifier()).thenReturn(Optional.of(this.modifier));
+		when(this.modifier.getPayload()).thenReturn(Optional.of(new DirectAttributeCheckPayload("elementSelector", "injectedAttribute")));
+		final Set<String> selectors = this.rule.getElementSelectors(this.documentContainer);
+		assertEquals(1, selectors.size());
+		assertEquals("elementSelector", selectors.iterator().next());
+	}
+
+	/**
+	 * Test method for
+	 * {@link org.x2vc.analysis.rules.DirectAttributeCheckRule#verifyNode(org.jsoup.nodes.Node, org.x2vc.xml.document.IXMLDocumentContainer, java.util.function.Consumer)}.
+	 */
+	@ParameterizedTest
+	@CsvSource({ "<p qwertzui=\"foobar\">test</p>, /p, qwertzui, foobar, true",
+			"<p qwertzui=\"foobar\">test</p>, /p, qwertzui, boofar, false",
+			"<p qwertzui=\"foobar\">test</p>, /p, asdfasdf, foobar, false", })
+	void testVerifyNode(String html, String elementSelector, String injectedAttribute, String injectedValue,
+			boolean result) {
+		final Element node = parseToElement(html);
+
+		when(this.documentDescriptor.getModifier()).thenReturn(Optional.of(this.modifier));
+		when(this.modifier.getPayload()).thenReturn(
+				Optional.of(new DirectAttributeCheckPayload(elementSelector, injectedAttribute, injectedValue)));
+
+		this.rule.verifyNode(node, this.documentContainer, this.vulnerabilityCollector);
+
+		assertEquals(!result, this.vulnerabilities.isEmpty());
+		// TODO XSS Vulnerability: check for contents
 	}
 
 	private Element parseToElement(String html) {
