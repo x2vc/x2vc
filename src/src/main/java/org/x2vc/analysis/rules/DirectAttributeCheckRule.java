@@ -71,71 +71,39 @@ public class DirectAttributeCheckRule extends AbstractAttributeRule {
 	protected void performCheckOn(Element element, Attribute attribute, IXMLDocumentContainer xmlContainer,
 			Consumer<IDocumentModifier> collector) {
 		logger.traceEntry("element {}, attribute {}", element, attribute);
-		final String elementPath = getPathToNode(element);
-		final String attributeName = attribute.getKey();
-		final IXMLSchema schema = this.schemaManager.getSchema(xmlContainer.getStylesheeURI());
 
+		final String attributeName = attribute.getKey();
 		final Optional<ImmutableSet<IValueDescriptor>> valueDescriptors = xmlContainer.getDocumentDescriptor()
 			.getValueDescriptors(attributeName);
 		if (valueDescriptors.isPresent()) {
+
+			final String elementPath = getPathToNode(element);
+			final IXMLSchema schema = this.schemaManager.getSchema(xmlContainer.getStylesheeURI());
+
 			for (final IValueDescriptor valueDescriptor : valueDescriptors.get()) {
-				if (valueDescriptor.getValue().equals(attributeName)) {
-					handleFullMatch(schema, elementPath, attributeName, valueDescriptors.get(), collector);
-				} else {
-					handlePartialMatch(schema, elementPath, valueDescriptor.getValue(), valueDescriptors.get(),
-							collector);
-				}
+				final String currentValue = valueDescriptor.getValue();
+
+				// try to replace the entire attribute with style attribute
+				requestModification(schema, valueDescriptor, currentValue, "style",
+						new DirectAttributeCheckPayload(elementPath, "style"), collector);
+
+				// try to replace the entire Attribute with a Javascript event handler
+				requestModification(schema, valueDescriptor, currentValue, "onerror",
+						new DirectAttributeCheckPayload(elementPath, "onerror"), collector);
+
+				// try to introduce new attribute by breaking the encoding
+				requestModification(schema, valueDescriptor, currentValue, "=\"\" style=\"test\" rest",
+						new DirectAttributeCheckPayload(elementPath, "style", "test"), collector);
+				requestModification(schema, valueDescriptor, currentValue, "=\"\" onerror=\"test\" rest",
+						new DirectAttributeCheckPayload(elementPath, "onerror", "test"), collector);
+				requestModification(schema, valueDescriptor, currentValue, "=&quot;&quot; style=&quot;foo&quot; rest",
+						new DirectAttributeCheckPayload(elementPath, "style", "foo"), collector);
+				requestModification(schema, valueDescriptor, currentValue, "=&quot;&quot; onerror=&quot;foo&quot; rest",
+						new DirectAttributeCheckPayload(elementPath, "onerror", "foo"), collector);
+
+				// TODO XSS Rule A.1: test for additional vectors with partial matches
+
 			}
-		}
-		logger.traceExit();
-	}
-
-	/**
-	 * Performs a check on an attribute that appears as an exact input value.
-	 *
-	 * @param schema
-	 * @param elementSelector
-	 * @param attributeName
-	 * @param valueDescriptors
-	 * @param collector
-	 */
-	private void handleFullMatch(IXMLSchema schema, final String elementSelector, final String attributeName,
-			ImmutableSet<IValueDescriptor> valueDescriptors, Consumer<IDocumentModifier> collector) {
-		logger.traceEntry();
-		for (final IValueDescriptor valueDescriptor : valueDescriptors) {
-			// try to replace the entire attribute with style attribute
-			requestModification(schema, valueDescriptor, attributeName, "style",
-					new DirectAttributeCheckPayload(elementSelector, "style"), collector);
-			// try to replace the entire Attribute with a Javascript event handler
-			requestModification(schema, valueDescriptor, attributeName, "onerror",
-					new DirectAttributeCheckPayload(elementSelector, "onerror"), collector);
-		}
-		logger.traceExit();
-	}
-
-	/**
-	 * Performs a check on a partial attribute match.
-	 *
-	 * @param schema
-	 * @param elementSelector
-	 * @param candidate
-	 * @param valueDescriptors
-	 * @param collector
-	 */
-	private void handlePartialMatch(IXMLSchema schema, final String elementSelector, String candidate,
-			ImmutableSet<IValueDescriptor> valueDescriptors, Consumer<IDocumentModifier> collector) {
-		logger.traceEntry();
-		for (final IValueDescriptor valueDescriptor : valueDescriptors) {
-			// try to introduce new attribute by breaking the encoding
-			requestModification(schema, valueDescriptor, candidate, "=\"\" style=\"test\" rest",
-					new DirectAttributeCheckPayload(elementSelector, "style", "test"), collector);
-			requestModification(schema, valueDescriptor, candidate, "=\"\" onerror=\"test\" rest",
-					new DirectAttributeCheckPayload(elementSelector, "onerror", "test"), collector);
-			requestModification(schema, valueDescriptor, candidate, "=&quot;&quot; style=&quot;foo&quot; rest",
-					new DirectAttributeCheckPayload(elementSelector, "style", "foo"), collector);
-			requestModification(schema, valueDescriptor, candidate, "=&quot;&quot; onerror=&quot;foo&quot; rest",
-					new DirectAttributeCheckPayload(elementSelector, "onerror", "foo"), collector);
-			// TODO XSS Rule A.1: test for additional vectors with partial matches
 		}
 		logger.traceExit();
 	}
@@ -185,7 +153,13 @@ public class DirectAttributeCheckRule extends AbstractAttributeRule {
 			if (Strings.isNullOrEmpty(actualValue)) {
 				logger.debug("attribute \"{}\" not found, follow-up check negative", attributeName);
 			} else {
-				if (actualValue.equalsIgnoreCase(injectedValue)) {
+				if (injectedValue == null) {
+					// we only tried to inject a new attribute, regardless of the contents -
+					// success, apparently
+					logger.debug("attribute \"{}\" injected from input data, follow-up check positive", attributeName);
+					collector.accept(new VulnerabilityReport());
+					// TODO XSS Vulnerability: produce a proper report object
+				} else if (actualValue.equalsIgnoreCase(injectedValue)) {
 					logger.debug("attribute \"{}\" contains injected value \"{}\", follow-up check positive",
 							attributeName, injectedValue);
 					collector.accept(new VulnerabilityReport());
