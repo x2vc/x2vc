@@ -56,23 +56,25 @@ public class RequestProcessingTask implements Runnable {
 			logger.debug("processing XML to HTML");
 			final IHTMLDocumentContainer htmlDocument = this.processor.processDocument(xmlDocument);
 
-			if (this.mode == ProcessingMode.FULL || this.mode == ProcessingMode.XSS_ONLY) {
-				this.analyzer.analyzeDocument(htmlDocument, modifier -> {
-					logger.debug("adding new task for modification request");
-					final IDocumentRequest modifiedRequest = this.requestGenerator.modifyRequest(this.request,
-							modifier);
-					final RequestProcessingTask task = this.taskFactory.createRequestProcessingTask(modifiedRequest,
-							this.mode);
-					this.workerProcessManager.submit(task);
-				}, report -> {
-					logger.warn("handling of vulnerability reports not yet implemented");
-					// TODO handle vulnerability reports
-				});
-			}
+			if (!htmlDocument.isFailed()) {
+				if (this.mode == ProcessingMode.FULL || this.mode == ProcessingMode.XSS_ONLY) {
+					this.analyzer.analyzeDocument(htmlDocument, modifier -> {
+						logger.debug("adding new task for modification request");
+						final IDocumentRequest modifiedRequest = this.requestGenerator.modifyRequest(this.request,
+								modifier);
+						final RequestProcessingTask task = this.taskFactory.createRequestProcessingTask(modifiedRequest,
+								this.mode);
+						this.workerProcessManager.submit(task);
+					}, report -> {
+						logger.warn("handling of vulnerability reports not yet implemented");
+						// TODO handle vulnerability reports
+					});
+				}
 
-			if (this.mode == ProcessingMode.FULL || this.mode == ProcessingMode.SCHEMA_ONLY) {
-				logger.warn("schema evolution not yet implemented");
-				// TODO XML Schema Evolution: implement
+				if (this.mode == ProcessingMode.FULL || this.mode == ProcessingMode.SCHEMA_ONLY) {
+					logger.warn("schema evolution not yet implemented");
+					// TODO XML Schema Evolution: implement
+				}
 			}
 		} catch (final Exception ex) {
 			logger.error("unhandled exception in request processing task", ex);
