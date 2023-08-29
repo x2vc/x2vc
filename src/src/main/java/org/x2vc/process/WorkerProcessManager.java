@@ -128,6 +128,7 @@ public class WorkerProcessManager implements IWorkerProcessManager {
 		}
 		this.exitingWorkerExecutorService.shutdown();
 		this.exitingWorkerExecutorService.awaitTermination(60, TimeUnit.SECONDS);
+		reportWorkerStatus();
 
 	}
 
