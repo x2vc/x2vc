@@ -71,13 +71,16 @@ public class XSLTProcessor implements IXSLTProcessor {
 				final StringWriter stringWriter = new StringWriter();
 				final Serializer out = this.processor.newSerializer(stringWriter);
 				final TraceMessageCollector messageCollector = new TraceMessageCollector();
+				final XSLTErrorListener errorListener = new XSLTErrorListener();
 				final Xslt30Transformer transformer = stylesheet.load30();
 				transformer.setMessageHandler(messageCollector);
+				transformer.setErrorListener(errorListener);
 				transformer.transform(new StreamSource(new StringReader(xmlDocument.getDocument())), out);
 				builder.withHtmlDocument(stringWriter.toString());
 				builder.withTraceEvents(messageCollector.getTraceEvents());
 			} catch (final SaxonApiException e) {
-				logger.error("Error processing XML document", e);
+				// we expect some errors due to the explorative nature of the tests (monkey
+				// testing), so don't log them, just add them to the result object
 				builder.withProcessingError(e);
 			}
 		}
