@@ -140,6 +140,12 @@ public class SetAttributeRule extends AbstractGenerationRule implements ISetAttr
 	}
 
 	@Override
+	public IGenerationRule normalize() {
+		return new SetAttributeRule(UUID.fromString("0000-00-00-00-000000"), this.attributeID,
+				this.requestedValue.normalize());
+	}
+
+	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();

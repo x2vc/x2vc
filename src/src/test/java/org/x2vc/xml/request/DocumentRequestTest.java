@@ -1,13 +1,14 @@
 package org.x2vc.xml.request;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.net.URI;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
+import org.x2vc.xml.document.IDocumentModifier;
 import org.x2vc.xml.request.AddElementRule.Builder;
 
 import com.google.common.collect.ImmutableCollection;
@@ -15,6 +16,10 @@ import com.google.common.collect.ImmutableMultimap;
 
 class DocumentRequestTest {
 
+	/**
+	 * Test method for
+	 * {@link org.x2vc.xml.request.DocumentRequest#buildRequestedValues()}.
+	 */
 	@Test
 	void testRequestedValueIndex() {
 		final UUID rootReferenceUUID = UUID.randomUUID();
@@ -72,6 +77,62 @@ class DocumentRequestTest {
 		final ImmutableCollection<IRequestedValue> subAttribValues = requestedValues.get(subAttribUUID);
 		assertTrue(subAttribValues.contains(subAttribValue));
 
+	}
+
+	/**
+	 * Test method for {@link org.x2vc.xml.request.DocumentRequest#normalize()}.
+	 */
+	@Test
+	void testNormalizeWithoutModifier() {
+
+		final IAddElementRule originalRootRule = mock(IAddElementRule.class);
+		final IAddElementRule normalizedRootRule = mock(IAddElementRule.class);
+		when(originalRootRule.normalize()).thenReturn(normalizedRootRule);
+
+		final URI schemaURI = URI.create("foo:bar");
+		final int schemaVersion = 1;
+		final URI stylesheetURI = URI.create("bar:foo");
+
+		final IDocumentRequest originalRequest = new DocumentRequest(schemaURI, schemaVersion, stylesheetURI,
+				originalRootRule);
+		final IDocumentRequest normalizedRequest = originalRequest.normalize();
+
+		assertNotSame(originalRequest, normalizedRequest);
+		assertEquals(schemaURI, normalizedRequest.getSchemaURI());
+		assertEquals(schemaVersion, normalizedRequest.getSchemaVersion());
+		assertEquals(stylesheetURI, normalizedRequest.getStylesheeURI());
+		assertSame(normalizedRootRule, normalizedRequest.getRootElementRule());
+		assertFalse(normalizedRequest.getModifier().isPresent());
+	}
+
+	/**
+	 * Test method for {@link org.x2vc.xml.request.DocumentRequest#normalize()}.
+	 */
+	@Test
+	void testNormalizeWithModifier() {
+
+		final IAddElementRule originalRootRule = mock(IAddElementRule.class);
+		final IAddElementRule normalizedRootRule = mock(IAddElementRule.class);
+		when(originalRootRule.normalize()).thenReturn(normalizedRootRule);
+
+		final IDocumentModifier originalModifier = mock(IDocumentModifier.class);
+		final IDocumentModifier normalizedModifier = mock(IDocumentModifier.class);
+		when(originalModifier.normalize()).thenReturn(normalizedModifier);
+
+		final URI schemaURI = URI.create("foo:bar");
+		final int schemaVersion = 1;
+		final URI stylesheetURI = URI.create("bar:foo");
+
+		final IDocumentRequest originalRequest = new DocumentRequest(schemaURI, schemaVersion, stylesheetURI,
+				originalRootRule, originalModifier);
+		final IDocumentRequest normalizedRequest = originalRequest.normalize();
+
+		assertNotSame(originalRequest, normalizedRequest);
+		assertEquals(schemaURI, normalizedRequest.getSchemaURI());
+		assertEquals(schemaVersion, normalizedRequest.getSchemaVersion());
+		assertEquals(stylesheetURI, normalizedRequest.getStylesheeURI());
+		assertSame(normalizedRootRule, normalizedRequest.getRootElementRule());
+		assertSame(normalizedModifier, normalizedRequest.getModifier().get());
 	}
 
 }

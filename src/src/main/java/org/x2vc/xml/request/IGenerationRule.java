@@ -21,4 +21,15 @@ public interface IGenerationRule extends Serializable {
 	 */
 	UUID getID();
 
+	/**
+	 * Creates a normalized copy of the rule. The normalized rule is equal to the
+	 * original rule in all functional aspects, i.e. executing it will cause the
+	 * same effects to the document. To make the normalized rules comparable,
+	 * attributes that do not directly influence the generation process like rule
+	 * IDs or original values are equalized or removed.
+	 *
+	 * @return a normalized copy of the rule
+	 */
+	IGenerationRule normalize();
+
 }

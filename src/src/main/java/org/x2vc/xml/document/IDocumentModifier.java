@@ -21,4 +21,16 @@ public interface IDocumentModifier extends Serializable {
 	 */
 	Optional<IModifierPayload> getPayload();
 
+	/**
+	 * Creates a normalized copy of the modifier. The normalized modifier is equal
+	 * to the original modifier in all functional aspects, i.e. incorporating it
+	 * will cause the same effects to the document. To make the normalized modifiers
+	 * comparable, attributes that do not directly influence the generation process
+	 * like rule IDs, original values and modifier payloads are equalized or
+	 * removed.
+	 *
+	 * @return a normalized copy of the modifier
+	 */
+	IDocumentModifier normalize();
+
 }

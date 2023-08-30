@@ -22,4 +22,14 @@ public interface IRequestedValue extends Serializable {
 	 */
 	Optional<IDocumentModifier> getModifier();
 
+	/**
+	 * Creates a normalized copy of the value. The normalized value is equal to the
+	 * original rule in all functional aspects, i.e. incorporating it will cause the
+	 * same effects to the document. To make the normalized values comparable,
+	 * attributes that do not directly influence the generation process like the
+	 * modifier are normalized or removed.
+	 *
+	 * @return a normalized copy of the value
+	 */
+	IRequestedValue normalize();
 }

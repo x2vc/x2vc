@@ -155,8 +155,20 @@ public class DocumentRequest implements IDocumentRequest {
 	}
 
 	@Override
+	public IDocumentRequest normalize() {
+		if (this.modifier == null) {
+			return new DocumentRequest(this.schemaURI, this.schemaVersion, this.stylesheetURI,
+					(IAddElementRule) this.rootElementRule.normalize());
+		} else {
+			return new DocumentRequest(this.schemaURI, this.schemaVersion, this.stylesheetURI,
+					(IAddElementRule) this.rootElementRule.normalize(), this.modifier.normalize());
+		}
+	}
+
+	@Override
 	public int hashCode() {
-		return Objects.hash(this.rootElementRule, this.schemaURI, this.schemaVersion, this.stylesheetURI);
+		return Objects.hash(this.modifier, this.rootElementRule, this.schemaURI, this.schemaVersion,
+				this.stylesheetURI);
 	}
 
 	@Override
@@ -171,7 +183,8 @@ public class DocumentRequest implements IDocumentRequest {
 			return false;
 		}
 		final DocumentRequest other = (DocumentRequest) obj;
-		return Objects.equals(this.rootElementRule, other.rootElementRule)
+		return Objects.equals(this.modifier, other.modifier)
+				&& Objects.equals(this.rootElementRule, other.rootElementRule)
 				&& Objects.equals(this.schemaURI, other.schemaURI) && this.schemaVersion == other.schemaVersion
 				&& Objects.equals(this.stylesheetURI, other.stylesheetURI);
 	}

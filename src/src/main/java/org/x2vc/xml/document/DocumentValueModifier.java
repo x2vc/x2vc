@@ -1,7 +1,5 @@
 package org.x2vc.xml.document;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -23,7 +21,6 @@ public class DocumentValueModifier implements IDocumentValueModifier {
 	private String analyzerRuleID;
 
 	private DocumentValueModifier(Builder builder) {
-		checkNotNull(builder.replacementValue);
 		this.payload = builder.payload;
 		this.schemaElementID = builder.schemaElementID;
 		this.generationRuleID = builder.generationRuleID;
@@ -62,6 +59,12 @@ public class DocumentValueModifier implements IDocumentValueModifier {
 		return Optional.ofNullable(this.analyzerRuleID);
 	}
 
+	@Override
+	public IDocumentModifier normalize() {
+		return new Builder(this).withGenerationRuleID(UUID.fromString("0000-00-00-00-000000")).withPayload(null)
+			.withOriginalValue(null).withAnalyzerRuleID(null).build();
+	}
+
 	/**
 	 * Builder to build {@link DocumentValueModifier}.
 	 */
@@ -93,6 +96,26 @@ public class DocumentValueModifier implements IDocumentValueModifier {
 		public Builder(UUID schemaElementID, UUID generationRuleID) {
 			this.schemaElementID = schemaElementID;
 			this.generationRuleID = generationRuleID;
+		}
+
+		private Builder(DocumentValueModifier documentValueModifier) {
+			this.payload = documentValueModifier.payload;
+			this.schemaElementID = documentValueModifier.schemaElementID;
+			this.generationRuleID = documentValueModifier.generationRuleID;
+			this.originalValue = documentValueModifier.originalValue;
+			this.replacementValue = documentValueModifier.replacementValue;
+			this.analyzerRuleID = documentValueModifier.analyzerRuleID;
+		}
+
+		/**
+		 * Builder method for generationRuleID parameter.
+		 *
+		 * @param generationRuleID field to set
+		 * @return builder
+		 */
+		public Builder withGenerationRuleID(UUID generationRuleID) {
+			this.generationRuleID = generationRuleID;
+			return this;
 		}
 
 		/**

@@ -72,6 +72,15 @@ public interface IDocumentRequest extends Serializable {
 	 */
 	Optional<IDocumentModifier> getModifier();
 
-	// TODO XML Document Generator: add method to normalize request
+	/**
+	 * Creates a normalized copy of the request. The normalized request is equal to
+	 * the original request in all functional aspects, i.e. executing it will
+	 * generate the same document. To make the normalized requests comparable,
+	 * attributes that do not directly influence the generation process like rule
+	 * IDs and modifier payloads are equalized or removed.
+	 *
+	 * @return a normalized copy of the request
+	 */
+	IDocumentRequest normalize();
 
 }

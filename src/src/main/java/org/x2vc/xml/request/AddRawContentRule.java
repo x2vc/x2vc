@@ -79,6 +79,12 @@ public class AddRawContentRule extends AbstractGenerationRule implements IAddRaw
 	}
 
 	@Override
+	public IGenerationRule normalize() {
+		return new AddRawContentRule(UUID.fromString("0000-00-00-00-000000"), this.elementID,
+				this.requestedValue.normalize());
+	}
+
+	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();

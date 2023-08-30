@@ -51,6 +51,15 @@ public class AddElementRule extends AbstractGenerationRule implements IAddElemen
 		return this.contentRules;
 	}
 
+	@Override
+	public IGenerationRule normalize() {
+		final Builder builder = new Builder(this.elementReferenceID)
+			.withRuleID(UUID.fromString("0000-00-00-00-000000"));
+		this.attributeRules.forEach(rule -> builder.addAttributeRule((ISetAttributeRule) rule.normalize()));
+		this.contentRules.forEach(rule -> builder.addContentRule((IContentGenerationRule) rule.normalize()));
+		return builder.build();
+	}
+
 	/**
 	 * Builder to build {@link AddElementRule}.
 	 */

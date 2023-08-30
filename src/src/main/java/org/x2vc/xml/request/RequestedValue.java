@@ -74,6 +74,11 @@ public class RequestedValue implements IRequestedValue {
 	}
 
 	@Override
+	public IRequestedValue normalize() {
+		return new RequestedValue(this.value, this.modifier.normalize());
+	}
+
+	@Override
 	public int hashCode() {
 		return Objects.hash(this.modifier, this.value);
 	}
