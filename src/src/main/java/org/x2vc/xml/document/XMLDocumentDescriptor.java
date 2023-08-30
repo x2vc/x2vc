@@ -99,7 +99,8 @@ public class XMLDocumentDescriptor implements IXMLDocumentDescriptor {
 			if (value.length() > this.valueLength) {
 				// add prefixed substrings to index
 				int position = value.indexOf(this.valuePrefix, 0);
-				while (position >= 0) {
+				final int maxPosition = value.length() - this.valueLength;
+				while (position >= 0 && position < maxPosition) {
 					final String candidate = value.substring(position, position + this.valueLength);
 					this.valueDescriptors.put(candidate, valueDescriptor);
 					position = value.indexOf(this.valuePrefix, position + this.valueLength - 1);
