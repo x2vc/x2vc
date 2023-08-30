@@ -4,6 +4,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
+import javax.xml.bind.annotation.XmlElement;
+
 import org.x2vc.schema.structure.IXMLAttribute;
 
 /**
@@ -12,7 +14,10 @@ import org.x2vc.schema.structure.IXMLAttribute;
 public class SetAttributeRule extends AbstractGenerationRule implements ISetAttributeRule {
 
 	private static final long serialVersionUID = 1L;
+
 	private UUID attributeID;
+
+	@XmlElement(type = RequestedValue.class)
 	private IRequestedValue requestedValue;
 
 	/**

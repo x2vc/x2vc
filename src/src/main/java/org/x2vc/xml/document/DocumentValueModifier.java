@@ -5,6 +5,9 @@ import java.util.Optional;
 import java.util.UUID;
 import java.util.function.Consumer;
 
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlTransient;
+
 import org.x2vc.xml.value.IValueDescriptor;
 
 /**
@@ -13,11 +16,23 @@ import org.x2vc.xml.value.IValueDescriptor;
 public class DocumentValueModifier implements IDocumentValueModifier {
 
 	private static final long serialVersionUID = -1698974074806350109L;
+
+	@XmlTransient
 	private IModifierPayload payload;
+
+	@XmlAttribute
 	private UUID schemaElementID;
+
+	@XmlAttribute
 	private UUID generationRuleID;
+
+	@XmlAttribute
 	private String originalValue;
+
+	@XmlAttribute
 	private String replacementValue;
+
+	@XmlAttribute
 	private String analyzerRuleID;
 
 	private DocumentValueModifier(Builder builder) {

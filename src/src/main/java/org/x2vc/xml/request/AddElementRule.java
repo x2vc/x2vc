@@ -5,6 +5,11 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.UUID;
 
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlElements;
+
 import org.x2vc.schema.structure.IXMLElementReference;
 
 import com.google.common.collect.ImmutableList;
@@ -18,8 +23,18 @@ import com.google.common.collect.Sets;
 public class AddElementRule extends AbstractGenerationRule implements IAddElementRule {
 
 	private static final long serialVersionUID = 7708211517867960929L;
+
+	@XmlAttribute
 	private UUID elementReferenceID;
+
+	@XmlElementWrapper(name = "attributeRules")
+	@XmlElement(type = SetAttributeRule.class, name = "attributeRule")
 	private ImmutableSet<ISetAttributeRule> attributeRules;
+
+	@XmlElementWrapper(name = "contentRules")
+	@XmlElements({ @XmlElement(name = "addDataContentRule", type = AddDataContentRule.class),
+			@XmlElement(name = "addElementRule", type = AddElementRule.class),
+			@XmlElement(name = "addRawContentRule", type = AddRawContentRule.class) })
 	private ImmutableList<IContentGenerationRule> contentRules;
 
 	private AddElementRule(UUID ruleID, Builder builder) {

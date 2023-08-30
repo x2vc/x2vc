@@ -4,6 +4,9 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+
 /**
  * Standard implementation of {@link IAddDataContentRule}.
  */
@@ -11,7 +14,10 @@ public class AddDataContentRule extends AbstractGenerationRule implements IAddDa
 
 	private static final long serialVersionUID = -6406343863665611821L;
 
+	@XmlAttribute
 	private UUID elementID;
+
+	@XmlElement(type = RequestedValue.class)
 	private IRequestedValue requestedValue;
 
 	/**

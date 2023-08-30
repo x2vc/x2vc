@@ -3,12 +3,16 @@ package org.x2vc.xml.request;
 import java.util.Objects;
 import java.util.UUID;
 
+import javax.xml.bind.annotation.XmlAttribute;
+
 /**
  * Base class for {@link IGenerationRule} derivations.
  */
 public abstract class AbstractGenerationRule implements IGenerationRule {
 
 	private static final long serialVersionUID = -2034672049201245565L;
+
+	@XmlAttribute
 	private UUID ruleID;
 
 	/**

@@ -3,6 +3,9 @@ package org.x2vc.xml.request;
 import java.util.Objects;
 import java.util.Optional;
 
+import javax.xml.bind.annotation.XmlElement;
+
+import org.x2vc.xml.document.DocumentValueModifier;
 import org.x2vc.xml.document.IDocumentModifier;
 import org.x2vc.xml.document.IDocumentValueModifier;
 
@@ -14,6 +17,8 @@ public class RequestedValue implements IRequestedValue {
 	private static final long serialVersionUID = 7315736707691499713L;
 
 	private String value;
+
+	@XmlElement(type = DocumentValueModifier.class)
 	private IDocumentModifier modifier;
 
 	/**

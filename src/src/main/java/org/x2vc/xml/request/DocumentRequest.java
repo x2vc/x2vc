@@ -5,9 +5,14 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.x2vc.schema.structure.IXMLSchema;
+import org.x2vc.xml.document.DocumentValueModifier;
 import org.x2vc.xml.document.IDocumentModifier;
 
 import com.google.common.collect.ImmutableMultimap;
@@ -17,16 +22,27 @@ import com.google.common.collect.MultimapBuilder;
 /**
  * Standard implementation of {@link IDocumentRequest}.
  */
+@XmlRootElement(name = "request")
 public class DocumentRequest implements IDocumentRequest {
 
 	private static final long serialVersionUID = -7197115634513136166L;
 	private static final Logger logger = LogManager.getLogger();
 
+	@XmlAttribute
 	private URI schemaURI;
+
+	@XmlAttribute
 	private int schemaVersion;
+
+	@XmlAttribute
 	private URI stylesheetURI;
+
+	@XmlElement(type = AddElementRule.class)
 	private IAddElementRule rootElementRule;
+
+	@XmlElement(type = DocumentValueModifier.class)
 	private IDocumentModifier modifier;
+
 	private transient ImmutableMultimap<UUID, IRequestedValue> requestedValues;
 
 	/**
@@ -78,6 +94,10 @@ public class DocumentRequest implements IDocumentRequest {
 		this.stylesheetURI = schema.getStylesheetURI();
 		this.rootElementRule = rootElementRule;
 		this.modifier = modifier;
+	}
+
+	DocumentRequest() {
+		// used for de-/serialization only
 	}
 
 	@Override

@@ -1,11 +1,13 @@
 package org.x2vc.xml.request;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Marshaller;
 
 import com.google.inject.Singleton;
 
@@ -15,21 +17,35 @@ import com.google.inject.Singleton;
 @Singleton
 public class CompletedRequestRegistry implements ICompletedRequestRegistry {
 
-	private static final Logger logger = LogManager.getLogger();
-
 	private Set<IDocumentRequest> completedRequests = Collections.synchronizedSet(new HashSet<IDocumentRequest>());
 
 	@Override
 	public void register(IDocumentRequest request) {
-		logger.traceEntry();
 		this.completedRequests.add(request.normalize());
-		logger.traceExit();
 	}
 
 	@Override
 	public boolean contains(IDocumentRequest request) {
-		logger.traceEntry();
-		return logger.traceExit(this.completedRequests.contains(request.normalize()));
+		final IDocumentRequest normalizedRequest = request.normalize();
+		return this.completedRequests.contains(normalizedRequest);
+	}
+
+	protected void dump() throws JAXBException {
+		final JAXBContext context = JAXBContext.newInstance(DocumentRequest.class);
+		final Marshaller marshaller = context.createMarshaller();
+		marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+		synchronized (this.completedRequests) {
+			int i = 0;
+			for (final IDocumentRequest request : this.completedRequests) {
+				i += 1;
+				final File file = new File(String.format("request%05d.xml", i));
+				try {
+					marshaller.marshal(request, file);
+				} catch (final JAXBException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 
 }
