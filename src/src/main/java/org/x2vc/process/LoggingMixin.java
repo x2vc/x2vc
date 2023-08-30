@@ -2,6 +2,9 @@ package org.x2vc.process;
 
 import static picocli.CommandLine.Spec.Target.MIXEE;
 
+import java.io.File;
+import java.net.URI;
+
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.Appender;
 import org.apache.logging.log4j.core.LoggerContext;
@@ -58,7 +61,9 @@ public class LoggingMixin {
 	 */
 	private @Spec(MIXEE) CommandSpec mixee; // spec of the command where the @Mixin is used
 
-	private boolean[] verbosity = new boolean[0];
+	private boolean[] verbosity;
+
+	private URI alternateConfigFile;
 
 	// Each subcommand that mixes in the LoggingMixin has its own instance of this
 	// class,
@@ -85,6 +90,16 @@ public class LoggingMixin {
 			"For example, `-v -v -v` or `-vvv`" })
 	public void setVerbose(boolean[] verbosity) {
 		getTopLevelCommandLoggingMixin(this.mixee).verbosity = verbosity;
+	}
+
+	/**
+	 * Applies the logging configuration file specified.
+	 *
+	 * @param configFile the configuration file to load
+	 */
+	@Option(names = { "--logConfig" }, description = { "Specify an alternate Log4j2 configuration file to use." })
+	public void setVerbose(File configFile) {
+		getTopLevelCommandLoggingMixin(this.mixee).alternateConfigFile = configFile.toURI();
 	}
 
 	/**
@@ -121,7 +136,8 @@ public class LoggingMixin {
 	}
 
 	/**
-	 * Configures the Log4j2 console appender(s), using the specified verbosity:
+	 * Configures the Log4j2 console appender(s), using the alternate config file
+	 * and/or the specified verbosity:
 	 * <ul>
 	 * <li>{@code -vvv} : enable TRACE level</li>
 	 * <li>{@code -vv} : enable DEBUG level</li>
@@ -130,20 +146,30 @@ public class LoggingMixin {
 	 * </ul>
 	 */
 	public void configureLoggers() {
-		final Level level = getTopLevelCommandLoggingMixin(this.mixee).calcLogLevel();
-
 		final LoggerContext loggerContext = LoggerContext.getContext(false);
-		final LoggerConfig rootConfig = loggerContext.getConfiguration().getRootLogger();
-		for (final Appender appender : rootConfig.getAppenders().values()) {
-			if (appender instanceof ConsoleAppender) {
-				rootConfig.removeAppender(appender.getName());
-				rootConfig.addAppender(appender, level, null);
+
+		// attempt to exchange config if alternate config file is provided
+		if (this.alternateConfigFile != null) {
+			Configurator.reconfigure(this.alternateConfigFile);
+		}
+
+		// adjust the verbosity if specified
+		if (this.verbosity != null) {
+			final Level level = getTopLevelCommandLoggingMixin(this.mixee).calcLogLevel();
+			final LoggerConfig rootConfig = loggerContext.getConfiguration().getRootLogger();
+			for (final Appender appender : rootConfig.getAppenders().values()) {
+				if (appender instanceof ConsoleAppender) {
+					rootConfig.removeAppender(appender.getName());
+					rootConfig.addAppender(appender, level, null);
+				}
+			}
+			if (rootConfig.getLevel().isMoreSpecificThan(level)) {
+				rootConfig.setLevel(level);
 			}
 		}
-		if (rootConfig.getLevel().isMoreSpecificThan(level)) {
-			rootConfig.setLevel(level);
-		}
-		loggerContext.updateLoggers(); // apply the changes
+
+		// apply the changes
+		loggerContext.updateLoggers();
 	}
 
 	private Level calcLogLevel() {
