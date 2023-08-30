@@ -8,6 +8,7 @@ import org.x2vc.xml.request.IDocumentRequest;
  * Factory to obtain instances of the following classes:
  * <ul>
  * <li>{@link InitializationTask}</li>
+ * <li>{@link RequestProcessingTask}</li>
  * </ul>
  */
 public interface ITaskFactory {
