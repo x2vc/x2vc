@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="warn" monitorInterval="30">
 
-    <!-- Logging Properties -->
     <Properties>
-        <Property name="LOG_PATTERN">%date{HH:mm:ss.SSS} %2tid %level{WARN=WRN, DEBUG=DBG, ERROR=ERR, TRACE=TRC, INFO=INF} %30.30logger{1.1.*}#%M: %msg%n</Property>
+        <Property name="LOG_PATTERN">%date{HH:mm:ss.SSS} %level{WARN=WRN, DEBUG=DBG, ERROR=ERR, TRACE=TRC, INFO=INF} [%tn] %30.30logger{1.1.*}#%M: %msg%n%throwable</Property>
     </Properties>
 
     <Appenders>

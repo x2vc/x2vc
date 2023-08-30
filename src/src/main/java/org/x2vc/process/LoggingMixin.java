@@ -8,10 +8,6 @@ import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.appender.ConsoleAppender;
 import org.apache.logging.log4j.core.config.Configurator;
 import org.apache.logging.log4j.core.config.LoggerConfig;
-import org.apache.logging.log4j.core.config.builder.api.AppenderComponentBuilder;
-import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilder;
-import org.apache.logging.log4j.core.config.builder.api.ConfigurationBuilderFactory;
-import org.apache.logging.log4j.core.config.builder.impl.BuiltConfiguration;
 
 import picocli.CommandLine;
 import picocli.CommandLine.Model.CommandSpec;
@@ -164,23 +160,14 @@ public class LoggingMixin {
 	}
 
 	/**
+	 * Initialize the logging context. <b>IMPORTANT:</b> The below MUST be called
+	 * BEFORE any call to LogManager.getLogger() is made.
+	 *
 	 * @return an initialized logging context
 	 */
 	public static LoggerContext initializeLog4j() {
-		// usually you would just have a log4j2.xml config file...
-		// for this example we do a quick and dirty programmatic setup
-		// IMPORTANT: The below MUST be called BEFORE any call to LogManager.getLogger()
-		// is made.
-		final ConfigurationBuilder<BuiltConfiguration> builder = ConfigurationBuilderFactory.newConfigurationBuilder();
-		builder.setStatusLevel(Level.ERROR); // show internal log4j2 errors
-		builder.setConfigurationName("QuickAndDirtySetup");
-		final AppenderComponentBuilder appenderBuilder = builder.newAppender("Stdout", "CONSOLE").addAttribute("target",
-				ConsoleAppender.Target.SYSTEM_OUT);
-		appenderBuilder.add(builder.newLayout("PatternLayout").addAttribute("pattern",
-				"%date{HH:mm:ss.SSS} [%tn] %level{WARN=WRN, DEBUG=DBG, ERROR=ERR, TRACE=TRC, INFO=INF} %30.30logger{1.1.*}#%M: %msg%n%throwable"));
-		builder.add(appenderBuilder);
-		builder.add(builder.newRootLogger(Level.ERROR)
-			.add(builder.newAppenderRef("Stdout").addAttribute("level", Level.WARN)));
-		return Configurator.initialize(builder.build());
+		// use the default logging config file provided with the application until other
+		// settings are made
+		return Configurator.initialize(null, "default-log4j2.xml");
 	}
 }

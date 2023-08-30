@@ -67,7 +67,7 @@ public class RequestProcessingTask implements Runnable {
 						this.workerProcessManager.submit(task);
 					}, report -> {
 						logger.warn("handling of vulnerability reports not yet implemented");
-						// TODO handle vulnerability reports
+						// TODO XSS Vulnerability: handle vulnerability reports
 					});
 				}
 

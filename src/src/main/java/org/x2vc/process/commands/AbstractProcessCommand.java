@@ -54,6 +54,9 @@ public abstract class AbstractProcessCommand implements Callable<Integer> {
 
 		this.workerProcessManager.awaitTermination();
 
+		logger.info("processing completed");
+		// TODO Logging: produce statistics output here
+
 		return logger.traceExit(0);
 
 	}
