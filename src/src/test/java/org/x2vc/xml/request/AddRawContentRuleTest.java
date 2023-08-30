@@ -1,6 +1,7 @@
 package org.x2vc.xml.request;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.mock;
@@ -19,7 +20,24 @@ class AddRawContentRuleTest {
 	 * Test method for {@link org.x2vc.xml.request.AddRawContentRule#normalize()}.
 	 */
 	@Test
-	void testNormalize() {
+	void testNormalizeWithoutRequestedValue() {
+		final UUID ruleID = UUID.randomUUID();
+		final UUID elementID = UUID.randomUUID();
+
+		final AddRawContentRule originalRule = new AddRawContentRule(ruleID, elementID);
+		final AddRawContentRule normalizedRule = (AddRawContentRule) originalRule.normalize();
+
+		assertNotSame(originalRule, normalizedRule);
+		assertEquals(UUID.fromString("0000-00-00-00-000000"), normalizedRule.getID());
+		assertEquals(elementID, normalizedRule.getElementID());
+		assertFalse(normalizedRule.getRequestedValue().isPresent());
+	}
+
+	/**
+	 * Test method for {@link org.x2vc.xml.request.AddRawContentRule#normalize()}.
+	 */
+	@Test
+	void testNormalizeWithRequestedValue() {
 		final UUID ruleID = UUID.randomUUID();
 		final UUID elementID = UUID.randomUUID();
 		final IRequestedValue originalValue = mock(IRequestedValue.class);

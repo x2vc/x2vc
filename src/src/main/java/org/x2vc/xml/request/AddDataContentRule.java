@@ -80,8 +80,12 @@ public class AddDataContentRule extends AbstractGenerationRule implements IAddDa
 
 	@Override
 	public IGenerationRule normalize() {
-		return new AddDataContentRule(UUID.fromString("0000-00-00-00-000000"), this.elementID,
-				this.requestedValue.normalize());
+		if (this.requestedValue == null) {
+			return new AddDataContentRule(UUID.fromString("0000-00-00-00-000000"), this.elementID);
+		} else {
+			return new AddDataContentRule(UUID.fromString("0000-00-00-00-000000"), this.elementID,
+					this.requestedValue.normalize());
+		}
 	}
 
 	@Override

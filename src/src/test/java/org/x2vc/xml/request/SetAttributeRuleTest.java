@@ -1,6 +1,7 @@
 package org.x2vc.xml.request;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotSame;
 import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.mock;
@@ -19,7 +20,24 @@ class SetAttributeRuleTest {
 	 * Test method for {@link org.x2vc.xml.request.SetAttributeRule#normalize()}.
 	 */
 	@Test
-	void testNormalize() {
+	void testNormalizeWithoutRequestedValue() {
+		final UUID ruleID = UUID.randomUUID();
+		final UUID attributeID = UUID.randomUUID();
+
+		final SetAttributeRule originalRule = new SetAttributeRule(ruleID, attributeID);
+		final SetAttributeRule normalizedRule = (SetAttributeRule) originalRule.normalize();
+
+		assertNotSame(originalRule, normalizedRule);
+		assertEquals(UUID.fromString("0000-00-00-00-000000"), normalizedRule.getID());
+		assertEquals(attributeID, normalizedRule.getAttributeID());
+		assertFalse(normalizedRule.getRequestedValue().isPresent());
+	}
+
+	/**
+	 * Test method for {@link org.x2vc.xml.request.SetAttributeRule#normalize()}.
+	 */
+	@Test
+	void testNormalizeWithRequestedValue() {
 		final UUID ruleID = UUID.randomUUID();
 		final UUID attributeID = UUID.randomUUID();
 		final IRequestedValue originalValue = mock(IRequestedValue.class);

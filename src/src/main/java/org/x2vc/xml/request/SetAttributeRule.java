@@ -141,8 +141,12 @@ public class SetAttributeRule extends AbstractGenerationRule implements ISetAttr
 
 	@Override
 	public IGenerationRule normalize() {
-		return new SetAttributeRule(UUID.fromString("0000-00-00-00-000000"), this.attributeID,
-				this.requestedValue.normalize());
+		if (this.requestedValue == null) {
+			return new SetAttributeRule(UUID.fromString("0000-00-00-00-000000"), this.attributeID);
+		} else {
+			return new SetAttributeRule(UUID.fromString("0000-00-00-00-000000"), this.attributeID,
+					this.requestedValue.normalize());
+		}
 	}
 
 	@Override
