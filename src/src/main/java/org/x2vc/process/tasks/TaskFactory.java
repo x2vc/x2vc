@@ -8,6 +8,7 @@ import org.x2vc.processor.IXSLTProcessor;
 import org.x2vc.schema.ISchemaManager;
 import org.x2vc.stylesheet.IStylesheetManager;
 import org.x2vc.xml.document.IDocumentGenerator;
+import org.x2vc.xml.request.ICompletedRequestRegistry;
 import org.x2vc.xml.request.IDocumentRequest;
 import org.x2vc.xml.request.IRequestGenerator;
 
@@ -22,6 +23,7 @@ public class TaskFactory implements ITaskFactory {
 	private IStylesheetManager stylesheetManager;
 	private ISchemaManager schemaManager;
 	private IRequestGenerator requestGenerator;
+	private ICompletedRequestRegistry completedRequestRegistry;
 	private IWorkerProcessManager workerProcessManager;
 	private IDocumentGenerator documentGenerator;
 	private IXSLTProcessor processor;
@@ -38,13 +40,14 @@ public class TaskFactory implements ITaskFactory {
 	 */
 	@Inject
 	TaskFactory(IStylesheetManager stylesheetManager, ISchemaManager schemaManager, IRequestGenerator requestGenerator,
-			ITaskFactory taskFactory, IWorkerProcessManager workerProcessManager, IDocumentGenerator documentGenerator,
-			IXSLTProcessor processor, IDocumentAnalyzer analyzer,
-			@TypesafeConfig("x2vc.xml.initial_documents") Integer initialDocumentCount) {
+			ICompletedRequestRegistry completedRequestRegistry, ITaskFactory taskFactory,
+			IWorkerProcessManager workerProcessManager, IDocumentGenerator documentGenerator, IXSLTProcessor processor,
+			IDocumentAnalyzer analyzer, @TypesafeConfig("x2vc.xml.initial_documents") Integer initialDocumentCount) {
 		super();
 		this.stylesheetManager = stylesheetManager;
 		this.schemaManager = schemaManager;
 		this.requestGenerator = requestGenerator;
+		this.completedRequestRegistry = completedRequestRegistry;
 		this.workerProcessManager = workerProcessManager;
 		this.documentGenerator = documentGenerator;
 		this.processor = processor;
@@ -61,7 +64,7 @@ public class TaskFactory implements ITaskFactory {
 	@Override
 	public RequestProcessingTask createRequestProcessingTask(IDocumentRequest request, ProcessingMode mode) {
 		return new RequestProcessingTask(this.documentGenerator, this.processor, this.analyzer, this.requestGenerator,
-				this, this.workerProcessManager, request, mode);
+				this.completedRequestRegistry, this, this.workerProcessManager, request, mode);
 	}
 
 }

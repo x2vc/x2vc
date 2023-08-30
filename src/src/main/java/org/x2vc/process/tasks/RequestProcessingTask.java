@@ -8,6 +8,7 @@ import org.x2vc.processor.IHTMLDocumentContainer;
 import org.x2vc.processor.IXSLTProcessor;
 import org.x2vc.xml.document.IDocumentGenerator;
 import org.x2vc.xml.document.IXMLDocumentContainer;
+import org.x2vc.xml.request.ICompletedRequestRegistry;
 import org.x2vc.xml.request.IDocumentRequest;
 import org.x2vc.xml.request.IRequestGenerator;
 
@@ -23,6 +24,7 @@ public class RequestProcessingTask implements Runnable {
 	private IXSLTProcessor processor;
 	private IDocumentAnalyzer analyzer;
 	private IRequestGenerator requestGenerator;
+	private ICompletedRequestRegistry completedRequestRegistry;
 	private ITaskFactory taskFactory;
 	private IWorkerProcessManager workerProcessManager;
 	private IDocumentRequest request;
@@ -33,13 +35,16 @@ public class RequestProcessingTask implements Runnable {
 	 * @param mode
 	 */
 	RequestProcessingTask(IDocumentGenerator documentGenerator, IXSLTProcessor processor, IDocumentAnalyzer analyzer,
-			IRequestGenerator requestGenerator, ITaskFactory taskFactory, IWorkerProcessManager workerProcessManager,
+			IRequestGenerator requestGenerator, ICompletedRequestRegistry completedRequestRegistry,
+			ITaskFactory taskFactory, IWorkerProcessManager workerProcessManager,
+
 			IDocumentRequest request, ProcessingMode mode) {
 		super();
 		this.documentGenerator = documentGenerator;
 		this.processor = processor;
 		this.analyzer = analyzer;
 		this.requestGenerator = requestGenerator;
+		this.completedRequestRegistry = completedRequestRegistry;
 		this.taskFactory = taskFactory;
 		this.workerProcessManager = workerProcessManager;
 		this.request = request;
@@ -50,30 +55,35 @@ public class RequestProcessingTask implements Runnable {
 	public void run() {
 		logger.traceEntry();
 		try {
-			logger.debug("generating XML document");
-			final IXMLDocumentContainer xmlDocument = this.documentGenerator.generateDocument(this.request);
+			if (this.completedRequestRegistry.contains(this.request)) {
+				logger.debug("eliminating duplicate request");
+			} else {
+				logger.debug("registering request as completed");
+				this.completedRequestRegistry.register(this.request);
 
-			logger.debug("processing XML to HTML");
-			final IHTMLDocumentContainer htmlDocument = this.processor.processDocument(xmlDocument);
+				logger.debug("generating XML document");
+				final IXMLDocumentContainer xmlDocument = this.documentGenerator.generateDocument(this.request);
 
-			if (!htmlDocument.isFailed()) {
-				if (this.mode == ProcessingMode.FULL || this.mode == ProcessingMode.XSS_ONLY) {
-					this.analyzer.analyzeDocument(htmlDocument, modifier -> {
-						logger.debug("adding new task for modification request");
-						final IDocumentRequest modifiedRequest = this.requestGenerator.modifyRequest(this.request,
-								modifier);
-						final RequestProcessingTask task = this.taskFactory.createRequestProcessingTask(modifiedRequest,
-								this.mode);
-						this.workerProcessManager.submit(task);
-					}, report -> {
-						logger.warn("handling of vulnerability reports not yet implemented");
-						// TODO XSS Vulnerability: handle vulnerability reports
-					});
-				}
+				logger.debug("processing XML to HTML");
+				final IHTMLDocumentContainer htmlDocument = this.processor.processDocument(xmlDocument);
 
-				if (this.mode == ProcessingMode.FULL || this.mode == ProcessingMode.SCHEMA_ONLY) {
-					logger.warn("schema evolution not yet implemented");
-					// TODO XML Schema Evolution: implement
+				if (!htmlDocument.isFailed()) {
+					if (this.mode == ProcessingMode.FULL || this.mode == ProcessingMode.XSS_ONLY) {
+						this.analyzer.analyzeDocument(htmlDocument, modifier -> {
+							final IDocumentRequest modifiedRequest = this.requestGenerator.modifyRequest(this.request,
+									modifier);
+							logger.debug("adding new task for modification request");
+							final RequestProcessingTask task = this.taskFactory
+								.createRequestProcessingTask(modifiedRequest, this.mode);
+							this.workerProcessManager.submit(task);
+						}, report -> {
+							// TODO XSS Vulnerability: handle vulnerability reports
+						});
+					}
+
+					if (this.mode == ProcessingMode.FULL || this.mode == ProcessingMode.SCHEMA_ONLY) {
+						// TODO XML Schema Evolution: implement
+					}
 				}
 			}
 		} catch (final Exception ex) {
