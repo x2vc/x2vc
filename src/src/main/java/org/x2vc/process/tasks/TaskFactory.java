@@ -7,6 +7,7 @@ import org.x2vc.process.IWorkerProcessManager;
 import org.x2vc.processor.IXSLTProcessor;
 import org.x2vc.schema.ISchemaManager;
 import org.x2vc.stylesheet.IStylesheetManager;
+import org.x2vc.utilities.IDebugObjectWriter;
 import org.x2vc.xml.document.IDocumentGenerator;
 import org.x2vc.xml.request.ICompletedRequestRegistry;
 import org.x2vc.xml.request.IDocumentRequest;
@@ -20,11 +21,14 @@ import com.google.inject.Inject;
  */
 public class TaskFactory implements ITaskFactory {
 
+	// TODO convert to assisted injection - this is getting ridiculous
+
 	private IStylesheetManager stylesheetManager;
 	private ISchemaManager schemaManager;
 	private IRequestGenerator requestGenerator;
 	private ICompletedRequestRegistry completedRequestRegistry;
 	private IWorkerProcessManager workerProcessManager;
+	private IDebugObjectWriter debugObjectWriter;
 	private IDocumentGenerator documentGenerator;
 	private IXSLTProcessor processor;
 	private IDocumentAnalyzer analyzer;
@@ -41,14 +45,16 @@ public class TaskFactory implements ITaskFactory {
 	@Inject
 	TaskFactory(IStylesheetManager stylesheetManager, ISchemaManager schemaManager, IRequestGenerator requestGenerator,
 			ICompletedRequestRegistry completedRequestRegistry, ITaskFactory taskFactory,
-			IWorkerProcessManager workerProcessManager, IDocumentGenerator documentGenerator, IXSLTProcessor processor,
-			IDocumentAnalyzer analyzer, @TypesafeConfig("x2vc.xml.initial_documents") Integer initialDocumentCount) {
+			IWorkerProcessManager workerProcessManager, IDebugObjectWriter debugObjectWriter,
+			IDocumentGenerator documentGenerator, IXSLTProcessor processor, IDocumentAnalyzer analyzer,
+			@TypesafeConfig("x2vc.xml.initial_documents") Integer initialDocumentCount) {
 		super();
 		this.stylesheetManager = stylesheetManager;
 		this.schemaManager = schemaManager;
 		this.requestGenerator = requestGenerator;
 		this.completedRequestRegistry = completedRequestRegistry;
 		this.workerProcessManager = workerProcessManager;
+		this.debugObjectWriter = debugObjectWriter;
 		this.documentGenerator = documentGenerator;
 		this.processor = processor;
 		this.analyzer = analyzer;
@@ -64,7 +70,7 @@ public class TaskFactory implements ITaskFactory {
 	@Override
 	public RequestProcessingTask createRequestProcessingTask(IDocumentRequest request, ProcessingMode mode) {
 		return new RequestProcessingTask(this.documentGenerator, this.processor, this.analyzer, this.requestGenerator,
-				this.completedRequestRegistry, this, this.workerProcessManager, request, mode);
+				this.completedRequestRegistry, this, this.workerProcessManager, this.debugObjectWriter, request, mode);
 	}
 
 }

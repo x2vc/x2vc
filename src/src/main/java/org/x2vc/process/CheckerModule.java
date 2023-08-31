@@ -22,6 +22,8 @@ import org.x2vc.stylesheet.extension.IStylesheetExtender;
 import org.x2vc.stylesheet.extension.StylesheetExtender;
 import org.x2vc.stylesheet.structure.IStylesheetStructureExtractor;
 import org.x2vc.stylesheet.structure.StylesheetStructureExtractor;
+import org.x2vc.utilities.DebugObjectWriter;
+import org.x2vc.utilities.IDebugObjectWriter;
 import org.x2vc.xml.document.DocumentGenerator;
 import org.x2vc.xml.document.IDocumentGenerator;
 import org.x2vc.xml.request.CompletedRequestRegistry;
@@ -61,6 +63,7 @@ public class CheckerModule extends AbstractModule {
 		// process commands
 
 		// process tasks
+		bind(IDebugObjectWriter.class).to(DebugObjectWriter.class);
 		bind(ITaskFactory.class).to(TaskFactory.class);
 
 		// processor

@@ -1,11 +1,14 @@
 package org.x2vc.process.tasks;
 
+import java.util.UUID;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.x2vc.analysis.IDocumentAnalyzer;
 import org.x2vc.process.IWorkerProcessManager;
 import org.x2vc.processor.IHTMLDocumentContainer;
 import org.x2vc.processor.IXSLTProcessor;
+import org.x2vc.utilities.IDebugObjectWriter;
 import org.x2vc.xml.document.IDocumentGenerator;
 import org.x2vc.xml.document.IXMLDocumentContainer;
 import org.x2vc.xml.request.ICompletedRequestRegistry;
@@ -27,8 +30,11 @@ public class RequestProcessingTask implements Runnable {
 	private ICompletedRequestRegistry completedRequestRegistry;
 	private ITaskFactory taskFactory;
 	private IWorkerProcessManager workerProcessManager;
+	private IDebugObjectWriter debugObjectWriter;
 	private IDocumentRequest request;
 	private ProcessingMode mode;
+
+	private UUID taskID;
 
 	/**
 	 * @param request
@@ -36,8 +42,7 @@ public class RequestProcessingTask implements Runnable {
 	 */
 	RequestProcessingTask(IDocumentGenerator documentGenerator, IXSLTProcessor processor, IDocumentAnalyzer analyzer,
 			IRequestGenerator requestGenerator, ICompletedRequestRegistry completedRequestRegistry,
-			ITaskFactory taskFactory, IWorkerProcessManager workerProcessManager,
-
+			ITaskFactory taskFactory, IWorkerProcessManager workerProcessManager, IDebugObjectWriter debugObjectWriter,
 			IDocumentRequest request, ProcessingMode mode) {
 		super();
 		this.documentGenerator = documentGenerator;
@@ -47,25 +52,31 @@ public class RequestProcessingTask implements Runnable {
 		this.completedRequestRegistry = completedRequestRegistry;
 		this.taskFactory = taskFactory;
 		this.workerProcessManager = workerProcessManager;
+		this.debugObjectWriter = debugObjectWriter;
 		this.request = request;
 		this.mode = mode;
+		this.taskID = UUID.randomUUID();
 	}
 
 	@Override
 	public void run() {
-		logger.traceEntry();
+		logger.traceEntry("for task ID {}", this.taskID);
 		try {
 			if (this.completedRequestRegistry.contains(this.request)) {
 				logger.debug("eliminating duplicate request");
 			} else {
+				this.debugObjectWriter.writeRequest(this.taskID, this.request);
+
 				logger.debug("registering request as completed");
 				this.completedRequestRegistry.register(this.request);
 
 				logger.debug("generating XML document");
 				final IXMLDocumentContainer xmlDocument = this.documentGenerator.generateDocument(this.request);
+				this.debugObjectWriter.writeXMLDocument(this.taskID, xmlDocument);
 
 				logger.debug("processing XML to HTML");
 				final IHTMLDocumentContainer htmlDocument = this.processor.processDocument(xmlDocument);
+				this.debugObjectWriter.writeHTMLDocument(this.taskID, htmlDocument);
 
 				if (!htmlDocument.isFailed()) {
 					if (this.mode == ProcessingMode.FULL || this.mode == ProcessingMode.XSS_ONLY) {
