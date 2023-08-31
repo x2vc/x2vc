@@ -41,6 +41,7 @@ public class StylesheetManager implements IStylesheetManager {
 		this.cacheSize = cacheSize;
 	}
 
+	@SuppressWarnings("java:S4738") // Java supplier does not support memoization
 	Supplier<LoadingCache<URI, IStylesheetInformation>> stylesheetCacheSupplier = Suppliers.memoize(() -> {
 		logger.traceEntry();
 		logger.debug("Initializing stylesheet cache (max. {} entries)", this.cacheSize);

@@ -66,6 +66,7 @@ public class SchemaManager implements ISchemaManager {
 		this.cacheSize = cacheSize;
 	}
 
+	@SuppressWarnings("java:S4738") // Java supplier does not support memoization
 	Supplier<LoadingCache<URI, IXMLSchema>> schemaCacheSupplier = Suppliers.memoize(() -> {
 		logger.traceEntry();
 		logger.debug("Initializing schema cache (max. {} entries)", this.cacheSize);
@@ -152,7 +153,6 @@ public class SchemaManager implements ISchemaManager {
 	class SchemaCacheLoader extends CacheLoader<URI, IXMLSchema> {
 
 		private JAXBContext context;
-//		private Marshaller marshaller;
 		private Unmarshaller unmarshaller;
 
 		/**
@@ -164,7 +164,6 @@ public class SchemaManager implements ISchemaManager {
 				if (this.context == null) {
 					this.context = JAXBContext.newInstance(XMLSchema.class);
 				}
-//				this.marshaller = this.context.createMarshaller();
 				if (this.unmarshaller == null) {
 					this.unmarshaller = this.context.createUnmarshaller();
 				}

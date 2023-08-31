@@ -47,6 +47,7 @@ public class XSLTProcessor implements IXSLTProcessor {
 		this.cacheSize = cacheSize;
 	}
 
+	@SuppressWarnings("java:S4738") // Java supplier does not support memoization
 	Supplier<LoadingCache<URI, XsltExecutable>> stylesheetCacheSupplier = Suppliers.memoize(() -> {
 		logger.traceEntry();
 		logger.debug("Initializing compiled stylesheet cache (max. {} entries)", this.cacheSize);
