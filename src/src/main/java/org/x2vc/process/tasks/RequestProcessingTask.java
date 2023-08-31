@@ -6,6 +6,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.x2vc.analysis.IDocumentAnalyzer;
 import org.x2vc.process.IWorkerProcessManager;
+import org.x2vc.process.results.IVulnerabilityCandidateCollector;
 import org.x2vc.processor.IHTMLDocumentContainer;
 import org.x2vc.processor.IXSLTProcessor;
 import org.x2vc.utilities.IDebugObjectWriter;
@@ -34,6 +35,7 @@ public class RequestProcessingTask implements IRequestProcessingTask {
 	private IRequestProcessingTaskFactory requestProcessingTaskFactory;
 	private IWorkerProcessManager workerProcessManager;
 	private IDebugObjectWriter debugObjectWriter;
+	private IVulnerabilityCandidateCollector vulnerabilityCandidateCollector;
 	private IDocumentRequest request;
 	private ProcessingMode mode;
 
@@ -43,11 +45,13 @@ public class RequestProcessingTask implements IRequestProcessingTask {
 	 * @param request
 	 * @param mode
 	 */
+	@SuppressWarnings("java:S107") // large number of parameters due to dependency injection
 	@Inject
 	RequestProcessingTask(IDocumentGenerator documentGenerator, IXSLTProcessor processor, IDocumentAnalyzer analyzer,
 			IRequestGenerator requestGenerator, ICompletedRequestRegistry completedRequestRegistry,
 			IRequestProcessingTaskFactory taskFactory, IWorkerProcessManager workerProcessManager,
-			IDebugObjectWriter debugObjectWriter, @Assisted IDocumentRequest request, @Assisted ProcessingMode mode) {
+			IDebugObjectWriter debugObjectWriter, IVulnerabilityCandidateCollector vulnerabilityCandidateCollector,
+			@Assisted IDocumentRequest request, @Assisted ProcessingMode mode) {
 		super();
 		this.documentGenerator = documentGenerator;
 		this.processor = processor;
@@ -57,6 +61,7 @@ public class RequestProcessingTask implements IRequestProcessingTask {
 		this.requestProcessingTaskFactory = taskFactory;
 		this.workerProcessManager = workerProcessManager;
 		this.debugObjectWriter = debugObjectWriter;
+		this.vulnerabilityCandidateCollector = vulnerabilityCandidateCollector;
 		this.request = request;
 		this.mode = mode;
 		this.taskID = UUID.randomUUID();
@@ -91,8 +96,9 @@ public class RequestProcessingTask implements IRequestProcessingTask {
 							final IRequestProcessingTask task = this.requestProcessingTaskFactory
 								.create(modifiedRequest, this.mode);
 							this.workerProcessManager.submit(task);
-						}, report -> {
-							// TODO XSS Vulnerability: handle vulnerability reports
+						}, candidate -> {
+							logger.debug("storing vulnerability candidate for later processing");
+							this.vulnerabilityCandidateCollector.add(this.request.getStylesheeURI(), candidate);
 						});
 					}
 
