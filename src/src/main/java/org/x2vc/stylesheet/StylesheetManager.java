@@ -9,8 +9,8 @@ import java.util.concurrent.ExecutionException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.x2vc.common.URIHandling;
-import org.x2vc.common.URIHandling.ObjectType;
+import org.x2vc.utilities.URIHandling;
+import org.x2vc.utilities.URIHandling.ObjectType;
 
 import com.github.racc.tscg.TypesafeConfig;
 import com.google.common.base.Supplier;

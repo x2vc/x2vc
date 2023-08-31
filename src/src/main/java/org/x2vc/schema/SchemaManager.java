@@ -16,12 +16,12 @@ import javax.xml.bind.Unmarshaller;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.x2vc.common.URIHandling;
-import org.x2vc.common.URIHandling.ObjectType;
 import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.schema.structure.XMLSchema;
 import org.x2vc.stylesheet.IStylesheetInformation;
 import org.x2vc.stylesheet.IStylesheetManager;
+import org.x2vc.utilities.URIHandling;
+import org.x2vc.utilities.URIHandling.ObjectType;
 
 import com.github.racc.tscg.TypesafeConfig;
 import com.google.common.base.Supplier;

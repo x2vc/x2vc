@@ -10,7 +10,8 @@ import java.net.URISyntaxException;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.x2vc.common.URIHandling.ObjectType;
+import org.x2vc.utilities.URIHandling;
+import org.x2vc.utilities.URIHandling.ObjectType;
 
 /**
  *
@@ -26,7 +27,7 @@ class URIHandlingTest {
 
 	/**
 	 * Test method for
-	 * {@link org.x2vc.common.URIHandling#makeMemoryURI(org.x2vc.common.URIHandling.ObjectType, java.lang.String)}.
+	 * {@link org.x2vc.utilities.URIHandling#makeMemoryURI(org.x2vc.utilities.URIHandling.ObjectType, java.lang.String)}.
 	 */
 	@Test
 	void testMakeMemoryURI() {
@@ -38,7 +39,7 @@ class URIHandlingTest {
 
 	/**
 	 * Test method for
-	 * {@link org.x2vc.common.URIHandling#makeMemoryURI(org.x2vc.common.URIHandling.ObjectType, java.lang.String, int)}.
+	 * {@link org.x2vc.utilities.URIHandling#makeMemoryURI(org.x2vc.utilities.URIHandling.ObjectType, java.lang.String, int)}.
 	 */
 	@Test
 	void testMakeMemoryURIWithVersion() {
@@ -50,7 +51,7 @@ class URIHandlingTest {
 
 	/**
 	 * Test method for
-	 * {@link org.x2vc.common.URIHandling#isMemoryURI(java.net.URI)}.
+	 * {@link org.x2vc.utilities.URIHandling#isMemoryURI(java.net.URI)}.
 	 */
 	@Test
 	void testIsMemoryURI() {
@@ -62,7 +63,7 @@ class URIHandlingTest {
 
 	/**
 	 * Test method for
-	 * {@link org.x2vc.common.URIHandling#getObjectType(java.net.URI)}.
+	 * {@link org.x2vc.utilities.URIHandling#getObjectType(java.net.URI)}.
 	 *
 	 * @throws URISyntaxException
 	 * @throws IllegalArgumentException
@@ -77,7 +78,7 @@ class URIHandlingTest {
 
 	/**
 	 * Test method for
-	 * {@link org.x2vc.common.URIHandling#getIdentifier(java.net.URI)}.
+	 * {@link org.x2vc.utilities.URIHandling#getIdentifier(java.net.URI)}.
 	 *
 	 * @throws IllegalArgumentException
 	 */
@@ -92,7 +93,7 @@ class URIHandlingTest {
 	}
 
 	/**
-	 * Test method for {@link org.x2vc.common.URIHandling#getVersion(java.net.URI)}.
+	 * Test method for {@link org.x2vc.utilities.URIHandling#getVersion(java.net.URI)}.
 	 */
 	@Test
 	void testGetVersion() {

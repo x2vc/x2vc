@@ -7,7 +7,7 @@ import java.util.function.Consumer;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.x2vc.common.ExtendedXSLTConstants;
+import org.x2vc.stylesheet.ExtendedXSLTConstants;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;

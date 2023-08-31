@@ -1,4 +1,4 @@
-package org.x2vc.common;
+package org.x2vc.stylesheet;
 
 /**
  * Constants to handle XSLT stylesheets: Namespaces and element names taken from

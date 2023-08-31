@@ -22,8 +22,8 @@ import javax.xml.stream.events.XMLEvent;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.x2vc.common.ExtendedXSLTConstants;
-import org.x2vc.common.XSLTConstants;
+import org.x2vc.stylesheet.ExtendedXSLTConstants;
+import org.x2vc.stylesheet.XSLTConstants;
 import org.x2vc.utilities.IPushbackXMLEventReader;
 import org.x2vc.utilities.PushbackXMLEventReader;
 

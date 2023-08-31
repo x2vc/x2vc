@@ -18,11 +18,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.x2vc.common.URIHandling;
-import org.x2vc.common.URIHandling.ObjectType;
 import org.x2vc.schema.ISchemaManager;
 import org.x2vc.schema.structure.*;
 import org.x2vc.stylesheet.IStylesheetInformation;
+import org.x2vc.utilities.URIHandling;
+import org.x2vc.utilities.URIHandling.ObjectType;
 import org.x2vc.xml.request.*;
 import org.x2vc.xml.value.IPrefixSelector.PrefixData;
 

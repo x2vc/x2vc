@@ -4,8 +4,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
-import org.x2vc.common.ExtendedXSLTConstants;
-import org.x2vc.common.XSLTConstants;
+import org.x2vc.stylesheet.ExtendedXSLTConstants;
+import org.x2vc.stylesheet.XSLTConstants;
 
 import com.google.common.collect.ImmutableList;
 

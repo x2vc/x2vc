@@ -15,12 +15,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.x2vc.common.URIHandling;
-import org.x2vc.common.URIHandling.ObjectType;
 import org.x2vc.schema.structure.IXMLElementType.ContentType;
 import org.x2vc.schema.structure.IXMLElementType.ElementArrangement;
 import org.x2vc.schema.structure.XMLSchema.Builder;
 import org.x2vc.stylesheet.IStylesheetInformation;
+import org.x2vc.utilities.URIHandling;
+import org.x2vc.utilities.URIHandling.ObjectType;
 
 @ExtendWith(MockitoExtension.class)
 class XMLSchemaTest {

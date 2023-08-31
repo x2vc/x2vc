@@ -11,7 +11,7 @@ import java.util.Optional;
 
 import javax.xml.namespace.QName;
 
-import org.x2vc.common.ExtendedXSLTConstants;
+import org.x2vc.stylesheet.ExtendedXSLTConstants;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;

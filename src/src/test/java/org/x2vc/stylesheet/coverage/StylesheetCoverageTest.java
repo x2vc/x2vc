@@ -8,8 +8,8 @@ import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.x2vc.common.ExtendedXSLTConstants;
-import org.x2vc.common.XSLTConstants;
+import org.x2vc.stylesheet.ExtendedXSLTConstants;
+import org.x2vc.stylesheet.XSLTConstants;
 import org.x2vc.stylesheet.structure.IStylesheetStructure;
 import org.x2vc.stylesheet.structure.StylesheetStructureTestFactory;
 import org.x2vc.stylesheet.structure.XSLTDirectiveNode;

@@ -1,4 +1,4 @@
-package org.x2vc.common;
+package org.x2vc.stylesheet;
 
 import javax.xml.namespace.QName;
 

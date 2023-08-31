@@ -12,7 +12,7 @@ import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.x2vc.common.XSLTConstants;
+import org.x2vc.stylesheet.XSLTConstants;
 
 import com.google.common.collect.ImmutableList;
 

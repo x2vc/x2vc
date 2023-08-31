@@ -1,4 +1,4 @@
-package org.x2vc.common;
+package org.x2vc.utilities;
 
 import java.net.URI;
 import java.net.URISyntaxException;
