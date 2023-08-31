@@ -1,6 +1,7 @@
 package org.x2vc.analysis;
 
 import java.util.Set;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 import org.jsoup.nodes.Node;
@@ -29,10 +30,9 @@ public interface IAnalyzerRule {
 	 * This method is called once for each DOM node during the first pass and may
 	 * emit any number of data modification requests to perform follow-up checks.
 	 *
-	 * @param node                 the DOM node to check
+	 * @param node         the DOM node to check
 	 * @param xmlContainer the input document container
-	 * @param collector            a sink to send any resulting modification
-	 *                             requests to
+	 * @param collector    a sink to send any resulting modification requests to
 	 */
 	void checkNode(Node node, IXMLDocumentContainer xmlContainer, Consumer<IDocumentModifier> collector);
 
@@ -40,7 +40,7 @@ public interface IAnalyzerRule {
 	 * If the rule needs to examine the entire document for the follow-up pass, emit
 	 * an empty set here. Otherwise, emit a set of XPath expressions and only the
 	 * corresponding values will be presented to
-	 * {@link #verifyNode(Node, IXMLDocumentContainer, Consumer)}
+	 * {@link #verifyNode(UUID, Node, IXMLDocumentContainer, Consumer)}
 	 *
 	 * @param xmlContainer the input document container
 	 * @return a set of XPath expressions to identify the entities to filter, or an
@@ -53,11 +53,12 @@ public interface IAnalyzerRule {
 	 * {@link #getElementSelectors(IXMLDocumentContainer)} - during the follow-up
 	 * pass and may emit any number of vulnerability reports.
 	 *
-	 * @param node                 the DOM node to check
+	 * @param taskID       the ID of the task being executed
+	 * @param node         the DOM node to check
 	 * @param xmlContainer the input document container
-	 * @param collector            a sink to send any resulting vulnerability
-	 *                             reports to
+	 * @param collector    a sink to send any resulting vulnerability reports to
 	 */
-	void verifyNode(Node node, IXMLDocumentContainer xmlContainer, Consumer<IVulnerabilityReport> collector);
+	void verifyNode(UUID taskID, Node node, IXMLDocumentContainer xmlContainer,
+			Consumer<IVulnerabilityCandidate> collector);
 
 }

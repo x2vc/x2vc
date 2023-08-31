@@ -5,6 +5,7 @@ import static com.google.common.base.Preconditions.checkArgument;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 import org.apache.logging.log4j.LogManager;
@@ -39,8 +40,8 @@ public class DocumentAnalyzer implements IDocumentAnalyzer {
 	}
 
 	@Override
-	public void analyzeDocument(IHTMLDocumentContainer document, Consumer<IDocumentModifier> modifierCollector,
-			Consumer<IVulnerabilityReport> vulnerabilityCollector) {
+	public void analyzeDocument(UUID taskID, IHTMLDocumentContainer document,
+			Consumer<IDocumentModifier> modifierCollector, Consumer<IVulnerabilityCandidate> vulnerabilityCollector) {
 		checkArgument(!document.isFailed());
 		logger.traceEntry();
 		logger.debug("analyzing document using a set of {} rules", this.rules.size());
@@ -50,7 +51,7 @@ public class DocumentAnalyzer implements IDocumentAnalyzer {
 		if (modifier.isEmpty() || modifier.get().getAnalyzerRuleID().isEmpty()) {
 			performFirstPass(document, xmlContainer, modifierCollector);
 		} else {
-			performFollowUpPass(document, xmlContainer, modifier.get(), vulnerabilityCollector);
+			performFollowUpPass(taskID, document, xmlContainer, modifier.get(), vulnerabilityCollector);
 		}
 		logger.traceExit();
 	}
@@ -83,8 +84,8 @@ public class DocumentAnalyzer implements IDocumentAnalyzer {
 	 * @param iDocumentModifier
 	 * @param vulnerabilityCollector
 	 */
-	private void performFollowUpPass(IHTMLDocumentContainer container, IXMLDocumentContainer xmlContainer,
-			IDocumentModifier modifier, Consumer<IVulnerabilityReport> vulnerabilityCollector) {
+	private void performFollowUpPass(UUID taskID, IHTMLDocumentContainer container, IXMLDocumentContainer xmlContainer,
+			IDocumentModifier modifier, Consumer<IVulnerabilityCandidate> vulnerabilityCollector) {
 		logger.traceEntry();
 		final IAnalyzerRule rule = filterCorrespondingRule(modifier);
 
@@ -96,7 +97,7 @@ public class DocumentAnalyzer implements IDocumentAnalyzer {
 		final Set<String> selectors = rule.getElementSelectors(xmlContainer);
 		if (selectors.isEmpty()) {
 			logger.debug("rule requires checking of entire DOM tree");
-			parsedDocument.traverse((node, depth) -> rule.verifyNode(node, xmlContainer, report -> {
+			parsedDocument.traverse((node, depth) -> rule.verifyNode(taskID, node, xmlContainer, report -> {
 				logger.debug("rule {} produced report {}", rule.getRuleID(), report);
 				vulnerabilityCollector.accept(report);
 			}));
@@ -108,7 +109,7 @@ public class DocumentAnalyzer implements IDocumentAnalyzer {
 				elements.forEach(consumer);
 			}).distinct().toList();
 			logger.debug("identified {} nodes to check for follow-up pass", filteredNodes.size());
-			filteredNodes.forEach(node -> rule.verifyNode(node, xmlContainer, report -> {
+			filteredNodes.forEach(node -> rule.verifyNode(taskID, node, xmlContainer, report -> {
 				logger.debug("rule {} produced report {}", rule.getRuleID(), report);
 				vulnerabilityCollector.accept(report);
 			}));

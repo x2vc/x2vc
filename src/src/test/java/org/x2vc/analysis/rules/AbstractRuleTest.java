@@ -3,6 +3,7 @@ package org.x2vc.analysis.rules;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 import org.jsoup.Jsoup;
@@ -11,7 +12,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
 import org.junit.jupiter.api.Test;
-import org.x2vc.analysis.IVulnerabilityReport;
+import org.x2vc.analysis.IVulnerabilityCandidate;
 import org.x2vc.xml.document.IDocumentModifier;
 import org.x2vc.xml.document.IXMLDocumentContainer;
 
@@ -36,7 +37,8 @@ class AbstractRuleTest {
 		}
 
 		@Override
-		public void verifyNode(Node node, IXMLDocumentContainer container, Consumer<IVulnerabilityReport> collector) {
+		public void verifyNode(UUID taskID, Node node, IXMLDocumentContainer container,
+				Consumer<IVulnerabilityCandidate> collector) {
 			throw new UnsupportedOperationException();
 		}
 	};

@@ -26,7 +26,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.x2vc.analysis.IVulnerabilityReport;
+import org.x2vc.analysis.IVulnerabilityCandidate;
 import org.x2vc.schema.ISchemaManager;
 import org.x2vc.schema.structure.IXMLAttribute;
 import org.x2vc.schema.structure.IXMLSchema;
@@ -62,6 +62,9 @@ class DirectAttributeCheckRuleTest {
 	@Mock
 	private IDocumentModifier modifier;
 
+	@Mock
+	private IDirectAttributeCheckPayload payload;
+
 	private List<IDocumentModifier> modifiers;
 
 	private Consumer<IDocumentModifier> modifierCollector = new Consumer<IDocumentModifier>() {
@@ -71,11 +74,11 @@ class DirectAttributeCheckRuleTest {
 		}
 	};
 
-	private List<IVulnerabilityReport> vulnerabilities;
+	private List<IVulnerabilityCandidate> vulnerabilities;
 
-	private Consumer<IVulnerabilityReport> vulnerabilityCollector = new Consumer<IVulnerabilityReport>() {
+	private Consumer<IVulnerabilityCandidate> vulnerabilityCollector = new Consumer<IVulnerabilityCandidate>() {
 		@Override
-		public void accept(IVulnerabilityReport t) {
+		public void accept(IVulnerabilityCandidate t) {
 			DirectAttributeCheckRuleTest.this.vulnerabilities.add(t);
 		}
 	};
@@ -188,7 +191,8 @@ class DirectAttributeCheckRuleTest {
 	@Test
 	void testGetElementSelectors() {
 		when(this.documentDescriptor.getModifier()).thenReturn(Optional.of(this.modifier));
-		when(this.modifier.getPayload()).thenReturn(Optional.of(new DirectAttributeCheckPayload("elementSelector", "injectedAttribute")));
+		when(this.payload.getElementSelector()).thenReturn("elementSelector");
+		when(this.modifier.getPayload()).thenReturn(Optional.of(this.payload));
 		final Set<String> selectors = this.rule.getElementSelectors(this.documentContainer);
 		assertEquals(1, selectors.size());
 		assertEquals("elementSelector", selectors.iterator().next());
@@ -199,21 +203,36 @@ class DirectAttributeCheckRuleTest {
 	 * {@link org.x2vc.analysis.rules.DirectAttributeCheckRule#verifyNode(org.jsoup.nodes.Node, org.x2vc.xml.document.IXMLDocumentContainer, java.util.function.Consumer)}.
 	 */
 	@ParameterizedTest
-	@CsvSource({ "<p qwertzui=\"foobar\">test</p>, /p, qwertzui, foobar, true",
-			"<p qwertzui=\"foobar\">test</p>, /p, qwertzui, boofar, false",
-			"<p qwertzui=\"foobar\">test</p>, /p, asdfasdf, foobar, false", })
+	@CsvSource({ "<p qwertzui=\"foobar\">test</p>, /p, qwertzui, foobar, 1",
+			"<p qwertzui=\"foobar\">test</p>, /p, qwertzui, boofar, 0",
+			"<p qwertzui=\"foobar\">test</p>, /p, asdfasdf, foobar, 0",
+			"<p qwertzui=\"foobar\">test</p>, /p, qwertzui, , 1" })
 	void testVerifyNode(String html, String elementSelector, String injectedAttribute, String injectedValue,
-			boolean result) {
+			int expectedVulnerabilityCount) {
+		final UUID taskID = UUID.randomUUID();
+		final UUID schemaElementID = UUID.randomUUID();
 		final Element node = parseToElement(html);
 
 		when(this.documentDescriptor.getModifier()).thenReturn(Optional.of(this.modifier));
-		when(this.modifier.getPayload()).thenReturn(
-				Optional.of(new DirectAttributeCheckPayload(elementSelector, injectedAttribute, injectedValue)));
+		lenient().when(this.payload.getElementSelector()).thenReturn(elementSelector);
+		when(this.payload.getInjectedAttribute()).thenReturn(injectedAttribute);
+		when(this.payload.getInjectedValue()).thenReturn(injectedValue);
+		lenient().when(this.payload.getSchemaElementID()).thenReturn(schemaElementID);
+		when(this.modifier.getPayload()).thenReturn(Optional.of(this.payload));
 
-		this.rule.verifyNode(node, this.documentContainer, this.vulnerabilityCollector);
+		this.rule.verifyNode(taskID, node, this.documentContainer, this.vulnerabilityCollector);
 
-		assertEquals(!result, this.vulnerabilities.isEmpty());
-		// TODO XSS Vulnerability: check for contents
+		assertEquals(expectedVulnerabilityCount, this.vulnerabilities.size());
+		if (expectedVulnerabilityCount > 0) {
+			final IVulnerabilityCandidate vc = this.vulnerabilities.get(0);
+			assertEquals(DirectAttributeCheckRule.RULE_ID, vc.getAnalyzerRuleID());
+			assertEquals(schemaElementID, vc.getAffectingSchemaObject());
+			assertEquals(elementSelector, vc.getAffectedOutputElement());
+//			assertEquals(, vc.getInputSample());
+			// TODO XSS Vulnerability: check input sampler
+			assertEquals(html, vc.getOutputSample());
+			assertEquals(taskID, vc.getTaskID());
+		}
 	}
 
 	private Element parseToElement(String html) {

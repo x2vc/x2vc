@@ -2,6 +2,7 @@ package org.x2vc.analysis.rules;
 
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 import org.apache.logging.log4j.LogManager;
@@ -9,8 +10,8 @@ import org.apache.logging.log4j.Logger;
 import org.jsoup.nodes.Attribute;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
-import org.x2vc.analysis.IVulnerabilityReport;
-import org.x2vc.analysis.VulnerabilityReport;
+import org.x2vc.analysis.IVulnerabilityCandidate;
+import org.x2vc.analysis.VulnerabilityCandidate;
 import org.x2vc.schema.ISchemaManager;
 import org.x2vc.schema.structure.IXMLAttribute;
 import org.x2vc.schema.structure.IXMLSchema;
@@ -36,6 +37,8 @@ public class DirectAttributeCheckRule extends AbstractAttributeRule {
 	 * @see #getRuleID()
 	 */
 	public static final String RULE_ID = "A.1";
+
+	private static final String MISSING_INPUT_SAMPLE = "<MISSING>";
 
 	private static final Logger logger = LogManager.getLogger();
 
@@ -85,21 +88,31 @@ public class DirectAttributeCheckRule extends AbstractAttributeRule {
 
 				// try to replace the entire attribute with style attribute
 				requestModification(schema, valueDescriptor, currentValue, "style",
-						new DirectAttributeCheckPayload(elementPath, "style"), collector);
+						new DirectAttributeCheckPayload(valueDescriptor.getSchemaElementID(), elementPath, "style"),
+						collector);
 
 				// try to replace the entire Attribute with a Javascript event handler
 				requestModification(schema, valueDescriptor, currentValue, "onerror",
-						new DirectAttributeCheckPayload(elementPath, "onerror"), collector);
+						new DirectAttributeCheckPayload(valueDescriptor.getSchemaElementID(), elementPath, "onerror"),
+						collector);
 
 				// try to introduce new attribute by breaking the encoding
 				requestModification(schema, valueDescriptor, currentValue, "=\"\" style=\"test\" rest",
-						new DirectAttributeCheckPayload(elementPath, "style", "test"), collector);
+						new DirectAttributeCheckPayload(valueDescriptor.getSchemaElementID(), elementPath, "style",
+								"test"),
+						collector);
 				requestModification(schema, valueDescriptor, currentValue, "=\"\" onerror=\"test\" rest",
-						new DirectAttributeCheckPayload(elementPath, "onerror", "test"), collector);
+						new DirectAttributeCheckPayload(valueDescriptor.getSchemaElementID(), elementPath, "onerror",
+								"test"),
+						collector);
 				requestModification(schema, valueDescriptor, currentValue, "=&quot;&quot; style=&quot;foo&quot; rest",
-						new DirectAttributeCheckPayload(elementPath, "style", "foo"), collector);
+						new DirectAttributeCheckPayload(valueDescriptor.getSchemaElementID(), elementPath, "style",
+								"foo"),
+						collector);
 				requestModification(schema, valueDescriptor, currentValue, "=&quot;&quot; onerror=&quot;foo&quot; rest",
-						new DirectAttributeCheckPayload(elementPath, "onerror", "foo"), collector);
+						new DirectAttributeCheckPayload(valueDescriptor.getSchemaElementID(), elementPath, "onerror",
+								"foo"),
+						collector);
 
 				// TODO XSS Rule A.1: test for additional vectors with partial matches
 
@@ -138,14 +151,17 @@ public class DirectAttributeCheckRule extends AbstractAttributeRule {
 	@Override
 	public Set<String> getElementSelectors(IXMLDocumentContainer xmlContainer) {
 		logger.traceEntry();
-		final DirectAttributeCheckPayload payload = getPayloadChecked(xmlContainer, DirectAttributeCheckPayload.class);
+		final IDirectAttributeCheckPayload payload = getPayloadChecked(xmlContainer,
+				IDirectAttributeCheckPayload.class);
 		return logger.traceExit(Set.of(payload.getElementSelector()));
 	}
 
 	@Override
-	public void verifyNode(Node node, IXMLDocumentContainer xmlContainer, Consumer<IVulnerabilityReport> collector) {
+	public void verifyNode(UUID taskID, Node node, IXMLDocumentContainer xmlContainer,
+			Consumer<IVulnerabilityCandidate> collector) {
 		logger.traceEntry();
-		final DirectAttributeCheckPayload payload = getPayloadChecked(xmlContainer, DirectAttributeCheckPayload.class);
+		final IDirectAttributeCheckPayload payload = getPayloadChecked(xmlContainer,
+				IDirectAttributeCheckPayload.class);
 		if (node instanceof final Element element) {
 			final String attributeName = payload.getInjectedAttribute();
 			final String injectedValue = payload.getInjectedValue();
@@ -157,13 +173,15 @@ public class DirectAttributeCheckRule extends AbstractAttributeRule {
 					// we only tried to inject a new attribute, regardless of the contents -
 					// success, apparently
 					logger.debug("attribute \"{}\" injected from input data, follow-up check positive", attributeName);
-					collector.accept(new VulnerabilityReport());
-					// TODO XSS Vulnerability: produce a proper report object
+					collector.accept(new VulnerabilityCandidate(RULE_ID, taskID, payload.getSchemaElementID(),
+							payload.getElementSelector(), MISSING_INPUT_SAMPLE, node.toString()));
+					// TODO XSS Vulnerability: include the input sample in the candidate object
 				} else if (actualValue.equalsIgnoreCase(injectedValue)) {
 					logger.debug("attribute \"{}\" contains injected value \"{}\", follow-up check positive",
 							attributeName, injectedValue);
-					collector.accept(new VulnerabilityReport());
-					// TODO XSS Vulnerability: produce a proper report object
+					collector.accept(new VulnerabilityCandidate(RULE_ID, taskID, payload.getSchemaElementID(),
+							payload.getElementSelector(), MISSING_INPUT_SAMPLE, node.toString()));
+					// TODO XSS Vulnerability: include the input sample in the candidate object
 				} else {
 					logger.debug(
 							"attribute \"{}\" with value \"{}\" does not contain injected value \"{}\", follow-up check negative",

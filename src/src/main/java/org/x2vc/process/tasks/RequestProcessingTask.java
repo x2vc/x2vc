@@ -84,7 +84,7 @@ public class RequestProcessingTask implements IRequestProcessingTask {
 
 				if (!htmlDocument.isFailed()) {
 					if (this.mode == ProcessingMode.FULL || this.mode == ProcessingMode.XSS_ONLY) {
-						this.analyzer.analyzeDocument(htmlDocument, modifier -> {
+						this.analyzer.analyzeDocument(this.taskID, htmlDocument, modifier -> {
 							final IDocumentRequest modifiedRequest = this.requestGenerator.modifyRequest(this.request,
 									modifier);
 							logger.debug("adding new task for modification request");

@@ -6,6 +6,7 @@ import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.*;
 
 import java.util.Optional;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 import org.jsoup.nodes.Node;
@@ -34,7 +35,7 @@ class DocumentAnalyzerTest {
 	private Consumer<IDocumentModifier> modifierCollector;
 
 	@Mock
-	private Consumer<IVulnerabilityReport> vulnerabilityCollector;
+	private Consumer<IVulnerabilityCandidate> vulnerabilityCollector;
 
 	@Mock
 	private IHTMLDocumentContainer container;
@@ -48,11 +49,14 @@ class DocumentAnalyzerTest {
 	@Mock
 	private IDocumentModifier modifier;
 
+	private UUID taskID;
+
 	/**
 	 * @throws java.lang.Exception
 	 */
 	@BeforeEach
 	void setUp() throws Exception {
+		this.taskID = UUID.randomUUID();
 		this.analyzer = new DocumentAnalyzer(Sets.newSet(this.rule));
 		lenient().when(this.container.isFailed()).thenReturn(false);
 		lenient().when(this.container.getSource()).thenReturn(this.source);
@@ -98,7 +102,7 @@ class DocumentAnalyzerTest {
 			return null;
 		}).when(this.rule).checkNode(any(Node.class), same(this.source), any());
 
-		this.analyzer.analyzeDocument(this.container, this.modifierCollector, this.vulnerabilityCollector);
+		this.analyzer.analyzeDocument(this.taskID, this.container, this.modifierCollector, this.vulnerabilityCollector);
 
 		verify(this.rule, times(30)).checkNode(any(Node.class), same(this.source), any());
 		verify(this.modifierCollector, times(30)).accept(any());
@@ -146,14 +150,14 @@ class DocumentAnalyzerTest {
 
 		// mock up rule to produce reports for collector wiring test
 		doAnswer(invocation -> {
-			final Consumer<IVulnerabilityReport> argCollector = invocation.getArgument(2);
-			argCollector.accept(mock(IVulnerabilityReport.class));
+			final Consumer<IVulnerabilityCandidate> argCollector = invocation.getArgument(3);
+			argCollector.accept(mock(IVulnerabilityCandidate.class));
 			return null;
-		}).when(this.rule).verifyNode(any(Node.class), same(this.source), any());
+		}).when(this.rule).verifyNode(same(this.taskID), any(Node.class), same(this.source), any());
 
-		this.analyzer.analyzeDocument(this.container, this.modifierCollector, this.vulnerabilityCollector);
+		this.analyzer.analyzeDocument(this.taskID, this.container, this.modifierCollector, this.vulnerabilityCollector);
 
-		verify(this.rule, times(30)).verifyNode(any(Node.class), same(this.source), any());
+		verify(this.rule, times(30)).verifyNode(same(this.taskID), any(Node.class), same(this.source), any());
 		verify(this.vulnerabilityCollector, times(30)).accept(any());
 	}
 
@@ -168,7 +172,7 @@ class DocumentAnalyzerTest {
 		when(this.rule.getRuleID()).thenReturn("FOO-RULE");
 		when(this.modifier.getAnalyzerRuleID()).thenReturn(Optional.of("BAR-RULE")); // does not match the line above
 
-		assertThrows(IllegalArgumentException.class, () -> this.analyzer.analyzeDocument(this.container,
+		assertThrows(IllegalArgumentException.class, () -> this.analyzer.analyzeDocument(this.taskID, this.container,
 				this.modifierCollector, this.vulnerabilityCollector));
 	}
 
@@ -187,7 +191,7 @@ class DocumentAnalyzerTest {
 		when(rule2.getRuleID()).thenReturn("FOO-RULE"); // must trigger an exception because rule IDs have to be unique
 		this.analyzer = new DocumentAnalyzer(Sets.newSet(rule1, rule2));
 
-		assertThrows(IllegalArgumentException.class, () -> this.analyzer.analyzeDocument(this.container,
+		assertThrows(IllegalArgumentException.class, () -> this.analyzer.analyzeDocument(this.taskID, this.container,
 				this.modifierCollector, this.vulnerabilityCollector));
 	}
 
@@ -237,14 +241,14 @@ class DocumentAnalyzerTest {
 
 		// mock up rule to produce reports for collector wiring test
 		doAnswer(invocation -> {
-			final Consumer<IVulnerabilityReport> argCollector = invocation.getArgument(2);
-			argCollector.accept(mock(IVulnerabilityReport.class));
+			final Consumer<IVulnerabilityCandidate> argCollector = invocation.getArgument(3);
+			argCollector.accept(mock(IVulnerabilityCandidate.class));
 			return null;
-		}).when(this.rule).verifyNode(any(Node.class), same(this.source), any());
+		}).when(this.rule).verifyNode(same(this.taskID), any(Node.class), same(this.source), any());
 
-		this.analyzer.analyzeDocument(this.container, this.modifierCollector, this.vulnerabilityCollector);
+		this.analyzer.analyzeDocument(this.taskID, this.container, this.modifierCollector, this.vulnerabilityCollector);
 
-		verify(this.rule, times(3)).verifyNode(any(Node.class), same(this.source), any());
+		verify(this.rule, times(3)).verifyNode(same(this.taskID), any(Node.class), same(this.source), any());
 		verify(this.vulnerabilityCollector, times(3)).accept(any());
 	}
 
