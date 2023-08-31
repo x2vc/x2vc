@@ -3,7 +3,7 @@ package org.x2vc.process.commands;
 import java.util.concurrent.Callable;
 
 import org.x2vc.process.IWorkerProcessManager;
-import org.x2vc.process.tasks.ITaskFactory;
+import org.x2vc.process.tasks.IInitializationTaskFactory;
 import org.x2vc.process.tasks.ProcessingMode;
 
 import com.google.inject.Inject;
@@ -22,8 +22,9 @@ public class FullProcessCommand extends AbstractProcessCommand implements Callab
 	 * @param workerProcessManager
 	 */
 	@Inject
-	FullProcessCommand(ITaskFactory taskFactory, IWorkerProcessManager workerProcessManager) {
-		super(taskFactory, workerProcessManager);
+	FullProcessCommand(IInitializationTaskFactory initializationTaskFactory,
+			IWorkerProcessManager workerProcessManager) {
+		super(initializationTaskFactory, workerProcessManager);
 	}
 
 	@Override

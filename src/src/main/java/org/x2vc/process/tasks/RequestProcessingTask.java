@@ -15,11 +15,14 @@ import org.x2vc.xml.request.ICompletedRequestRegistry;
 import org.x2vc.xml.request.IDocumentRequest;
 import org.x2vc.xml.request.IRequestGenerator;
 
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
+
 /**
  * This task is used to process a single {@link IDocumentRequest} and follow up
  * on the results depending on the {@link ProcessingMode}.
  */
-public class RequestProcessingTask implements Runnable {
+public class RequestProcessingTask implements IRequestProcessingTask {
 
 	private static final Logger logger = LogManager.getLogger();
 
@@ -28,7 +31,7 @@ public class RequestProcessingTask implements Runnable {
 	private IDocumentAnalyzer analyzer;
 	private IRequestGenerator requestGenerator;
 	private ICompletedRequestRegistry completedRequestRegistry;
-	private ITaskFactory taskFactory;
+	private IRequestProcessingTaskFactory requestProcessingTaskFactory;
 	private IWorkerProcessManager workerProcessManager;
 	private IDebugObjectWriter debugObjectWriter;
 	private IDocumentRequest request;
@@ -40,17 +43,18 @@ public class RequestProcessingTask implements Runnable {
 	 * @param request
 	 * @param mode
 	 */
+	@Inject
 	RequestProcessingTask(IDocumentGenerator documentGenerator, IXSLTProcessor processor, IDocumentAnalyzer analyzer,
 			IRequestGenerator requestGenerator, ICompletedRequestRegistry completedRequestRegistry,
-			ITaskFactory taskFactory, IWorkerProcessManager workerProcessManager, IDebugObjectWriter debugObjectWriter,
-			IDocumentRequest request, ProcessingMode mode) {
+			IRequestProcessingTaskFactory taskFactory, IWorkerProcessManager workerProcessManager,
+			IDebugObjectWriter debugObjectWriter, @Assisted IDocumentRequest request, @Assisted ProcessingMode mode) {
 		super();
 		this.documentGenerator = documentGenerator;
 		this.processor = processor;
 		this.analyzer = analyzer;
 		this.requestGenerator = requestGenerator;
 		this.completedRequestRegistry = completedRequestRegistry;
-		this.taskFactory = taskFactory;
+		this.requestProcessingTaskFactory = taskFactory;
 		this.workerProcessManager = workerProcessManager;
 		this.debugObjectWriter = debugObjectWriter;
 		this.request = request;
@@ -84,8 +88,8 @@ public class RequestProcessingTask implements Runnable {
 							final IDocumentRequest modifiedRequest = this.requestGenerator.modifyRequest(this.request,
 									modifier);
 							logger.debug("adding new task for modification request");
-							final RequestProcessingTask task = this.taskFactory
-								.createRequestProcessingTask(modifiedRequest, this.mode);
+							final IRequestProcessingTask task = this.requestProcessingTaskFactory
+								.create(modifiedRequest, this.mode);
 							this.workerProcessManager.submit(task);
 						}, report -> {
 							// TODO XSS Vulnerability: handle vulnerability reports

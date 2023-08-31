@@ -4,8 +4,7 @@ import org.x2vc.analysis.DocumentAnalyzer;
 import org.x2vc.analysis.IAnalyzerRule;
 import org.x2vc.analysis.IDocumentAnalyzer;
 import org.x2vc.analysis.rules.DirectAttributeCheckRule;
-import org.x2vc.process.tasks.ITaskFactory;
-import org.x2vc.process.tasks.TaskFactory;
+import org.x2vc.process.tasks.*;
 import org.x2vc.processor.HTMLDocumentFactory;
 import org.x2vc.processor.IHTMLDocumentFactory;
 import org.x2vc.processor.IXSLTProcessor;
@@ -30,13 +29,11 @@ import org.x2vc.xml.request.CompletedRequestRegistry;
 import org.x2vc.xml.request.ICompletedRequestRegistry;
 import org.x2vc.xml.request.IRequestGenerator;
 import org.x2vc.xml.request.RequestGenerator;
-import org.x2vc.xml.value.IPrefixSelector;
-import org.x2vc.xml.value.IValueGeneratorFactory;
-import org.x2vc.xml.value.PrefixSelector;
-import org.x2vc.xml.value.ValueGeneratorFactory;
+import org.x2vc.xml.value.*;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
+import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.multibindings.Multibinder;
 
 import net.sf.saxon.s9api.Processor;
@@ -64,7 +61,10 @@ public class CheckerModule extends AbstractModule {
 
 		// process tasks
 		bind(IDebugObjectWriter.class).to(DebugObjectWriter.class);
-		bind(ITaskFactory.class).to(TaskFactory.class);
+		install(new FactoryModuleBuilder().implement(IRequestProcessingTask.class, RequestProcessingTask.class)
+			.build(IRequestProcessingTaskFactory.class));
+		install(new FactoryModuleBuilder().implement(IInitializationTask.class, InitializationTask.class)
+			.build(IInitializationTaskFactory.class));
 
 		// processor
 		bind(IHTMLDocumentFactory.class).to(HTMLDocumentFactory.class);
@@ -95,7 +95,8 @@ public class CheckerModule extends AbstractModule {
 
 		// xml value
 		bind(IPrefixSelector.class).to(PrefixSelector.class);
-		bind(IValueGeneratorFactory.class).to(ValueGeneratorFactory.class);
+		install(new FactoryModuleBuilder().implement(IValueGenerator.class, ValueGenerator.class)
+			.build(IValueGeneratorFactory.class));
 
 	}
 

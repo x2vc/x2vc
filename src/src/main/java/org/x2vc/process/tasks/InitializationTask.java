@@ -12,19 +12,21 @@ import org.x2vc.stylesheet.IStylesheetManager;
 import org.x2vc.xml.request.IDocumentRequest;
 import org.x2vc.xml.request.IRequestGenerator;
 
+import com.github.racc.tscg.TypesafeConfig;
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
+
 /**
- * This task is used to initialize the checking of a single XSLT file by
- * preparing the stylesheet, loading or generating the initial schema version
- * and generating a number of first-pass document requests.
+ * Standard implementation of {@link IInitializationTask}.
  */
-public class InitializationTask implements Runnable {
+public class InitializationTask implements IInitializationTask {
 
 	private static final Logger logger = LogManager.getLogger();
 
 	private IStylesheetManager stylesheetManager;
 	private ISchemaManager schemaManager;
 	private IRequestGenerator requestGenerator;
-	private ITaskFactory taskFactory;
+	private IRequestProcessingTaskFactory requestProcessingTaskFactory;
 	private IWorkerProcessManager workerProcessManager;
 	private File xsltFile;
 	private ProcessingMode mode;
@@ -34,14 +36,16 @@ public class InitializationTask implements Runnable {
 	 * @param stylesheetManager
 	 * @param xsltFile
 	 */
+	@Inject
 	InitializationTask(IStylesheetManager stylesheetManager, ISchemaManager schemaManager,
-			IRequestGenerator requestGenerator, ITaskFactory taskFactory, IWorkerProcessManager workerProcessManager,
-			File xsltFile, ProcessingMode mode, Integer initialDocumentCount) {
+			IRequestGenerator requestGenerator, IRequestProcessingTaskFactory taskFactory,
+			IWorkerProcessManager workerProcessManager, @Assisted File xsltFile, @Assisted ProcessingMode mode,
+			@TypesafeConfig("x2vc.xml.initial_documents") Integer initialDocumentCount) {
 		super();
 		this.stylesheetManager = stylesheetManager;
 		this.schemaManager = schemaManager;
 		this.requestGenerator = requestGenerator;
-		this.taskFactory = taskFactory;
+		this.requestProcessingTaskFactory = taskFactory;
 		this.workerProcessManager = workerProcessManager;
 		this.xsltFile = xsltFile;
 		this.mode = mode;
@@ -66,7 +70,7 @@ public class InitializationTask implements Runnable {
 					this.xsltFile);
 			for (int i = 0; i < this.initialDocumentCount; i++) {
 				final IDocumentRequest request = this.requestGenerator.generateNewRequest(schema);
-				final RequestProcessingTask task = this.taskFactory.createRequestProcessingTask(request, this.mode);
+				final IRequestProcessingTask task = this.requestProcessingTaskFactory.create(request, this.mode);
 				this.workerProcessManager.submit(task);
 			}
 		} catch (final Exception ex) {

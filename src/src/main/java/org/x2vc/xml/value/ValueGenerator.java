@@ -12,8 +12,11 @@ import org.x2vc.schema.structure.*;
 import org.x2vc.xml.request.*;
 import org.x2vc.xml.value.IPrefixSelector.PrefixData;
 
+import com.github.racc.tscg.TypesafeConfig;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
+import com.google.inject.Inject;
+import com.google.inject.assistedinject.Assisted;
 import com.thedeanda.lorem.LoremIpsum;
 
 /**
@@ -61,8 +64,12 @@ public class ValueGenerator implements IValueGenerator {
 	 * @param stringMinWordCount
 	 * @param stringMaxWordCount
 	 */
-	public ValueGenerator(ISchemaManager schemaManager, IPrefixSelector prefixSelector, IDocumentRequest request,
-			Double discreteValueSelectionRatio, Integer stringMinWordCount, Integer stringMaxWordCount) {
+	@Inject
+	public ValueGenerator(ISchemaManager schemaManager, IPrefixSelector prefixSelector,
+			@Assisted IDocumentRequest request,
+			@TypesafeConfig("x2vc.xml.value.discrete_value_selection_ratio") Double discreteValueSelectionRatio,
+			@TypesafeConfig("x2vc.xml.value.string_min_word_count") Integer stringMinWordCount,
+			@TypesafeConfig("x2vc.xml.value.string_max_word_count") Integer stringMaxWordCount) {
 		this.schemaManager = schemaManager;
 		this.prefixSelector = prefixSelector;
 		this.request = request;

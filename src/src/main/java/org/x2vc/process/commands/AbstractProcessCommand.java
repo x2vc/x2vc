@@ -8,7 +8,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.x2vc.process.IWorkerProcessManager;
 import org.x2vc.process.LoggingMixin;
-import org.x2vc.process.tasks.ITaskFactory;
+import org.x2vc.process.tasks.IInitializationTaskFactory;
 import org.x2vc.process.tasks.ProcessingMode;
 
 import com.google.inject.Inject;
@@ -29,12 +29,13 @@ public abstract class AbstractProcessCommand implements Callable<Integer> {
 	@Parameters(description = "XSLT files to check", arity = "1..*")
 	private List<File> xsltFiles;
 
-	private ITaskFactory taskFactory;
+	private IInitializationTaskFactory initializationTaskFactory;
 	private IWorkerProcessManager workerProcessManager;
 
 	@Inject
-	AbstractProcessCommand(ITaskFactory taskFactory, IWorkerProcessManager workerProcessManager) {
-		this.taskFactory = taskFactory;
+	AbstractProcessCommand(IInitializationTaskFactory initializationTaskFactory,
+			IWorkerProcessManager workerProcessManager) {
+		this.initializationTaskFactory = initializationTaskFactory;
 		this.workerProcessManager = workerProcessManager;
 	}
 
@@ -49,7 +50,7 @@ public abstract class AbstractProcessCommand implements Callable<Integer> {
 
 		// generate the initialization tasks for all files
 		for (final File file : this.xsltFiles) {
-			this.workerProcessManager.submit(this.taskFactory.createInitializationTask(file, getProcessingMode()));
+			this.workerProcessManager.submit(this.initializationTaskFactory.create(file, getProcessingMode()));
 		}
 
 		this.workerProcessManager.awaitTermination();
