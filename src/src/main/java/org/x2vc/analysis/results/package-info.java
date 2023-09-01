@@ -3,4 +3,4 @@
  * {@link org.x2vc.analysis.IVulnerabilityCandidate}s and producing the
  * corresponding output.
  */
-package org.x2vc.process.results;
+package org.x2vc.analysis.results;

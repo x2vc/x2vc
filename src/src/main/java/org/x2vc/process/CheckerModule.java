@@ -3,9 +3,9 @@ package org.x2vc.process;
 import org.x2vc.analysis.DocumentAnalyzer;
 import org.x2vc.analysis.IAnalyzerRule;
 import org.x2vc.analysis.IDocumentAnalyzer;
+import org.x2vc.analysis.results.IVulnerabilityCandidateCollector;
+import org.x2vc.analysis.results.VulnerabilityCandidateCollector;
 import org.x2vc.analysis.rules.DirectAttributeCheckRule;
-import org.x2vc.process.results.IVulnerabilityCandidateCollector;
-import org.x2vc.process.results.VulnerabilityCandidateCollector;
 import org.x2vc.process.tasks.*;
 import org.x2vc.processor.HTMLDocumentFactory;
 import org.x2vc.processor.IHTMLDocumentFactory;
@@ -51,6 +51,9 @@ public class CheckerModule extends AbstractModule {
 		// analysis
 		bind(IDocumentAnalyzer.class).to(DocumentAnalyzer.class);
 
+		// analysis results
+		bind(IVulnerabilityCandidateCollector.class).to(VulnerabilityCandidateCollector.class);
+
 		// analysis rules: use a multibinder for the analyzer rules (plugin-like
 		// structure)
 		final Multibinder<IAnalyzerRule> ruleBinder = Multibinder.newSetBinder(binder(), IAnalyzerRule.class);
@@ -60,9 +63,6 @@ public class CheckerModule extends AbstractModule {
 		bind(IWorkerProcessManager.class).to(WorkerProcessManager.class);
 
 		// process commands
-
-		// process results
-		bind(IVulnerabilityCandidateCollector.class).to(VulnerabilityCandidateCollector.class);
 
 		// process tasks
 		bind(IDebugObjectWriter.class).to(DebugObjectWriter.class);
