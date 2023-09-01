@@ -38,7 +38,13 @@ public class DirectAttributeCheckRule extends AbstractAttributeRule {
 	 */
 	public static final String RULE_ID = "A.1";
 
-	private static final String MISSING_INPUT_SAMPLE = "<MISSING>";
+	static final String MISSING_INPUT_SAMPLE = "<MISSING>";
+	static final String CHECK_ID_ATTRIB_STYLE = "A.CSS";
+	static final String CHECK_ID_ATTRIB_ONERROR = "A.JSH";
+	static final String CHECK_ID_BS_STYLE = "BS.CSS";
+	static final String CHECK_ID_BS_ONERROR = "BS.JSH";
+	static final String CHECK_ID_QUOT_STYLE = "Q.CSS";
+	static final String CHECK_ID_QUOT_ONERROR = "Q.JSH";
 
 	private static final Logger logger = LogManager.getLogger();
 
@@ -87,31 +93,31 @@ public class DirectAttributeCheckRule extends AbstractAttributeRule {
 				final String currentValue = valueDescriptor.getValue();
 
 				// try to replace the entire attribute with style attribute
-				requestModification(schema, valueDescriptor, currentValue, "style",
-						new DirectAttributeCheckPayload(valueDescriptor.getSchemaElementID(), elementPath, "style"),
-						collector);
+				requestModification(schema, valueDescriptor, currentValue, "style", new DirectAttributeCheckPayload(
+						CHECK_ID_ATTRIB_STYLE, valueDescriptor.getSchemaElementID(), elementPath, "style"), collector);
 
 				// try to replace the entire Attribute with a Javascript event handler
 				requestModification(schema, valueDescriptor, currentValue, "onerror",
-						new DirectAttributeCheckPayload(valueDescriptor.getSchemaElementID(), elementPath, "onerror"),
+						new DirectAttributeCheckPayload(CHECK_ID_ATTRIB_ONERROR, valueDescriptor.getSchemaElementID(),
+								elementPath, "onerror"),
 						collector);
 
 				// try to introduce new attribute by breaking the encoding
 				requestModification(schema, valueDescriptor, currentValue, "=\"\" style=\"test\" rest",
-						new DirectAttributeCheckPayload(valueDescriptor.getSchemaElementID(), elementPath, "style",
-								"test"),
+						new DirectAttributeCheckPayload(CHECK_ID_BS_STYLE, valueDescriptor.getSchemaElementID(),
+								elementPath, "style", "test"),
 						collector);
 				requestModification(schema, valueDescriptor, currentValue, "=\"\" onerror=\"test\" rest",
-						new DirectAttributeCheckPayload(valueDescriptor.getSchemaElementID(), elementPath, "onerror",
-								"test"),
+						new DirectAttributeCheckPayload(CHECK_ID_BS_ONERROR, valueDescriptor.getSchemaElementID(),
+								elementPath, "onerror", "test"),
 						collector);
 				requestModification(schema, valueDescriptor, currentValue, "=&quot;&quot; style=&quot;foo&quot; rest",
-						new DirectAttributeCheckPayload(valueDescriptor.getSchemaElementID(), elementPath, "style",
-								"foo"),
+						new DirectAttributeCheckPayload(CHECK_ID_QUOT_STYLE, valueDescriptor.getSchemaElementID(),
+								elementPath, "style", "foo"),
 						collector);
 				requestModification(schema, valueDescriptor, currentValue, "=&quot;&quot; onerror=&quot;foo&quot; rest",
-						new DirectAttributeCheckPayload(valueDescriptor.getSchemaElementID(), elementPath, "onerror",
-								"foo"),
+						new DirectAttributeCheckPayload(CHECK_ID_QUOT_ONERROR, valueDescriptor.getSchemaElementID(),
+								elementPath, "onerror", "foo"),
 						collector);
 
 				// TODO XSS Rule A.1: test for additional vectors with partial matches
@@ -173,14 +179,16 @@ public class DirectAttributeCheckRule extends AbstractAttributeRule {
 					// we only tried to inject a new attribute, regardless of the contents -
 					// success, apparently
 					logger.debug("attribute \"{}\" injected from input data, follow-up check positive", attributeName);
-					collector.accept(new VulnerabilityCandidate(RULE_ID, taskID, payload.getSchemaElementID(),
-							payload.getElementSelector(), MISSING_INPUT_SAMPLE, node.toString()));
+					collector.accept(new VulnerabilityCandidate(RULE_ID, payload.getCheckID(), taskID,
+							payload.getSchemaElementID(), payload.getElementSelector(), MISSING_INPUT_SAMPLE,
+							node.toString()));
 					// TODO XSS Vulnerability: include the input sample in the candidate object
 				} else if (actualValue.equalsIgnoreCase(injectedValue)) {
 					logger.debug("attribute \"{}\" contains injected value \"{}\", follow-up check positive",
 							attributeName, injectedValue);
-					collector.accept(new VulnerabilityCandidate(RULE_ID, taskID, payload.getSchemaElementID(),
-							payload.getElementSelector(), MISSING_INPUT_SAMPLE, node.toString()));
+					collector.accept(new VulnerabilityCandidate(RULE_ID, payload.getCheckID(), taskID,
+							payload.getSchemaElementID(), payload.getElementSelector(), MISSING_INPUT_SAMPLE,
+							node.toString()));
 					// TODO XSS Vulnerability: include the input sample in the candidate object
 				} else {
 					logger.debug(

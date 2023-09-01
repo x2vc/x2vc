@@ -11,6 +11,12 @@ import org.x2vc.xml.document.IModifierPayload;
 public interface IDirectAttributeCheckPayload extends IModifierPayload {
 
 	/**
+	 * @return the ID of check performed by the analyzer rule that produced the
+	 *         modifier
+	 */
+	String getCheckID();
+
+	/**
 	 * @return the injectedValue
 	 */
 	String getInjectedValue();
