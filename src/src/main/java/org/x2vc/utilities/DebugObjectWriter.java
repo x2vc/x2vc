@@ -12,6 +12,8 @@ import javax.xml.bind.Marshaller;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.x2vc.analysis.IVulnerabilityCandidate;
+import org.x2vc.analysis.VulnerabilityCandidate;
 import org.x2vc.processor.IHTMLDocumentContainer;
 import org.x2vc.xml.document.IXMLDocumentContainer;
 import org.x2vc.xml.request.DocumentRequest;
@@ -34,15 +36,18 @@ public class DebugObjectWriter implements IDebugObjectWriter {
 	private boolean requestOutputEnabled;
 	private boolean xmlOutputEnabled;
 	private boolean htmlOutputEnabled;
+	private boolean vulnerabilityCandidateOutputEnabled;
 	private File outputPath;
 
 	@Inject
 	DebugObjectWriter(@TypesafeConfig("x2vc.xml.request.write_to_file") boolean requestOutputEnabled,
 			@TypesafeConfig("x2vc.xml.document.write_to_file") boolean xmlOutputEnabled,
-			@TypesafeConfig("x2vc.html.document.write_to_file") boolean htmlOutputEnabled) {
+			@TypesafeConfig("x2vc.html.document.write_to_file") boolean htmlOutputEnabled,
+			@TypesafeConfig("x2vc.analysis.candidates.write_to_file") boolean vulnerabilityCandidateOutputEnabled) {
 		this.requestOutputEnabled = requestOutputEnabled;
 		this.xmlOutputEnabled = xmlOutputEnabled;
 		this.htmlOutputEnabled = htmlOutputEnabled;
+		this.vulnerabilityCandidateOutputEnabled = vulnerabilityCandidateOutputEnabled;
 		this.outputPath = new File("debugOutput");
 	}
 
@@ -98,6 +103,34 @@ public class DebugObjectWriter implements IDebugObjectWriter {
 				} catch (final IOException e) {
 					logger.error("Unable to write XML document to file", e);
 				}
+			}
+		}
+		logger.traceExit();
+	}
+
+	@SuppressWarnings("java:S4738") // Java supplier does not support memoization
+	Supplier<JAXBContext> vulnerabilityCandidateContextSupplier = Suppliers.memoize(() -> {
+		try {
+			return JAXBContext.newInstance(VulnerabilityCandidate.class);
+		} catch (final JAXBException e) {
+			logger.error("Unable to provide JAXB context for vulnerability candidates", e);
+			throw new DebugOutputError(e);
+		}
+	});
+
+	@Override
+	public void writeVulnerabilityCandidate(UUID taskID, int candidateNumber,
+			IVulnerabilityCandidate vulnerabilityCandidate) {
+		logger.traceEntry("for task ID {}", taskID);
+		if (this.vulnerabilityCandidateOutputEnabled) {
+			try {
+				final File outputFile = provideOutputFile(taskID, String.format("candidate-%06d", candidateNumber),
+						"xml");
+				final Marshaller marshaller = this.vulnerabilityCandidateContextSupplier.get().createMarshaller();
+				marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+				marshaller.marshal(vulnerabilityCandidate, outputFile);
+			} catch (final Exception e) {
+				logger.error("Unable to write vulnerability candidate to file", e);
 			}
 		}
 		logger.traceExit();

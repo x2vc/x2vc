@@ -2,6 +2,7 @@ package org.x2vc.utilities;
 
 import java.util.UUID;
 
+import org.x2vc.analysis.IVulnerabilityCandidate;
 import org.x2vc.processor.IHTMLDocumentContainer;
 import org.x2vc.xml.document.IXMLDocumentContainer;
 import org.x2vc.xml.request.IDocumentRequest;
@@ -38,5 +39,15 @@ public interface IDebugObjectWriter {
 	 * @param htmlDocument
 	 */
 	void writeHTMLDocument(UUID taskID, IHTMLDocumentContainer htmlDocument);
+
+	/**
+	 * Writes a {@link IVulnerabilityCandidate} to a file.
+	 *
+	 * @param taskID                 a common task ID to keep all the output files
+	 *                               belonging to a single task together
+	 * @param candidateNumber
+	 * @param vulnerabilityCandidate
+	 */
+	void writeVulnerabilityCandidate(UUID taskID, int candidateNumber, IVulnerabilityCandidate vulnerabilityCandidate);
 
 }

@@ -41,6 +41,8 @@ public class RequestProcessingTask implements IRequestProcessingTask {
 
 	private UUID taskID;
 
+	int nextCandidateNumber = 1;
+
 	/**
 	 * @param request
 	 * @param mode
@@ -97,6 +99,9 @@ public class RequestProcessingTask implements IRequestProcessingTask {
 								.create(modifiedRequest, this.mode);
 							this.workerProcessManager.submit(task);
 						}, candidate -> {
+							this.debugObjectWriter.writeVulnerabilityCandidate(this.taskID, this.nextCandidateNumber,
+									candidate);
+							this.nextCandidateNumber++;
 							logger.debug("storing vulnerability candidate for later processing");
 							this.vulnerabilityCandidateCollector.add(this.request.getStylesheeURI(), candidate);
 						});
