@@ -2,7 +2,7 @@ package org.x2vc.utilities;
 
 import java.util.UUID;
 
-import org.x2vc.analysis.IVulnerabilityCandidate;
+import org.x2vc.analysis.results.IVulnerabilityCandidate;
 import org.x2vc.processor.IHTMLDocumentContainer;
 import org.x2vc.xml.document.IXMLDocumentContainer;
 import org.x2vc.xml.request.IDocumentRequest;

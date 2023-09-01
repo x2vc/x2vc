@@ -5,6 +5,7 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 import org.jsoup.nodes.Node;
+import org.x2vc.analysis.results.IVulnerabilityCandidate;
 import org.x2vc.analysis.rules.AbstractAttributeRule;
 import org.x2vc.analysis.rules.AbstractElementRule;
 import org.x2vc.analysis.rules.AbstractTextRule;
