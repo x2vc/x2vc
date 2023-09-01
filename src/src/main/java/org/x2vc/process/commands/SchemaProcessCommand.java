@@ -4,6 +4,7 @@ import java.util.concurrent.Callable;
 
 import org.x2vc.process.IWorkerProcessManager;
 import org.x2vc.process.tasks.IInitializationTaskFactory;
+import org.x2vc.process.tasks.IReportGeneratorTaskFactory;
 import org.x2vc.process.tasks.ProcessingMode;
 
 import com.google.inject.Inject;
@@ -22,8 +23,8 @@ public class SchemaProcessCommand extends AbstractProcessCommand implements Call
 	 */
 	@Inject
 	SchemaProcessCommand(IInitializationTaskFactory initializationTaskFactory,
-			IWorkerProcessManager workerProcessManager) {
-		super(initializationTaskFactory, workerProcessManager);
+			IReportGeneratorTaskFactory reportGeneratorTaskFactory, IWorkerProcessManager workerProcessManager) {
+		super(initializationTaskFactory, reportGeneratorTaskFactory, workerProcessManager);
 	}
 
 	@Override

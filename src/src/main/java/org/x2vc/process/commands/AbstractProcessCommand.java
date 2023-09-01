@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Logger;
 import org.x2vc.process.IWorkerProcessManager;
 import org.x2vc.process.LoggingMixin;
 import org.x2vc.process.tasks.IInitializationTaskFactory;
+import org.x2vc.process.tasks.IReportGeneratorTaskFactory;
 import org.x2vc.process.tasks.ProcessingMode;
 
 import com.google.inject.Inject;
@@ -30,12 +31,14 @@ public abstract class AbstractProcessCommand implements Callable<Integer> {
 	private List<File> xsltFiles;
 
 	private IInitializationTaskFactory initializationTaskFactory;
+	private IReportGeneratorTaskFactory reportGeneratorTaskFactory;
 	private IWorkerProcessManager workerProcessManager;
 
 	@Inject
 	AbstractProcessCommand(IInitializationTaskFactory initializationTaskFactory,
-			IWorkerProcessManager workerProcessManager) {
+			IReportGeneratorTaskFactory reportGeneratorTaskFactory, IWorkerProcessManager workerProcessManager) {
 		this.initializationTaskFactory = initializationTaskFactory;
+		this.reportGeneratorTaskFactory = reportGeneratorTaskFactory;
 		this.workerProcessManager = workerProcessManager;
 	}
 
@@ -54,6 +57,11 @@ public abstract class AbstractProcessCommand implements Callable<Integer> {
 		}
 
 		this.workerProcessManager.awaitCompletion();
+
+		// generate the report tasks for all files
+		for (final File file : this.xsltFiles) {
+			this.workerProcessManager.submit(this.reportGeneratorTaskFactory.create(file));
+		}
 
 		this.workerProcessManager.shutdown();
 

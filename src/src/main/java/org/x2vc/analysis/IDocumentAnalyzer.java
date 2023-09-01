@@ -1,8 +1,10 @@
 package org.x2vc.analysis;
 
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 
+import org.x2vc.analysis.results.IVulnerabilityReport;
 import org.x2vc.processor.IHTMLDocumentContainer;
 import org.x2vc.xml.document.IDocumentModifier;
 import org.x2vc.xml.document.IXMLDocumentDescriptor;
@@ -42,5 +44,15 @@ public interface IDocumentAnalyzer {
 	 */
 	void analyzeDocument(UUID taskID, IHTMLDocumentContainer container, Consumer<IDocumentModifier> modifierCollector,
 			Consumer<IVulnerabilityCandidate> vulnerabilityCollector);
+
+	/**
+	 * Combines the {@link IVulnerabilityCandidate}s generated using
+	 * {@link IDocumentAnalyzer#analyzeDocument(UUID, IHTMLDocumentContainer, Consumer, Consumer)}
+	 * and produces a report document
+	 *
+	 * @param candidates
+	 * @return a consolidated vulnerability report
+	 */
+	IVulnerabilityReport consolidateResults(Set<IVulnerabilityCandidate> candidates);
 
 }

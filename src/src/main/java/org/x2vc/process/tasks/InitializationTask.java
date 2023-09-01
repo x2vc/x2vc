@@ -32,10 +32,6 @@ public class InitializationTask implements IInitializationTask {
 	private ProcessingMode mode;
 	private Integer initialDocumentCount;
 
-	/**
-	 * @param stylesheetManager
-	 * @param xsltFile
-	 */
 	@Inject
 	InitializationTask(IStylesheetManager stylesheetManager, ISchemaManager schemaManager,
 			IRequestGenerator requestGenerator, IRequestProcessingTaskFactory taskFactory,

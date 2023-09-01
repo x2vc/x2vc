@@ -3,7 +3,9 @@ package org.x2vc.process;
 import org.x2vc.analysis.DocumentAnalyzer;
 import org.x2vc.analysis.IAnalyzerRule;
 import org.x2vc.analysis.IDocumentAnalyzer;
+import org.x2vc.analysis.results.IReportWriter;
 import org.x2vc.analysis.results.IVulnerabilityCandidateCollector;
+import org.x2vc.analysis.results.ReportWriter;
 import org.x2vc.analysis.results.VulnerabilityCandidateCollector;
 import org.x2vc.analysis.rules.DirectAttributeCheckRule;
 import org.x2vc.process.tasks.*;
@@ -53,6 +55,7 @@ public class CheckerModule extends AbstractModule {
 
 		// analysis results
 		bind(IVulnerabilityCandidateCollector.class).to(VulnerabilityCandidateCollector.class);
+		bind(IReportWriter.class).to(ReportWriter.class);
 
 		// analysis rules: use a multibinder for the analyzer rules (plugin-like
 		// structure)
@@ -66,10 +69,12 @@ public class CheckerModule extends AbstractModule {
 
 		// process tasks
 		bind(IDebugObjectWriter.class).to(DebugObjectWriter.class);
-		install(new FactoryModuleBuilder().implement(IRequestProcessingTask.class, RequestProcessingTask.class)
-			.build(IRequestProcessingTaskFactory.class));
 		install(new FactoryModuleBuilder().implement(IInitializationTask.class, InitializationTask.class)
 			.build(IInitializationTaskFactory.class));
+		install(new FactoryModuleBuilder().implement(IRequestProcessingTask.class, RequestProcessingTask.class)
+			.build(IRequestProcessingTaskFactory.class));
+		install(new FactoryModuleBuilder().implement(IReportGeneratorTask.class, ReportGeneratorTask.class)
+			.build(IReportGeneratorTaskFactory.class));
 
 		// processor
 		bind(IHTMLDocumentFactory.class).to(HTMLDocumentFactory.class);

@@ -5,8 +5,8 @@ import java.util.UUID;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.x2vc.analysis.IDocumentAnalyzer;
+import org.x2vc.analysis.results.IVulnerabilityCandidateCollector;
 import org.x2vc.process.IWorkerProcessManager;
-import org.x2vc.process.results.IVulnerabilityCandidateCollector;
 import org.x2vc.processor.IHTMLDocumentContainer;
 import org.x2vc.processor.IXSLTProcessor;
 import org.x2vc.utilities.IDebugObjectWriter;
@@ -43,10 +43,6 @@ public class RequestProcessingTask implements IRequestProcessingTask {
 
 	int nextCandidateNumber = 1;
 
-	/**
-	 * @param request
-	 * @param mode
-	 */
 	@SuppressWarnings("java:S107") // large number of parameters due to dependency injection
 	@Inject
 	RequestProcessingTask(IDocumentGenerator documentGenerator, IXSLTProcessor processor, IDocumentAnalyzer analyzer,
