@@ -18,11 +18,14 @@ import org.x2vc.processor.IHTMLDocumentContainer;
 import org.x2vc.xml.document.IDocumentModifier;
 import org.x2vc.xml.document.IXMLDocumentContainer;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 /**
  * Standard implementation of {@link IDocumentAnalyzer}.
  */
+@Singleton
 public class DocumentAnalyzer implements IDocumentAnalyzer {
 
 	private static final Logger logger = LogManager.getLogger();
@@ -37,6 +40,11 @@ public class DocumentAnalyzer implements IDocumentAnalyzer {
 	public DocumentAnalyzer(Set<IAnalyzerRule> rules) {
 		this.rules = rules;
 		logger.info("Analyzer initialized using a set of {} rules", this.rules.size());
+	}
+
+	@Override
+	public ImmutableSet<String> getRuleIDs() {
+		return ImmutableSet.copyOf(this.rules.stream().map(IAnalyzerRule::getRuleID).toList());
 	}
 
 	@Override

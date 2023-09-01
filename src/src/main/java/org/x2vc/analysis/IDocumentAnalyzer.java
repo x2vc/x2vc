@@ -7,6 +7,8 @@ import org.x2vc.processor.IHTMLDocumentContainer;
 import org.x2vc.xml.document.IDocumentModifier;
 import org.x2vc.xml.document.IXMLDocumentDescriptor;
 
+import com.google.common.collect.ImmutableSet;
+
 /**
  * This component processes the HTML document and examines each context that
  * offers a potential for XSS injection.
@@ -22,6 +24,11 @@ import org.x2vc.xml.document.IXMLDocumentDescriptor;
  * requests.
  */
 public interface IDocumentAnalyzer {
+
+	/**
+	 * @return a list of all the rule IDs registered to the document analyzer
+	 */
+	ImmutableSet<String> getRuleIDs();
 
 	/**
 	 * Analyze a HTML document and check for potential XSS vulnerabilities.
