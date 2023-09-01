@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 
 import com.github.racc.tscg.TypesafeConfig;
 import com.google.common.util.concurrent.MoreExecutors;
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -66,11 +67,17 @@ public class WorkerProcessManager implements IWorkerProcessManager {
 	 */
 	private void initialize() {
 		logger.traceEntry();
+		initializeWorkerThreads();
+		initializeWatcherThreads();
+		logger.traceExit();
+	}
 
+	/**
+	 * Initializes the thread pool that performs the actual work.
+	 */
+	private void initializeWorkerThreads() {
 		logger.info("Preparing pool of {}-{} worker threads with a timeout of {}", this.minThreadCount,
 				this.maxThreadCount, this.threadTimeout);
-
-		// start the main task processor
 		// see https://stackoverflow.com/a/24493856/218890 for this pattern
 		this.taskQueue = new LinkedTransferQueue<Runnable>() {
 			private static final long serialVersionUID = -7999280787101835452L;
@@ -80,8 +87,9 @@ public class WorkerProcessManager implements IWorkerProcessManager {
 				return tryTransfer(e);
 			}
 		};
+		final ThreadFactory workerThreadFactory = new ThreadFactoryBuilder().setNameFormat("worker-%02d").build();
 		this.workerExecutor = new ThreadPoolExecutor(this.minThreadCount, this.maxThreadCount,
-				this.threadTimeout.toMillis(), TimeUnit.MILLISECONDS, this.taskQueue);
+				this.threadTimeout.toMillis(), TimeUnit.MILLISECONDS, this.taskQueue, workerThreadFactory);
 		this.workerExecutor.setRejectedExecutionHandler((r, executor) -> {
 			try {
 				executor.getQueue().put(r);
@@ -91,15 +99,19 @@ public class WorkerProcessManager implements IWorkerProcessManager {
 		});
 		this.exitingWorkerExecutorService = MoreExecutors.getExitingExecutorService(this.workerExecutor,
 				this.shutdownTimeout.toMillis(), TimeUnit.MILLISECONDS);
+	}
 
+	/**
+	 * Initializes the thread that reports on the queue state and progress.
+	 */
+	private void initializeWatcherThreads() {
 		logger.debug("Will report on worker thread pool state every {}", this.reportInterval);
-		final ScheduledThreadPoolExecutor reportingExecutor = new ScheduledThreadPoolExecutor(1);
+		final ThreadFactory watcherThreadFactory = new ThreadFactoryBuilder().setNameFormat("watcher-%01d").build();
+		final ScheduledThreadPoolExecutor reportingExecutor = new ScheduledThreadPoolExecutor(1, watcherThreadFactory);
 		this.reportExecutorService = MoreExecutors.getExitingScheduledExecutorService(reportingExecutor,
 				this.shutdownTimeout.toMillis(), TimeUnit.MILLISECONDS);
 		this.reportExecutorService.scheduleWithFixedDelay(this::reportWorkerStatus, this.reportInterval.getNano(),
 				this.reportInterval.toMillis(), TimeUnit.MILLISECONDS);
-
-		logger.traceExit();
 	}
 
 	private void reportWorkerStatus() {
@@ -113,11 +125,11 @@ public class WorkerProcessManager implements IWorkerProcessManager {
 	}
 
 	@Override
-	public void awaitTermination() throws InterruptedException {
+	public void awaitCompletion() throws InterruptedException {
 		if (!isInitialized()) {
 			throw new IllegalStateException("Worker process manager not yet initialized");
 		}
-		logger.info("Will await the completion of all tasks");
+		logger.info("Waiting for all tasks to complete");
 		while (this.workerExecutor.getActiveCount() > 0 || !this.taskQueue.isEmpty()) {
 			try {
 				Thread.sleep(250);
@@ -126,6 +138,12 @@ public class WorkerProcessManager implements IWorkerProcessManager {
 				throw e;
 			}
 		}
+	}
+
+	@Override
+	public void shutdown() throws InterruptedException {
+		awaitCompletion();
+		logger.info("Shutting down worker threads");
 		this.exitingWorkerExecutorService.shutdown();
 		this.exitingWorkerExecutorService.awaitTermination(60, TimeUnit.SECONDS);
 		reportWorkerStatus();

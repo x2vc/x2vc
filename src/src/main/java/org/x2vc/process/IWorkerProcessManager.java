@@ -15,12 +15,18 @@ public interface IWorkerProcessManager {
 	void submit(Runnable task);
 
 	/**
-	 * Blocks until all tasks have completed execution after a shutdown request, or
-	 * the configured timeout occurs, or the current thread is interrupted,
-	 * whichever happens first.
+	 * Blocks until all tasks have completed execution.
 	 *
 	 * @throws InterruptedException
 	 */
-	void awaitTermination() throws InterruptedException;
+	void awaitCompletion() throws InterruptedException;
+
+	/**
+	 * Blocks until all tasks have completed execution and shuts the queue down so
+	 * that no more tasks are accepted.
+	 *
+	 * @throws InterruptedException
+	 */
+	void shutdown() throws InterruptedException;
 
 }

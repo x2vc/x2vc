@@ -53,7 +53,9 @@ public abstract class AbstractProcessCommand implements Callable<Integer> {
 			this.workerProcessManager.submit(this.initializationTaskFactory.create(file, getProcessingMode()));
 		}
 
-		this.workerProcessManager.awaitTermination();
+		this.workerProcessManager.awaitCompletion();
+
+		this.workerProcessManager.shutdown();
 
 		logger.info("processing completed");
 		// TODO Logging: produce statistics output here

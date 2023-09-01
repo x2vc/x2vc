@@ -33,6 +33,7 @@ public class Checker {
 	 * @param args the command line parameters
 	 */
 	public static void main(String[] args) {
+		Thread.currentThread().setName("x2vc-main");
 		final Config config = ConfigFactory.load();
 		config.checkValid(ConfigFactory.defaultReference());
 		final int exitCode = new CommandLine(Checker.class, new CheckerFactory(config))
