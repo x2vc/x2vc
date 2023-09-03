@@ -3,6 +3,7 @@ package org.x2vc.analysis.rules;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -12,12 +13,16 @@ import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.x2vc.analysis.results.IVulnerabilityCandidate;
+import org.x2vc.analysis.results.IVulnerabilityReportSection;
 import org.x2vc.xml.document.IDocumentModifier;
 import org.x2vc.xml.document.IXMLDocumentContainer;
 
 import com.google.common.collect.ImmutableSet;
 
+@ExtendWith(MockitoExtension.class)
 class AbstractRuleTest {
 
 	private AbstractRule rule = new AbstractRule() {
@@ -39,6 +44,11 @@ class AbstractRuleTest {
 		@Override
 		public void verifyNode(UUID taskID, Node node, IXMLDocumentContainer container,
 				Consumer<IVulnerabilityCandidate> collector) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public List<IVulnerabilityReportSection> consolidateResults(Set<IVulnerabilityCandidate> candidates) {
 			throw new UnsupportedOperationException();
 		}
 	};

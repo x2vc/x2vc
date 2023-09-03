@@ -56,7 +56,8 @@ public class ReportGeneratorTask implements IReportGeneratorTask {
 				.get(stylesheetURI);
 			logger.info("Consolidating {} vulnerability candidates for stylesheet {}", vulnerabilityCandidates.size(),
 					this.xsltFile);
-			final IVulnerabilityReport report = this.analyzer.consolidateResults(vulnerabilityCandidates);
+			final IVulnerabilityReport report = this.analyzer.consolidateResults(stylesheetURI,
+					vulnerabilityCandidates);
 			final Object basename = Files.getNameWithoutExtension(this.xsltFile.getName());
 			final File outputFile = new File(this.xsltFile.getParentFile(),
 					String.format("%s_x2vc_report.html", basename));

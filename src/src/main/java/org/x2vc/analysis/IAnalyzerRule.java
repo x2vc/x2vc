@@ -1,11 +1,13 @@
 package org.x2vc.analysis;
 
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 
 import org.jsoup.nodes.Node;
 import org.x2vc.analysis.results.IVulnerabilityCandidate;
+import org.x2vc.analysis.results.IVulnerabilityReportSection;
 import org.x2vc.analysis.rules.AbstractAttributeRule;
 import org.x2vc.analysis.rules.AbstractElementRule;
 import org.x2vc.analysis.rules.AbstractTextRule;
@@ -61,5 +63,16 @@ public interface IAnalyzerRule {
 	 */
 	void verifyNode(UUID taskID, Node node, IXMLDocumentContainer xmlContainer,
 			Consumer<IVulnerabilityCandidate> collector);
+
+	/**
+	 * Combines the {@link IVulnerabilityCandidate}s generated using
+	 * {@link #verifyNode(UUID, Node, IXMLDocumentContainer, Consumer)} and produces
+	 * one or more report sections. Note that the input set may be empty, in which
+	 * case a "no findings" section is supposed to be generated.
+	 *
+	 * @param candidates
+	 * @return the sections to add to the report
+	 */
+	List<IVulnerabilityReportSection> consolidateResults(Set<IVulnerabilityCandidate> candidates);
 
 }

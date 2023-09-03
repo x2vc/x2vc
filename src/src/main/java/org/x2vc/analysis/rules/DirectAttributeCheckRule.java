@@ -150,6 +150,7 @@ public class DirectAttributeCheckRule extends AbstractAttributeRule {
 				logger.debug("attribute \"{}\" not found, follow-up check negative", attributeName);
 			} else {
 				logger.debug("attribute \"{}\" injected from input data, follow-up check positive", attributeName);
+				// TODO Report Output: provide input sample
 				collector.accept(new VulnerabilityCandidate(RULE_ID, payload.getCheckID(), taskID,
 						payload.getSchemaElementID(), payload.getElementSelector(), MISSING_INPUT_SAMPLE,
 						node.toString()));

@@ -1,5 +1,6 @@
 package org.x2vc.analysis;
 
+import java.net.URI;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -49,11 +50,14 @@ public interface IDocumentAnalyzer {
 	/**
 	 * Combines the {@link IVulnerabilityCandidate}s generated using
 	 * {@link IDocumentAnalyzer#analyzeDocument(UUID, IHTMLDocumentContainer, Consumer, Consumer)}
-	 * and produces a report document
+	 * and produces a report document. Note that the input set may be empty, in
+	 * which case a report consisting of "no findings" sections is supposed to be
+	 * generated.
 	 *
+	 * @param stylesheetURI
 	 * @param candidates
 	 * @return a consolidated vulnerability report
 	 */
-	IVulnerabilityReport consolidateResults(Set<IVulnerabilityCandidate> candidates);
+	IVulnerabilityReport consolidateResults(URI stylesheetURI, Set<IVulnerabilityCandidate> candidates);
 
 }

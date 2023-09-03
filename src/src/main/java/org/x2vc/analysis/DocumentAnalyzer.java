@@ -2,6 +2,7 @@ package org.x2vc.analysis;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -16,11 +17,15 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.x2vc.analysis.results.IVulnerabilityCandidate;
 import org.x2vc.analysis.results.IVulnerabilityReport;
+import org.x2vc.analysis.results.VulnerabilityReport;
+import org.x2vc.analysis.results.VulnerabilityReport.Builder;
 import org.x2vc.processor.IHTMLDocumentContainer;
 import org.x2vc.xml.document.IDocumentModifier;
 import org.x2vc.xml.document.IXMLDocumentContainer;
 
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.MultimapBuilder;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -137,6 +142,17 @@ public class DocumentAnalyzer implements IDocumentAnalyzer {
 		final Optional<String> analyzerRuleID = modifier.getAnalyzerRuleID();
 		checkArgument(analyzerRuleID.isPresent());
 		final String ruleID = analyzerRuleID.get();
+		return logger.traceExit(filterRuleByID(ruleID));
+	}
+
+	/**
+	 * @param ruleID
+	 * @return
+	 * @throws IllegalArgumentException
+	 */
+	private IAnalyzerRule filterRuleByID(String ruleID) throws IllegalArgumentException {
+		logger.traceEntry();
+		// TODO Document Analyzer: move to map of rules
 		final List<IAnalyzerRule> filteredRules = this.rules.stream().filter(r -> r.getRuleID().equals(ruleID))
 			.toList();
 		if (filteredRules.isEmpty()) {
@@ -150,9 +166,23 @@ public class DocumentAnalyzer implements IDocumentAnalyzer {
 	}
 
 	@Override
-	public IVulnerabilityReport consolidateResults(Set<IVulnerabilityCandidate> candidates) {
-		// TODO Auto-generated method stub
-		return null;
+	public IVulnerabilityReport consolidateResults(URI stylesheetURI, Set<IVulnerabilityCandidate> candidates) {
+
+		// sort the candidates by rule ID
+		final Multimap<String, IVulnerabilityCandidate> candidatesByRuleID = MultimapBuilder.hashKeys()
+			.arrayListValues().build();
+		candidates.forEach(c -> candidatesByRuleID.put(c.getAnalyzerRuleID(), c));
+
+		// start building report
+		final Builder builder = VulnerabilityReport.builder(stylesheetURI);
+
+		// process all rules, whether we have vulnerability candidates or not
+		for (final String ruleID : getRuleIDs()) {
+			final IAnalyzerRule rule = filterRuleByID(ruleID);
+			builder.addSections(rule.consolidateResults(Set.copyOf(candidatesByRuleID.get(ruleID))));
+		}
+
+		return builder.build();
 	}
 
 }
