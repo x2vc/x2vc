@@ -17,11 +17,6 @@ public interface IDirectAttributeCheckPayload extends IModifierPayload {
 	String getCheckID();
 
 	/**
-	 * @return the injectedValue
-	 */
-	String getInjectedValue();
-
-	/**
 	 * @return the injectedAttribute
 	 */
 	String getInjectedAttribute();

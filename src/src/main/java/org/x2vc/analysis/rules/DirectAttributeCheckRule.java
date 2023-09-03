@@ -41,10 +41,6 @@ public class DirectAttributeCheckRule extends AbstractAttributeRule {
 	static final String MISSING_INPUT_SAMPLE = "<MISSING>";
 	static final String CHECK_ID_ATTRIB_STYLE = "A.CSS";
 	static final String CHECK_ID_ATTRIB_ONERROR = "A.JSH";
-	static final String CHECK_ID_BS_STYLE = "BS.CSS";
-	static final String CHECK_ID_BS_ONERROR = "BS.JSH";
-	static final String CHECK_ID_QUOT_STYLE = "Q.CSS";
-	static final String CHECK_ID_QUOT_ONERROR = "Q.JSH";
 
 	private static final Logger logger = LogManager.getLogger();
 
@@ -101,27 +97,6 @@ public class DirectAttributeCheckRule extends AbstractAttributeRule {
 						new DirectAttributeCheckPayload(CHECK_ID_ATTRIB_ONERROR, valueDescriptor.getSchemaElementID(),
 								elementPath, "onerror"),
 						collector);
-
-				// try to introduce new attribute by breaking the encoding
-				requestModification(schema, valueDescriptor, currentValue, "=\"\" style=\"test\" rest",
-						new DirectAttributeCheckPayload(CHECK_ID_BS_STYLE, valueDescriptor.getSchemaElementID(),
-								elementPath, "style", "test"),
-						collector);
-				requestModification(schema, valueDescriptor, currentValue, "=\"\" onerror=\"test\" rest",
-						new DirectAttributeCheckPayload(CHECK_ID_BS_ONERROR, valueDescriptor.getSchemaElementID(),
-								elementPath, "onerror", "test"),
-						collector);
-				requestModification(schema, valueDescriptor, currentValue, "=&quot;&quot; style=&quot;foo&quot; rest",
-						new DirectAttributeCheckPayload(CHECK_ID_QUOT_STYLE, valueDescriptor.getSchemaElementID(),
-								elementPath, "style", "foo"),
-						collector);
-				requestModification(schema, valueDescriptor, currentValue, "=&quot;&quot; onerror=&quot;foo&quot; rest",
-						new DirectAttributeCheckPayload(CHECK_ID_QUOT_ONERROR, valueDescriptor.getSchemaElementID(),
-								elementPath, "onerror", "foo"),
-						collector);
-
-				// TODO XSS Rule A.1: test for additional vectors with partial matches
-
 			}
 		}
 		logger.traceExit();
@@ -170,31 +145,14 @@ public class DirectAttributeCheckRule extends AbstractAttributeRule {
 				IDirectAttributeCheckPayload.class);
 		if (node instanceof final Element element) {
 			final String attributeName = payload.getInjectedAttribute();
-			final String injectedValue = payload.getInjectedValue();
 			final String actualValue = element.attr(attributeName);
 			if (Strings.isNullOrEmpty(actualValue)) {
 				logger.debug("attribute \"{}\" not found, follow-up check negative", attributeName);
 			} else {
-				if (injectedValue == null) {
-					// we only tried to inject a new attribute, regardless of the contents -
-					// success, apparently
-					logger.debug("attribute \"{}\" injected from input data, follow-up check positive", attributeName);
-					collector.accept(new VulnerabilityCandidate(RULE_ID, payload.getCheckID(), taskID,
-							payload.getSchemaElementID(), payload.getElementSelector(), MISSING_INPUT_SAMPLE,
-							node.toString()));
-					// TODO XSS Vulnerability: include the input sample in the candidate object
-				} else if (actualValue.equalsIgnoreCase(injectedValue)) {
-					logger.debug("attribute \"{}\" contains injected value \"{}\", follow-up check positive",
-							attributeName, injectedValue);
-					collector.accept(new VulnerabilityCandidate(RULE_ID, payload.getCheckID(), taskID,
-							payload.getSchemaElementID(), payload.getElementSelector(), MISSING_INPUT_SAMPLE,
-							node.toString()));
-					// TODO XSS Vulnerability: include the input sample in the candidate object
-				} else {
-					logger.debug(
-							"attribute \"{}\" with value \"{}\" does not contain injected value \"{}\", follow-up check negative",
-							attributeName, actualValue, injectedValue);
-				}
+				logger.debug("attribute \"{}\" injected from input data, follow-up check positive", attributeName);
+				collector.accept(new VulnerabilityCandidate(RULE_ID, payload.getCheckID(), taskID,
+						payload.getSchemaElementID(), payload.getElementSelector(), MISSING_INPUT_SAMPLE,
+						node.toString()));
 			}
 		} else {
 			logger.warn("follow-up check called for non-element node");

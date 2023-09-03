@@ -203,11 +203,9 @@ class DirectAttributeCheckRuleTest {
 	 * {@link org.x2vc.analysis.rules.DirectAttributeCheckRule#verifyNode(org.jsoup.nodes.Node, org.x2vc.xml.document.IXMLDocumentContainer, java.util.function.Consumer)}.
 	 */
 	@ParameterizedTest
-	@CsvSource({ "<p qwertzui=\"foobar\">test</p>, /p, qwertzui, foobar, 1",
-			"<p qwertzui=\"foobar\">test</p>, /p, qwertzui, boofar, 0",
-			"<p qwertzui=\"foobar\">test</p>, /p, asdfasdf, foobar, 0",
-			"<p qwertzui=\"foobar\">test</p>, /p, qwertzui, , 1" })
-	void testVerifyNode(String html, String elementSelector, String injectedAttribute, String injectedValue,
+	@CsvSource({ "<p qwertzui=\"foobar\">test</p>, /p, qwertzui, 1",
+			"<p qwertzui=\"foobar\">test</p>, /p, asdfasdf, 0" })
+	void testVerifyNode(String html, String elementSelector, String injectedAttribute,
 			int expectedVulnerabilityCount) {
 		final UUID taskID = UUID.randomUUID();
 		final UUID schemaElementID = UUID.randomUUID();
@@ -216,7 +214,6 @@ class DirectAttributeCheckRuleTest {
 		when(this.documentDescriptor.getModifier()).thenReturn(Optional.of(this.modifier));
 		lenient().when(this.payload.getElementSelector()).thenReturn(elementSelector);
 		when(this.payload.getInjectedAttribute()).thenReturn(injectedAttribute);
-		when(this.payload.getInjectedValue()).thenReturn(injectedValue);
 		lenient().when(this.payload.getSchemaElementID()).thenReturn(schemaElementID);
 		when(this.modifier.getPayload()).thenReturn(Optional.of(this.payload));
 

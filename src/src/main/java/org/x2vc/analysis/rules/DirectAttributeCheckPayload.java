@@ -13,24 +13,6 @@ class DirectAttributeCheckPayload implements IDirectAttributeCheckPayload {
 	private UUID schemaElementID;
 	private String elementSelector;
 	private String injectedAttribute;
-	private String injectedValue;
-
-	/**
-	 * @param checkID
-	 * @param schemaElementID
-	 * @param elementSelector
-	 * @param injectedAttribute
-	 * @param injectedValue
-	 */
-	public DirectAttributeCheckPayload(String checkID, UUID schemaElementID, String elementSelector,
-			String injectedAttribute, String injectedValue) {
-		super();
-		this.checkID = checkID;
-		this.schemaElementID = schemaElementID;
-		this.elementSelector = elementSelector;
-		this.injectedAttribute = injectedAttribute;
-		this.injectedValue = injectedValue;
-	}
 
 	/**
 	 * @param checkID
@@ -65,11 +47,6 @@ class DirectAttributeCheckPayload implements IDirectAttributeCheckPayload {
 	@Override
 	public String getInjectedAttribute() {
 		return this.injectedAttribute;
-	}
-
-	@Override
-	public String getInjectedValue() {
-		return this.injectedValue;
 	}
 
 }
