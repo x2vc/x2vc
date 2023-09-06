@@ -26,7 +26,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.x2vc.analysis.results.IVulnerabilityCandidate;
+import org.x2vc.report.IVulnerabilityCandidate;
 import org.x2vc.schema.ISchemaManager;
 import org.x2vc.schema.structure.IXMLAttribute;
 import org.x2vc.schema.structure.IXMLSchema;

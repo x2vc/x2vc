@@ -1,4 +1,4 @@
-package org.x2vc.analysis.results;
+package org.x2vc.report;
 
 import java.io.File;
 import java.io.IOException;

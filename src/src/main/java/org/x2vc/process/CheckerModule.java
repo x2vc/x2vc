@@ -3,16 +3,16 @@ package org.x2vc.process;
 import org.x2vc.analysis.DocumentAnalyzer;
 import org.x2vc.analysis.IAnalyzerRule;
 import org.x2vc.analysis.IDocumentAnalyzer;
-import org.x2vc.analysis.results.IReportWriter;
-import org.x2vc.analysis.results.IVulnerabilityCandidateCollector;
-import org.x2vc.analysis.results.ReportWriter;
-import org.x2vc.analysis.results.VulnerabilityCandidateCollector;
 import org.x2vc.analysis.rules.DirectAttributeCheckRule;
 import org.x2vc.process.tasks.*;
 import org.x2vc.processor.HTMLDocumentFactory;
 import org.x2vc.processor.IHTMLDocumentFactory;
 import org.x2vc.processor.IXSLTProcessor;
 import org.x2vc.processor.XSLTProcessor;
+import org.x2vc.report.IReportWriter;
+import org.x2vc.report.IVulnerabilityCandidateCollector;
+import org.x2vc.report.ReportWriter;
+import org.x2vc.report.VulnerabilityCandidateCollector;
 import org.x2vc.schema.IInitialSchemaGenerator;
 import org.x2vc.schema.ISchemaManager;
 import org.x2vc.schema.InitialSchemaGenerator;
@@ -53,10 +53,6 @@ public class CheckerModule extends AbstractModule {
 		// analysis
 		bind(IDocumentAnalyzer.class).to(DocumentAnalyzer.class);
 
-		// analysis results
-		bind(IVulnerabilityCandidateCollector.class).to(VulnerabilityCandidateCollector.class);
-		bind(IReportWriter.class).to(ReportWriter.class);
-
 		// analysis rules: use a multibinder for the analyzer rules (plugin-like
 		// structure)
 		final Multibinder<IAnalyzerRule> ruleBinder = Multibinder.newSetBinder(binder(), IAnalyzerRule.class);
@@ -79,6 +75,10 @@ public class CheckerModule extends AbstractModule {
 		// processor
 		bind(IHTMLDocumentFactory.class).to(HTMLDocumentFactory.class);
 		bind(IXSLTProcessor.class).to(XSLTProcessor.class);
+
+		// report
+		bind(IVulnerabilityCandidateCollector.class).to(VulnerabilityCandidateCollector.class);
+		bind(IReportWriter.class).to(ReportWriter.class);
 
 		// schema
 		bind(ISchemaManager.class).to(SchemaManager.class);

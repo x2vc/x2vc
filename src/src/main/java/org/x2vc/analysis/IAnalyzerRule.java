@@ -6,11 +6,11 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 import org.jsoup.nodes.Node;
-import org.x2vc.analysis.results.IVulnerabilityCandidate;
-import org.x2vc.analysis.results.IVulnerabilityReportSection;
 import org.x2vc.analysis.rules.AbstractAttributeRule;
 import org.x2vc.analysis.rules.AbstractElementRule;
 import org.x2vc.analysis.rules.AbstractTextRule;
+import org.x2vc.report.IVulnerabilityCandidate;
+import org.x2vc.report.IVulnerabilityReportSection;
 import org.x2vc.xml.document.IDocumentModifier;
 import org.x2vc.xml.document.IXMLDocumentContainer;
 

@@ -15,8 +15,8 @@ import org.jsoup.select.Elements;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.x2vc.analysis.results.IVulnerabilityCandidate;
-import org.x2vc.analysis.results.IVulnerabilityReportSection;
+import org.x2vc.report.IVulnerabilityCandidate;
+import org.x2vc.report.IVulnerabilityReportSection;
 import org.x2vc.xml.document.IDocumentModifier;
 import org.x2vc.xml.document.IXMLDocumentContainer;
 

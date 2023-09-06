@@ -10,7 +10,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.x2vc.analysis.IAnalyzerRule;
-import org.x2vc.analysis.results.*;
+import org.x2vc.report.*;
 import org.x2vc.xml.document.IDocumentModifier;
 import org.x2vc.xml.document.IModifierPayload;
 import org.x2vc.xml.document.IXMLDocumentContainer;

@@ -15,11 +15,11 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.x2vc.analysis.results.IVulnerabilityCandidate;
-import org.x2vc.analysis.results.IVulnerabilityReport;
-import org.x2vc.analysis.results.VulnerabilityReport;
-import org.x2vc.analysis.results.VulnerabilityReport.Builder;
 import org.x2vc.processor.IHTMLDocumentContainer;
+import org.x2vc.report.IVulnerabilityCandidate;
+import org.x2vc.report.IVulnerabilityReport;
+import org.x2vc.report.VulnerabilityReport;
+import org.x2vc.report.VulnerabilityReport.Builder;
 import org.x2vc.xml.document.IDocumentModifier;
 import org.x2vc.xml.document.IXMLDocumentContainer;
 

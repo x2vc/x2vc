@@ -7,10 +7,10 @@ import java.util.UUID;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.x2vc.analysis.IDocumentAnalyzer;
-import org.x2vc.analysis.results.IReportWriter;
-import org.x2vc.analysis.results.IVulnerabilityCandidate;
-import org.x2vc.analysis.results.IVulnerabilityCandidateCollector;
-import org.x2vc.analysis.results.IVulnerabilityReport;
+import org.x2vc.report.IReportWriter;
+import org.x2vc.report.IVulnerabilityCandidate;
+import org.x2vc.report.IVulnerabilityCandidateCollector;
+import org.x2vc.report.IVulnerabilityReport;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.io.Files;
