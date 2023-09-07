@@ -152,26 +152,15 @@ public class SchemaManager implements ISchemaManager {
 
 	class SchemaCacheLoader extends CacheLoader<URI, IXMLSchema> {
 
-		private JAXBContext context;
-		private Unmarshaller unmarshaller;
-
-		/**
-		 * @throws RuntimeException
-		 */
-		private void initializeJAXB() throws RuntimeException {
+		@SuppressWarnings("java:S4738") // Java supplier does not support memoization
+		Supplier<JAXBContext> contextSupplier = Suppliers.memoize(() -> {
 			logger.traceEntry();
 			try {
-				if (this.context == null) {
-					this.context = JAXBContext.newInstance(XMLSchema.class);
-				}
-				if (this.unmarshaller == null) {
-					this.unmarshaller = this.context.createUnmarshaller();
-				}
+				return logger.traceExit(JAXBContext.newInstance(XMLSchema.class));
 			} catch (final JAXBException e) {
 				throw logger.throwing(new RuntimeException("Unable to initialize JAXB for schema handling", e));
 			}
-			logger.traceExit();
-		}
+		});
 
 		@Override
 		public IXMLSchema load(URI schemaURI) throws Exception {
@@ -243,7 +232,6 @@ public class SchemaManager implements ISchemaManager {
 		 */
 		private Optional<IXMLSchema> loadSchemaIfExists(URI schemaURI, URI stylesheetURI) {
 			logger.traceEntry();
-			initializeJAXB();
 			final File stylesheetFile = new File(stylesheetURI);
 			final String schemaFilename = stylesheetFile.getParent() + File.separator
 					+ Files.getNameWithoutExtension(stylesheetFile.getName()) + ".x2vc_schema";
@@ -254,8 +242,8 @@ public class SchemaManager implements ISchemaManager {
 				XMLSchema schema = null;
 				logger.debug("schema file {} found, will attempt to load", schemaFilename);
 				try {
-					schema = (XMLSchema) this.unmarshaller
-						.unmarshal(Files.newReader(schemaFile, StandardCharsets.UTF_8));
+					final Unmarshaller unmarshaller = this.contextSupplier.get().createUnmarshaller();
+					schema = (XMLSchema) unmarshaller.unmarshal(Files.newReader(schemaFile, StandardCharsets.UTF_8));
 					schema.setURI(schemaURI);
 					schema.setStylesheetURI(stylesheetURI);
 				} catch (FileNotFoundException | JAXBException e) {
