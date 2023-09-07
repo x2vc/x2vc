@@ -11,6 +11,7 @@ import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.x2vc.analysis.IAnalyzerRule;
 import org.x2vc.report.*;
+import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.xml.document.IDocumentModifier;
 import org.x2vc.xml.document.IModifierPayload;
 import org.x2vc.xml.document.IXMLDocumentContainer;
@@ -81,7 +82,8 @@ public abstract class AbstractRule implements IAnalyzerRule {
 	}
 
 	@Override
-	public List<IVulnerabilityReportSection> consolidateResults(Set<IVulnerabilityCandidate> candidates) {
+	public List<IVulnerabilityReportSection> consolidateResults(IXMLSchema schema,
+			Set<IVulnerabilityCandidate> candidates) {
 		logger.traceEntry();
 
 		// TODO Report Output: add missing unit tests for this
@@ -100,7 +102,7 @@ public abstract class AbstractRule implements IAnalyzerRule {
 				// create empty placeholder section
 				sectionBuilder.withIntroduction(getReportPlaceholderIntroduction(sectionID));
 			} else {
-				final List<IVulnerabilityReportIssue> issues = createReportIssues(sectionCandidates);
+				final List<IVulnerabilityReportIssue> issues = createReportIssues(schema, sectionCandidates);
 				sectionBuilder
 					.withIntroduction(getReportIntroduction(sectionID))
 					.withDescription(getReportDescription(sectionID))
@@ -209,7 +211,7 @@ public abstract class AbstractRule implements IAnalyzerRule {
 	 * @param sectionCandidates
 	 * @return the issues to be reported from the candidates
 	 */
-	protected List<IVulnerabilityReportIssue> createReportIssues(
+	protected List<IVulnerabilityReportIssue> createReportIssues(IXMLSchema schema,
 			Collection<IVulnerabilityCandidate> sectionCandidates) {
 
 		final Table<String, UUID, IVulnerabilityCandidate> selectedCandidates = HashBasedTable.create();
@@ -219,8 +221,7 @@ public abstract class AbstractRule implements IAnalyzerRule {
 		selectedCandidates.cellSet().forEach(cell -> result.add(VulnerabilityReportIssue
 			.builder()
 			.withAffectedOutputElement(cell.getRowKey())
-			// TODO Report Output: map schema object to human-readable text
-			.addAffectingInputElement(cell.getColumnKey().toString())
+			.addAffectingInputElements(schema.getObjectPaths(cell.getColumnKey()))
 			.addExample(cell.getValue().getInputSample(), cell.getValue().getOutputSample())
 			.build()));
 		return result;

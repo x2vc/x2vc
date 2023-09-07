@@ -58,4 +58,11 @@ public interface IXMLSchema extends Serializable {
 	 */
 	IXMLSchemaObject getObjectByID(UUID id) throws IllegalArgumentException;
 
+	/**
+	 * @param id the ID of a schema object
+	 * @return a set of all the paths the object can appear in a document
+	 * @throws IllegalArgumentException if the object is not part of the schema
+	 */
+	Set<String> getObjectPaths(UUID id) throws IllegalArgumentException;
+
 }

@@ -24,6 +24,8 @@ import org.x2vc.processor.IHTMLDocumentContainer;
 import org.x2vc.report.IVulnerabilityCandidate;
 import org.x2vc.report.IVulnerabilityReport;
 import org.x2vc.report.IVulnerabilityReportSection;
+import org.x2vc.schema.ISchemaManager;
+import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.utilities.URIHandling;
 import org.x2vc.utilities.URIHandling.ObjectType;
 import org.x2vc.xml.document.IDocumentModifier;
@@ -56,6 +58,9 @@ class DocumentAnalyzerTest {
 	@Mock
 	private IDocumentModifier modifier;
 
+	@Mock
+	private ISchemaManager schemaManager;
+
 	private UUID taskID;
 
 	private URI stylesheetURI;
@@ -78,7 +83,7 @@ class DocumentAnalyzerTest {
 	 */
 	@Test
 	void testFirstPass() {
-		final DocumentAnalyzer analyzer = new DocumentAnalyzer(Sets.newSet(this.rule));
+		final DocumentAnalyzer analyzer = new DocumentAnalyzer(Sets.newSet(this.rule), this.schemaManager);
 
 		when(this.container.getDocument()).thenReturn(Optional.of(
 				"""
@@ -123,7 +128,7 @@ class DocumentAnalyzerTest {
 	 */
 	@Test
 	void testFollowUpPassWithoutFilter() {
-		final DocumentAnalyzer analyzer = new DocumentAnalyzer(Sets.newSet(this.rule));
+		final DocumentAnalyzer analyzer = new DocumentAnalyzer(Sets.newSet(this.rule), this.schemaManager);
 
 		when(this.container.getDocument()).thenReturn(Optional.of(
 				"""
@@ -176,7 +181,7 @@ class DocumentAnalyzerTest {
 	 */
 	@Test
 	void testFollowUpPassWithUnknownRuleID() {
-		final DocumentAnalyzer analyzer = new DocumentAnalyzer(Sets.newSet(this.rule));
+		final DocumentAnalyzer analyzer = new DocumentAnalyzer(Sets.newSet(this.rule), this.schemaManager);
 
 		// connect rule and modifier
 		when(this.source.getDocumentDescriptor().getModifier()).thenReturn(Optional.of(this.modifier));
@@ -200,7 +205,7 @@ class DocumentAnalyzerTest {
 		final IAnalyzerRule rule2 = mock(IAnalyzerRule.class);
 		when(rule1.getRuleID()).thenReturn("FOO-RULE");
 		when(rule2.getRuleID()).thenReturn("FOO-RULE"); // must trigger an exception because rule IDs have to be unique
-		final DocumentAnalyzer analyzer = new DocumentAnalyzer(Sets.newSet(rule1, rule2));
+		final DocumentAnalyzer analyzer = new DocumentAnalyzer(Sets.newSet(rule1, rule2), this.schemaManager);
 
 		assertThrows(IllegalArgumentException.class, () -> analyzer.analyzeDocument(this.taskID, this.container,
 				this.modifierCollector, this.vulnerabilityCollector));
@@ -211,7 +216,7 @@ class DocumentAnalyzerTest {
 	 */
 	@Test
 	void testFollowUpPassWithFilter() {
-		final DocumentAnalyzer analyzer = new DocumentAnalyzer(Sets.newSet(this.rule));
+		final DocumentAnalyzer analyzer = new DocumentAnalyzer(Sets.newSet(this.rule), this.schemaManager);
 
 		when(this.container.getDocument()).thenReturn(Optional.of(
 				"""
@@ -269,6 +274,10 @@ class DocumentAnalyzerTest {
 	 */
 	@Test
 	void testConsolidate() {
+
+		final IXMLSchema schema = mock(IXMLSchema.class);
+		when(this.schemaManager.getSchema(this.stylesheetURI)).thenReturn(schema);
+
 		final IAnalyzerRule rule1 = mock(IAnalyzerRule.class);
 		when(rule1.getRuleID()).thenReturn("RULE-1");
 
@@ -294,19 +303,19 @@ class DocumentAnalyzerTest {
 		final IVulnerabilityReportSection section1b = mock(IVulnerabilityReportSection.class);
 		final IVulnerabilityReportSection section1c = mock(IVulnerabilityReportSection.class);
 		final List<IVulnerabilityReportSection> sections1 = List.of(section1a, section1b, section1c);
-		when(rule1.consolidateResults(Set.of(candidate1a, candidate1b))).thenReturn(sections1);
+		when(rule1.consolidateResults(schema, Set.of(candidate1a, candidate1b))).thenReturn(sections1);
 
 		final IVulnerabilityReportSection section2a = mock(IVulnerabilityReportSection.class);
 		final List<IVulnerabilityReportSection> sections2 = List.of(section2a);
-		when(rule2.consolidateResults(Set.of(candidate2a, candidate2b))).thenReturn(sections2);
+		when(rule2.consolidateResults(schema, Set.of(candidate2a, candidate2b))).thenReturn(sections2);
 
 		final IVulnerabilityReportSection section3a = mock(IVulnerabilityReportSection.class);
 		final List<IVulnerabilityReportSection> sections3 = List.of(section3a);
-		when(rule3.consolidateResults(Set.of())).thenReturn(sections3);
+		when(rule3.consolidateResults(schema, Set.of())).thenReturn(sections3);
 
 		final Set<IVulnerabilityCandidate> candidates = Set.of(candidate1a, candidate1b, candidate2a, candidate2b);
 
-		final DocumentAnalyzer analyzer = new DocumentAnalyzer(Sets.newSet(rule1, rule2, rule3));
+		final DocumentAnalyzer analyzer = new DocumentAnalyzer(Sets.newSet(rule1, rule2, rule3), this.schemaManager);
 
 		final IVulnerabilityReport report = analyzer.consolidateResults(this.stylesheetURI, candidates);
 

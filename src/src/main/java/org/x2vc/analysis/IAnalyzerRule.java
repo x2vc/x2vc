@@ -11,6 +11,7 @@ import org.x2vc.analysis.rules.AbstractElementRule;
 import org.x2vc.analysis.rules.AbstractTextRule;
 import org.x2vc.report.IVulnerabilityCandidate;
 import org.x2vc.report.IVulnerabilityReportSection;
+import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.xml.document.IDocumentModifier;
 import org.x2vc.xml.document.IXMLDocumentContainer;
 
@@ -70,9 +71,11 @@ public interface IAnalyzerRule {
 	 * one or more report sections. Note that the input set may be empty, in which
 	 * case a "no findings" section is supposed to be generated.
 	 *
+	 * @param schema
+	 *
 	 * @param candidates
 	 * @return the sections to add to the report
 	 */
-	List<IVulnerabilityReportSection> consolidateResults(Set<IVulnerabilityCandidate> candidates);
+	List<IVulnerabilityReportSection> consolidateResults(IXMLSchema schema, Set<IVulnerabilityCandidate> candidates);
 
 }

@@ -17,6 +17,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.x2vc.report.IVulnerabilityCandidate;
 import org.x2vc.report.IVulnerabilityReportSection;
+import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.xml.document.IDocumentModifier;
 import org.x2vc.xml.document.IXMLDocumentContainer;
 
@@ -48,7 +49,8 @@ class AbstractRuleTest {
 		}
 
 		@Override
-		public List<IVulnerabilityReportSection> consolidateResults(Set<IVulnerabilityCandidate> candidates) {
+		public List<IVulnerabilityReportSection> consolidateResults(IXMLSchema schema,
+				Set<IVulnerabilityCandidate> candidates) {
 			throw new UnsupportedOperationException();
 		}
 	};

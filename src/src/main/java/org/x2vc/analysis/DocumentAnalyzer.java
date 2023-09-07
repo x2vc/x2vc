@@ -20,6 +20,8 @@ import org.x2vc.report.IVulnerabilityCandidate;
 import org.x2vc.report.IVulnerabilityReport;
 import org.x2vc.report.VulnerabilityReport;
 import org.x2vc.report.VulnerabilityReport.Builder;
+import org.x2vc.schema.ISchemaManager;
+import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.xml.document.IDocumentModifier;
 import org.x2vc.xml.document.IXMLDocumentContainer;
 
@@ -37,15 +39,18 @@ public class DocumentAnalyzer implements IDocumentAnalyzer {
 
 	private static final Logger logger = LogManager.getLogger();
 	private Set<IAnalyzerRule> rules;
+	private ISchemaManager schemaManager;
 
 	/**
 	 * Creates a new analyzer instance using the rules provided.
 	 *
 	 * @param rules
+	 * @param schemaManager
 	 */
 	@Inject
-	public DocumentAnalyzer(Set<IAnalyzerRule> rules) {
+	public DocumentAnalyzer(Set<IAnalyzerRule> rules, ISchemaManager schemaManager) {
 		this.rules = rules;
+		this.schemaManager = schemaManager;
 		logger.info("Analyzer initialized using a set of {} rules", this.rules.size());
 	}
 
@@ -168,6 +173,9 @@ public class DocumentAnalyzer implements IDocumentAnalyzer {
 	@Override
 	public IVulnerabilityReport consolidateResults(URI stylesheetURI, Set<IVulnerabilityCandidate> candidates) {
 
+		// obtain the schema reference
+		final IXMLSchema schema = this.schemaManager.getSchema(stylesheetURI);
+
 		// sort the candidates by rule ID
 		final Multimap<String, IVulnerabilityCandidate> candidatesByRuleID = MultimapBuilder.hashKeys()
 			.arrayListValues().build();
@@ -179,7 +187,7 @@ public class DocumentAnalyzer implements IDocumentAnalyzer {
 		// process all rules, whether we have vulnerability candidates or not
 		for (final String ruleID : getRuleIDs()) {
 			final IAnalyzerRule rule = filterRuleByID(ruleID);
-			builder.addSections(rule.consolidateResults(Set.copyOf(candidatesByRuleID.get(ruleID))));
+			builder.addSections(rule.consolidateResults(schema, Set.copyOf(candidatesByRuleID.get(ruleID))));
 		}
 
 		return builder.build();

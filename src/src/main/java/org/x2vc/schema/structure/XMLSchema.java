@@ -13,6 +13,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.x2vc.schema.structure.IXMLElementType.ContentType;
 
+import com.google.common.base.Supplier;
+import com.google.common.base.Suppliers;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.MultimapBuilder;
 import com.google.common.collect.Sets;
 
 /**
@@ -110,7 +115,7 @@ public class XMLSchema implements IXMLSchema {
 			this.objectMap = buildObjectMap();
 		}
 		if (!this.objectMap.containsKey(id)) {
-			logger.throwing(
+			throw logger.throwing(
 					new IllegalArgumentException(String.format("No object with ID %s exists in this schema.", id)));
 		}
 		return this.objectMap.get(id);
@@ -209,6 +214,58 @@ public class XMLSchema implements IXMLSchema {
 				addToMap(reference, map);
 			}
 		}
+	}
+
+	@SuppressWarnings("java:S4738") // Java supplier does not support memoization
+	private transient Supplier<Multimap<UUID, String>> objectPathMapSupplier = Suppliers.memoize(() -> {
+		logger.traceEntry();
+		final Multimap<UUID, String> map = MultimapBuilder.hashKeys().arrayListValues().build();
+		this.rootElements.forEach(elem -> addToPathMap(map, elem, "/"));
+		return logger.traceExit(map);
+	});
+
+	@Override
+	public Set<String> getObjectPaths(UUID id) throws IllegalArgumentException {
+		final Multimap<UUID, String> objectPathMap = this.objectPathMapSupplier.get();
+		if (!objectPathMap.containsKey(id)) {
+			throw logger.throwing(
+					new IllegalArgumentException(String.format("No object with ID %s exists in this schema.", id)));
+		}
+		return ImmutableSet.copyOf(objectPathMap.get(id));
+	}
+
+	/**
+	 * @param map
+	 * @param elemRef
+	 * @param parentPath
+	 */
+	private void addToPathMap(Multimap<UUID, String> map, IXMLElementReference elemRef, String parentPath) {
+		final String path = String.format("%s%s", parentPath, elemRef.getName());
+		map.put(elemRef.getID(), path);
+		addToPathMap(map, elemRef.getElement(), path);
+	}
+
+	/**
+	 * @param map
+	 * @param elemt
+	 * @param parentPath
+	 */
+	private void addToPathMap(Multimap<UUID, String> map, IXMLElementType elem, String parentPath) {
+		map.put(elem.getID(), parentPath); // elements can only be addressed by their reference paths
+		final String path = String.format("%s/", parentPath);
+		elem.getAttributes().forEach(attrib -> addToPathMap(map, attrib, path));
+		if (elem.hasElementContent() || elem.hasMixedContent()) {
+			elem.getElements().forEach(elemRef -> addToPathMap(map, elemRef, path));
+		}
+	}
+
+	/**
+	 * @param map
+	 * @param attrib
+	 * @param parentPath
+	 */
+	private void addToPathMap(Multimap<UUID, String> map, IXMLAttribute attrib, String parentPath) {
+		map.put(attrib.getID(), String.format("%s@%s", parentPath, attrib.getName()));
 	}
 
 	/**
