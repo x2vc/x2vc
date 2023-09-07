@@ -105,12 +105,31 @@
 		<h3 id="{concat('i', (count(../../preceding-sibling::section) + 1), '-', (count(preceding-sibling::issue) + 1))}">
 			Issue <xsl:value-of select="count(preceding-sibling::issue) + 1" />
 		</h3>
-		<p>The value of the output element <code><xsl:value-of select="affectedOutputElement"/></code> can be manipulated through the following input elements:
-		<ul>
-			<xsl:apply-templates select="affectingInputElements/element" mode="content" />
-		</ul>
+		<p>
+			<xsl:choose>
+				<xsl:when test="count(affectingInputElements/element) = 1">
+					The value of the output element
+					<code>
+						<xsl:value-of select="affectedOutputElement" />
+					</code>
+					can be manipulated through the input element
+					<code>
+						<xsl:value-of select="affectingInputElements/element" />
+					</code>.
+				</xsl:when>
+				<xsl:otherwise>
+					The value of the output element
+					<code>
+						<xsl:value-of select="affectedOutputElement" />
+					</code>
+					can be manipulated through the following input elements:
+					<ul>
+						<xsl:apply-templates select="affectingInputElements/element" mode="content" />
+					</ul>
+				</xsl:otherwise>
+			</xsl:choose>
 		</p>
-			<xsl:apply-templates select="examples/example" mode="content" />
+		<xsl:apply-templates select="examples/example" mode="content" />
 	</xsl:template>
 
 	<xsl:template match="element" mode="content">
