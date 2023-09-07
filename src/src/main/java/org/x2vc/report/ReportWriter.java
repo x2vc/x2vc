@@ -1,8 +1,13 @@
 package org.x2vc.report;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -30,8 +35,9 @@ public class ReportWriter implements IReportWriter {
 	private static final Logger logger = LogManager.getLogger();
 
 	private Processor processor;
-
 	private boolean xmlOutputEnabled;
+
+	private Set<String> resourcesProvidedTo = new HashSet<>();
 
 	@Inject
 	ReportWriter(Processor processor,
@@ -64,31 +70,12 @@ public class ReportWriter implements IReportWriter {
 		}
 	});
 
-	/**
-	 * @return
-	 */
-	private Marshaller createMarshaller() {
-		logger.traceEntry();
-		try {
-			final Marshaller marshaller = this.contextSupplier.get().createMarshaller();
-			marshaller.setProperty(CharacterEscapeHandler.class.getName(), new CharacterEscapeHandler() {
-				@Override
-				public void escape(char[] ch, int start, int length, boolean isAttVal, Writer out) throws IOException {
-					out.write(ch, start, length);
-				}
-			});
-			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-			return logger.traceExit(marshaller);
-		} catch (final JAXBException e) {
-			throw logger.throwing(new RuntimeException("Unable to initialize report serializer", e));
-		}
-
-	}
-
 	@Override
 	public void write(IVulnerabilityReport report, File outputFile) {
 		logger.traceEntry();
 		try {
+			provideResources(outputFile.getAbsoluteFile().getParent());
+
 			final Marshaller marshaller = createMarshaller();
 			final StringWriter xmlWriter = new StringWriter();
 			marshaller.marshal(report, xmlWriter);
@@ -109,6 +96,66 @@ public class ReportWriter implements IReportWriter {
 	}
 
 	/**
+	 * Ensures that the resources that are included by the generated report are
+	 * present.
+	 *
+	 * @param targetPath
+	 */
+	private synchronized void provideResources(String targetPath) {
+		logger.traceEntry();
+		if (!this.resourcesProvidedTo.contains(targetPath)) {
+			try {
+				// get the list of resources to provide
+				final List<String> resourceNames = new BufferedReader(
+						new InputStreamReader(getClass().getClassLoader().getResourceAsStream("report/resources.txt"),
+								StandardCharsets.UTF_8))
+					.lines().toList();
+
+				final File resourcePath = new File(targetPath, ".x2vc");
+				for (final String resourceName : resourceNames) {
+					logger.debug("Providing resource file {}", resourceName);
+					final File targetFile = new File(resourcePath, resourceName);
+					// ensure parent directory exists
+					Files.createDirectories(targetFile.getParentFile().toPath());
+					// copy contents
+					Files.copy(
+							getClass().getClassLoader().getResourceAsStream(String.format("report/%s", resourceName)),
+							targetFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+				}
+				this.resourcesProvidedTo.add(targetPath);
+			} catch (final IOException e) {
+				logger.error("Unable to provide resource files for report", e);
+			}
+		}
+		logger.traceExit();
+	}
+
+	/**
+	 * Creates and configures a JAXB marshaller to generate report XML.
+	 *
+	 * @return
+	 */
+	private Marshaller createMarshaller() {
+		logger.traceEntry();
+		try {
+			final Marshaller marshaller = this.contextSupplier.get().createMarshaller();
+			marshaller.setProperty(CharacterEscapeHandler.class.getName(), new CharacterEscapeHandler() {
+				@Override
+				public void escape(char[] ch, int start, int length, boolean isAttVal, Writer out) throws IOException {
+					out.write(ch, start, length);
+				}
+			});
+			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+			return logger.traceExit(marshaller);
+		} catch (final JAXBException e) {
+			throw logger.throwing(new RuntimeException("Unable to initialize report serializer", e));
+		}
+
+	}
+
+	/**
+	 * Dumps the raw report XML to an output file.
+	 *
 	 * @param xmlData
 	 * @param outputFile
 	 */
