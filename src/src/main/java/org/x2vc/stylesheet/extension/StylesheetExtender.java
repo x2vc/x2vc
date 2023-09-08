@@ -2,19 +2,9 @@ package org.x2vc.stylesheet.extension;
 
 import java.io.StringReader;
 import java.io.StringWriter;
-import java.util.ArrayList;
-import java.util.Deque;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
-import javax.xml.stream.XMLEventFactory;
-import javax.xml.stream.XMLEventReader;
-import javax.xml.stream.XMLEventWriter;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLOutputFactory;
-import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.*;
 import javax.xml.stream.events.Attribute;
 import javax.xml.stream.events.Namespace;
 import javax.xml.stream.events.StartElement;
@@ -26,6 +16,7 @@ import org.x2vc.stylesheet.ExtendedXSLTConstants;
 import org.x2vc.stylesheet.XSLTConstants;
 import org.x2vc.utilities.IPushbackXMLEventReader;
 import org.x2vc.utilities.PushbackXMLEventReader;
+import org.x2vc.utilities.XMLEventTypeFormatter;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
@@ -358,9 +349,11 @@ public class StylesheetExtender implements IStylesheetExtender {
 
 			// at this point, the next event could be...
 
-			// ...a non-whitespace text node or an end event of the containing element
+			// ...a non-whitespace text node, an end event of the containing element or a
+			// comment
 			// push back all events and write message immediately
-			if (nextEvent.isCharacters() || nextEvent.isEndElement()) {
+			if (nextEvent.isCharacters() || nextEvent.isEndElement()
+					|| nextEvent.getEventType() == XMLStreamConstants.COMMENT) {
 				storedEvents.forEach(e -> this.xmlReader.pushback(e));
 				writeElementMessageDirect(referredElement);
 			}
@@ -391,7 +384,9 @@ public class StylesheetExtender implements IStylesheetExtender {
 				}
 			} else {
 				// any other event - don't know what to do yet
-				Worker.logger.warn("Unclear whether to delay message output, check situation");
+				final String eventType = XMLEventTypeFormatter.toString(nextEvent.getEventType());
+				Worker.logger.warn("Unclear whether to delay message output with event type {}, check situation",
+						eventType);
 				// push back all events and write message immediately
 				storedEvents.forEach(e -> this.xmlReader.pushback(e));
 				writeElementMessageDirect(referredElement);
