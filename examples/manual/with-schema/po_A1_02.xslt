@@ -99,6 +99,7 @@
 				<th>Pos.</th>
 				<th>Part No.</th>
 				<th>Product</th>
+				<th>Image</th>
 				<th>Qty.</th>
 				<th>Price</th>
 				<th>Ship Date</th>
@@ -109,23 +110,31 @@
 	<xsl:template match="item">
 		<xsl:comment>item number
 			<xsl:value-of select="position()"/>:
-			<xsl:value-of select="productName"/>
+			<xsl:value-of select="product/productName"/>
 		</xsl:comment>
-		<!-- BAD EXAMPLE: this should trigger the DirectAttributeCheckRule because it allows for insertion of an arbitrary attribute -->
-		<xsl:element name="bad_example">
-			<xsl:attribute name="{translate(@partNum, ' ', '_')}">
-				<xsl:value-of select="productName"/>
-			</xsl:attribute>
-		</xsl:element>
 		<tr>
 			<td>
 				<xsl:value-of select="position()"/>
 			</td>
 			<td>
-				<xsl:value-of select="@partNum"/>
+				<xsl:value-of select="product/@partNum"/>
 			</td>
 			<td>
-				<xsl:value-of select="productName"/>
+				<xsl:value-of select="product/productName"/>
+			</td>
+			<td>
+				<xsl:if test="product/productImage">
+					<xsl:element name="img">
+						<xsl:attribute name="src">
+							<xsl:value-of select="product/productImage/url" />
+						</xsl:attribute>
+						<!-- BAD EXAMPLE: this should trigger Rule A.1 because it allows for
+						     insertion of an arbitrary attribute through a source element value -->
+						<xsl:attribute name="{product/productImage/textPlacement}">
+							<xsl:value-of select="product/productImage/text" />
+						</xsl:attribute>
+					</xsl:element>
+				</xsl:if>
 			</td>
 			<td>
 				<xsl:value-of select="quantity"/>

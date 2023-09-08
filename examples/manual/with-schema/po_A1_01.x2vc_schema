@@ -2,23 +2,35 @@
 <schema stylesheetURI="file://po.xslt" schemaURI="memory:schema/bar" version="1">
 	<elementTypes>
 		<elementType contentType="ELEMENT" elementArrangement="SEQUENCE" id="a95c10f3-2a83-421e-b0f4-5f5d50152210">
-			<attribute name="orderNumber" datatype="STRING" optional="false" fixedValueset="false" userModifiable="false" id="be9032d5-da44-47b7-b8d8-8a2da23f3fda" />
-			<attribute name="orderDate" datatype="STRING" optional="false" fixedValueset="false" userModifiable="false" id="88a3d6ed-55f6-4546-b82e-e6ffb97a37ca" />
+			<attribute name="orderNumber" datatype="STRING" optional="false" fixedValueset="false" userModifiable="false"
+				id="be9032d5-da44-47b7-b8d8-8a2da23f3fda" />
+			<attribute name="orderDate" datatype="STRING" optional="false" fixedValueset="false" userModifiable="false"
+				id="88a3d6ed-55f6-4546-b82e-e6ffb97a37ca" />
 			<comment>root element purchaseOrder</comment>
-			<subElement name="shipTo" elementID="c48e4c70-a325-4c0d-8a17-11f9440c4f68" minOccurrence="1" maxOccurrence="1" id="1e84741f-6aaa-4c7f-bc46-e7a635cbb8a2" />
-			<subElement name="billTo" elementID="c48e4c70-a325-4c0d-8a17-11f9440c4f68" minOccurrence="1" maxOccurrence="1" id="85ff2d4e-e2a3-443a-9f73-953202dae935" />
-			<subElement name="comment" elementID="323ed056-5fda-494d-b169-2c8ee6757a6c" minOccurrence="0" maxOccurrence="1" id="1919c889-a4f4-4223-987f-2be1621b4113" />
-			<subElement name="items" elementID="5ba599bb-8415-45d2-a928-2cb3c7041abd" minOccurrence="1" maxOccurrence="1" id="f4a81a91-ca92-4d54-b71f-4e7d00318805" />
+			<subElement name="shipTo" elementID="c48e4c70-a325-4c0d-8a17-11f9440c4f68" minOccurrence="1" maxOccurrence="1"
+				id="1e84741f-6aaa-4c7f-bc46-e7a635cbb8a2" />
+			<subElement name="billTo" elementID="c48e4c70-a325-4c0d-8a17-11f9440c4f68" minOccurrence="1" maxOccurrence="1"
+				id="85ff2d4e-e2a3-443a-9f73-953202dae935" />
+			<subElement name="comment" elementID="323ed056-5fda-494d-b169-2c8ee6757a6c" minOccurrence="0" maxOccurrence="1"
+				id="1919c889-a4f4-4223-987f-2be1621b4113" />
+			<subElement name="items" elementID="5ba599bb-8415-45d2-a928-2cb3c7041abd" minOccurrence="1" maxOccurrence="1"
+				id="f4a81a91-ca92-4d54-b71f-4e7d00318805" />
 		</elementType>
 
 		<elementType contentType="ELEMENT" elementArrangement="SEQUENCE" id="c48e4c70-a325-4c0d-8a17-11f9440c4f68">
-			<attribute name="country" datatype="STRING" optional="false" fixedValueset="false" userModifiable="false" id="acd2a904-1531-4c78-b207-815b862be5ab" />
+			<attribute name="country" datatype="STRING" optional="false" fixedValueset="false" userModifiable="false"
+				id="acd2a904-1531-4c78-b207-815b862be5ab" />
 			<comment>name and address, used for shipTo and billTo</comment>
-			<subElement name="name" elementID="bcd654c9-2a3c-476f-97d7-21a805badddc" minOccurrence="1" maxOccurrence="1" id="282084b0-db5c-486f-9345-fb087004934d" />
-			<subElement name="street" elementID="a406dcb6-c8f3-4b42-82d1-754040520b1d" minOccurrence="1" maxOccurrence="1" id="df90d4b8-9183-467b-b255-2bb3eec6fb0c" />
-			<subElement name="city" elementID="14fb9a5f-2f06-4ba0-8302-27eb9ec40433" minOccurrence="1" maxOccurrence="1" id="20957071-94f3-4110-804c-fc9dc977ab5d" />
-			<subElement name="state" elementID="a61f088c-4ccb-498e-9ca9-d50ffc3ab117" minOccurrence="1" maxOccurrence="1" id="4fd92ab0-9c88-4b20-ae38-0d7e7d0fab41" />
-			<subElement name="zip" elementID="988e2645-4f65-4102-bd0a-56bb07385212" minOccurrence="1" maxOccurrence="1" id="174ea570-dad2-4586-862f-05e0656ad462" />
+			<subElement name="name" elementID="bcd654c9-2a3c-476f-97d7-21a805badddc" minOccurrence="1" maxOccurrence="1"
+				id="282084b0-db5c-486f-9345-fb087004934d" />
+			<subElement name="street" elementID="a406dcb6-c8f3-4b42-82d1-754040520b1d" minOccurrence="1" maxOccurrence="1"
+				id="df90d4b8-9183-467b-b255-2bb3eec6fb0c" />
+			<subElement name="city" elementID="14fb9a5f-2f06-4ba0-8302-27eb9ec40433" minOccurrence="1" maxOccurrence="1"
+				id="20957071-94f3-4110-804c-fc9dc977ab5d" />
+			<subElement name="state" elementID="a61f088c-4ccb-498e-9ca9-d50ffc3ab117" minOccurrence="1" maxOccurrence="1"
+				id="4fd92ab0-9c88-4b20-ae38-0d7e7d0fab41" />
+			<subElement name="zip" elementID="988e2645-4f65-4102-bd0a-56bb07385212" minOccurrence="1" maxOccurrence="1"
+				id="174ea570-dad2-4586-862f-05e0656ad462" />
 		</elementType>
 
 		<elementType contentType="DATA" datatype="STRING" userModifiable="true" id="bcd654c9-2a3c-476f-97d7-21a805badddc">
@@ -33,7 +45,8 @@
 			<comment>city used in shipTo and billTo</comment>
 		</elementType>
 
-		<elementType contentType="DATA" datatype="STRING" userModifiable="false" fixedValueset="true" id="a61f088c-4ccb-498e-9ca9-d50ffc3ab117">
+		<elementType contentType="DATA" datatype="STRING" userModifiable="false" fixedValueset="true"
+			id="a61f088c-4ccb-498e-9ca9-d50ffc3ab117">
 			<comment>state used in shipTo and billTo</comment>
 			<discreteValue datatype="STRING" stringValue="AL" id="68594115-e473-4fe1-90d2-49056b5dd20d">
 				<comment>Alabama</comment>
@@ -215,17 +228,47 @@
 
 		<elementType contentType="ELEMENT" elementArrangement="SEQUENCE" id="5ba599bb-8415-45d2-a928-2cb3c7041abd">
 			<comment>purchase order item list</comment>
-			<subElement name="item" elementID="73ac44e5-0f0c-4d2d-9e60-682651d93f0a" minOccurrence="1" id="84a50759-e4a8-4e6d-8a3b-b443eb78b946" />
+			<subElement name="item" elementID="73ac44e5-0f0c-4d2d-9e60-682651d93f0a" minOccurrence="1"
+				id="84a50759-e4a8-4e6d-8a3b-b443eb78b946" />
 		</elementType>
 
 		<elementType contentType="ELEMENT" elementArrangement="SEQUENCE" id="73ac44e5-0f0c-4d2d-9e60-682651d93f0a">
 			<comment>purchase order item</comment>
-			<attribute name="partNum" datatype="STRING" optional="false" fixedValueset="false" maxLength="50" userModifiable="true" id="4fca3382-050a-481d-a4c4-c57d92e5deb0" />
-			<subElement name="productName" elementID="3f422f94-d15c-4771-aa97-d6cb93d92cd4" minOccurrence="1" maxOccurrence="1" id="2429c442-dbe0-4e45-bca5-bf6a8c2df56c" />
-			<subElement name="quantity" elementID="48805800-abed-4c0b-88d8-b296033f3c20" minOccurrence="1" maxOccurrence="1" id="e2e04b6a-d467-45e5-8171-8bf13d86b683" />
-			<subElement name="USPrice" elementID="aef408bf-04fc-417c-bc82-3d66adc3597a" minOccurrence="1" maxOccurrence="1" id="84de9f86-b704-422e-abb4-f5ff7fb99284" />
-			<subElement name="shipDate" elementID="b5cb8ab9-2781-4902-8421-e7947a6f8b70" minOccurrence="1" maxOccurrence="1" id="1ed9eefa-4217-4497-b246-e6900ef3c0bd" />
-			<subElement name="comment" elementID="37c8d4ba-ca5b-4ccc-8d88-06a00034e879" minOccurrence="1" maxOccurrence="1" id="143cc54f-767a-4cc9-b14c-e07dc3fec858" />
+			<subElement name="product" elementID="ad4dec4f-3697-42b9-b98b-c7bca3a4a917" minOccurrence="1" maxOccurrence="1"
+				id="27a9884b-05cb-4e39-9d12-476e124b80e9" />
+			<subElement name="quantity" elementID="48805800-abed-4c0b-88d8-b296033f3c20" minOccurrence="1" maxOccurrence="1"
+				id="e2e04b6a-d467-45e5-8171-8bf13d86b683" />
+			<subElement name="USPrice" elementID="aef408bf-04fc-417c-bc82-3d66adc3597a" minOccurrence="1" maxOccurrence="1"
+				id="84de9f86-b704-422e-abb4-f5ff7fb99284" />
+			<subElement name="shipDate" elementID="b5cb8ab9-2781-4902-8421-e7947a6f8b70" minOccurrence="1" maxOccurrence="1"
+				id="1ed9eefa-4217-4497-b246-e6900ef3c0bd" />
+			<subElement name="comment" elementID="37c8d4ba-ca5b-4ccc-8d88-06a00034e879" minOccurrence="1" maxOccurrence="1"
+				id="143cc54f-767a-4cc9-b14c-e07dc3fec858" />
+		</elementType>
+
+		<elementType contentType="ELEMENT" elementArrangement="SEQUENCE" id="ad4dec4f-3697-42b9-b98b-c7bca3a4a917">
+			<comment>product element</comment>
+			<attribute name="partNumber" datatype="STRING" optional="false" fixedValueset="false" maxLength="50" userModifiable="true"
+				id="4fca3382-050a-481d-a4c4-c57d92e5deb0" />
+			<subElement name="productName" elementID="3f422f94-d15c-4771-aa97-d6cb93d92cd4" minOccurrence="1" maxOccurrence="1"
+				id="2429c442-dbe0-4e45-bca5-bf6a8c2df56c" />
+			<subElement name="productImage" elementID="f28fbfa1-ddfc-4b24-824f-3e0a98d5646f" minOccurrence="0" maxOccurrence="1"
+				id="6b418a3d-8e86-466b-a62f-be981d6ab219" />
+		</elementType>
+
+		<elementType contentType="ELEMENT" elementArrangement="SEQUENCE" id="f28fbfa1-ddfc-4b24-824f-3e0a98d5646f">
+			<comment>product image element</comment>
+			<attribute name="textPlacement" datatype="STRING" optional="false" fixedValueset="false" maxLength="50" userModifiable="true"
+				id="a71fd071-97ca-42ba-a703-dfc2c5373874">
+				<discreteValue datatype="STRING" stringValue="alt" id="216ab45b-b7d9-4d0d-ada7-00296df21df0" />
+				<discreteValue datatype="STRING" stringValue="title" id="e2091526-2cd6-43b7-84f9-7ca77ef706aa" />
+			</attribute>
+			<subElement name="url" elementID="6a62dcb4-bab8-4baf-8efe-14a329044140" minOccurrence="1" maxOccurrence="1"
+				id="fcd59932-6747-400b-9756-c8ecfb14264d" />
+			<subElement name="text" elementID="5eac321f-40b0-4aed-9040-9c7aadc837cd" minOccurrence="1" maxOccurrence="1"
+				id="edce34a2-ef41-4794-bf8d-256fb438fa49" />
+			<subElement name="textPlacement" elementID="49a3da68-4646-422b-9484-6fff360355d3" minOccurrence="1" maxOccurrence="1"
+				id="e586a0cb-cb79-4348-8d6b-6f49a78871eb" />
 		</elementType>
 
 		<elementType contentType="DATA" datatype="STRING" userModifiable="true" id="3f422f94-d15c-4771-aa97-d6cb93d92cd4">
@@ -248,10 +291,25 @@
 			<comment>comment used in item</comment>
 		</elementType>
 
+		<elementType contentType="DATA" datatype="STRING" userModifiable="true" id="6a62dcb4-bab8-4baf-8efe-14a329044140">
+			<comment>product image URL</comment>
+		</elementType>
+
+		<elementType contentType="DATA" datatype="STRING" userModifiable="true" id="5eac321f-40b0-4aed-9040-9c7aadc837cd">
+			<comment>product image text</comment>
+		</elementType>
+
+		<elementType contentType="DATA" datatype="STRING" userModifiable="true" fixedValueset="false"
+			id="49a3da68-4646-422b-9484-6fff360355d3">
+			<comment>product image text placement</comment>
+			<discreteValue datatype="STRING" stringValue="alt" id="abf648b4-6502-4e74-b767-6647390da056" />
+			<discreteValue datatype="STRING" stringValue="title" id="765c5724-068b-46a5-b11f-54dc335a8da0" />
+		</elementType>
 
 	</elementTypes>
 	<rootElements>
-		<rootElement name="purchaseOrder" elementID="a95c10f3-2a83-421e-b0f4-5f5d50152210" minOccurrence="1" maxOccurrence="1" id="a7417fad-c155-4ad9-84fe-d901457cebcc">
+		<rootElement name="purchaseOrder" elementID="a95c10f3-2a83-421e-b0f4-5f5d50152210" minOccurrence="1" maxOccurrence="1"
+			id="a7417fad-c155-4ad9-84fe-d901457cebcc">
 			<comment>root element purchaseOrder</comment>
 		</rootElement>
 	</rootElements>

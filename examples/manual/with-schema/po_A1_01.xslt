@@ -124,9 +124,16 @@
 			</td>
 			<td>
 				<xsl:if test="product/productImage">
-					<img src="@product/productImage/url" />
-					<br/>
-					<xsl:value-of select="productImage/text"/>
+					<xsl:element name="img">
+						<xsl:attribute name="src">
+							<xsl:value-of select="product/productImage/url" />
+						</xsl:attribute>
+						<!-- BAD EXAMPLE: this should trigger Rule A.1 because it allows for
+						     insertion of an arbitrary attribute through a source attribute value -->
+						<xsl:attribute name="{product/productImage/@textPlacement}">
+							<xsl:value-of select="product/productImage/text" />
+						</xsl:attribute>
+					</xsl:element>
 				</xsl:if>
 			</td>
 			<td>
