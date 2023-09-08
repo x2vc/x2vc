@@ -3,6 +3,7 @@ package org.x2vc.analysis.rules;
 import static com.google.common.base.Preconditions.checkArgument;
 
 import java.util.*;
+import java.util.function.Consumer;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -11,10 +12,12 @@ import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.x2vc.analysis.IAnalyzerRule;
 import org.x2vc.report.*;
-import org.x2vc.schema.structure.IXMLSchema;
+import org.x2vc.schema.structure.*;
+import org.x2vc.xml.document.DocumentValueModifier;
 import org.x2vc.xml.document.IDocumentModifier;
 import org.x2vc.xml.document.IModifierPayload;
 import org.x2vc.xml.document.IXMLDocumentContainer;
+import org.x2vc.xml.value.IValueDescriptor;
 
 import com.google.common.collect.*;
 
@@ -225,6 +228,52 @@ public abstract class AbstractRule implements IAnalyzerRule {
 			.addExample(cell.getValue().getInputSample(), cell.getValue().getOutputSample())
 			.build()));
 		return result;
+	}
+
+	/**
+	 * Issues a modification request if the requested value is valid for the
+	 * attribute in question.
+	 *
+	 * @param schema
+	 * @param valueDescriptor
+	 * @param originalValue
+	 * @param replacementValue
+	 * @param payload
+	 * @param collector
+	 */
+	protected void requestModification(IXMLSchema schema, IValueDescriptor valueDescriptor, String originalValue,
+			String replacementValue, IModifierPayload payload,
+			Consumer<IDocumentModifier> collector) {
+		// check whether the requested value is valid (the attribute has to be a string
+		// and the max length may not be exceeded) - otherwise we can just skip the
+		// request
+		logger.traceEntry();
+		final IXMLSchemaObject schemaObject = schema.getObjectByID(valueDescriptor.getSchemaElementID());
+		if (schemaObject.isAttribute()) {
+			final IXMLAttribute attribute = schemaObject.asAttribute();
+			if (attribute.getDatatype() == XMLDatatype.STRING) {
+				final Integer maxLength = attribute.getMaxLength().orElse(Integer.MAX_VALUE);
+				if (replacementValue.length() <= maxLength) {
+					new DocumentValueModifier.Builder(valueDescriptor).withAnalyzerRuleID(getRuleID())
+						.withOriginalValue(originalValue).withReplacementValue(replacementValue).withPayload(payload)
+						.sendTo(collector);
+				}
+			}
+		} else if (schemaObject.isElement()) {
+			final IXMLElementType element = schemaObject.asElement();
+			if (element.getDatatype() == XMLDatatype.STRING) {
+				final Integer maxLength = element.getMaxLength().orElse(Integer.MAX_VALUE);
+				if (replacementValue.length() <= maxLength) {
+					new DocumentValueModifier.Builder(valueDescriptor).withAnalyzerRuleID(getRuleID())
+						.withOriginalValue(originalValue).withReplacementValue(replacementValue).withPayload(payload)
+						.sendTo(collector);
+				}
+			}
+		} else {
+			throw logger
+				.throwing(new IllegalArgumentException("Modification requests are not possible for this object type"));
+		}
+		logger.traceExit();
 	}
 
 }

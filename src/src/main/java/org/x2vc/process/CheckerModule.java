@@ -4,6 +4,7 @@ import org.x2vc.analysis.DocumentAnalyzer;
 import org.x2vc.analysis.IAnalyzerRule;
 import org.x2vc.analysis.IDocumentAnalyzer;
 import org.x2vc.analysis.rules.DirectAttributeCheckRule;
+import org.x2vc.analysis.rules.DirectElementCheckRule;
 import org.x2vc.process.tasks.*;
 import org.x2vc.processor.HTMLDocumentFactory;
 import org.x2vc.processor.IHTMLDocumentFactory;
@@ -57,6 +58,7 @@ public class CheckerModule extends AbstractModule {
 		// structure)
 		final Multibinder<IAnalyzerRule> ruleBinder = Multibinder.newSetBinder(binder(), IAnalyzerRule.class);
 		ruleBinder.addBinding().to(DirectAttributeCheckRule.class);
+		ruleBinder.addBinding().to(DirectElementCheckRule.class);
 
 		// process
 		bind(IWorkerProcessManager.class).to(WorkerProcessManager.class);

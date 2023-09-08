@@ -228,8 +228,23 @@
 
 		<elementType contentType="ELEMENT" elementArrangement="SEQUENCE" id="5ba599bb-8415-45d2-a928-2cb3c7041abd">
 			<comment>purchase order item list</comment>
+			<attribute name="listType" datatype="STRING" optional="false" fixedValueset="false" userModifiable="true"
+				id="53b43d32-7a29-43a6-b104-23a686054797">
+				<discreteValue datatype="STRING" stringValue="table" id="728d469c-f7c4-4ce0-a8d8-b6a28758c072" />
+				<discreteValue datatype="STRING" stringValue="ul" id="af00a8b1-9338-47b9-9c99-de4e330cce78" />
+				<discreteValue datatype="STRING" stringValue="li" id="dc0e687d-a48e-4e97-b304-98e2ab4c56b2" />
+			</attribute>
+			<subElement name="listType" elementID="f0aae478-247f-459b-a618-643d26e5915e" minOccurrence="1" maxOccurrence="1"
+				id="77b123e4-9c6c-48da-9d2c-5eff44e13b37" />
 			<subElement name="item" elementID="73ac44e5-0f0c-4d2d-9e60-682651d93f0a" minOccurrence="1"
 				id="84a50759-e4a8-4e6d-8a3b-b443eb78b946" />
+		</elementType>
+
+		<elementType contentType="DATA" datatype="STRING" fixedValueset="false" userModifiable="true" id="f0aae478-247f-459b-a618-643d26e5915e">
+			<comment>listType used in item list</comment>
+			<discreteValue datatype="STRING" stringValue="table" id="92bb37b8-cfd3-4100-a074-d0a23df9777e" />
+			<discreteValue datatype="STRING" stringValue="ul" id="913ebb97-be56-49eb-84f1-844a58e58bb4" />
+			<discreteValue datatype="STRING" stringValue="li" id="0de5584d-ef30-4750-9dd8-4228a3335948" />
 		</elementType>
 
 		<elementType contentType="ELEMENT" elementArrangement="SEQUENCE" id="73ac44e5-0f0c-4d2d-9e60-682651d93f0a">
