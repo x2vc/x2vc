@@ -13,9 +13,7 @@ import org.jsoup.nodes.Node;
 import org.x2vc.report.IVulnerabilityCandidate;
 import org.x2vc.report.VulnerabilityCandidate;
 import org.x2vc.schema.ISchemaManager;
-import org.x2vc.schema.structure.IXMLAttribute;
-import org.x2vc.schema.structure.IXMLSchema;
-import org.x2vc.schema.structure.XMLDatatype;
+import org.x2vc.schema.structure.*;
 import org.x2vc.xml.document.DocumentValueModifier;
 import org.x2vc.xml.document.IDocumentModifier;
 import org.x2vc.xml.document.IModifierPayload;
@@ -118,14 +116,30 @@ public class DirectAttributeCheckRule extends AbstractAttributeRule {
 		// check whether the requested value is valid (the attribute has to be a string
 		// and the max length may not be exceeded) - otherwise we can just skip the
 		// request
-		final IXMLAttribute attribute = schema.getObjectByID(valueDescriptor.getSchemaElementID()).asAttribute();
-		if (attribute.getDatatype() == XMLDatatype.STRING) {
-			final Integer maxLength = attribute.getMaxLength().orElse(Integer.MAX_VALUE);
-			if (replacementValue.length() <= maxLength) {
-				new DocumentValueModifier.Builder(valueDescriptor).withAnalyzerRuleID(RULE_ID)
-					.withOriginalValue(originalValue).withReplacementValue(replacementValue).withPayload(payload)
-					.sendTo(collector);
+		final IXMLSchemaObject schemaObject = schema.getObjectByID(valueDescriptor.getSchemaElementID());
+		if (schemaObject.isAttribute()) {
+			final IXMLAttribute attribute = schemaObject.asAttribute();
+			if (attribute.getDatatype() == XMLDatatype.STRING) {
+				final Integer maxLength = attribute.getMaxLength().orElse(Integer.MAX_VALUE);
+				if (replacementValue.length() <= maxLength) {
+					new DocumentValueModifier.Builder(valueDescriptor).withAnalyzerRuleID(RULE_ID)
+						.withOriginalValue(originalValue).withReplacementValue(replacementValue).withPayload(payload)
+						.sendTo(collector);
+				}
 			}
+		} else if (schemaObject.isElement()) {
+			final IXMLElementType element = schemaObject.asElement();
+			if (element.getDatatype() == XMLDatatype.STRING) {
+				final Integer maxLength = element.getMaxLength().orElse(Integer.MAX_VALUE);
+				if (replacementValue.length() <= maxLength) {
+					new DocumentValueModifier.Builder(valueDescriptor).withAnalyzerRuleID(RULE_ID)
+						.withOriginalValue(originalValue).withReplacementValue(replacementValue).withPayload(payload)
+						.sendTo(collector);
+				}
+			}
+		} else {
+			throw logger
+				.throwing(new IllegalArgumentException("Modification requests are not possible for this object type"));
 		}
 	}
 
