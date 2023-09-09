@@ -55,7 +55,8 @@ class XMLDocumentDescriptorTest {
 		"abcd0000 Foo Bar,abcd0000 Foo Bar",
 		"Foo abcd0000 Bar,abcd0000 Foo Bar",
 		"abcd0000 Foo Bar,Foo abcd0000 Bar",
-		"Foo abcd0000 Bar,Foo abcd0000 Bar"
+		"Foo abcd0000 Bar,Foo abcd0000 Bar",
+		"abcd0000 qwer tzui ghjk abcd,abcd0000 qwer abcd"
 	})
 	void testValueDescriptor_Match(String testValue, String testQuery) {
 		when(this.valueDescriptor.getValue()).thenReturn(testValue);

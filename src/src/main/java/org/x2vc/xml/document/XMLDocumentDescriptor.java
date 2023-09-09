@@ -48,11 +48,16 @@ public class XMLDocumentDescriptor implements IXMLDocumentDescriptor {
 		if (value.length() > this.valueLength) {
 			int position = value.indexOf(this.valuePrefix, 0);
 			while (position >= 0) {
-				final String candidate = value.substring(position, position + this.valueLength);
-				if (this.valueDescriptors.containsKey(candidate)) {
-					result.addAll(this.valueDescriptors.get(candidate));
+				if (position + this.valueLength < value.length()) {
+					final String candidate = value.substring(position, position + this.valueLength);
+					if (this.valueDescriptors.containsKey(candidate)) {
+						result.addAll(this.valueDescriptors.get(candidate));
+					}
+					position = value.indexOf(this.valuePrefix, position + this.valueLength - 1);
+				} else {
+					// ran over the end of the string
+					position = -1;
 				}
-				position = value.indexOf(this.valuePrefix, position + this.valueLength - 1);
 			}
 		}
 		if (result.isEmpty()) {
