@@ -7,7 +7,7 @@
         <elementType contentType="EMPTY" userModifiable="false" elementArrangement="ALL" id="00771113-ee28-4cfe-b348-f55cb8861f62">
             <comment>element without content</comment>
         </elementType>
-        <elementType contentType="ELEMENT" elementArrangement="sequence" id="45023ac4-9c79-4247-bbe5-36f893bd7eaa">
+        <elementType contentType="ELEMENT" elementArrangement="SEQUENCE" id="45023ac4-9c79-4247-bbe5-36f893bd7eaa">
             <comment>root element</comment>
             <subElement name="text" elementID="0fe9b06d-559b-412a-954b-89a9b441c4d1" minOccurrence="1" maxOccurrence="1" id="c90f6614-362f-4c50-a040-ebeb8f9eb113">
                 <comment>reference to element with text content</comment>

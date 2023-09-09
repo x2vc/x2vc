@@ -302,8 +302,9 @@ class RequestGeneratorTest {
 	}
 
 	@Test
-	void testGenerateNewRequest_MixedContent() throws URISyntaxException, FileNotFoundException, JAXBException {
-		final IXMLSchema schema = loadSchema("MixedContent.x2vc_schema");
+	void testGenerateNewRequest_MixedContent_WithSubElements()
+			throws URISyntaxException, FileNotFoundException, JAXBException {
+		final IXMLSchema schema = loadSchema("MixedContent_WithSubElements.x2vc_schema");
 
 		final UUID rootElementID = UUID.fromString("45023ac4-9c79-4247-bbe5-36f893bd7eaa");
 		final UUID textElementReferenceID = UUID.fromString("c90f6614-362f-4c50-a040-ebeb8f9eb113");
@@ -318,8 +319,8 @@ class RequestGeneratorTest {
 		// of text elements in between
 		int textElementCount = 0;
 		int emptyElementCount = 0;
-		int dataContentCount = 0;
-		for (int i = 2; i < rootElementRule.getContentRules().size(); i++) {
+		int rawContentCount = 0;
+		for (int i = 0; i < rootElementRule.getContentRules().size(); i++) {
 			final IContentGenerationRule rule = rootElementRule.getContentRules().get(i);
 			if (rule instanceof final IAddElementRule addElementRule) {
 				final UUID elementID = addElementRule.getElementReferenceID();
@@ -330,10 +331,10 @@ class RequestGeneratorTest {
 				} else {
 					fail("Unexpected element ID " + elementID);
 				}
-			} else if (rule instanceof final IAddRawContentRule addDataContentRule) {
-				final UUID elementID = addDataContentRule.getElementID();
+			} else if (rule instanceof final IAddRawContentRule addRawContentRule) {
+				final UUID elementID = addRawContentRule.getElementID();
 				if (elementID.equals(rootElementID)) {
-					dataContentCount++;
+					rawContentCount++;
 				} else {
 					fail("Unexpected element ID " + elementID);
 				}
@@ -342,8 +343,28 @@ class RequestGeneratorTest {
 
 		assertInRange("textElementCount", 0, textElementCount, 10);
 		assertInRange("emptyElementCount", 1, emptyElementCount, 10);
-		assertInRange("dataContentCount", 0, dataContentCount, 121);
+		assertInRange("rawContentCount", 0, rawContentCount, 121);
 
+		assertFalse(request.getModifier().isPresent());
+	}
+
+	@Test
+	void testGenerateNewRequest_MixedContent_WithoutSubElements()
+			throws URISyntaxException, FileNotFoundException, JAXBException {
+		final IXMLSchema schema = loadSchema("MixedContent_WithoutSubElements.x2vc_schema");
+
+		final UUID rootElementID = UUID.fromString("45023ac4-9c79-4247-bbe5-36f893bd7eaa");
+
+		final IDocumentRequest request = this.requestGenerator.generateNewRequest(schema);
+		final IAddElementRule rootElementRule = request.getRootElementRule();
+		assertEquals(UUID.fromString("fe3fa767-685a-4c5a-8531-ca717a7cb72b"), rootElementRule.getElementReferenceID());
+		assertEquals(0, rootElementRule.getAttributeRules().size());
+
+		// expect a single raw data generation rule
+		// expect a mix of [1..10] text elements, [1..10] empty elements and any number
+		// of text elements in between
+		assertEquals(1, rootElementRule.getContentRules().size());
+		assertInstanceOf(IAddRawContentRule.class, rootElementRule.getContentRules().get(0));
 		assertFalse(request.getModifier().isPresent());
 	}
 

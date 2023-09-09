@@ -195,8 +195,15 @@ public class RequestGenerator implements IRequestGenerator {
 			}
 			newRules.add(rule);
 		}
-		if (ThreadLocalRandom.current().nextInt(0, 2) > 0) {
+		if (newRules.isEmpty()) {
+			// if no other element is present, add a raw content generation rule
+			// unconditionally
 			newRules.add(new AddRawContentRule(element.getID()));
+		} else {
+			// randomly add a raw content generation rule at the end
+			if (ThreadLocalRandom.current().nextInt(0, 2) > 0) {
+				newRules.add(new AddRawContentRule(element.getID()));
+			}
 		}
 		logger.debug("extended list of rules from {} to {} entries", originalRules.size(), newRules.size());
 		return logger.traceExit(newRules);
