@@ -9,29 +9,21 @@ class DirectElementCheckPayload implements IDirectElementCheckPayload {
 
 	private static final long serialVersionUID = -176115350310411970L;
 
-	private String checkID;
 	private UUID schemaElementID;
 	private String elementSelector;
 	private String injectedElement;
 
 	/**
-	 * @param checkID
 	 * @param schemaElementID
 	 * @param elementSelector
 	 * @param injectedElement
 	 */
-	public DirectElementCheckPayload(String checkID, UUID schemaElementID, String elementSelector,
+	public DirectElementCheckPayload(UUID schemaElementID, String elementSelector,
 			String injectedElement) {
 		super();
-		this.checkID = checkID;
 		this.schemaElementID = schemaElementID;
 		this.elementSelector = elementSelector;
 		this.injectedElement = injectedElement;
-	}
-
-	@Override
-	public String getCheckID() {
-		return this.checkID;
 	}
 
 	@Override

@@ -8,13 +8,7 @@ import org.x2vc.xml.document.IModifierPayload;
 /**
  * An {@link IModifierPayload} produced by the {@link DirectElementCheckRule}.
  */
-public interface IDirectElementCheckPayload extends IModifierPayload {
-
-	/**
-	 * @return the ID of check performed by the analyzer rule that produced the
-	 *         modifier
-	 */
-	String getCheckID();
+public interface IDirectElementCheckPayload extends IAnalyzerRulePayload {
 
 	/**
 	 * @return the injectedAttribute

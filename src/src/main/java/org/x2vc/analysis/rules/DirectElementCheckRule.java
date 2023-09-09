@@ -32,8 +32,6 @@ public class DirectElementCheckRule extends AbstractElementRule {
 	 */
 	public static final String RULE_ID = "E.1";
 
-	static final String CHECK_ID_ELEM_SCRIPT = "E.SCR";
-
 	private static final Logger logger = LogManager.getLogger();
 
 	private ISchemaManager schemaManager;
@@ -73,7 +71,7 @@ public class DirectElementCheckRule extends AbstractElementRule {
 				final String currentValue = valueDescriptor.getValue();
 				// try to replace the entire element with script element
 				requestModification(schema, valueDescriptor, currentValue, "script", new DirectElementCheckPayload(
-						CHECK_ID_ELEM_SCRIPT, valueDescriptor.getSchemaElementID(), parentElementPath + "/script",
+						valueDescriptor.getSchemaElementID(), parentElementPath + "/script",
 						"script"), collector);
 			}
 		}
@@ -105,7 +103,7 @@ public class DirectElementCheckRule extends AbstractElementRule {
 				// the output sample can be derived from the node
 				final String outputSample = node.toString();
 
-				collector.accept(new VulnerabilityCandidate(RULE_ID, payload.getCheckID(), taskID,
+				collector.accept(new VulnerabilityCandidate(RULE_ID, taskID,
 						payload.getSchemaElementID(), payload.getElementSelector(), inputSample,
 						outputSample));
 			} else {

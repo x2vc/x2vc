@@ -34,9 +34,6 @@ public class DirectAttributeCheckRule extends AbstractAttributeRule {
 	 */
 	public static final String RULE_ID = "A.1";
 
-	static final String CHECK_ID_ATTRIB_STYLE = "A.CSS";
-	static final String CHECK_ID_ATTRIB_ONERROR = "A.JSH";
-
 	private static final Logger logger = LogManager.getLogger();
 
 	private ISchemaManager schemaManager;
@@ -85,11 +82,11 @@ public class DirectAttributeCheckRule extends AbstractAttributeRule {
 
 				// try to replace the entire attribute with style attribute
 				requestModification(schema, valueDescriptor, currentValue, "style", new DirectAttributeCheckPayload(
-						CHECK_ID_ATTRIB_STYLE, valueDescriptor.getSchemaElementID(), elementPath, "style"), collector);
+						valueDescriptor.getSchemaElementID(), elementPath, "style"), collector);
 
 				// try to replace the entire Attribute with a Javascript event handler
 				requestModification(schema, valueDescriptor, currentValue, "onerror",
-						new DirectAttributeCheckPayload(CHECK_ID_ATTRIB_ONERROR, valueDescriptor.getSchemaElementID(),
+						new DirectAttributeCheckPayload(valueDescriptor.getSchemaElementID(),
 								elementPath, "onerror"),
 						collector);
 			}
@@ -125,7 +122,7 @@ public class DirectAttributeCheckRule extends AbstractAttributeRule {
 				// the output sample can be derived from the node
 				final String outputSample = node.toString();
 
-				collector.accept(new VulnerabilityCandidate(RULE_ID, payload.getCheckID(), taskID,
+				collector.accept(new VulnerabilityCandidate(RULE_ID, taskID,
 						payload.getSchemaElementID(), payload.getElementSelector(), inputSample,
 						outputSample));
 			}
