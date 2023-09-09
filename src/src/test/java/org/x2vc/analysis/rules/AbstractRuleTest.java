@@ -1,8 +1,12 @@
 package org.x2vc.analysis.rules;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -19,9 +23,9 @@ import org.x2vc.report.IVulnerabilityCandidate;
 import org.x2vc.report.IVulnerabilityReportSection;
 import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.xml.document.IDocumentModifier;
+import org.x2vc.xml.document.IModifierPayload;
 import org.x2vc.xml.document.IXMLDocumentContainer;
-
-import com.google.common.collect.ImmutableSet;
+import org.x2vc.xml.document.IXMLDocumentDescriptor;
 
 @ExtendWith(MockitoExtension.class)
 class AbstractRuleTest {
@@ -38,12 +42,8 @@ class AbstractRuleTest {
 		}
 
 		@Override
-		public ImmutableSet<String> getElementSelectors(IXMLDocumentContainer container) {
-			throw new UnsupportedOperationException();
-		}
-
-		@Override
-		public void verifyNode(UUID taskID, Node node, IXMLDocumentContainer container,
+		protected void verifyNode(UUID taskID, Node node, IXMLDocumentContainer xmlContainer,
+				Optional<String> injectedValue, Optional<UUID> schemaElementID, Optional<String> elementSelector,
 				Consumer<IVulnerabilityCandidate> collector) {
 			throw new UnsupportedOperationException();
 		}
@@ -110,6 +110,70 @@ class AbstractRuleTest {
 
 		final Elements elements2 = document.selectXpath("/html/body/p");
 		assertEquals(List.of(element2a, element2b, element2c), List.of(elements2.toArray()));
+	}
+
+	/**
+	 * Test method for
+	 * {@link org.x2vc.analysis.rules.AbstractRule#getElementSelectors(org.x2vc.xml.document.IXMLDocumentContainer)}.
+	 */
+	@Test
+	void testGetElementSelectors_NoModifier() {
+		final IXMLDocumentContainer documentContainer = mock(IXMLDocumentContainer.class);
+		final IXMLDocumentDescriptor documentDescriptor = mock(IXMLDocumentDescriptor.class);
+		when(documentContainer.getDocumentDescriptor()).thenReturn(documentDescriptor);
+		when(documentDescriptor.getModifier()).thenReturn(Optional.empty());
+		assertThrows(IllegalArgumentException.class, () -> this.rule.getElementSelectors(documentContainer));
+	}
+
+	/**
+	 * Test method for
+	 * {@link org.x2vc.analysis.rules.AbstractRule#getElementSelectors(org.x2vc.xml.document.IXMLDocumentContainer)}.
+	 */
+	@Test
+	void testGetElementSelectors_NoPayload() {
+		final IXMLDocumentContainer documentContainer = mock(IXMLDocumentContainer.class);
+		final IXMLDocumentDescriptor documentDescriptor = mock(IXMLDocumentDescriptor.class);
+		when(documentContainer.getDocumentDescriptor()).thenReturn(documentDescriptor);
+		final IDocumentModifier modifier = mock(IDocumentModifier.class);
+		when(documentDescriptor.getModifier()).thenReturn(Optional.of(modifier));
+		when(modifier.getPayload()).thenReturn(Optional.empty());
+		assertThrows(IllegalArgumentException.class, () -> this.rule.getElementSelectors(documentContainer));
+	}
+
+	/**
+	 * Test method for
+	 * {@link org.x2vc.analysis.rules.AbstractRule#getElementSelectors(org.x2vc.xml.document.IXMLDocumentContainer)}.
+	 */
+	@Test
+	void testGetElementSelectors_WrongType() {
+		final IXMLDocumentContainer documentContainer = mock(IXMLDocumentContainer.class);
+		final IXMLDocumentDescriptor documentDescriptor = mock(IXMLDocumentDescriptor.class);
+		when(documentContainer.getDocumentDescriptor()).thenReturn(documentDescriptor);
+		final IDocumentModifier modifier = mock(IDocumentModifier.class);
+		when(documentDescriptor.getModifier()).thenReturn(Optional.of(modifier));
+		when(modifier.getPayload()).thenReturn(Optional.of(new IModifierPayload() {
+			private static final long serialVersionUID = -6630813475107736706L;
+		}));
+		assertThrows(IllegalArgumentException.class, () -> this.rule.getElementSelectors(documentContainer));
+	}
+
+	/**
+	 * Test method for
+	 * {@link org.x2vc.analysis.rules.AbstractRule#getElementSelectors(org.x2vc.xml.document.IXMLDocumentContainer)}.
+	 */
+	@Test
+	void testGetElementSelectors() {
+		final IXMLDocumentContainer documentContainer = mock(IXMLDocumentContainer.class);
+		final IXMLDocumentDescriptor documentDescriptor = mock(IXMLDocumentDescriptor.class);
+		when(documentContainer.getDocumentDescriptor()).thenReturn(documentDescriptor);
+		final IDocumentModifier modifier = mock(IDocumentModifier.class);
+		when(documentDescriptor.getModifier()).thenReturn(Optional.of(modifier));
+		final IAnalyzerRulePayload payload = mock(IAnalyzerRulePayload.class);
+		when(modifier.getPayload()).thenReturn(Optional.of(payload));
+		when(payload.getElementSelector()).thenReturn(Optional.of("elementSelector"));
+		final Set<String> selectors = this.rule.getElementSelectors(documentContainer);
+		assertEquals(1, selectors.size());
+		assertEquals("elementSelector", selectors.iterator().next());
 	}
 
 }

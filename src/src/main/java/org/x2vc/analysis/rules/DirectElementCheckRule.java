@@ -1,7 +1,8 @@
 package org.x2vc.analysis.rules;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -70,31 +71,29 @@ public class DirectElementCheckRule extends AbstractElementRule {
 			for (final IValueDescriptor valueDescriptor : valueDescriptors.get()) {
 				final String currentValue = valueDescriptor.getValue();
 				// try to replace the entire element with script element
-				requestModification(schema, valueDescriptor, currentValue, "script", new DirectElementCheckPayload(
-						valueDescriptor.getSchemaElementID(), parentElementPath + "/script",
-						"script"), collector);
+				final AnalyzerRulePayload payload = AnalyzerRulePayload.builder()
+					.withSchemaElementID(valueDescriptor.getSchemaElementID())
+					.withElementSelector(parentElementPath + "/script")
+					.withInjectedValue("script")
+					.build();
+				requestModification(schema, valueDescriptor, currentValue, "script", payload, collector);
 			}
 		}
 		logger.traceExit();
 	}
 
 	@Override
-	public Set<String> getElementSelectors(IXMLDocumentContainer xmlContainer) {
-		logger.traceEntry();
-		final IDirectElementCheckPayload payload = getPayloadChecked(xmlContainer,
-				IDirectElementCheckPayload.class);
-		return logger.traceExit(Set.of(payload.getElementSelector()));
-	}
-
-	@Override
-	public void verifyNode(UUID taskID, Node node, IXMLDocumentContainer xmlContainer,
+	protected void verifyNode(UUID taskID, Node node, IXMLDocumentContainer xmlContainer,
+			Optional<String> injectedValue, Optional<UUID> schemaElementID, Optional<String> elementSelector,
 			Consumer<IVulnerabilityCandidate> collector) {
 		logger.traceEntry();
-		final IDirectElementCheckPayload payload = getPayloadChecked(xmlContainer,
-				IDirectElementCheckPayload.class);
 		if (node instanceof final Element element) {
+			checkArgument(injectedValue.isPresent());
+			checkArgument(schemaElementID.isPresent());
+			checkArgument(elementSelector.isPresent());
+
 			final String elementName = element.tagName();
-			final String injectedName = payload.getInjectedElement();
+			final String injectedName = injectedValue.get();
 			if (elementName.equals(injectedName)) {
 				logger.debug("element \"{}\" injected from input data, follow-up check positive", elementName);
 				// TODO Report Output: provide better input sample (formatting, highlighting?)
@@ -103,9 +102,8 @@ public class DirectElementCheckRule extends AbstractElementRule {
 				// the output sample can be derived from the node
 				final String outputSample = node.toString();
 
-				collector.accept(new VulnerabilityCandidate(RULE_ID, taskID,
-						payload.getSchemaElementID(), payload.getElementSelector(), inputSample,
-						outputSample));
+				collector.accept(new VulnerabilityCandidate(RULE_ID, taskID, schemaElementID.get(),
+						elementSelector.get(), inputSample, outputSample));
 			} else {
 				logger.debug("element \"{}\" not found, follow-up check negative", injectedName);
 			}

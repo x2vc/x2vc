@@ -58,6 +58,45 @@ public abstract class AbstractRule implements IAnalyzerRule {
 		return result.toString();
 	}
 
+	@Override
+	public Set<String> getElementSelectors(IXMLDocumentContainer xmlContainer) {
+		logger.traceEntry();
+		// default implementation will check for an IAnalyzerRulePayload and return the
+		// value thereof
+		final IAnalyzerRulePayload payload = getPayloadChecked(xmlContainer);
+		Set<String> result = Collections.emptySet();
+		final Optional<String> oSelector = payload.getElementSelector();
+		if (oSelector.isPresent()) {
+			result = Set.of(oSelector.get());
+		}
+		return logger.traceExit(result);
+	}
+
+	@Override
+	public void verifyNode(UUID taskID, Node node, IXMLDocumentContainer xmlContainer,
+			Consumer<IVulnerabilityCandidate> collector) {
+		logger.traceEntry();
+		final IAnalyzerRulePayload payload = getPayloadChecked(xmlContainer);
+		final Optional<String> injectedValue = payload.getInjectedValue();
+		final Optional<UUID> schemaElementID = payload.getSchemaElementID();
+		final Optional<String> elementSelector = payload.getElementSelector();
+		verifyNode(taskID, node, xmlContainer, injectedValue, schemaElementID, elementSelector, collector);
+		logger.traceExit();
+	}
+
+	/**
+	 * @param taskID
+	 * @param node
+	 * @param xmlContainer
+	 * @param injectedValue
+	 * @param schemaElementID
+	 * @param elementSelector
+	 * @param collector
+	 */
+	protected abstract void verifyNode(UUID taskID, Node node, IXMLDocumentContainer xmlContainer,
+			Optional<String> injectedValue, Optional<UUID> schemaElementID, Optional<String> elementSelector,
+			Consumer<IVulnerabilityCandidate> collector);
+
 	/**
 	 * Retrieves the {@link IModifierPayload} of an {@link IDocumentModifier} used
 	 * to generate a document, checking its type and casting it in the process.
@@ -77,11 +116,57 @@ public abstract class AbstractRule implements IAnalyzerRule {
 		if (expectedType.isInstance(oPayload.get())) {
 			return (T) oPayload.get();
 		} else {
+			final String actualTypeName = oPayload.get().getClass().getName();
+			final String expectedTypeName = expectedType.getName();
 			throw logger.throwing(new IllegalArgumentException(
 					String.format("payload of document modifier has the wrong type %s, expected %s", //$NON-NLS-1$
-							oPayload.get().getClass().getName(), expectedType.getName())));
+							actualTypeName, expectedTypeName)));
 		}
+	}
 
+	/**
+	 * Retrieves the {@link IAnalyzerRulePayload} of an {@link IDocumentModifier}
+	 * used to generate a document, checking its type and casting it in the process.
+	 *
+	 * @param xmlContainer
+	 * @return
+	 */
+	protected IAnalyzerRulePayload getPayloadChecked(IXMLDocumentContainer xmlContainer) {
+		final Optional<IDocumentModifier> oModifier = xmlContainer.getDocumentDescriptor().getModifier();
+		checkArgument(oModifier.isPresent());
+		final Optional<IModifierPayload> oPayload = oModifier.get().getPayload();
+		checkArgument(oPayload.isPresent());
+		final IModifierPayload payload = oPayload.get();
+		if (payload instanceof final IAnalyzerRulePayload arPayload) {
+			return arPayload;
+		} else {
+			final String actualTypeName = oPayload.get().getClass().getName();
+			throw logger.throwing(new IllegalArgumentException(
+					String.format("payload of document modifier has the wrong type %s, expected IAnalyzerRulePayload", //$NON-NLS-1$
+							actualTypeName)));
+		}
+	}
+
+	/**
+	 * Retrieves the {@link IAnalyzerRulePayload} of an {@link IDocumentModifier}
+	 * used to generate a document, checking its type and casting it in the process.
+	 * This will return an empty object if no payload is present or the wrong type
+	 * was used.
+	 *
+	 * @param xmlContainer
+	 * @return
+	 */
+	protected Optional<IAnalyzerRulePayload> getPayload(IXMLDocumentContainer xmlContainer) {
+		final Optional<IDocumentModifier> oModifier = xmlContainer.getDocumentDescriptor().getModifier();
+		checkArgument(oModifier.isPresent());
+		final Optional<IModifierPayload> oPayload = oModifier.get().getPayload();
+		checkArgument(oPayload.isPresent());
+		final IModifierPayload payload = oPayload.get();
+		if (payload instanceof final IAnalyzerRulePayload arPayload) {
+			return Optional.of(arPayload);
+		} else {
+			return Optional.empty();
+		}
 	}
 
 	@Override

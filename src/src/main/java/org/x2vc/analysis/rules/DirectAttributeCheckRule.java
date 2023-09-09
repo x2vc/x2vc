@@ -1,7 +1,8 @@
 package org.x2vc.analysis.rules;
 
+import static com.google.common.base.Preconditions.checkArgument;
+
 import java.util.Optional;
-import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -81,35 +82,36 @@ public class DirectAttributeCheckRule extends AbstractAttributeRule {
 				final String currentValue = valueDescriptor.getValue();
 
 				// try to replace the entire attribute with style attribute
-				requestModification(schema, valueDescriptor, currentValue, "style", new DirectAttributeCheckPayload(
-						valueDescriptor.getSchemaElementID(), elementPath, "style"), collector);
+				final AnalyzerRulePayload stylePayload = AnalyzerRulePayload.builder()
+					.withSchemaElementID(valueDescriptor.getSchemaElementID())
+					.withInjectedValue("style")
+					.withElementSelector(elementPath)
+					.build();
+				requestModification(schema, valueDescriptor, currentValue, "style", stylePayload, collector);
 
 				// try to replace the entire Attribute with a Javascript event handler
-				requestModification(schema, valueDescriptor, currentValue, "onerror",
-						new DirectAttributeCheckPayload(valueDescriptor.getSchemaElementID(),
-								elementPath, "onerror"),
-						collector);
+				final AnalyzerRulePayload handlerPayload = AnalyzerRulePayload.builder()
+					.withSchemaElementID(valueDescriptor.getSchemaElementID())
+					.withInjectedValue("onerror")
+					.withElementSelector(elementPath)
+					.build();
+				requestModification(schema, valueDescriptor, currentValue, "onerror", handlerPayload, collector);
 			}
 		}
 		logger.traceExit();
 	}
 
 	@Override
-	public Set<String> getElementSelectors(IXMLDocumentContainer xmlContainer) {
-		logger.traceEntry();
-		final IDirectAttributeCheckPayload payload = getPayloadChecked(xmlContainer,
-				IDirectAttributeCheckPayload.class);
-		return logger.traceExit(Set.of(payload.getElementSelector()));
-	}
-
-	@Override
-	public void verifyNode(UUID taskID, Node node, IXMLDocumentContainer xmlContainer,
+	protected void verifyNode(UUID taskID, Node node, IXMLDocumentContainer xmlContainer,
+			Optional<String> injectedValue, Optional<UUID> schemaElementID, Optional<String> elementSelector,
 			Consumer<IVulnerabilityCandidate> collector) {
 		logger.traceEntry();
-		final IDirectAttributeCheckPayload payload = getPayloadChecked(xmlContainer,
-				IDirectAttributeCheckPayload.class);
 		if (node instanceof final Element element) {
-			final String attributeName = payload.getInjectedAttribute();
+			checkArgument(injectedValue.isPresent());
+			checkArgument(schemaElementID.isPresent());
+			checkArgument(elementSelector.isPresent());
+
+			final String attributeName = injectedValue.get();
 			final String actualValue = element.attr(attributeName);
 			if (Strings.isNullOrEmpty(actualValue)) {
 				logger.debug("attribute \"{}\" not found, follow-up check negative", attributeName);
@@ -122,9 +124,9 @@ public class DirectAttributeCheckRule extends AbstractAttributeRule {
 				// the output sample can be derived from the node
 				final String outputSample = node.toString();
 
-				collector.accept(new VulnerabilityCandidate(RULE_ID, taskID,
-						payload.getSchemaElementID(), payload.getElementSelector(), inputSample,
-						outputSample));
+				collector
+					.accept(new VulnerabilityCandidate(RULE_ID, taskID, schemaElementID.get(), elementSelector.get(),
+							inputSample, outputSample));
 			}
 		} else {
 			logger.warn("follow-up check called for non-element node");
