@@ -1264,6 +1264,7 @@ class ValueGeneratorTest {
 		final String generatedValue = this.valueGenerator.generateValue(this.addRawContentRule);
 		assertTrue(Pattern.compile("<[^<>]+>").matcher(generatedValue).find(),
 				String.format("generated value \"%s\"should contain a bit of HTML markup", generatedValue));
+		assertTrue(generatedValue.contains(TEST_PREFIX), "generated value does not contain the prefix");
 		assertValueDescriptorPresent(this.elementID, generatedValue, false);
 	}
 

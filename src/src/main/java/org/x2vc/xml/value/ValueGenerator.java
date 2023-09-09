@@ -353,13 +353,19 @@ public class ValueGenerator implements IValueGenerator {
 		} else {
 			// generate some raw content: some text with a few tags inside
 			value = switch (ThreadLocalRandom.current().nextInt(6)) {
-			case 1 -> "#TEXT# <b>#TEXT#</b> #TEXT#";
-			case 2 -> "#TEXT# <i>#TEXT#</i> #TEXT#";
-			case 3 -> "#TEXT# <a href=\"foobar\">#TEXT#</a> #TEXT#";
-			case 4 -> "#TEXT# <p>#TEXT#</p> #TEXT#";
-			case 5 -> "#TEXT# <div id=\"foobar\">#TEXT#</div> #TEXT#";
-			default -> "#TEXT# <br/> #TEXT#";
+			case 1 -> "#PREFIX# <b>#TEXT#</b> #TEXT#";
+			case 2 -> "#PREFIX# <i>#TEXT#</i> #TEXT#";
+			case 3 -> "#PREFIX# <a href=\"foobar\">#TEXT#</a> #TEXT#";
+			case 4 -> "#PREFIX# <p>#TEXT#</p> #TEXT#";
+			case 5 -> "#PREFIX# <div id=\"foobar\">#TEXT#</div> #TEXT#";
+			default -> "#PREFIX# <br/> #TEXT#";
 			};
+			while (value.contains("#PREFIX#")) {
+				final int counterLength = this.getValueLength() - this.getValuePrefix().length();
+				final String format = "%s%0" + counterLength + "d";
+				final String prefixValue = String.format(format, this.valuePrefix, this.nextGeneratedValueCounter++);
+				value = value.replaceFirst("#PREFIX#", prefixValue);
+			}
 			while (value.contains("#TEXT#")) {
 				value = value.replaceFirst("#TEXT#", this.textGenerator.getWords(5, 50));
 			}
