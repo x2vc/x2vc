@@ -129,7 +129,7 @@ public class WorkerProcessManager implements IWorkerProcessManager {
 		if (!isInitialized()) {
 			throw new IllegalStateException("Worker process manager not yet initialized");
 		}
-		logger.info("Waiting for all tasks to complete");
+		logger.debug("Waiting for all tasks to complete");
 		while (this.workerExecutor.getActiveCount() > 0 || !this.taskQueue.isEmpty()) {
 			try {
 				Thread.sleep(250);

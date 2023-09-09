@@ -54,14 +54,14 @@ public class ReportGeneratorTask implements IReportGeneratorTask {
 			final URI stylesheetURI = this.xsltFile.toURI();
 			final ImmutableSet<IVulnerabilityCandidate> vulnerabilityCandidates = this.vulnerabilityCandidateCollector
 				.get(stylesheetURI);
-			logger.info("Consolidating {} vulnerability candidates for stylesheet {}", vulnerabilityCandidates.size(),
-					this.xsltFile);
-			final IVulnerabilityReport report = this.analyzer.consolidateResults(stylesheetURI,
-					vulnerabilityCandidates);
 			final Object basename = Files.getNameWithoutExtension(this.xsltFile.getName());
 			final File outputFile = new File(this.xsltFile.getParentFile(),
 					String.format("%s_x2vc_report.html", basename));
-			logger.info("Writing report to output file {}", outputFile);
+			logger.info("Consolidating {} vulnerability candidates for stylesheet {} into report file {}",
+					vulnerabilityCandidates.size(),
+					this.xsltFile, outputFile);
+			final IVulnerabilityReport report = this.analyzer.consolidateResults(stylesheetURI,
+					vulnerabilityCandidates);
 			this.reportWriter.write(report, outputFile);
 		} catch (final Exception ex) {
 			logger.error("unhandled exception in report generator task", ex);
