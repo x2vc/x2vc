@@ -110,6 +110,14 @@ class DirectAttributeCheckRuleTest {
 	/**
 	 * Test method for
 	 * {@link org.x2vc.analysis.rules.AbstractElementRule#checkNode(org.jsoup.nodes.Node, org.x2vc.xml.document.IXMLDocumentDescriptor, java.util.function.Consumer)}.
+	 *
+	 * @param html   the source code of the node that will be passed to the rule to
+	 *               check
+	 * @param prefix the prefix of the simulated generated value
+	 * @param value  the simulated generated value
+	 * @param query  the query value that is supposed to be used to retrieve the
+	 *               value descriptor
+	 * @param length the length of the simulated generated value
 	 */
 	@ParameterizedTest
 	@CsvSource({ "<p qwertzui=\"foobar\">test</p>, qwer, qwertzui, qwertzui, 8",
@@ -158,6 +166,14 @@ class DirectAttributeCheckRuleTest {
 	/**
 	 * Test method for
 	 * {@link org.x2vc.analysis.rules.AbstractElementRule#checkNode(org.jsoup.nodes.Node, org.x2vc.xml.document.IXMLDocumentDescriptor, java.util.function.Consumer)}.
+	 *
+	 * @param html   the source code of the node that will be passed to the rule to
+	 *               check
+	 * @param prefix the prefix of the simulated generated value
+	 * @param value  the simulated generated value
+	 * @param query  the query value that is supposed to be used to retrieve the
+	 *               value descriptor
+	 * @param length the length of the simulated generated value
 	 */
 	@ParameterizedTest
 	@CsvSource({ "<p qwertzui=\"foobar\">test</p>, qwer, qwertzui, qwertzui, 8",
@@ -254,6 +270,15 @@ class DirectAttributeCheckRuleTest {
 	/**
 	 * Test method for
 	 * {@link org.x2vc.analysis.rules.DirectAttributeCheckRule#verifyNode(org.jsoup.nodes.Node, org.x2vc.xml.document.IXMLDocumentContainer, java.util.function.Consumer)}.
+	 *
+	 * @param html                       the source code of the node that will be
+	 *                                   passed to the rule to verify
+	 * @param elementSelector            the selector issued by the rule to identify
+	 *                                   the element
+	 * @param injectedAttribute          the name of the injected attribute
+	 *                                   identified by the payload
+	 * @param expectedVulnerabilityCount the number of vulnerabilities we expect to
+	 *                                   find
 	 */
 	@ParameterizedTest
 	@CsvSource({ "<p qwertzui=\"foobar\">test</p>, /p, qwertzui, 1",
