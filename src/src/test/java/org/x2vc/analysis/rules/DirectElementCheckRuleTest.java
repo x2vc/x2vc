@@ -162,10 +162,10 @@ class DirectElementCheckRuleTest extends AnalyzerRuleTestBase {
 			int expectedVulnerabilityCount) {
 		final UUID taskID = UUID.randomUUID();
 		final UUID schemaElementID = UUID.randomUUID();
-		final Element node = parseToElement(html);
 
 		mockModifierWithPayload(elementSelector, injectedElement, schemaElementID);
 
+		final Element node = parseToElement(html);
 		this.rule.verifyNode(taskID, node, this.documentContainer, this.vulnerabilityCollector);
 
 		assertEquals(expectedVulnerabilityCount, this.vulnerabilities.size());

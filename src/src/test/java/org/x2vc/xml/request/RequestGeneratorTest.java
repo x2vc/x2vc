@@ -353,8 +353,6 @@ class RequestGeneratorTest {
 			throws URISyntaxException, FileNotFoundException, JAXBException {
 		final IXMLSchema schema = loadSchema("MixedContent_WithoutSubElements.x2vc_schema");
 
-		final UUID rootElementID = UUID.fromString("45023ac4-9c79-4247-bbe5-36f893bd7eaa");
-
 		final IDocumentRequest request = this.requestGenerator.generateNewRequest(schema);
 		final IAddElementRule rootElementRule = request.getRootElementRule();
 		assertEquals(UUID.fromString("fe3fa767-685a-4c5a-8531-ca717a7cb72b"), rootElementRule.getElementReferenceID());
