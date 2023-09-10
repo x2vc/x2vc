@@ -4,8 +4,15 @@
 		<elementType contentType="ELEMENT" elementArrangement="SEQUENCE" id="a95c10f3-2a83-421e-b0f4-5f5d50152210">
 			<attribute name="orderNumber" datatype="STRING" optional="false" fixedValueset="false" userModifiable="false"
 				id="be9032d5-da44-47b7-b8d8-8a2da23f3fda" />
-			<attribute name="orderDate" datatype="STRING" optional="false" fixedValueset="false" userModifiable="false"
-				id="88a3d6ed-55f6-4546-b82e-e6ffb97a37ca" />
+			<attribute name="orderNumber" datatype="STRING" optional="false" fixedValueset="false" userModifiable="false"
+				id="be9032d5-da44-47b7-b8d8-8a2da23f3fda" />
+			<attribute name="system" datatype="STRING" optional="false" fixedValueset="false" userModifiable="true"
+				id="b59d6e81-03ec-441d-9b21-410adeea0754" >
+				<comment>system environment</comment>
+				<discreteValue datatype="STRING" stringValue="dev" id="1e1535b3-69c1-4fa9-a8fa-646e83f589d4" />
+				<discreteValue datatype="STRING" stringValue="test" id="0e0a9f5c-db39-4ac6-aa02-4903d9f896c5" />
+				<discreteValue datatype="STRING" stringValue="prod" id="c74256c6-3919-4f27-bb4c-74bcefb6239" />
+			</attribute>
 			<comment>root element purchaseOrder</comment>
 			<subElement name="shipTo" elementID="c48e4c70-a325-4c0d-8a17-11f9440c4f68" minOccurrence="1" maxOccurrence="1"
 				id="1e84741f-6aaa-4c7f-bc46-e7a635cbb8a2" />

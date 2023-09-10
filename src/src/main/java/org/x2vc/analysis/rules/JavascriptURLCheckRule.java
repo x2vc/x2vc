@@ -8,6 +8,7 @@ import java.util.function.Consumer;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.jsoup.nodes.Attribute;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.x2vc.report.IVulnerabilityCandidate;
@@ -22,16 +23,15 @@ import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
 
 /**
- * Rule E.1: Check every element that contains the prefix used to generate the
- * values whether it is possible to inject new elements by modifying the input
- * data.
+ * Rule J.2: Check whether the src attribute of a script tag can be manipulated
+ * via the input data.
  */
-public class DirectElementCheckRule extends AbstractElementRule {
+public class JavascriptURLCheckRule extends AbstractAttributeRule {
 
 	/**
 	 * @see #getRuleID()
 	 */
-	public static final String RULE_ID = "E.1";
+	public static final String RULE_ID = "J.2";
 
 	private static final Logger logger = LogManager.getLogger();
 
@@ -41,7 +41,7 @@ public class DirectElementCheckRule extends AbstractElementRule {
 	 * @param schemaManager
 	 */
 	@Inject
-	DirectElementCheckRule(ISchemaManager schemaManager) {
+	JavascriptURLCheckRule(ISchemaManager schemaManager) {
 		super();
 		this.schemaManager = schemaManager;
 	}
@@ -53,30 +53,40 @@ public class DirectElementCheckRule extends AbstractElementRule {
 
 	@Override
 	protected boolean isApplicableTo(Element element, IXMLDocumentContainer xmlContainer) {
-		// check every element
-		return true;
+		// rule only applies to script elements
+		return element.tagName().equalsIgnoreCase("script");
 	}
 
 	@Override
-	protected void performCheckOn(Element element, IXMLDocumentContainer xmlContainer,
-			Consumer<IDocumentModifier> collector) {
-		logger.traceEntry("element {}", element);
+	protected boolean isApplicableTo(Element element, Attribute attribute, IXMLDocumentContainer xmlContainer) {
+		// rule only applies to src attributes
+		return attribute.getKey().equalsIgnoreCase("src");
+	}
 
-		final String elementName = element.tagName();
+	@Override
+	protected void performCheckOn(Element element, Attribute attribute, IXMLDocumentContainer xmlContainer,
+			Consumer<IDocumentModifier> collector) {
+		logger.traceEntry("element {}, attribute {}", element, attribute);
+
+		final String attributeValue = attribute.getValue();
 		final Optional<ImmutableSet<IValueDescriptor>> valueDescriptors = xmlContainer.getDocumentDescriptor()
-			.getValueDescriptors(elementName);
+			.getValueDescriptors(attributeValue);
 		if (valueDescriptors.isPresent()) {
-			final String parentElementPath = getPathToNode(element.parentNode());
+
+			final String elementPath = getPathToNode(element);
 			final IXMLSchema schema = this.schemaManager.getSchema(xmlContainer.getStylesheeURI());
+
 			for (final IValueDescriptor valueDescriptor : valueDescriptors.get()) {
 				final String currentValue = valueDescriptor.getValue();
-				// try to replace the entire element with script element
-				final AnalyzerRulePayload payload = AnalyzerRulePayload.builder()
+
+				// try to inject a source path into the attribute
+				final AnalyzerRulePayload stylePayload = AnalyzerRulePayload.builder()
 					.withSchemaElementID(valueDescriptor.getSchemaElementID())
-					.withElementSelector(parentElementPath + "/xss-e1-element")
-					.withInjectedValue("xss-e1-element")
+					.withInjectedValue("XSS-J.2")
+					.withElementSelector(elementPath)
 					.build();
-				requestModification(schema, valueDescriptor, currentValue, "xss-e1-element", payload, collector);
+				requestModification(schema, valueDescriptor, currentValue, "http://evil.attacker.com/XSS-J.2.js",
+						stylePayload, collector);
 			}
 		}
 		logger.traceExit();
@@ -91,11 +101,14 @@ public class DirectElementCheckRule extends AbstractElementRule {
 			checkArgument(injectedValue.isPresent());
 			checkArgument(schemaElementID.isPresent());
 
-			final String elementName = element.tagName();
-			final String injectedName = injectedValue.get();
-			final String elementPath = getPathToNode(element);
-			if (elementName.equals(injectedName)) {
-				logger.debug("element \"{}\" injected from input data, follow-up check positive", elementName);
+			final String injectedData = injectedValue.get();
+			final String actualValue = element.attr("src");
+			final String elementPath = getPathToNode(node);
+			if (actualValue.contains(injectedData)) {
+				logger.debug(
+						"attribute \"src\" contains injected data \"{}\" from input data, follow-up check positive",
+						injectedData);
+
 				// TODO Report Output: provide better input sample (formatting, highlighting?)
 				final String inputSample = xmlContainer.getDocument();
 
@@ -109,9 +122,8 @@ public class DirectElementCheckRule extends AbstractElementRule {
 					.withOutputSample(outputSample)
 					.build()
 					.sendTo(collector);
-
 			} else {
-				logger.debug("element \"{}\" not found, follow-up check negative", injectedName);
+				logger.debug("attribute \"src\" does not contain injected data, follow-up check negative");
 			}
 		} else {
 			logger.warn("follow-up check called for non-element node");
