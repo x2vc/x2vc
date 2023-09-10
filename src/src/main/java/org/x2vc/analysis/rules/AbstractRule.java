@@ -183,7 +183,9 @@ public abstract class AbstractRule implements IAnalyzerRule {
 		for (final String sectionID : getReportSectionIDs()) {
 			final Collection<IVulnerabilityCandidate> sectionCandidates = candidatesBySectionID.get(sectionID);
 			final VulnerabilityReportSection.Builder sectionBuilder = VulnerabilityReportSection.builder()
-				.withHeading(getSReportectionHeading(sectionID));
+				.withRuleID(getRuleID())
+				.withHeading(getReportSectionHeading(sectionID))
+				.withShortHeading(getReportSectionShortHeading(sectionID));
 			if (sectionCandidates.isEmpty()) {
 				// create empty placeholder section
 				sectionBuilder.withIntroduction(getReportPlaceholderIntroduction(sectionID));
@@ -232,9 +234,22 @@ public abstract class AbstractRule implements IAnalyzerRule {
 	 * @param sectionID
 	 * @return the section title
 	 */
-	protected String getSReportectionHeading(String sectionID) {
+	protected String getReportSectionHeading(String sectionID) {
 		return Messages
 			.getString(String.format("AnalyzerRule.%s.%s.Heading", getRuleID().replace(".", "_"), sectionID)); //$NON-NLS-1$
+	}
+
+	/**
+	 * Provides the shortened section title. The base class provides a default
+	 * implementation to read from externalized strings using the rule ID and the
+	 * section ID as a key.
+	 *
+	 * @param sectionID
+	 * @return the section title
+	 */
+	protected String getReportSectionShortHeading(String sectionID) {
+		return Messages
+			.getString(String.format("AnalyzerRule.%s.%s.ShortHeading", getRuleID().replace(".", "_"), sectionID)); //$NON-NLS-1$
 	}
 
 	/**

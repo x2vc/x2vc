@@ -83,6 +83,8 @@
 
 	<xsl:template match="section" mode="content">
 		<h2 id="{concat('s', (count(preceding-sibling::section) + 1))}">
+			<xsl:value-of select="ruleID" />
+			-
 			<xsl:value-of select="heading" />
 		</h2>
 		<p>
@@ -188,7 +190,9 @@
 			<xsl:choose>
 				<xsl:when test="issues/issue">
 					<span class="opener">
-						<xsl:value-of select="heading" />
+						<xsl:value-of select="ruleID" />
+						-
+						<xsl:value-of select="shortHeading" />
 					</span>
 					<ul>
 						<xsl:apply-templates select="issues/issue" mode="toc" />
@@ -196,7 +200,9 @@
 				</xsl:when>
 				<xsl:otherwise>
 					<a href="{concat('#s', (count(preceding-sibling::section) + 1))}">
-						<xsl:value-of select="heading" />
+						<xsl:value-of select="ruleID" />
+						-
+						<xsl:value-of select="shortHeading" />
 					</a>
 				</xsl:otherwise>
 			</xsl:choose>
