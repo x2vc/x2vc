@@ -3,10 +3,7 @@ package org.x2vc.process;
 import org.x2vc.analysis.DocumentAnalyzer;
 import org.x2vc.analysis.IAnalyzerRule;
 import org.x2vc.analysis.IDocumentAnalyzer;
-import org.x2vc.analysis.rules.DirectAttributeCheckRule;
-import org.x2vc.analysis.rules.DirectElementCheckRule;
-import org.x2vc.analysis.rules.DisabledOutputEscapingCheckRule;
-import org.x2vc.analysis.rules.ElementCopyCheckRule;
+import org.x2vc.analysis.rules.*;
 import org.x2vc.process.tasks.*;
 import org.x2vc.processor.HTMLDocumentFactory;
 import org.x2vc.processor.IHTMLDocumentFactory;
@@ -63,6 +60,7 @@ public class CheckerModule extends AbstractModule {
 		ruleBinder.addBinding().to(DirectElementCheckRule.class);
 		ruleBinder.addBinding().to(ElementCopyCheckRule.class);
 		ruleBinder.addBinding().to(DisabledOutputEscapingCheckRule.class);
+		ruleBinder.addBinding().to(JavascriptHandlerCheckRule.class);
 
 		// process
 		bind(IWorkerProcessManager.class).to(WorkerProcessManager.class);

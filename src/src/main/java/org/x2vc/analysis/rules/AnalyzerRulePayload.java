@@ -14,11 +14,13 @@ public class AnalyzerRulePayload implements IAnalyzerRulePayload {
 	private String injectedValue;
 	private UUID schemaElementID;
 	private String elementSelector;
+	private String attributeName;
 
 	private AnalyzerRulePayload(Builder builder) {
 		this.injectedValue = builder.injectedValue;
 		this.schemaElementID = builder.schemaElementID;
 		this.elementSelector = builder.elementSelector;
+		this.attributeName = builder.attributeName;
 	}
 
 	@Override
@@ -34,6 +36,11 @@ public class AnalyzerRulePayload implements IAnalyzerRulePayload {
 	@Override
 	public Optional<String> getElementSelector() {
 		return Optional.ofNullable(this.elementSelector);
+	}
+
+	@Override
+	public Optional<String> getAttributeName() {
+		return Optional.ofNullable(this.attributeName);
 	}
 
 	/**
@@ -52,6 +59,7 @@ public class AnalyzerRulePayload implements IAnalyzerRulePayload {
 		private String injectedValue;
 		private UUID schemaElementID;
 		private String elementSelector;
+		private String attributeName;
 
 		private Builder() {
 		}
@@ -90,6 +98,17 @@ public class AnalyzerRulePayload implements IAnalyzerRulePayload {
 		}
 
 		/**
+		 * Builder method for attributeName parameter.
+		 *
+		 * @param attributeName field to set
+		 * @return builder
+		 */
+		public Builder withAttributeName(String attributeName) {
+			this.attributeName = attributeName;
+			return this;
+		}
+
+		/**
 		 * Builder method of the builder.
 		 *
 		 * @return built class
@@ -101,7 +120,7 @@ public class AnalyzerRulePayload implements IAnalyzerRulePayload {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(this.elementSelector, this.injectedValue, this.schemaElementID);
+		return Objects.hash(this.attributeName, this.elementSelector, this.injectedValue, this.schemaElementID);
 	}
 
 	@Override
@@ -116,7 +135,8 @@ public class AnalyzerRulePayload implements IAnalyzerRulePayload {
 			return false;
 		}
 		final AnalyzerRulePayload other = (AnalyzerRulePayload) obj;
-		return Objects.equals(this.elementSelector, other.elementSelector)
+		return Objects.equals(this.attributeName, other.attributeName)
+				&& Objects.equals(this.elementSelector, other.elementSelector)
 				&& Objects.equals(this.injectedValue, other.injectedValue)
 				&& Objects.equals(this.schemaElementID, other.schemaElementID);
 	}

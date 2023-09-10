@@ -177,4 +177,23 @@ public abstract class AnalyzerRuleTestBase {
 		lenient().when(modifier.getPayload()).thenReturn(Optional.of(payload));
 	}
 
+	/**
+	 * @param elementSelector
+	 * @param injectedValue
+	 * @param schemaElementID
+	 * @param attributeName
+	 */
+	protected void mockModifierWithPayload(String elementSelector, String injectedValue,
+			final UUID schemaElementID, String attributeName) {
+		final IDocumentModifier modifier = mock(IDocumentModifier.class);
+		lenient().when(this.documentDescriptor.getModifier()).thenReturn(Optional.of(modifier));
+		final IAnalyzerRulePayload payload = mock(IAnalyzerRulePayload.class);
+		lenient().when(modifier.getPayload()).thenReturn(Optional.of(payload));
+		lenient().when(payload.getElementSelector()).thenReturn(Optional.of(elementSelector));
+		lenient().when(payload.getInjectedValue()).thenReturn(Optional.of(injectedValue));
+		lenient().when(payload.getSchemaElementID()).thenReturn(Optional.of(schemaElementID));
+		lenient().when(payload.getAttributeName()).thenReturn(Optional.of(attributeName));
+		lenient().when(modifier.getPayload()).thenReturn(Optional.of(payload));
+	}
+
 }
