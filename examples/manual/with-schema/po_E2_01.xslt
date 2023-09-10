@@ -64,17 +64,21 @@
 		<div>
 			<b>Ship To:</b>
 		</div>
-		<xsl:call-template name="address"/>
+		<xsl:call-template name="address">
+			<xsl:with-param name="use">ship</xsl:with-param>
+		</xsl:call-template>
 	</xsl:template>
 	<xsl:template match="billTo">
 		<xsl:comment>billing information</xsl:comment>
 		<div>
 			<b>Bill To:</b>
 		</div>
-		<xsl:call-template name="address"/>
+		<xsl:call-template name="address">
+			<xsl:with-param name="use">bill</xsl:with-param>
+		</xsl:call-template>
 	</xsl:template>
 	<xsl:template name="address">
-		<xsl:comment>billing information</xsl:comment>
+		<xsl:param name="use" />
 		<div>
 			<xsl:value-of select="name"/>
 		</div>
@@ -91,6 +95,13 @@
 		<div>
 			<xsl:value-of select="@country"/>
 		</div>
+		<xsl:if test="phone">
+			<div>
+				Phone:
+				<span id="{use}phone"><xsl:value-of select="phone"/></span>
+				<button onclick="window.open('tel:' + document.getElementById('{use}phone').innerHTML);">call</button>
+			</div>
+		</xsl:if>
 	</xsl:template>
 	<xsl:template match="items">
 		<xsl:comment>order items</xsl:comment>

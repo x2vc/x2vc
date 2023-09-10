@@ -31,6 +31,8 @@
 				id="4fd92ab0-9c88-4b20-ae38-0d7e7d0fab41" />
 			<subElement name="zip" elementID="988e2645-4f65-4102-bd0a-56bb07385212" minOccurrence="1" maxOccurrence="1"
 				id="174ea570-dad2-4586-862f-05e0656ad462" />
+			<subElement name="phone" elementID="bf8e0178-0a0e-489a-b5d0-24c47b39376b" minOccurrence="0" maxOccurrence="1"
+				id="0ea5e5b9-839f-41ef-ae5f-03c82e61903b" />
 		</elementType>
 
 		<elementType contentType="DATA" datatype="STRING" userModifiable="true" id="bcd654c9-2a3c-476f-97d7-21a805badddc">
@@ -220,6 +222,10 @@
 
 		<elementType contentType="DATA" datatype="STRING" maxLength="5" userModifiable="true" id="988e2645-4f65-4102-bd0a-56bb07385212">
 			<comment>zip used in shipTo and billTo</comment>
+		</elementType>
+
+		<elementType contentType="DATA" datatype="STRING" maxLength="50" userModifiable="true" id="bf8e0178-0a0e-489a-b5d0-24c47b39376b">
+			<comment>phone used in shipTo and billTo</comment>
 		</elementType>
 
 		<elementType contentType="MIXED" userModifiable="true" id="323ed056-5fda-494d-b169-2c8ee6757a6c">
