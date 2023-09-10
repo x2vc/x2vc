@@ -130,7 +130,14 @@ public class DocumentGenerator implements IDocumentGenerator {
 		private void processAddDataContentRule(IAddDataContentRule rule) throws XMLStreamException {
 			logger.traceEntry("for rule {} and element {}", rule.getID(), rule.getElementID());
 			final String value = this.valueGenerator.generateValue(rule);
-			this.xmlWriter.add(this.eventFactory.createCharacters(value));
+			if (value.contains("&")) {
+				// This is used e.g. by DisabledOutputEscapingCheckRule.
+				// We can't add this value through the xmlWriter because it will be escaped.
+				// Therefore we add a marker here that will be replaced in post-processing.
+				addRawDataForReplacement(value);
+			} else {
+				this.xmlWriter.add(this.eventFactory.createCharacters(value));
+			}
 			logger.traceExit();
 		}
 
@@ -173,10 +180,18 @@ public class DocumentGenerator implements IDocumentGenerator {
 			final String value = this.valueGenerator.generateValue(rule);
 			// We can't add raw data through the xmlWriter because it will be escaped.
 			// Therefore we add a marker here that will be replaced in post-processing.
+			addRawDataForReplacement(value);
+			logger.traceExit();
+		}
+
+		/**
+		 * @param value
+		 * @throws XMLStreamException
+		 */
+		protected void addRawDataForReplacement(final String value) throws XMLStreamException {
 			final UUID marker = UUID.randomUUID();
 			this.rawDataReplacementMap.put(marker, value);
 			this.xmlWriter.add(this.eventFactory.createCharacters(String.format("$%s$", marker)));
-			logger.traceExit();
 		}
 
 		/**

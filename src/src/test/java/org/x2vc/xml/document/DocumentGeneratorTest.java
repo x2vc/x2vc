@@ -175,6 +175,42 @@ class DocumentGeneratorTest {
 	}
 
 	@Test
+	void testGenerateDocument_ElementWithDataContent_UnescapedEntities() throws FileNotFoundException, JAXBException {
+		// load schema and extract relevant objects
+		this.schema = loadSchema("ElementWithDataContent.x2vc_schema");
+		final IXMLElementReference rootElementReference = this.schema.getRootElements().iterator().next();
+
+		// prepare generation rules and request
+		final AddDataContentRule dataContentRule = new AddDataContentRule(rootElementReference.getID());
+		this.rootElementRule = new AddElementRule.Builder(rootElementReference).addContentRule(dataContentRule).build();
+
+		// prepare value generator
+		when(this.valueGenerator.generateValue(dataContentRule)).thenReturn("foo&lt;br/&gt;bar");
+		this.valueDescriptors
+			.add(new ValueDescriptor(rootElementReference.getID(), dataContentRule.getID(), "foo&lt;br/&gt;bar",
+					false));
+
+		final IXMLDocumentContainer document = this.documentGenerator.generateDocument(this.request);
+		assertNotNull(document);
+
+		final String expectedXML = """
+									<root>foo&lt;br/&gt;bar</root>
+									""";
+		compareXML(expectedXML, document.getDocument());
+
+		final IXMLDocumentDescriptor descriptor = document.getDocumentDescriptor();
+		assertEquals(VALUE_PREFIX, descriptor.getValuePrefix());
+		assertEquals(VALUE_LENGTH, descriptor.getValueLength());
+
+		final Optional<ImmutableSet<IValueDescriptor>> valDescSet = descriptor.getValueDescriptors("foo&lt;br/&gt;bar");
+		assertTrue(valDescSet.isPresent());
+		assertEquals(1, valDescSet.get().size());
+		final IValueDescriptor valDesc = valDescSet.get().iterator().next();
+		assertEquals(rootElementReference.getID(), valDesc.getSchemaElementID());
+		assertEquals(dataContentRule.getID(), valDesc.getGenerationRuleID());
+	}
+
+	@Test
 	void testGenerateDocument_ElementWithSubElement() throws FileNotFoundException, JAXBException {
 		// load schema and extract relevant objects
 		this.schema = loadSchema("ElementWithSubElement.x2vc_schema");
