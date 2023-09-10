@@ -32,6 +32,11 @@ public interface IAnalyzerRulePayload extends IModifierPayload {
 	Optional<String> getElementSelector();
 
 	/**
+	 * @return the name of the element to check
+	 */
+	Optional<String> getElementName();
+
+	/**
 	 * @return the name of the attribute to check
 	 */
 	Optional<String> getAttributeName();

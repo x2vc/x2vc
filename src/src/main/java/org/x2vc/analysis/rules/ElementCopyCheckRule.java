@@ -90,10 +90,10 @@ public class ElementCopyCheckRule extends AbstractTextRule {
 					final AnalyzerRulePayload payload = AnalyzerRulePayload.builder()
 						.withSchemaElementID(schemaElementID)
 						.withElementSelector(parentElementPath)
-						.withInjectedValue("script") // this is the sub-element we'll be looking for
+						.withElementName("script")
+						.withInjectedValue("XSS-E.2")
 						.build();
-					// this is what we try to inject ---------------------------vvvvvvvvvvvvvvvvv
-					requestModification(schema, valueDescriptor, currentValue, "<script>alert('XSS!')</script>",
+					requestModification(schema, valueDescriptor, currentValue, "<script>alert('XSS-E.2!')</script>",
 							payload,
 							collector);
 				}
@@ -108,7 +108,15 @@ public class ElementCopyCheckRule extends AbstractTextRule {
 			Consumer<IVulnerabilityCandidate> collector) {
 		logger.traceEntry();
 		checkArgument(injectedValue.isPresent());
+		final String injectedContent = injectedValue.get();
+
 		checkArgument(schemaElementID.isPresent());
+
+		final Optional<IAnalyzerRulePayload> oPayload = getPayload(xmlContainer);
+		checkArgument(oPayload.isPresent());
+		final Optional<String> oElementName = oPayload.get().getElementName();
+		checkArgument(oElementName.isPresent());
+		final String elementName = oElementName.get();
 
 		// As per the "can't address the text node directly" comment above, the node to
 		// be examined here will actually be an Element node. We have to examine its
@@ -116,29 +124,34 @@ public class ElementCopyCheckRule extends AbstractTextRule {
 		// wouldn't have turned up as part of the text node anyway.
 		if (node instanceof final Element element) {
 			final String parentPath = getPathToNode(element);
-			final String injectedTag = injectedValue.get();
-			logger.debug("follow-up check on {} to check for injection of \"{}\" tag", parentPath, injectedTag);
+			logger.debug("follow-up check on {} to check for injection of \"{}\" tag", parentPath, elementName);
 
-			final Elements possiblyInjectedElements = element.getElementsByTag(injectedTag);
+			final Elements possiblyInjectedElements = element.getElementsByTag(elementName);
 			possiblyInjectedElements.forEach(injectedElement -> {
-				logger.debug("tag \"{}\" injected from input data, follow-up check positive",
-						injectedTag);
 
-				final String injectedPath = getPathToNode(injectedElement.parentNode());
+				final String actualContent = injectedElement.toString();
+				if (actualContent.contains(injectedContent)) {
 
-				// TODO Report Output: provide better input sample (formatting, highlighting?)
-				final String inputSample = xmlContainer.getDocument();
+					logger.debug(
+							"tag \"{}\" injected from input data contains search string \"{}\", follow-up check positive",
+							injectedElement.tagName(), injectedContent);
 
-				// the output sample can be derived from the node
-				final String outputSample = element.toString();
+					final String injectedPath = getPathToNode(injectedElement.parentNode());
 
-				new VulnerabilityCandidate.Builder(RULE_ID, taskID)
-					.withAffectingSchemaObject(schemaElementID.get())
-					.withAffectedOutputElement(injectedPath)
-					.withInputSample(inputSample)
-					.withOutputSample(outputSample)
-					.build()
-					.sendTo(collector);
+					// TODO Report Output: provide better input sample (formatting, highlighting?)
+					final String inputSample = xmlContainer.getDocument();
+
+					// the output sample can be derived from the node
+					final String outputSample = element.toString();
+
+					new VulnerabilityCandidate.Builder(RULE_ID, taskID)
+						.withAffectingSchemaObject(schemaElementID.get())
+						.withAffectedOutputElement(injectedPath)
+						.withInputSample(inputSample)
+						.withOutputSample(outputSample)
+						.build()
+						.sendTo(collector);
+				}
 
 			});
 		} else {

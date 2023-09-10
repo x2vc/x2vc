@@ -14,12 +14,14 @@ public class AnalyzerRulePayload implements IAnalyzerRulePayload {
 	private String injectedValue;
 	private UUID schemaElementID;
 	private String elementSelector;
+	private String elementName;
 	private String attributeName;
 
 	private AnalyzerRulePayload(Builder builder) {
 		this.injectedValue = builder.injectedValue;
 		this.schemaElementID = builder.schemaElementID;
 		this.elementSelector = builder.elementSelector;
+		this.elementName = builder.elementName;
 		this.attributeName = builder.attributeName;
 	}
 
@@ -36,6 +38,11 @@ public class AnalyzerRulePayload implements IAnalyzerRulePayload {
 	@Override
 	public Optional<String> getElementSelector() {
 		return Optional.ofNullable(this.elementSelector);
+	}
+
+	@Override
+	public Optional<String> getElementName() {
+		return Optional.ofNullable(this.elementName);
 	}
 
 	@Override
@@ -59,6 +66,7 @@ public class AnalyzerRulePayload implements IAnalyzerRulePayload {
 		private String injectedValue;
 		private UUID schemaElementID;
 		private String elementSelector;
+		private String elementName;
 		private String attributeName;
 
 		private Builder() {
@@ -98,6 +106,17 @@ public class AnalyzerRulePayload implements IAnalyzerRulePayload {
 		}
 
 		/**
+		 * Builder method for elementName parameter.
+		 *
+		 * @param elementName field to set
+		 * @return builder
+		 */
+		public Builder withElementName(String elementName) {
+			this.elementName = elementName;
+			return this;
+		}
+
+		/**
 		 * Builder method for attributeName parameter.
 		 *
 		 * @param attributeName field to set
@@ -115,6 +134,31 @@ public class AnalyzerRulePayload implements IAnalyzerRulePayload {
 		 */
 		public AnalyzerRulePayload build() {
 			return new AnalyzerRulePayload(this);
+		}
+
+		@Override
+		public int hashCode() {
+			return Objects.hash(this.attributeName, this.elementName, this.elementSelector, this.injectedValue,
+					this.schemaElementID);
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (obj == null) {
+				return false;
+			}
+			if (getClass() != obj.getClass()) {
+				return false;
+			}
+			final Builder other = (Builder) obj;
+			return Objects.equals(this.attributeName, other.attributeName)
+					&& Objects.equals(this.elementName, other.elementName)
+					&& Objects.equals(this.elementSelector, other.elementSelector)
+					&& Objects.equals(this.injectedValue, other.injectedValue)
+					&& Objects.equals(this.schemaElementID, other.schemaElementID);
 		}
 	}
 
