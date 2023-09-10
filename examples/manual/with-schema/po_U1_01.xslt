@@ -141,31 +141,20 @@
 	</xsl:template>
 	<xsl:template match="items">
 		<xsl:comment>order items</xsl:comment>
-		<xsl:choose>
-			<xsl:when test="@listType = 'table'">
-				<table border="1">
-					<tr>
-						<th>Pos.</th>
-						<th>Part No.</th>
-						<th>Product</th>
-						<th>Image</th>
-						<th>Qty.</th>
-						<th>Price</th>
-						<th>Ship Date</th>
-					</tr>
-					<xsl:apply-templates select="item" mode="table" />
-				</table>
-			</xsl:when>
-			<xsl:otherwise>
-				<!-- BAD EXAMPLE: this should trigger Rule E.1 because it allows for
-				     insertion of an arbitrary element through a source element value -->
-				<xsl:element name="{listType}">
-					<xsl:apply-templates select="item" mode="list" />
-				</xsl:element>
-			</xsl:otherwise>
-		</xsl:choose>
+		<table border="1">
+			<tr>
+				<th>Pos.</th>
+				<th>Part No.</th>
+				<th>Product</th>
+				<th>Image</th>
+				<th>Qty.</th>
+				<th>Price</th>
+				<th>Ship Date</th>
+			</tr>
+			<xsl:apply-templates select="item"/>
+		</table>
 	</xsl:template>
-	<xsl:template match="item" mode="table">
+	<xsl:template match="item">
 		<xsl:comment>item number
 			<xsl:value-of select="position()"/>:
 			<xsl:value-of select="product/productName"/>
@@ -182,7 +171,8 @@
 			</td>
 			<td>
 				<xsl:if test="product/productImage">
-					<img src="https://my.cdn.com/products/{@partNum}.png" />
+					<!-- BAD EXAMPLE: this allows for an attacker to manipulate the URL directly -->
+					<img src="{product/productImage/url}" />
 					<br/>
 					<xsl:value-of select="productImage/text"/>
 				</xsl:if>
@@ -197,18 +187,13 @@
 				<xsl:value-of select="shipDate"/>
 			</td>
 		</tr>
-		<xsl:apply-templates select="comment" mode="list"/>
+		<xsl:apply-templates select="comment" mode="item"/>
 	</xsl:template>
-	<xsl:template match="item" mode="table">
-		<xsl:comment>item number
-			<xsl:value-of select="position()"/>:
-			<xsl:value-of select="product/productName"/>
-		</xsl:comment>
-		<li>
-			<xsl:value-of select="product/@partNum"/>:
-			<xsl:value-of select="product/productName"/>
-			(<xsl:value-of select="quantity"/>x)
-		</li>
+	<xsl:template match="comment" mode="po">
+		<div>
+			<!-- exclude @* because we don't want to inject attributes into surrounding td -->
+			<xsl:apply-templates select="text()|b|i|br|span" mode="xss-filter"/>
+		</div>
 	</xsl:template>
 	<xsl:template match="comment" mode="item">
 		<tr>

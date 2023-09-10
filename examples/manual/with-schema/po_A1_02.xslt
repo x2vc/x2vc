@@ -173,7 +173,7 @@
 				<xsl:if test="product/productImage">
 					<xsl:element name="img">
 						<xsl:attribute name="src">
-							<xsl:value-of select="product/productImage/url" />
+							<xsl:value-of select="concat('https://my.cdn.com/products/', @partNum, '.png')" />
 						</xsl:attribute>
 						<!-- BAD EXAMPLE: this should trigger Rule A.1 because it allows for
 						     insertion of an arbitrary attribute through a source element value -->

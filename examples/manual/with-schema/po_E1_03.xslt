@@ -187,7 +187,7 @@
 			</td>
 			<td>
 				<xsl:if test="product/productImage">
-					<img src="@product/productImage/url" />
+					<img src="https://my.cdn.com/products/{@partNum}.png" />
 					<br/>
 					<xsl:value-of select="productImage/text"/>
 				</xsl:if>

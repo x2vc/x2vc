@@ -66,6 +66,7 @@ public class CheckerModule extends AbstractModule {
 		ruleBinder.addBinding().to(CSSAttributeCheckRule.class);
 		ruleBinder.addBinding().to(CSSBlockCheckRule.class);
 		ruleBinder.addBinding().to(CSSURLCheckRule.class);
+		ruleBinder.addBinding().to(GeneralURLCheckRule.class);
 
 		// process
 		bind(IWorkerProcessManager.class).to(WorkerProcessManager.class);
