@@ -98,8 +98,8 @@
 		<xsl:if test="phone">
 			<div>
 				Phone:
-				<span id="{use}phone"><xsl:value-of select="phone"/></span>
-				<button onclick="window.open('tel:' + document.getElementById('{use}phone').innerHTML);">call</button>
+				<span id="{$use}phone"><xsl:value-of select="phone"/></span>
+				<button onclick="window.open('tel:' + document.getElementById('{$use}phone').innerHTML);">call</button>
 			</div>
 		</xsl:if>
 	</xsl:template>
