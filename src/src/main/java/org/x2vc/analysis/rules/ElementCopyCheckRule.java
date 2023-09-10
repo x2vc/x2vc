@@ -97,12 +97,11 @@ public class ElementCopyCheckRule extends AbstractTextRule {
 
 	@Override
 	protected void verifyNode(UUID taskID, Node node, IXMLDocumentContainer xmlContainer,
-			Optional<String> injectedValue, Optional<UUID> schemaElementID, Optional<String> elementSelector,
+			Optional<String> injectedValue, Optional<UUID> schemaElementID,
 			Consumer<IVulnerabilityCandidate> collector) {
 		logger.traceEntry();
 		checkArgument(injectedValue.isPresent());
 		checkArgument(schemaElementID.isPresent());
-		checkArgument(elementSelector.isPresent());
 
 		// As per the "can't address the text node directly" comment above, the node to
 		// be examined here will actually be an Element node. We have to examine its
@@ -126,8 +125,14 @@ public class ElementCopyCheckRule extends AbstractTextRule {
 				// the output sample can be derived from the node
 				final String outputSample = element.toString();
 
-				collector.accept(new VulnerabilityCandidate(RULE_ID, taskID, schemaElementID.get(),
-						injectedPath, inputSample, outputSample));
+				new VulnerabilityCandidate.Builder(RULE_ID, taskID)
+					.withAffectingSchemaObject(schemaElementID.get())
+					.withAffectedOutputElement(injectedPath)
+					.withInputSample(inputSample)
+					.withOutputSample(outputSample)
+					.build()
+					.sendTo(collector);
+
 			});
 		} else {
 			logger.warn("follow-up check called for non-element node");

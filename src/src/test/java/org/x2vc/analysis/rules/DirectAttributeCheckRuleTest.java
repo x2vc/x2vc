@@ -155,12 +155,13 @@ class DirectAttributeCheckRuleTest extends AnalyzerRuleTestBase {
 	 *                                   identified by the payload
 	 * @param expectedVulnerabilityCount the number of vulnerabilities we expect to
 	 *                                   find
+	 * @param expectedOutputElement      the expected output element path
 	 */
 	@ParameterizedTest
-	@CsvSource({ "<p qwertzui=\"foobar\">test</p>, /p, qwertzui, 1",
-			"<p qwertzui=\"foobar\">test</p>, /p, asdfasdf, 0" })
+	@CsvSource({ "<p qwertzui=\"foobar\">test</p>, /p, qwertzui, 1, /html/body/div/p",
+			"<p qwertzui=\"foobar\">test</p>, /p, asdfasdf, 0, -" })
 	void testVerifyNode(String html, String elementSelector, String injectedAttribute,
-			int expectedVulnerabilityCount) {
+			int expectedVulnerabilityCount, String expectedOutputElement) {
 		final UUID taskID = UUID.randomUUID();
 		final UUID schemaElementID = UUID.randomUUID();
 
@@ -174,7 +175,7 @@ class DirectAttributeCheckRuleTest extends AnalyzerRuleTestBase {
 			final IVulnerabilityCandidate vc = this.vulnerabilities.get(0);
 			assertEquals(DirectAttributeCheckRule.RULE_ID, vc.getAnalyzerRuleID());
 			assertEquals(schemaElementID, vc.getAffectingSchemaObject());
-			assertEquals(elementSelector, vc.getAffectedOutputElement());
+			assertEquals(expectedOutputElement, vc.getAffectedOutputElement());
 //			assertEquals(, vc.getInputSample());
 			// TODO XSS Vulnerability: check input sampler
 			assertEquals(html, vc.getOutputSample());

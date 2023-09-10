@@ -154,12 +154,13 @@ class DirectElementCheckRuleTest extends AnalyzerRuleTestBase {
 	 *                                   by the payload
 	 * @param expectedVulnerabilityCount the number of vulnerabilities we expect to
 	 *                                   find
+	 * @param expectedOutputElement      the expected output element path
 	 */
 	@ParameterizedTest
-	@CsvSource({ "<qwertzui class=\"foobar\">test</qwertzui>, /qwertzui, qwertzui, 1",
-			"<qwertzui class=\"foobar\">test</qwertzui>, /qwertzui, asdfasdf, 0" })
+	@CsvSource({ "<qwertzui class=\"foobar\">test</qwertzui>, /qwertzui, qwertzui, 1, /html/body/div/qwertzui",
+			"<qwertzui class=\"foobar\">test</qwertzui>, /qwertzui, asdfasdf, 0, -" })
 	void testVerifyNode(String html, String elementSelector, String injectedElement,
-			int expectedVulnerabilityCount) {
+			int expectedVulnerabilityCount, String expectedOutputElement) {
 		final UUID taskID = UUID.randomUUID();
 		final UUID schemaElementID = UUID.randomUUID();
 
@@ -173,7 +174,7 @@ class DirectElementCheckRuleTest extends AnalyzerRuleTestBase {
 			final IVulnerabilityCandidate vc = this.vulnerabilities.get(0);
 			assertEquals(DirectElementCheckRule.RULE_ID, vc.getAnalyzerRuleID());
 			assertEquals(schemaElementID, vc.getAffectingSchemaObject());
-			assertEquals(elementSelector, vc.getAffectedOutputElement());
+			assertEquals(expectedOutputElement, vc.getAffectedOutputElement());
 //			assertEquals(, vc.getInputSample());
 			// TODO XSS Vulnerability: check input sampler
 			assertEquals(html.replaceAll("\\s", ""), vc.getOutputSample().replaceAll("\\s", ""));

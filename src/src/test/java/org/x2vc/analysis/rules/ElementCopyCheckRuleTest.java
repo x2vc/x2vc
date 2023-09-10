@@ -105,6 +105,7 @@ class ElementCopyCheckRuleTest extends AnalyzerRuleTestBase {
 	 *                                   by the payload
 	 * @param expectedVulnerabilityCount the number of vulnerabilities we expect to
 	 *                                   find
+	 * @param expectedOutputElement      the expected output element path
 	 */
 	@ParameterizedTest
 	@CsvSource({ "<p>foobar123</p>, sel, script, 0, -",

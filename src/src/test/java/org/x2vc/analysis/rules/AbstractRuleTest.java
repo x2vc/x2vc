@@ -43,7 +43,7 @@ class AbstractRuleTest {
 
 		@Override
 		protected void verifyNode(UUID taskID, Node node, IXMLDocumentContainer xmlContainer,
-				Optional<String> injectedValue, Optional<UUID> schemaElementID, Optional<String> elementSelector,
+				Optional<String> injectedValue, Optional<UUID> schemaElementID,
 				Consumer<IVulnerabilityCandidate> collector) {
 			throw new UnsupportedOperationException();
 		}

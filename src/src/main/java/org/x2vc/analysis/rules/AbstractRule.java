@@ -79,8 +79,7 @@ public abstract class AbstractRule implements IAnalyzerRule {
 		final IAnalyzerRulePayload payload = getPayloadChecked(xmlContainer);
 		final Optional<String> injectedValue = payload.getInjectedValue();
 		final Optional<UUID> schemaElementID = payload.getSchemaElementID();
-		final Optional<String> elementSelector = payload.getElementSelector();
-		verifyNode(taskID, node, xmlContainer, injectedValue, schemaElementID, elementSelector, collector);
+		verifyNode(taskID, node, xmlContainer, injectedValue, schemaElementID, collector);
 		logger.traceExit();
 	}
 
@@ -90,11 +89,10 @@ public abstract class AbstractRule implements IAnalyzerRule {
 	 * @param xmlContainer
 	 * @param injectedValue
 	 * @param schemaElementID
-	 * @param elementSelector
 	 * @param collector
 	 */
 	protected abstract void verifyNode(UUID taskID, Node node, IXMLDocumentContainer xmlContainer,
-			Optional<String> injectedValue, Optional<UUID> schemaElementID, Optional<String> elementSelector,
+			Optional<String> injectedValue, Optional<UUID> schemaElementID,
 			Consumer<IVulnerabilityCandidate> collector);
 
 	/**
@@ -306,8 +304,7 @@ public abstract class AbstractRule implements IAnalyzerRule {
 		sectionCandidates
 			.forEach(c -> selectedCandidates.put(c.getAffectedOutputElement(), c.getAffectingSchemaObject(), c));
 		final List<IVulnerabilityReportIssue> result = Lists.newArrayList();
-		selectedCandidates.cellSet().forEach(cell -> result.add(VulnerabilityReportIssue
-			.builder()
+		selectedCandidates.cellSet().forEach(cell -> result.add(VulnerabilityReportIssue.builder()
 			.withAffectedOutputElement(cell.getRowKey())
 			.addAffectingInputElements(schema.getObjectPaths(cell.getColumnKey()))
 			.addExample(cell.getValue().getInputSample(), cell.getValue().getOutputSample())
@@ -335,30 +332,160 @@ public abstract class AbstractRule implements IAnalyzerRule {
 		logger.traceEntry();
 		final IXMLSchemaObject schemaObject = schema.getObjectByID(valueDescriptor.getSchemaElementID());
 		if (schemaObject.isAttribute()) {
-			final IXMLAttribute attribute = schemaObject.asAttribute();
-			if (attribute.getDatatype() == XMLDatatype.STRING) {
-				final Integer maxLength = attribute.getMaxLength().orElse(Integer.MAX_VALUE);
-				if (replacementValue.length() <= maxLength) {
-					new DocumentValueModifier.Builder(valueDescriptor).withAnalyzerRuleID(getRuleID())
-						.withOriginalValue(originalValue).withReplacementValue(replacementValue).withPayload(payload)
-						.sendTo(collector);
-				}
-			}
+			requestAttributeModification(schemaObject.asAttribute(), valueDescriptor, originalValue, replacementValue,
+					payload, collector);
 		} else if (schemaObject.isElement()) {
-			final IXMLElementType element = schemaObject.asElement();
-			if (element.getDatatype() == XMLDatatype.STRING) {
-				final Integer maxLength = element.getMaxLength().orElse(Integer.MAX_VALUE);
-				if (replacementValue.length() <= maxLength) {
-					new DocumentValueModifier.Builder(valueDescriptor).withAnalyzerRuleID(getRuleID())
-						.withOriginalValue(originalValue).withReplacementValue(replacementValue).withPayload(payload)
-						.sendTo(collector);
-				}
-			}
+			requestElementModification(schemaObject.asElement(), valueDescriptor, originalValue, replacementValue,
+					payload, collector);
 		} else {
 			throw logger
-				.throwing(new IllegalArgumentException("Modification requests are not possible for this object type"));
+				.throwing(new IllegalArgumentException(
+						"Modification requests are not possible for this schema object type"));
 		}
 		logger.traceExit();
 	}
 
+	/**
+	 * @param attribute
+	 * @param valueDescriptor
+	 * @param originalValue
+	 * @param replacementValue
+	 * @param payload
+	 * @param collector
+	 */
+	protected void requestAttributeModification(final IXMLAttribute attribute, IValueDescriptor valueDescriptor,
+			String originalValue, String replacementValue, IModifierPayload payload,
+			Consumer<IDocumentModifier> collector) {
+		logger.traceEntry();
+		if (attribute.getDatatype() == XMLDatatype.STRING) {
+			final Integer maxLength = attribute.getMaxLength().orElse(Integer.MAX_VALUE);
+			if (replacementValue.length() <= maxLength) {
+				new DocumentValueModifier.Builder(valueDescriptor)
+					.withAnalyzerRuleID(getRuleID())
+					.withOriginalValue(originalValue)
+					.withReplacementValue(replacementValue)
+					.withPayload(payload)
+					.build()
+					.sendTo(collector);
+			}
+		}
+		logger.traceExit();
+	}
+
+	/**
+	 * @param element
+	 * @param valueDescriptor
+	 * @param originalValue
+	 * @param replacementValue
+	 * @param payload
+	 * @param collector
+	 */
+	protected void requestElementModification(final IXMLElementType element, IValueDescriptor valueDescriptor,
+			String originalValue, String replacementValue, IModifierPayload payload,
+			Consumer<IDocumentModifier> collector) {
+		logger.traceEntry();
+		switch (element.getContentType()) {
+		case DATA:
+			requestDataElementModification(element, valueDescriptor, originalValue, replacementValue, payload,
+					collector);
+			break;
+		case MIXED:
+			requestMixedElementModification(valueDescriptor, originalValue, replacementValue, payload,
+					collector);
+			break;
+		default:
+			final String message = String.format("Modification requests are not implemented for element type %s",
+					element.getContentType());
+			throw logger.throwing(new IllegalArgumentException(message));
+		}
+		logger.traceExit();
+	}
+
+	/**
+	 * @param element
+	 * @param valueDescriptor
+	 * @param originalValue
+	 * @param replacementValue
+	 * @param payload
+	 * @param collector
+	 */
+	protected void requestDataElementModification(final IXMLElementType element, IValueDescriptor valueDescriptor,
+			String originalValue, String replacementValue, IModifierPayload payload,
+			Consumer<IDocumentModifier> collector) {
+		logger.traceEntry();
+		switch (element.getDatatype()) {
+		case BOOLEAN:
+			if (replacementValue.equals("true") || replacementValue.equals("false")) {
+				new DocumentValueModifier.Builder(valueDescriptor)
+					.withAnalyzerRuleID(getRuleID())
+					.withOriginalValue(originalValue)
+					.withReplacementValue(replacementValue)
+					.withPayload(payload)
+					.build()
+					.sendTo(collector);
+			}
+			break;
+		case INTEGER:
+			try {
+				final int intValue = Integer.parseInt(replacementValue);
+				final Integer minValue = element.getMinValue().orElse(Integer.MIN_VALUE);
+				final Integer maxValue = element.getMaxValue().orElse(Integer.MAX_VALUE);
+				if ((intValue >= minValue) && (intValue <= maxValue)) {
+					new DocumentValueModifier.Builder(valueDescriptor)
+						.withAnalyzerRuleID(getRuleID())
+						.withOriginalValue(originalValue)
+						.withReplacementValue(replacementValue)
+						.withPayload(payload)
+						.build()
+						.sendTo(collector);
+				}
+			} catch (final NumberFormatException e) {
+				logger.debug("requested value {} is not a valid integer and will be disregarded", replacementValue);
+			}
+			break;
+		case STRING:
+			final Integer maxLength = element.getMaxLength().orElse(Integer.MAX_VALUE);
+			if (replacementValue.length() <= maxLength) {
+				new DocumentValueModifier.Builder(valueDescriptor)
+					.withAnalyzerRuleID(getRuleID())
+					.withOriginalValue(originalValue)
+					.withReplacementValue(replacementValue)
+					.withPayload(payload)
+					.build()
+					.sendTo(collector);
+			} else {
+				logger.debug("requested value \"{}\" is too long ({} > {}) and will be disregarded", replacementValue,
+						replacementValue.length(), maxLength);
+			}
+			break;
+		default:
+			final String message = String.format("Modification requests are not implemented for data type %s",
+					element.getDatatype());
+			throw logger.throwing(new IllegalArgumentException(message));
+		}
+		logger.traceExit();
+
+	}
+
+	/**
+	 * @param valueDescriptor
+	 * @param originalValue
+	 * @param replacementValue
+	 * @param payload
+	 * @param collector
+	 */
+	protected void requestMixedElementModification(IValueDescriptor valueDescriptor,
+			String originalValue, String replacementValue, IModifierPayload payload,
+			Consumer<IDocumentModifier> collector) {
+		logger.traceEntry();
+		new DocumentValueModifier.Builder(valueDescriptor)
+			.withAnalyzerRuleID(getRuleID())
+			.withOriginalValue(originalValue)
+			.withReplacementValue(replacementValue)
+			.withPayload(payload)
+			.build()
+			.sendTo(collector);
+		logger.traceExit();
+
+	}
 }

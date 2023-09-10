@@ -80,6 +80,11 @@ public class DocumentValueModifier implements IDocumentValueModifier {
 			.withOriginalValue(null).withAnalyzerRuleID(null).build();
 	}
 
+	@Override
+	public void sendTo(Consumer<IDocumentModifier> consumer) {
+		consumer.accept(this);
+	}
+
 	/**
 	 * Builder to build {@link DocumentValueModifier}.
 	 */
@@ -184,15 +189,6 @@ public class DocumentValueModifier implements IDocumentValueModifier {
 		 */
 		public DocumentValueModifier build() {
 			return new DocumentValueModifier(this);
-		}
-
-		/**
-		 * Creates the modifier and sends it directly to a consumer.
-		 *
-		 * @param collector
-		 */
-		public void sendTo(Consumer<IDocumentModifier> collector) {
-			collector.accept(build());
 		}
 
 	}

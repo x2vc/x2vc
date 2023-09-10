@@ -84,16 +84,16 @@ public class DirectElementCheckRule extends AbstractElementRule {
 
 	@Override
 	protected void verifyNode(UUID taskID, Node node, IXMLDocumentContainer xmlContainer,
-			Optional<String> injectedValue, Optional<UUID> schemaElementID, Optional<String> elementSelector,
+			Optional<String> injectedValue, Optional<UUID> schemaElementID,
 			Consumer<IVulnerabilityCandidate> collector) {
 		logger.traceEntry();
 		if (node instanceof final Element element) {
 			checkArgument(injectedValue.isPresent());
 			checkArgument(schemaElementID.isPresent());
-			checkArgument(elementSelector.isPresent());
 
 			final String elementName = element.tagName();
 			final String injectedName = injectedValue.get();
+			final String elementPath = getPathToNode(element);
 			if (elementName.equals(injectedName)) {
 				logger.debug("element \"{}\" injected from input data, follow-up check positive", elementName);
 				// TODO Report Output: provide better input sample (formatting, highlighting?)
@@ -102,8 +102,14 @@ public class DirectElementCheckRule extends AbstractElementRule {
 				// the output sample can be derived from the node
 				final String outputSample = node.toString();
 
-				collector.accept(new VulnerabilityCandidate(RULE_ID, taskID, schemaElementID.get(),
-						elementSelector.get(), inputSample, outputSample));
+				new VulnerabilityCandidate.Builder(RULE_ID, taskID)
+					.withAffectingSchemaObject(schemaElementID.get())
+					.withAffectedOutputElement(elementPath)
+					.withInputSample(inputSample)
+					.withOutputSample(outputSample)
+					.build()
+					.sendTo(collector);
+
 			} else {
 				logger.debug("element \"{}\" not found, follow-up check negative", injectedName);
 			}

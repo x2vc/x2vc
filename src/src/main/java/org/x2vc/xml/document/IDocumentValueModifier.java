@@ -2,6 +2,7 @@ package org.x2vc.xml.document;
 
 import java.util.Optional;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 import org.x2vc.xml.request.IGenerationRule;
 
@@ -31,5 +32,12 @@ public interface IDocumentValueModifier extends IDocumentModifier {
 	 * @return the new value to be used
 	 */
 	String getReplacementValue();
+
+	/**
+	 * Sends the modifier to the consumer provided.
+	 *
+	 * @param consumer
+	 */
+	void sendTo(Consumer<IDocumentModifier> consumer);
 
 }
