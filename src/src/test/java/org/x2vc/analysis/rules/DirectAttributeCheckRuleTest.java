@@ -1,7 +1,6 @@
 package org.x2vc.analysis.rules;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.lenient;
@@ -54,20 +53,26 @@ class DirectAttributeCheckRuleTest extends AnalyzerRuleTestBase {
 	 * Test method for
 	 * {@link org.x2vc.analysis.rules.AbstractElementRule#checkNode(org.jsoup.nodes.Node, org.x2vc.xml.document.IXMLDocumentDescriptor, java.util.function.Consumer)}.
 	 *
-	 * @param html   the source code of the node that will be passed to the rule to
-	 *               check
-	 * @param prefix the prefix of the simulated generated value
-	 * @param value  the simulated generated value
-	 * @param query  the query value that is supposed to be used to retrieve the
-	 *               value descriptor
-	 * @param length the length of the simulated generated value
+	 * @param html              the source code of the node that will be passed to
+	 *                          the rule to check
+	 * @param query             the query value that is supposed to be used to
+	 *                          retrieve the value descriptor
+	 * @param modifiersExpected whether the check should result in modifiers being
+	 *                          issued
 	 */
 	@ParameterizedTest
-	@CsvSource({ "<p qwertzui=\"foobar\">test</p>, qwer, qwertzui, qwertzui, 8",
-			"<p onqwertzui=\"foobar\">test</p>, qwer, qwertzui, onqwertzui, 8",
-			"<p qwertzuistyle=\"foobar\">test</p>, qwer, qwertzui, qwertzuistyle, 8",
-			"<p onqwertzuistyle=\"foobar\">test</p>, qwer, qwertzui, onqwertzuistyle, 8" })
-	void testCheckAttributeNode(String html, String prefix, String value, String query, int length) {
+	@CsvSource({
+			"<p qwer1234=\"foobar\">test</p>,        qwer1234,        true",
+			"<p onqwer1234=\"foobar\">test</p>,      onqwer1234,      true",
+			"<p qwer1234style=\"foobar\">test</p>,   qwer1234style,   true",
+			"<p onqwer1234style=\"foobar\">test</p>, onqwer1234style, true"
+	})
+	void testCheckAttributeNode(String html, String query, boolean modifiersExpected) {
+		// common test values
+		final String valuePrefix = "qwer";
+		final int valueLength = 8;
+		final String generatedValue = "qwer1234";
+
 		// prepare schema information
 		final IXMLAttribute attribute = mockUnlimitedStringAttribute();
 		final UUID attributeID = attribute.getID();
@@ -75,11 +80,11 @@ class DirectAttributeCheckRuleTest extends AnalyzerRuleTestBase {
 		// prepare a value descriptor to return a known ID
 		final IValueDescriptor valueDescriptor = mock(IValueDescriptor.class);
 		when(valueDescriptor.getSchemaElementID()).thenReturn(attributeID);
-		when(valueDescriptor.getValue()).thenReturn(value);
+		when(valueDescriptor.getValue()).thenReturn(generatedValue);
 
 		final Element node = parseToElement(html);
-		lenient().when(this.documentDescriptor.getValuePrefix()).thenReturn(prefix);
-		lenient().when(this.documentDescriptor.getValueLength()).thenReturn(length);
+		lenient().when(this.documentDescriptor.getValuePrefix()).thenReturn(valuePrefix);
+		lenient().when(this.documentDescriptor.getValueLength()).thenReturn(valueLength);
 
 		when(this.documentDescriptor.getValueDescriptors(anyString())).thenReturn(Optional.empty());
 		when(this.documentDescriptor.getValueDescriptors(query))
@@ -87,12 +92,12 @@ class DirectAttributeCheckRuleTest extends AnalyzerRuleTestBase {
 
 		this.rule.checkNode(node, this.documentContainer, this.modifierCollector);
 
-		assertFalse(this.modifiers.isEmpty());
+		assertEquals(modifiersExpected, !this.modifiers.isEmpty());
 		this.modifiers.forEach(m -> {
 			if (m instanceof final IDocumentValueModifier vm) {
 				assertEquals(attributeID, vm.getSchemaElementID());
 				assertTrue(vm.getOriginalValue().isPresent());
-				assertEquals(value, vm.getOriginalValue().get());
+				assertEquals(generatedValue, vm.getOriginalValue().get());
 			}
 		});
 	}
@@ -101,31 +106,38 @@ class DirectAttributeCheckRuleTest extends AnalyzerRuleTestBase {
 	 * Test method for
 	 * {@link org.x2vc.analysis.rules.AbstractElementRule#checkNode(org.jsoup.nodes.Node, org.x2vc.xml.document.IXMLDocumentDescriptor, java.util.function.Consumer)}.
 	 *
-	 * @param html   the source code of the node that will be passed to the rule to
-	 *               check
-	 * @param prefix the prefix of the simulated generated value
-	 * @param value  the simulated generated value
-	 * @param query  the query value that is supposed to be used to retrieve the
-	 *               value descriptor
-	 * @param length the length of the simulated generated value
+	 * @param html           the source code of the node that will be passed to the
+	 *                       rule to check
+	 * @param valuePrefix    the prefix of the simulated generated value
+	 * @param generatedValue the simulated generated value
+	 * @param query          the query value that is supposed to be used to retrieve
+	 *                       the value descriptor
+	 * @param valueLength    the length of the simulated generated value
 	 */
 	@ParameterizedTest
-	@CsvSource({ "<p qwertzui=\"foobar\">test</p>, qwer, qwertzui, qwertzui, 8",
-			"<p onqwertzui=\"foobar\">test</p>, qwer, qwertzui, onqwertzui, 8",
-			"<p qwertzuistyle=\"foobar\">test</p>, qwer, qwertzui, qwertzuistyle, 8",
-			"<p onqwertzuistyle=\"foobar\">test</p>, qwer, qwertzui, onqwertzuistyle, 8" })
-	void testCheckElementNode(String html, String prefix, String value, String query, int length) {
+	@CsvSource({
+			"<p qwer1234=\"foobar\">test</p>,        qwer1234,        true",
+			"<p onqwer1234=\"foobar\">test</p>,      onqwer1234,      true",
+			"<p qwer1234style=\"foobar\">test</p>,   qwer1234style,   true",
+			"<p onqwer1234style=\"foobar\">test</p>, onqwer1234style, true"
+	})
+	void testCheckElementNode(String html, String query, boolean modifiersExpected) {
+		// common test values
+		final String valuePrefix = "qwer";
+		final int valueLength = 8;
+		final String generatedValue = "qwer1234";
+
 		final IXMLElementType elementType = mockUnlimitedStringElement();
 		final UUID elementTypeID = elementType.getID();
 
 		// prepare a value descriptor to return a known ID
 		final IValueDescriptor valueDescriptor = mock(IValueDescriptor.class);
 		when(valueDescriptor.getSchemaElementID()).thenReturn(elementTypeID);
-		when(valueDescriptor.getValue()).thenReturn(value);
+		when(valueDescriptor.getValue()).thenReturn(generatedValue);
 
 		final Element node = parseToElement(html);
-		lenient().when(this.documentDescriptor.getValuePrefix()).thenReturn(prefix);
-		lenient().when(this.documentDescriptor.getValueLength()).thenReturn(length);
+		lenient().when(this.documentDescriptor.getValuePrefix()).thenReturn(valuePrefix);
+		lenient().when(this.documentDescriptor.getValueLength()).thenReturn(valueLength);
 
 		when(this.documentDescriptor.getValueDescriptors(anyString())).thenReturn(Optional.empty());
 		when(this.documentDescriptor.getValueDescriptors(query))
@@ -133,12 +145,12 @@ class DirectAttributeCheckRuleTest extends AnalyzerRuleTestBase {
 
 		this.rule.checkNode(node, this.documentContainer, this.modifierCollector);
 
-		assertFalse(this.modifiers.isEmpty());
+		assertEquals(modifiersExpected, !this.modifiers.isEmpty());
 		this.modifiers.forEach(m -> {
 			if (m instanceof final IDocumentValueModifier vm) {
 				assertEquals(elementTypeID, vm.getSchemaElementID());
 				assertTrue(vm.getOriginalValue().isPresent());
-				assertEquals(value, vm.getOriginalValue().get());
+				assertEquals(generatedValue, vm.getOriginalValue().get());
 			}
 		});
 	}
@@ -158,8 +170,10 @@ class DirectAttributeCheckRuleTest extends AnalyzerRuleTestBase {
 	 * @param expectedOutputElement      the expected output element path
 	 */
 	@ParameterizedTest
-	@CsvSource({ "<p qwertzui=\"foobar\">test</p>, /p, qwertzui, 1, /html/body/div/p",
-			"<p qwertzui=\"foobar\">test</p>, /p, asdfasdf, 0, -" })
+	@CsvSource({
+			"<p qwertzui=\"foobar\">test</p>, /p, qwertzui, 1, /html/body/div/p",
+			"<p qwertzui=\"foobar\">test</p>, /p, asdfasdf, 0, -"
+	})
 	void testVerifyNode(String html, String elementSelector, String injectedAttribute,
 			int expectedVulnerabilityCount, String expectedOutputElement) {
 		final UUID taskID = UUID.randomUUID();

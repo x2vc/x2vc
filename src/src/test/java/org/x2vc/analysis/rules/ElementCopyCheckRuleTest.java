@@ -53,25 +53,30 @@ class ElementCopyCheckRuleTest extends AnalyzerRuleTestBase {
 	 * Test method for
 	 * {@link org.x2vc.analysis.rules.AbstractElementRule#checkNode(org.jsoup.nodes.Node, org.x2vc.xml.document.IXMLDocumentDescriptor, java.util.function.Consumer)}.
 	 *
-	 * @param html   the source text of the node that will be passed to the rule to
-	 *               check
-	 * @param prefix the prefix of the simulated generated value
-	 * @param value  the simulated generated value
-	 * @param length the length of the simulated generated value
+	 * @param html              the source code of the node that will be passed to
+	 *                          the rule to check
+	 * @param query             the query value that is supposed to be used to
+	 *                          retrieve the value descriptor
+	 * @param modifiersExpected whether the check should result in modifiers being
+	 *                          issued
 	 */
 	@ParameterizedTest
 	@CsvSource({
-			"foobar, qwer, qwertzui, 8, DATA, true",
-			"foobar, qwer, qwertzui, 8, MIXED, true",
-			"qwertzui, qwer, qwertzui, 8, DATA, true",
-			"qwertzui, qwer, qwertzui, 8, MIXED, false",
-			"abcqwertzui, qwer, qwertzui, 8, DATA, true",
-			"abcqwertzui, qwer, qwertzui, 8, MIXED, false",
-			"qwertzuixyz, qwer, qwertzui, 8, DATA, true",
-			"qwertzuixyz, qwer, qwertzui, 8, MIXED, false"
+			"foobar,      DATA,  false",
+			"foobar,      MIXED, false",
+			"qwer1234,    DATA,  false",
+			"qwer1234,    MIXED, true",
+			"abcqwer1234, DATA,  false",
+			"abcqwer1234, MIXED, true",
+			"qwer1234xyz, DATA,  false",
+			"qwer1234xyz, MIXED, true"
 	})
-	void testCheckElementNode(String text, String prefix, String value, int length,
-			IXMLElementType.ContentType contentType, boolean modifiersEmpty) {
+	void testCheckElementNode(String text, IXMLElementType.ContentType contentType, boolean modifiersExpected) {
+		// common test values
+		final String valuePrefix = "qwer";
+		final int valueLength = 8;
+		final String generatedValue = "qwer1234";
+
 		IXMLElementType elementType;
 		if (contentType == ContentType.DATA) {
 			elementType = mockUnlimitedStringElement();
@@ -86,11 +91,11 @@ class ElementCopyCheckRuleTest extends AnalyzerRuleTestBase {
 		final IValueDescriptor valueDescriptor = mock(IValueDescriptor.class);
 
 		lenient().when(valueDescriptor.getSchemaElementID()).thenReturn(elementTypeID);
-		lenient().when(valueDescriptor.getValue()).thenReturn(value);
+		lenient().when(valueDescriptor.getValue()).thenReturn(generatedValue);
 
 		final Node node = parseToNode(text);
-		lenient().when(this.documentDescriptor.getValuePrefix()).thenReturn(prefix);
-		lenient().when(this.documentDescriptor.getValueLength()).thenReturn(length);
+		lenient().when(this.documentDescriptor.getValuePrefix()).thenReturn(valuePrefix);
+		lenient().when(this.documentDescriptor.getValueLength()).thenReturn(valueLength);
 
 		lenient().when(this.documentDescriptor.getValueDescriptors(anyString())).thenReturn(Optional.empty());
 		lenient().when(this.documentDescriptor.getValueDescriptors(text))
@@ -98,12 +103,12 @@ class ElementCopyCheckRuleTest extends AnalyzerRuleTestBase {
 
 		this.rule.checkNode(node, this.documentContainer, this.modifierCollector);
 
-		assertEquals(modifiersEmpty, this.modifiers.isEmpty());
+		assertEquals(modifiersExpected, !this.modifiers.isEmpty());
 		this.modifiers.forEach(m -> {
 			if (m instanceof final IDocumentValueModifier vm) {
 				assertEquals(elementTypeID, vm.getSchemaElementID());
 				assertTrue(vm.getOriginalValue().isPresent());
-				assertEquals(value, vm.getOriginalValue().get());
+				assertEquals(generatedValue, vm.getOriginalValue().get());
 			}
 		});
 	}
@@ -124,8 +129,10 @@ class ElementCopyCheckRuleTest extends AnalyzerRuleTestBase {
 	 * @param expectedOutputElement      the expected output element path
 	 */
 	@ParameterizedTest
-	@CsvSource({ "<p>foobar123</p>, sel, script, 0, -",
-			"<p>barfoo<script>alert('XSS')</script>foobar</p>, sel, XSS, 1, /html/body/div/p" })
+	@CsvSource({
+			"<p>foobar123</p>, sel, script, 0, -",
+			"<p>barfoo<script>alert('XSS')</script>foobar</p>, sel, XSS, 1, /html/body/div/p"
+	})
 	void testVerifyNode(String html, String elementSelector, String injectedElement,
 			int expectedVulnerabilityCount, String expectedOutputElement) {
 		final UUID taskID = UUID.randomUUID();
