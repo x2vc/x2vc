@@ -18,6 +18,42 @@
 		<title>Purchase Order
 			<xsl:value-of select="@orderNumber"/>
 		</title>
+		<xsl:choose>
+			<xsl:when test="@system = 'dev'">
+				<script src="dev/commonFunctions.js"></script>
+				<link rel="stylesheet" href="dev/commonStyles.css" />
+			</xsl:when>
+			<xsl:when test="@system = 'test'">
+				<script src="test/commonFunctions.js"></script>
+				<link rel="stylesheet" href="test/commonStyles.css" />
+			</xsl:when>
+			<xsl:when test="@system = 'prod'">
+				<script src="prod/commonFunctions.js"></script>
+				<link rel="stylesheet" href="prod/commonStyles.css" />
+			</xsl:when>
+		</xsl:choose>
+		<xsl:choose>
+			<xsl:when test="@background = 'ivory'">
+				<style>
+					body {background-color: ivory;}
+				</style>
+			</xsl:when>
+			<xsl:when test="@background = 'beige'">
+				<style>
+					body {background-color: beige;}
+				</style>
+			</xsl:when>
+			<xsl:when test="@background = 'seashell'">
+				<style>
+					body {background-color: seashell;}
+				</style>
+			</xsl:when>
+			<xsl:otherwise>
+				<style>
+					body {background-color: white;}
+				</style>
+			</xsl:otherwise>
+		</xsl:choose>
 	</xsl:template>
 	<xsl:template name="poBody">
 		<h1>Purchase Order</h1>

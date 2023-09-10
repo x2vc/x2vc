@@ -21,6 +21,39 @@
 		<!-- BAD EXAMPLE: this should trigger Rule J.2 because input value is used directly in the script location -->
 		<script src="{@system}/commonFunctions.js">
 		</script>
+		<xsl:choose>
+			<xsl:when test="@system = 'dev'">
+				<link rel="stylesheet" href="dev/commonStyles.css" />
+			</xsl:when>
+			<xsl:when test="@system = 'test'">
+				<link rel="stylesheet" href="test/commonStyles.css" />
+			</xsl:when>
+			<xsl:when test="@system = 'prod'">
+				<link rel="stylesheet" href="prod/commonStyles.css" />
+			</xsl:when>
+		</xsl:choose>
+		<xsl:choose>
+			<xsl:when test="@background = 'ivory'">
+				<style>
+					body {background-color: ivory;}
+				</style>
+			</xsl:when>
+			<xsl:when test="@background = 'beige'">
+				<style>
+					body {background-color: beige;}
+				</style>
+			</xsl:when>
+			<xsl:when test="@background = 'seashell'">
+				<style>
+					body {background-color: seashell;}
+				</style>
+			</xsl:when>
+			<xsl:otherwise>
+				<style>
+					body {background-color: white;}
+				</style>
+			</xsl:otherwise>
+		</xsl:choose>
 	</xsl:template>
 	<xsl:template name="poBody">
 		<h1>Purchase Order</h1>

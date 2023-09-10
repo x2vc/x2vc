@@ -13,6 +13,14 @@
 				<discreteValue datatype="STRING" stringValue="test" id="0e0a9f5c-db39-4ac6-aa02-4903d9f896c5" />
 				<discreteValue datatype="STRING" stringValue="prod" id="c74256c6-3919-4f27-bb4c-74bcefb6239" />
 			</attribute>
+			<attribute name="background" datatype="STRING" optional="false" fixedValueset="false" userModifiable="true"
+				id="e7ba1e88-1526-46bd-872a-eb70936116cb" >
+				<comment>background color</comment>
+				<discreteValue datatype="STRING" stringValue="white" id="6332862f-faf1-4050-833a-eae674cbdcf5" />
+				<discreteValue datatype="STRING" stringValue="ivory" id="e5a6cff6-bd6c-45ec-88ad-cd8ba07780f1" />
+				<discreteValue datatype="STRING" stringValue="beige" id="8d44e597-64d3-4049-8bbd-3160cb55bb41" />
+				<discreteValue datatype="STRING" stringValue="seashell" id="baeb8092-a597-4cd3-b986-f7a65602e6ff" />
+			</attribute>
 			<comment>root element purchaseOrder</comment>
 			<subElement name="shipTo" elementID="c48e4c70-a325-4c0d-8a17-11f9440c4f68" minOccurrence="1" maxOccurrence="1"
 				id="1e84741f-6aaa-4c7f-bc46-e7a635cbb8a2" />
