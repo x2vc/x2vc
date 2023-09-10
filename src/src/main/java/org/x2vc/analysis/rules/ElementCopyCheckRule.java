@@ -15,7 +15,9 @@ import org.jsoup.select.Elements;
 import org.x2vc.report.IVulnerabilityCandidate;
 import org.x2vc.report.VulnerabilityCandidate;
 import org.x2vc.schema.ISchemaManager;
+import org.x2vc.schema.structure.IXMLElementType.ContentType;
 import org.x2vc.schema.structure.IXMLSchema;
+import org.x2vc.schema.structure.IXMLSchemaObject;
 import org.x2vc.xml.document.IDocumentModifier;
 import org.x2vc.xml.document.IXMLDocumentContainer;
 import org.x2vc.xml.value.IValueDescriptor;
@@ -78,18 +80,24 @@ public class ElementCopyCheckRule extends AbstractTextRule {
 			final IXMLSchema schema = this.schemaManager.getSchema(xmlContainer.getStylesheeURI());
 			for (final IValueDescriptor valueDescriptor : valueDescriptors.get()) {
 				final String currentValue = valueDescriptor.getValue();
-				// try to replace the entire element with script element
 				final UUID schemaElementID = valueDescriptor.getSchemaElementID();
-				logger.debug("attempt to replace \"{}\" with \"<script></script>\" for schema element {}", currentValue,
-						schemaElementID);
-				final AnalyzerRulePayload payload = AnalyzerRulePayload.builder()
-					.withSchemaElementID(schemaElementID)
-					.withElementSelector(parentElementPath)
-					.withInjectedValue("script") // this is the sub-element we'll be looking for
-					.build();
-				// this is what we try to inject ---------------------------vvvvvvvvvvvvvvvvv
-				requestModification(schema, valueDescriptor, currentValue, "<script>alert('XSS!')</script>", payload,
-						collector);
+				// The xsl:copy/copy-of vulnerability only applies to mixed output elements
+				final IXMLSchemaObject schemaElement = schema.getObjectByID(schemaElementID);
+				if (schemaElement.isElement() && schemaElement.asElement().getContentType() == ContentType.MIXED) {
+					// try to replace the entire element with script element
+					logger.debug("attempt to replace \"{}\" with \"<script></script>\" for schema element {}",
+							currentValue,
+							schemaElementID);
+					final AnalyzerRulePayload payload = AnalyzerRulePayload.builder()
+						.withSchemaElementID(schemaElementID)
+						.withElementSelector(parentElementPath)
+						.withInjectedValue("script") // this is the sub-element we'll be looking for
+						.build();
+					// this is what we try to inject ---------------------------vvvvvvvvvvvvvvvvv
+					requestModification(schema, valueDescriptor, currentValue, "<script>alert('XSS!')</script>",
+							payload,
+							collector);
+				}
 			}
 		}
 		logger.traceExit();

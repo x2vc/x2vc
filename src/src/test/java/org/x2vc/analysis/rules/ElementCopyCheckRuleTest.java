@@ -19,6 +19,7 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.x2vc.report.IVulnerabilityCandidate;
 import org.x2vc.schema.structure.IXMLElementType;
+import org.x2vc.schema.structure.IXMLElementType.ContentType;
 import org.x2vc.xml.document.IDocumentValueModifier;
 import org.x2vc.xml.value.IValueDescriptor;
 
@@ -59,16 +60,31 @@ class ElementCopyCheckRuleTest extends AnalyzerRuleTestBase {
 	 * @param length the length of the simulated generated value
 	 */
 	@ParameterizedTest
-	@CsvSource({ "foobar, qwer, qwertzui, 8, true",
-			"qwertzui, qwer, qwertzui, 8, false",
-			"abcqwertzui, qwer, qwertzui, 8, false",
-			"qwertzuixyz, qwer, qwertzui, 8, false" })
-	void testCheckElementNode(String text, String prefix, String value, int length, boolean modifiersEmpty) {
-		final IXMLElementType elementType = mockUnlimitedStringElement();
+	@CsvSource({
+			"foobar, qwer, qwertzui, 8, DATA, true",
+			"foobar, qwer, qwertzui, 8, MIXED, true",
+			"qwertzui, qwer, qwertzui, 8, DATA, true",
+			"qwertzui, qwer, qwertzui, 8, MIXED, false",
+			"abcqwertzui, qwer, qwertzui, 8, DATA, true",
+			"abcqwertzui, qwer, qwertzui, 8, MIXED, false",
+			"qwertzuixyz, qwer, qwertzui, 8, DATA, true",
+			"qwertzuixyz, qwer, qwertzui, 8, MIXED, false"
+	})
+	void testCheckElementNode(String text, String prefix, String value, int length,
+			IXMLElementType.ContentType contentType, boolean modifiersEmpty) {
+		IXMLElementType elementType;
+		if (contentType == ContentType.DATA) {
+			elementType = mockUnlimitedStringElement();
+		} else if (contentType == ContentType.MIXED) {
+			elementType = mockMixedElement();
+		} else {
+			throw new IllegalArgumentException("unsupported content type");
+		}
 		final UUID elementTypeID = elementType.getID();
 
 		// prepare a value descriptor to return a known ID
 		final IValueDescriptor valueDescriptor = mock(IValueDescriptor.class);
+
 		lenient().when(valueDescriptor.getSchemaElementID()).thenReturn(elementTypeID);
 		lenient().when(valueDescriptor.getValue()).thenReturn(value);
 

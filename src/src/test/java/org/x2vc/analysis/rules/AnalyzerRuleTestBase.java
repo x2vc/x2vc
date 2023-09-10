@@ -144,6 +144,21 @@ public abstract class AnalyzerRuleTestBase {
 	}
 
 	/**
+	 * @return
+	 * @throws IllegalArgumentException
+	 */
+	protected IXMLElementType mockMixedElement() throws IllegalArgumentException {
+		final UUID elementTypeID = UUID.randomUUID();
+		final IXMLElementType elementType = mock(IXMLElementType.class);
+		lenient().when(this.schema.getObjectByID(elementTypeID)).thenReturn(elementType);
+		lenient().when(elementType.getID()).thenReturn(elementTypeID);
+		lenient().when(elementType.asElement()).thenReturn(elementType);
+		lenient().when(elementType.isElement()).thenReturn(true);
+		lenient().when(elementType.getContentType()).thenReturn(ContentType.MIXED);
+		return elementType;
+	}
+
+	/**
 	 * @param elementSelector
 	 * @param injectedValue
 	 * @param schemaElementID
