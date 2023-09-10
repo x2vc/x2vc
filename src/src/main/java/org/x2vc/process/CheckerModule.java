@@ -61,6 +61,7 @@ public class CheckerModule extends AbstractModule {
 		ruleBinder.addBinding().to(ElementCopyCheckRule.class);
 		ruleBinder.addBinding().to(DisabledOutputEscapingCheckRule.class);
 		ruleBinder.addBinding().to(JavascriptHandlerCheckRule.class);
+		ruleBinder.addBinding().to(JavascriptBlockCheckRule.class);
 
 		// process
 		bind(IWorkerProcessManager.class).to(WorkerProcessManager.class);
