@@ -138,6 +138,7 @@ public abstract class AnalyzerRuleTestBase {
 		lenient().when(elementType.asElement()).thenReturn(elementType);
 		lenient().when(elementType.isElement()).thenReturn(true);
 		lenient().when(elementType.getContentType()).thenReturn(ContentType.DATA);
+		lenient().when(elementType.hasDataContent()).thenReturn(true);
 		lenient().when(elementType.getDatatype()).thenReturn(XMLDatatype.STRING);
 		lenient().when(elementType.getMaxLength()).thenReturn(Optional.empty());
 		return elementType;
@@ -155,6 +156,7 @@ public abstract class AnalyzerRuleTestBase {
 		lenient().when(elementType.asElement()).thenReturn(elementType);
 		lenient().when(elementType.isElement()).thenReturn(true);
 		lenient().when(elementType.getContentType()).thenReturn(ContentType.MIXED);
+		lenient().when(elementType.hasMixedContent()).thenReturn(true);
 		return elementType;
 	}
 
