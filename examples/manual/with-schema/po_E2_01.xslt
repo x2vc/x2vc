@@ -143,8 +143,9 @@
 	</xsl:template>
 	<xsl:template match="comment" mode="po">
 		<div>
-			<!-- exclude @* because we don't want to inject attributes into surrounding td -->
-			<xsl:apply-templates select="text()|b|i|br|span" mode="xss-filter"/>
+			<!-- BAD EXAMPLE: this should trigger Rule E.2 because it copies the entire
+			     subtree without further filtering -->
+			<xsl:copy-of select="."/>
 		</div>
 	</xsl:template>
 	<xsl:template match="comment" mode="item">
@@ -153,14 +154,10 @@
 			<td colspan="5">
 				<b>Comment:</b>
 				<xsl:text> </xsl:text>
-				<!-- exclude @* because we don't want to inject attributes into surrounding td -->
-				<xsl:apply-templates select="text()|b|i|br|span" mode="xss-filter"/>
+				<!-- BAD EXAMPLE: this should trigger Rule E.2 because it copies the entire
+				     subtree without further filtering -->
+				<xsl:copy-of select="."/>
 			</td>
 		</tr>
-	</xsl:template>
-	<xsl:template match="@*|*" mode="xss-filter">
-		<xsl:copy>
-			<xsl:apply-templates select="@style|text()|b|i|br|span" mode="xss-filter"/>
-		</xsl:copy>
 	</xsl:template>
 </xsl:stylesheet>

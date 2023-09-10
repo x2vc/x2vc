@@ -223,7 +223,7 @@
 		</elementType>
 
 		<elementType contentType="MIXED" userModifiable="true" id="323ed056-5fda-494d-b169-2c8ee6757a6c">
-			<comment>comment</comment>
+			<comment>comment used in purchaseOrder</comment>
 		</elementType>
 
 		<elementType contentType="ELEMENT" elementArrangement="SEQUENCE" id="5ba599bb-8415-45d2-a928-2cb3c7041abd">

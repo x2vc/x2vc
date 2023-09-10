@@ -2,7 +2,6 @@ package org.x2vc.analysis.rules;
 
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import java.net.URI;
 import java.util.List;
@@ -13,12 +12,14 @@ import java.util.function.Consumer;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
+import org.jsoup.nodes.Node;
 import org.junit.jupiter.api.BeforeEach;
 import org.x2vc.analysis.IAnalyzerRule;
 import org.x2vc.report.IVulnerabilityCandidate;
 import org.x2vc.schema.ISchemaManager;
 import org.x2vc.schema.structure.IXMLAttribute;
 import org.x2vc.schema.structure.IXMLElementType;
+import org.x2vc.schema.structure.IXMLElementType.ContentType;
 import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.schema.structure.XMLDatatype;
 import org.x2vc.utilities.URIHandling;
@@ -96,18 +97,32 @@ public abstract class AnalyzerRuleTestBase {
 	}
 
 	/**
+	 * Parses a bit of text embedded in HTML using Jsoup and returns the element
+	 * node
+	 *
+	 * @param text
+	 * @return
+	 */
+	protected Node parseToNode(String text) {
+		final String id = "6702018e-cbd6-4d36-8457-6471a400860d";
+		final String frame = String.format("<div id=\"%s\">%s</div>", id, text);
+		final Document document = Jsoup.parse(frame);
+		return document.getElementById(id).childNode(0);
+	}
+
+	/**
 	 * @return
 	 * @throws IllegalArgumentException
 	 */
 	protected IXMLAttribute mockUnlimitedStringAttribute() throws IllegalArgumentException {
 		final UUID attributeID = UUID.randomUUID();
 		final IXMLAttribute attribute = mock(IXMLAttribute.class);
-		when(this.schema.getObjectByID(attributeID)).thenReturn(attribute);
-		when(attribute.getID()).thenReturn(attributeID);
-		when(attribute.isAttribute()).thenReturn(true);
-		when(attribute.asAttribute()).thenReturn(attribute);
-		when(attribute.getDatatype()).thenReturn(XMLDatatype.STRING);
-		when(attribute.getMaxLength()).thenReturn(Optional.empty());
+		lenient().when(this.schema.getObjectByID(attributeID)).thenReturn(attribute);
+		lenient().when(attribute.getID()).thenReturn(attributeID);
+		lenient().when(attribute.isAttribute()).thenReturn(true);
+		lenient().when(attribute.asAttribute()).thenReturn(attribute);
+		lenient().when(attribute.getDatatype()).thenReturn(XMLDatatype.STRING);
+		lenient().when(attribute.getMaxLength()).thenReturn(Optional.empty());
 		return attribute;
 	}
 
@@ -118,12 +133,13 @@ public abstract class AnalyzerRuleTestBase {
 	protected IXMLElementType mockUnlimitedStringElement() throws IllegalArgumentException {
 		final UUID elementTypeID = UUID.randomUUID();
 		final IXMLElementType elementType = mock(IXMLElementType.class);
-		when(this.schema.getObjectByID(elementTypeID)).thenReturn(elementType);
-		when(elementType.getID()).thenReturn(elementTypeID);
-		when(elementType.asElement()).thenReturn(elementType);
-		when(elementType.isElement()).thenReturn(true);
-		when(elementType.getDatatype()).thenReturn(XMLDatatype.STRING);
-		when(elementType.getMaxLength()).thenReturn(Optional.empty());
+		lenient().when(this.schema.getObjectByID(elementTypeID)).thenReturn(elementType);
+		lenient().when(elementType.getID()).thenReturn(elementTypeID);
+		lenient().when(elementType.asElement()).thenReturn(elementType);
+		lenient().when(elementType.isElement()).thenReturn(true);
+		lenient().when(elementType.getContentType()).thenReturn(ContentType.DATA);
+		lenient().when(elementType.getDatatype()).thenReturn(XMLDatatype.STRING);
+		lenient().when(elementType.getMaxLength()).thenReturn(Optional.empty());
 		return elementType;
 	}
 
@@ -135,13 +151,13 @@ public abstract class AnalyzerRuleTestBase {
 	protected void mockModifierWithPayload(String elementSelector, String injectedValue,
 			final UUID schemaElementID) {
 		final IDocumentModifier modifier = mock(IDocumentModifier.class);
-		when(this.documentDescriptor.getModifier()).thenReturn(Optional.of(modifier));
+		lenient().when(this.documentDescriptor.getModifier()).thenReturn(Optional.of(modifier));
 		final IAnalyzerRulePayload payload = mock(IAnalyzerRulePayload.class);
-		when(modifier.getPayload()).thenReturn(Optional.of(payload));
+		lenient().when(modifier.getPayload()).thenReturn(Optional.of(payload));
 		lenient().when(payload.getElementSelector()).thenReturn(Optional.of(elementSelector));
-		when(payload.getInjectedValue()).thenReturn(Optional.of(injectedValue));
+		lenient().when(payload.getInjectedValue()).thenReturn(Optional.of(injectedValue));
 		lenient().when(payload.getSchemaElementID()).thenReturn(Optional.of(schemaElementID));
-		when(modifier.getPayload()).thenReturn(Optional.of(payload));
+		lenient().when(modifier.getPayload()).thenReturn(Optional.of(payload));
 	}
 
 }

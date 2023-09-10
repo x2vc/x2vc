@@ -163,19 +163,20 @@
 			(<xsl:value-of select="quantity"/>x)
 		</li>
 	</xsl:template>
-	<xsl:template match="comment" mode="po">
-		<div>
-			<xsl:copy-of select="."/>
-		</div>
-	</xsl:template>
 	<xsl:template match="comment" mode="item">
 		<tr>
 			<td/>
 			<td colspan="5">
 				<b>Comment:</b>
 				<xsl:text> </xsl:text>
-				<xsl:copy-of select="."/>
+				<!-- exclude @* because we don't want to inject attributes into surrounding td -->
+				<xsl:apply-templates select="text()|b|i|br|span" mode="xss-filter"/>
 			</td>
 		</tr>
+	</xsl:template>
+	<xsl:template match="@*|*" mode="xss-filter">
+		<xsl:copy>
+			<xsl:apply-templates select="@style|text()|b|i|br|span" mode="xss-filter"/>
+		</xsl:copy>
 	</xsl:template>
 </xsl:stylesheet>
