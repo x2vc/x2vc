@@ -326,9 +326,7 @@ public abstract class AbstractRule implements IAnalyzerRule {
 	protected void requestModification(IXMLSchema schema, IValueDescriptor valueDescriptor, String originalValue,
 			String replacementValue, IModifierPayload payload,
 			Consumer<IDocumentModifier> collector) {
-		// check whether the requested value is valid (the attribute has to be a string
-		// and the max length may not be exceeded) - otherwise we can just skip the
-		// request
+		// check whether the requested value is valid and the input field is
 		logger.traceEntry();
 		final IXMLSchemaObject schemaObject = schema.getObjectByID(valueDescriptor.getSchemaElementID());
 		if (schemaObject.isAttribute()) {
@@ -357,17 +355,27 @@ public abstract class AbstractRule implements IAnalyzerRule {
 			String originalValue, String replacementValue, IModifierPayload payload,
 			Consumer<IDocumentModifier> collector) {
 		logger.traceEntry();
-		if (attribute.getDatatype() == XMLDatatype.STRING) {
-			final Integer maxLength = attribute.getMaxLength().orElse(Integer.MAX_VALUE);
-			if (replacementValue.length() <= maxLength) {
-				new DocumentValueModifier.Builder(valueDescriptor)
-					.withAnalyzerRuleID(getRuleID())
-					.withOriginalValue(originalValue)
-					.withReplacementValue(replacementValue)
-					.withPayload(payload)
-					.build()
-					.sendTo(collector);
+		if (attribute.isUserModifiable()) {
+			if (attribute.getDatatype() == XMLDatatype.STRING) {
+				final Integer maxLength = attribute.getMaxLength().orElse(Integer.MAX_VALUE);
+				if (replacementValue.length() <= maxLength) {
+					new DocumentValueModifier.Builder(valueDescriptor)
+						.withAnalyzerRuleID(getRuleID())
+						.withOriginalValue(originalValue)
+						.withReplacementValue(replacementValue)
+						.withPayload(payload)
+						.build()
+						.sendTo(collector);
+				} else {
+					logger.debug("requested value \"{}\" exceeds maximum length and will be disregarded",
+							replacementValue);
+				}
+			} else {
+				logger.warn("modification of non-string attributes is not yet implemented");
 			}
+		} else {
+			logger.debug("attribute {} is not user-modifiable, request will be disregarded",
+					attribute.getID());
 		}
 		logger.traceExit();
 	}
@@ -384,19 +392,24 @@ public abstract class AbstractRule implements IAnalyzerRule {
 			String originalValue, String replacementValue, IModifierPayload payload,
 			Consumer<IDocumentModifier> collector) {
 		logger.traceEntry();
-		switch (element.getContentType()) {
-		case DATA:
-			requestDataElementModification(element, valueDescriptor, originalValue, replacementValue, payload,
-					collector);
-			break;
-		case MIXED:
-			requestMixedElementModification(valueDescriptor, originalValue, replacementValue, payload,
-					collector);
-			break;
-		default:
-			final String message = String.format("Modification requests are not implemented for element type %s",
-					element.getContentType());
-			throw logger.throwing(new IllegalArgumentException(message));
+		if (element.isUserModifiable().orElse(true)) {
+			switch (element.getContentType()) {
+			case DATA:
+				requestDataElementModification(element, valueDescriptor, originalValue, replacementValue, payload,
+						collector);
+				break;
+			case MIXED:
+				requestMixedElementModification(valueDescriptor, originalValue, replacementValue, payload,
+						collector);
+				break;
+			default:
+				final String message = String.format("Modification requests are not implemented for element type %s",
+						element.getContentType());
+				throw logger.throwing(new IllegalArgumentException(message));
+			}
+		} else {
+			logger.debug("element {} is not user-modifiable, request will be disregarded",
+					element.getID());
 		}
 		logger.traceExit();
 	}

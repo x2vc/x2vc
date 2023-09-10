@@ -121,6 +121,7 @@ public abstract class AnalyzerRuleTestBase {
 		lenient().when(attribute.getID()).thenReturn(attributeID);
 		lenient().when(attribute.isAttribute()).thenReturn(true);
 		lenient().when(attribute.asAttribute()).thenReturn(attribute);
+		lenient().when(attribute.isUserModifiable()).thenReturn(true);
 		lenient().when(attribute.getDatatype()).thenReturn(XMLDatatype.STRING);
 		lenient().when(attribute.getMaxLength()).thenReturn(Optional.empty());
 		return attribute;
@@ -137,6 +138,7 @@ public abstract class AnalyzerRuleTestBase {
 		lenient().when(elementType.getID()).thenReturn(elementTypeID);
 		lenient().when(elementType.asElement()).thenReturn(elementType);
 		lenient().when(elementType.isElement()).thenReturn(true);
+		lenient().when(elementType.isUserModifiable()).thenReturn(Optional.of(true));
 		lenient().when(elementType.getContentType()).thenReturn(ContentType.DATA);
 		lenient().when(elementType.hasDataContent()).thenReturn(true);
 		lenient().when(elementType.getDatatype()).thenReturn(XMLDatatype.STRING);
@@ -155,6 +157,7 @@ public abstract class AnalyzerRuleTestBase {
 		lenient().when(elementType.getID()).thenReturn(elementTypeID);
 		lenient().when(elementType.asElement()).thenReturn(elementType);
 		lenient().when(elementType.isElement()).thenReturn(true);
+		lenient().when(elementType.isUserModifiable()).thenReturn(Optional.of(true));
 		lenient().when(elementType.getContentType()).thenReturn(ContentType.MIXED);
 		lenient().when(elementType.hasMixedContent()).thenReturn(true);
 		return elementType;
@@ -181,10 +184,11 @@ public abstract class AnalyzerRuleTestBase {
 	 * @param elementSelector
 	 * @param injectedValue
 	 * @param schemaElementID
+	 * @param elementName
 	 * @param attributeName
 	 */
 	protected void mockModifierWithPayload(String elementSelector, String injectedValue,
-			final UUID schemaElementID, String attributeName) {
+			final UUID schemaElementID, String elementName, String attributeName) {
 		final IDocumentModifier modifier = mock(IDocumentModifier.class);
 		lenient().when(this.documentDescriptor.getModifier()).thenReturn(Optional.of(modifier));
 		final IAnalyzerRulePayload payload = mock(IAnalyzerRulePayload.class);
@@ -192,7 +196,8 @@ public abstract class AnalyzerRuleTestBase {
 		lenient().when(payload.getElementSelector()).thenReturn(Optional.of(elementSelector));
 		lenient().when(payload.getInjectedValue()).thenReturn(Optional.of(injectedValue));
 		lenient().when(payload.getSchemaElementID()).thenReturn(Optional.of(schemaElementID));
-		lenient().when(payload.getAttributeName()).thenReturn(Optional.of(attributeName));
+		lenient().when(payload.getElementName()).thenReturn(Optional.ofNullable(elementName));
+		lenient().when(payload.getAttributeName()).thenReturn(Optional.ofNullable(attributeName));
 		lenient().when(modifier.getPayload()).thenReturn(Optional.of(payload));
 	}
 

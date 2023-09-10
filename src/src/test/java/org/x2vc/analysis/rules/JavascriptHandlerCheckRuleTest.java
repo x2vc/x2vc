@@ -186,7 +186,7 @@ class JavascriptHandlerCheckRuleTest extends AnalyzerRuleTestBase {
 		final UUID taskID = UUID.randomUUID();
 		final UUID schemaElementID = UUID.randomUUID();
 
-		mockModifierWithPayload(elementSelector, injectedValue, schemaElementID, "ontosomething");
+		mockModifierWithPayload(elementSelector, injectedValue, schemaElementID, null, "ontosomething");
 
 		final Element node = parseToElement(html);
 		this.rule.verifyNode(taskID, node, this.documentContainer, this.vulnerabilityCollector);

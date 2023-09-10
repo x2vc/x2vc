@@ -125,13 +125,13 @@ class ElementCopyCheckRuleTest extends AnalyzerRuleTestBase {
 	 */
 	@ParameterizedTest
 	@CsvSource({ "<p>foobar123</p>, sel, script, 0, -",
-			"<p>barfoo<script>alert('XSS')</script>foobar</p>, sel, script, 1, /html/body/div/p" })
+			"<p>barfoo<script>alert('XSS')</script>foobar</p>, sel, XSS, 1, /html/body/div/p" })
 	void testVerifyNode(String html, String elementSelector, String injectedElement,
 			int expectedVulnerabilityCount, String expectedOutputElement) {
 		final UUID taskID = UUID.randomUUID();
 		final UUID schemaElementID = UUID.randomUUID();
 
-		mockModifierWithPayload(elementSelector, injectedElement, schemaElementID);
+		mockModifierWithPayload(elementSelector, injectedElement, schemaElementID, "script", null);
 
 		final Element element = parseToElement(html);
 		this.rule.verifyNode(taskID, element, this.documentContainer, this.vulnerabilityCollector);
