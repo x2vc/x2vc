@@ -129,34 +129,22 @@ public class DisabledOutputEscapingCheckRule extends AbstractTextRule {
 		if (node instanceof final Element element) {
 			final String parentPath = getPathToNode(element);
 			logger.debug("follow-up check on {} to check for injection of \"{}\" tag", parentPath, elementName);
-
 			final Elements possiblyInjectedElements = element.getElementsByTag(elementName);
 			possiblyInjectedElements.forEach(injectedElement -> {
-				
 				final String actualContent = injectedElement.toString();
 				if (actualContent.contains(injectedContent)) {
-
 					logger.debug(
 							"tag \"{}\" injected from input data contains search string \"{}\", follow-up check positive",
 							injectedElement.tagName(), injectedContent);
-
-					final String injectedPath = getPathToNode(injectedElement.parentNode());
-
-					// TODO Report Output: provide better input sample (formatting, highlighting?)
-					final String inputSample = xmlContainer.getDocument();
-
-					// the output sample can be derived from the node
-					final String outputSample = element.toString();
-
 					new VulnerabilityCandidate.Builder(RULE_ID, taskID)
 						.withAffectingSchemaObject(schemaElementID.get())
-						.withAffectedOutputElement(injectedPath)
-						.withInputSample(inputSample)
-						.withOutputSample(outputSample)
+						.withAffectedOutputElement(getPathToNode(injectedElement.parentNode()))
+						.withInputSample(xmlContainer.getDocument())
+						.withOutputSample(element.toString())
 						.build()
 						.sendTo(collector);
 				}
-				
+
 			});
 		} else {
 			logger.warn("follow-up check called for non-element node");

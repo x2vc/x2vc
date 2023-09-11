@@ -178,6 +178,7 @@ class DirectElementCheckRuleTest extends AnalyzerRuleTestBase {
 		final UUID schemaElementID = UUID.randomUUID();
 
 		mockModifierWithPayload(elementSelector, injectedElement, schemaElementID);
+		lenient().when(this.documentContainer.getDocument()).thenReturn("<xml-doc</>");
 
 		final Element node = parseToElement(html);
 		this.rule.verifyNode(taskID, node, this.documentContainer, this.vulnerabilityCollector);
@@ -188,8 +189,7 @@ class DirectElementCheckRuleTest extends AnalyzerRuleTestBase {
 			assertEquals(DirectElementCheckRule.RULE_ID, vc.getAnalyzerRuleID());
 			assertEquals(schemaElementID, vc.getAffectingSchemaObject());
 			assertEquals(expectedOutputElement, vc.getAffectedOutputElement());
-//			assertEquals(, vc.getInputSample());
-			// TODO XSS Vulnerability: check input sampler
+			assertEquals("<xml-doc</>", vc.getInputSample());
 			assertEquals(html.replaceAll("\\s", ""), vc.getOutputSample().replaceAll("\\s", ""));
 			assertEquals(taskID, vc.getTaskID());
 		}

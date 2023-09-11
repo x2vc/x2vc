@@ -187,6 +187,7 @@ class JavascriptHandlerCheckRuleTest extends AnalyzerRuleTestBase {
 		final UUID schemaElementID = UUID.randomUUID();
 
 		mockModifierWithPayload(elementSelector, injectedValue, schemaElementID, null, "ontosomething");
+		lenient().when(this.documentContainer.getDocument()).thenReturn("<xml-doc</>");
 
 		final Element node = parseToElement(html);
 		this.rule.verifyNode(taskID, node, this.documentContainer, this.vulnerabilityCollector);
@@ -197,8 +198,7 @@ class JavascriptHandlerCheckRuleTest extends AnalyzerRuleTestBase {
 			assertEquals(JavascriptHandlerCheckRule.RULE_ID, vc.getAnalyzerRuleID());
 			assertEquals(schemaElementID, vc.getAffectingSchemaObject());
 			assertEquals(expectedOutputElement, vc.getAffectedOutputElement());
-//			assertEquals(, vc.getInputSample());
-			// TODO XSS Vulnerability: check input sampler
+			assertEquals("<xml-doc</>", vc.getInputSample());
 			assertEquals(html, vc.getOutputSample());
 			assertEquals(taskID, vc.getTaskID());
 		}

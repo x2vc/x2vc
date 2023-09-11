@@ -104,23 +104,15 @@ public class CSSAttributeCheckRule extends AbstractAttributeRule {
 			checkArgument(schemaElementID.isPresent());
 
 			final String actualValue = element.attr("style");
-			final String elementPath = getPathToNode(node);
 			if (actualValue.contains(checkValue)) {
 				logger.debug(
 						"attribute \"style\" contains injected content \"{}\" from input data, follow-up check positive",
 						checkValue);
-
-				// TODO Report Output: provide better input sample (formatting, highlighting?)
-				final String inputSample = xmlContainer.getDocument();
-
-				// the output sample can be derived from the node
-				final String outputSample = node.toString();
-
 				new VulnerabilityCandidate.Builder(RULE_ID, taskID)
 					.withAffectingSchemaObject(schemaElementID.get())
-					.withAffectedOutputElement(elementPath)
-					.withInputSample(inputSample)
-					.withOutputSample(outputSample)
+					.withAffectedOutputElement(getPathToNode(node))
+					.withInputSample(xmlContainer.getDocument())
+					.withOutputSample(node.toString())
 					.build()
 					.sendTo(collector);
 			} else {

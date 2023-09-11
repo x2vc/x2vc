@@ -139,6 +139,7 @@ class ElementCopyCheckRuleTest extends AnalyzerRuleTestBase {
 		final UUID schemaElementID = UUID.randomUUID();
 
 		mockModifierWithPayload(elementSelector, injectedElement, schemaElementID, "script", null);
+		lenient().when(this.documentContainer.getDocument()).thenReturn("<xml-doc</>");
 
 		final Element element = parseToElement(html);
 		this.rule.verifyNode(taskID, element, this.documentContainer, this.vulnerabilityCollector);
@@ -149,8 +150,7 @@ class ElementCopyCheckRuleTest extends AnalyzerRuleTestBase {
 			assertEquals(ElementCopyCheckRule.RULE_ID, vc.getAnalyzerRuleID());
 			assertEquals(schemaElementID, vc.getAffectingSchemaObject());
 			assertEquals(expectedOutputElement, vc.getAffectedOutputElement());
-//			assertEquals(, vc.getInputSample());
-			// TODO XSS Vulnerability: check input sampler
+			assertEquals("<xml-doc</>", vc.getInputSample());
 			assertEquals(html.replaceAll("\\s", ""), vc.getOutputSample().replaceAll("\\s", ""));
 			assertEquals(taskID, vc.getTaskID());
 		}

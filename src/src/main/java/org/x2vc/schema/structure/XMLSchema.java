@@ -365,6 +365,4 @@ public class XMLSchema implements IXMLSchema {
 				&& Objects.equals(this.stylesheetURI, other.stylesheetURI) && this.version == other.version;
 	}
 
-	// TODO XML Schema: Add copy operation with reconnection of element references
-
 }

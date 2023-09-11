@@ -103,23 +103,15 @@ public class JavascriptURLCheckRule extends AbstractAttributeRule {
 
 			final String injectedData = injectedValue.get();
 			final String actualValue = element.attr("src");
-			final String elementPath = getPathToNode(node);
 			if (actualValue.contains(injectedData)) {
 				logger.debug(
 						"attribute \"src\" contains injected data \"{}\" from input data, follow-up check positive",
 						injectedData);
-
-				// TODO Report Output: provide better input sample (formatting, highlighting?)
-				final String inputSample = xmlContainer.getDocument();
-
-				// the output sample can be derived from the node
-				final String outputSample = node.toString();
-
 				new VulnerabilityCandidate.Builder(RULE_ID, taskID)
 					.withAffectingSchemaObject(schemaElementID.get())
-					.withAffectedOutputElement(elementPath)
-					.withInputSample(inputSample)
-					.withOutputSample(outputSample)
+					.withAffectedOutputElement(getPathToNode(node))
+					.withInputSample(xmlContainer.getDocument())
+					.withOutputSample(node.toString())
 					.build()
 					.sendTo(collector);
 			} else {

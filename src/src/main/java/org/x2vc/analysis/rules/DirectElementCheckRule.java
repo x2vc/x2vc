@@ -93,20 +93,13 @@ public class DirectElementCheckRule extends AbstractElementRule {
 
 			final String elementName = element.tagName();
 			final String injectedName = injectedValue.get();
-			final String elementPath = getPathToNode(element);
 			if (elementName.equals(injectedName)) {
 				logger.debug("element \"{}\" injected from input data, follow-up check positive", elementName);
-				// TODO Report Output: provide better input sample (formatting, highlighting?)
-				final String inputSample = xmlContainer.getDocument();
-
-				// the output sample can be derived from the node
-				final String outputSample = node.toString();
-
 				new VulnerabilityCandidate.Builder(RULE_ID, taskID)
 					.withAffectingSchemaObject(schemaElementID.get())
-					.withAffectedOutputElement(elementPath)
-					.withInputSample(inputSample)
-					.withOutputSample(outputSample)
+					.withAffectedOutputElement(getPathToNode(element))
+					.withInputSample(xmlContainer.getDocument())
+					.withOutputSample(node.toString())
 					.build()
 					.sendTo(collector);
 

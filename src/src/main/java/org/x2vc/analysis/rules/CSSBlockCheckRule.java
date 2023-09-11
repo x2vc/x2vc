@@ -92,20 +92,13 @@ public class CSSBlockCheckRule extends AbstractElementRule {
 
 			final String scriptContents = element.html();
 			final String injectedText = injectedValue.get();
-			final String elementPath = getPathToNode(element);
 			if (scriptContents.contains(injectedText)) {
 				logger.debug("style element contains injected text from input data, follow-up check positive");
-				// TODO Report Output: provide better input sample (formatting, highlighting?)
-				final String inputSample = xmlContainer.getDocument();
-
-				// the output sample can be derived from the node
-				final String outputSample = node.toString();
-
 				new VulnerabilityCandidate.Builder(RULE_ID, taskID)
 					.withAffectingSchemaObject(schemaElementID.get())
-					.withAffectedOutputElement(elementPath)
-					.withInputSample(inputSample)
-					.withOutputSample(outputSample)
+					.withAffectedOutputElement(getPathToNode(element))
+					.withInputSample(xmlContainer.getDocument())
+					.withOutputSample(node.toString())
 					.build()
 					.sendTo(collector);
 

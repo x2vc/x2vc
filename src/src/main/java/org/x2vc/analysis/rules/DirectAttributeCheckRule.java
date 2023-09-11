@@ -112,23 +112,15 @@ public class DirectAttributeCheckRule extends AbstractAttributeRule {
 
 			final String attributeName = injectedValue.get();
 			final String actualValue = element.attr(attributeName);
-			final String elementPath = getPathToNode(node);
 			if (Strings.isNullOrEmpty(actualValue)) {
 				logger.debug("attribute \"{}\" not found, follow-up check negative", attributeName);
 			} else {
 				logger.debug("attribute \"{}\" injected from input data, follow-up check positive", attributeName);
-
-				// TODO Report Output: provide better input sample (formatting, highlighting?)
-				final String inputSample = xmlContainer.getDocument();
-
-				// the output sample can be derived from the node
-				final String outputSample = node.toString();
-
 				new VulnerabilityCandidate.Builder(RULE_ID, taskID)
 					.withAffectingSchemaObject(schemaElementID.get())
-					.withAffectedOutputElement(elementPath)
-					.withInputSample(inputSample)
-					.withOutputSample(outputSample)
+					.withAffectedOutputElement(getPathToNode(node))
+					.withInputSample(xmlContainer.getDocument())
+					.withOutputSample(node.toString())
 					.build()
 					.sendTo(collector);
 			}

@@ -113,23 +113,15 @@ public class JavascriptHandlerCheckRule extends AbstractAttributeRule {
 			final String attributeName = oAttributeName.get();
 
 			final String actualValue = element.attr(attributeName);
-			final String elementPath = getPathToNode(node);
 			if (actualValue.contains(checkValue)) {
 				logger.debug(
 						"attribute \"{}\" contains injected content \"{}\" from input data, follow-up check positive",
 						attributeName, checkValue);
-
-				// TODO Report Output: provide better input sample (formatting, highlighting?)
-				final String inputSample = xmlContainer.getDocument();
-
-				// the output sample can be derived from the node
-				final String outputSample = node.toString();
-
 				new VulnerabilityCandidate.Builder(RULE_ID, taskID)
 					.withAffectingSchemaObject(schemaElementID.get())
-					.withAffectedOutputElement(elementPath)
-					.withInputSample(inputSample)
-					.withOutputSample(outputSample)
+					.withAffectedOutputElement(getPathToNode(node))
+					.withInputSample(xmlContainer.getDocument())
+					.withOutputSample(node.toString())
 					.build()
 					.sendTo(collector);
 			} else {
