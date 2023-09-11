@@ -1,9 +1,12 @@
 package org.x2vc.process;
 
+import java.util.List;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.x2vc.analysis.DocumentAnalyzer;
 import org.x2vc.analysis.IAnalyzerRule;
 import org.x2vc.analysis.IDocumentAnalyzer;
-import org.x2vc.analysis.rules.*;
 import org.x2vc.process.tasks.*;
 import org.x2vc.processor.HTMLDocumentFactory;
 import org.x2vc.processor.IHTMLDocumentFactory;
@@ -39,6 +42,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.multibindings.Multibinder;
+import com.typesafe.config.Config;
 
 import net.sf.saxon.s9api.Processor;
 
@@ -47,26 +51,25 @@ import net.sf.saxon.s9api.Processor;
  */
 public class CheckerModule extends AbstractModule {
 
+	private static final Logger logger = LogManager.getLogger();
+	private Config configuration;
+
+	/**
+	 * @param configuration
+	 */
+	public CheckerModule(Config configuration) {
+		this.configuration = configuration;
+	}
+
 	@Override
 	protected void configure() {
+		logger.traceEntry();
 
 		// analysis
 		bind(IDocumentAnalyzer.class).to(DocumentAnalyzer.class);
 
-		// analysis rules: use a multibinder for the analyzer rules (plugin-like
-		// structure)
-		final Multibinder<IAnalyzerRule> ruleBinder = Multibinder.newSetBinder(binder(), IAnalyzerRule.class);
-		ruleBinder.addBinding().to(DirectAttributeCheckRule.class);
-		ruleBinder.addBinding().to(DirectElementCheckRule.class);
-		ruleBinder.addBinding().to(ElementCopyCheckRule.class);
-		ruleBinder.addBinding().to(DisabledOutputEscapingCheckRule.class);
-		ruleBinder.addBinding().to(JavascriptHandlerCheckRule.class);
-		ruleBinder.addBinding().to(JavascriptBlockCheckRule.class);
-		ruleBinder.addBinding().to(JavascriptURLCheckRule.class);
-		ruleBinder.addBinding().to(CSSAttributeCheckRule.class);
-		ruleBinder.addBinding().to(CSSBlockCheckRule.class);
-		ruleBinder.addBinding().to(CSSURLCheckRule.class);
-		ruleBinder.addBinding().to(GeneralURLCheckRule.class);
+		// analysis rules
+		configureAnalyzerRules();
 
 		// process
 		bind(IWorkerProcessManager.class).to(WorkerProcessManager.class);
@@ -118,6 +121,31 @@ public class CheckerModule extends AbstractModule {
 		install(new FactoryModuleBuilder().implement(IValueGenerator.class, ValueGenerator.class)
 			.build(IValueGeneratorFactory.class));
 
+		logger.traceExit();
+	}
+
+	/**
+	 * Configures the rules to be used.
+	 */
+	@SuppressWarnings("unchecked")
+	protected void configureAnalyzerRules() {
+		logger.traceEntry();
+		// use a multibinder for the analyzer rules (plugin-like
+		final Multibinder<IAnalyzerRule> ruleBinder = Multibinder.newSetBinder(binder(), IAnalyzerRule.class);
+		final List<String> enabledRules = this.configuration.getStringList("x2vc.analysis.enabled_rules");
+		enabledRules.forEach(ruleName -> {
+			logger.debug("Loading rule implementation {}", ruleName);
+			try {
+				final Class<? extends IAnalyzerRule> implementingClass = (Class<? extends IAnalyzerRule>) getClass()
+					.getClassLoader().loadClass(ruleName);
+				ruleBinder.addBinding().to(implementingClass);
+			} catch (final ClassNotFoundException e) {
+				logger.error("Unable to load class {}.", ruleName, e);
+			} catch (final ClassCastException e) {
+				logger.error("Class {} does not implement IAnalyzerRule and cannot be used as a rule.", ruleName, e);
+			}
+		});
+		logger.traceExit();
 	}
 
 	@Provides

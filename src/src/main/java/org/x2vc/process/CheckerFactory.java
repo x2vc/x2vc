@@ -21,7 +21,7 @@ public class CheckerFactory implements IFactory {
 	 * @param configuration
 	 */
 	public CheckerFactory(Config configuration) {
-		this.injector = Guice.createInjector(new CheckerModule(),
+		this.injector = Guice.createInjector(new CheckerModule(configuration),
 				TypesafeConfigModule.fromConfigWithPackage(configuration, "org.x2vc"));
 	}
 
