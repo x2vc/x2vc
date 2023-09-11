@@ -13,6 +13,9 @@ import javax.xml.stream.XMLStreamException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.dom4j.DocumentHelper;
+import org.dom4j.io.OutputFormat;
+import org.dom4j.io.XMLWriter;
 import org.x2vc.schema.ISchemaManager;
 import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.xml.document.XMLDocumentDescriptor.Builder;
@@ -115,9 +118,28 @@ public class DocumentGenerator implements IDocumentGenerator {
 				this.xmlWriter.add(this.eventFactory.createEndDocument());
 				final String rawXML = stringWriter.toString();
 				final String postprocessedXML = replaceRawData(rawXML);
-				return logger.traceExit(postprocessedXML);
+				final String formattedXML = prettyPrintByXML(postprocessedXML, 4, true).replaceAll("^\\s", "");
+				return logger.traceExit(formattedXML);
 			} catch (final XMLStreamException e) {
 				throw logger.throwing(new IllegalStateException("Error generating XML document", e));
+			}
+		}
+
+		private String prettyPrintByXML(String xmlString, int indent, boolean skipDeclaration) {
+			logger.traceEntry();
+			try {
+				final OutputFormat format = OutputFormat.createPrettyPrint();
+				format.setIndentSize(indent);
+				format.setSuppressDeclaration(skipDeclaration);
+				format.setEncoding("UTF-8");
+
+				final org.dom4j.Document document = DocumentHelper.parseText(xmlString);
+				final StringWriter sw = new StringWriter();
+				final XMLWriter writer = new XMLWriter(sw, format);
+				writer.write(document);
+				return logger.traceExit(sw.toString());
+			} catch (final Exception e) {
+				throw logger.throwing(new RuntimeException("Error occurs when pretty-printing XML", e));
 			}
 		}
 

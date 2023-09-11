@@ -8,13 +8,8 @@
 	<xsl:template match="/vulnerabilityReport">
 		<html>
 			<xsl:call-template name="head" />
-			<body class="is-preload">
+			<body class="is-preload" onload="PR.prettyPrint()">
 				<xsl:call-template name="body-contents" />
-				<script src=".x2vc/js/jquery.min.js"></script>
-				<script src=".x2vc/js/browser.min.js"></script>
-				<script src=".x2vc/js/breakpoints.min.js"></script>
-				<script src=".x2vc/js/util.js"></script>
-				<script src=".x2vc/js/main.js"></script>
 			</body>
 		</html>
 	</xsl:template>
@@ -24,7 +19,14 @@
 			<title>x2vc Result | <xsl:value-of select="@stylesheetFilename"/></title>
 			<meta charset="utf-8" />
 			<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
-			<link rel="stylesheet" href=".x2vc/css/main.css" />
+			<link rel="stylesheet" type="text/css" href=".x2vc/css/main.css" />
+			<link rel="stylesheet" type="text/css" href=".x2vc/css/prettify.css" />
+			<script type="text/javascript" src=".x2vc/js/jquery.min.js"></script>
+			<script type="text/javascript" src=".x2vc/js/browser.min.js"></script>
+			<script type="text/javascript" src=".x2vc/js/breakpoints.min.js"></script>
+			<script type="text/javascript" src=".x2vc/js/util.js"></script>
+			<script type="text/javascript" src=".x2vc/js/main.js"></script>
+			<script type="text/javascript" src=".x2vc/js/prettify.js"></script>
 		</head>
 	</xsl:template>
 
@@ -147,7 +149,7 @@
 			<dt>XML Input:</dt>
 			<dd>
 				<pre>
-					<code>
+					<code class="prettyprint">
 						<xsl:value-of select="input" />
 					</code>
 				</pre>
@@ -155,7 +157,7 @@
 			<dt>HTML Output:</dt>
 			<dd>
 				<pre>
-					<code>
+					<code class="prettyprint">
 						<xsl:value-of select="output" />
 					</code>
 				</pre>

@@ -1,10 +1,12 @@
 css/fontawesome-all.min.css
 css/main.css
+css/prettify.css
 js/breakpoints.min.js
 js/browser.min.js
 js/jquery.min.js
 js/main.js
 js/util.js
+js/prettify.js
 webfonts/fa-brands-400.eot
 webfonts/fa-brands-400.svg
 webfonts/fa-brands-400.ttf
