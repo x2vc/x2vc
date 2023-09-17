@@ -9,6 +9,9 @@ import org.x2vc.stylesheet.coverage.IStylesheetCoverage;
 import org.x2vc.stylesheet.coverage.StylesheetCoverage;
 import org.x2vc.stylesheet.structure.IStylesheetStructure;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.Multimap;
+
 /**
  * This object is a result of the stylesheet preparation process and provides
  * access to the precompiled extended stylesheet and the structure information.
@@ -23,17 +26,22 @@ public class StylesheetInformation implements IStylesheetInformation {
 	private URI uri;
 	private String originalStylesheet;
 	private String preparedStylesheet;
+	private ArrayListMultimap<String, URI> namespacePrefixes;
+	private String traceNamespacePrefix;
 	private IStylesheetStructure structure;
 
 	StylesheetInformation(URI uri, String originalStylesheet, String preparedStylesheet,
-			IStylesheetStructure structure) {
+			Multimap<String, URI> namespacePrefixes, String traceNamespacePrefix, IStylesheetStructure structure) {
 		checkNotNull(uri);
 		checkNotNull(originalStylesheet);
 		checkNotNull(preparedStylesheet);
+		checkNotNull(namespacePrefixes);
 		checkNotNull(structure);
 		this.uri = uri;
 		this.originalStylesheet = originalStylesheet;
 		this.preparedStylesheet = preparedStylesheet;
+		this.namespacePrefixes = ArrayListMultimap.create(namespacePrefixes);
+		this.traceNamespacePrefix = traceNamespacePrefix;
 		this.structure = structure;
 	}
 
@@ -70,6 +78,16 @@ public class StylesheetInformation implements IStylesheetInformation {
 	@Override
 	public String getPreparedStylesheet() {
 		return this.preparedStylesheet;
+	}
+
+	@Override
+	public Multimap<String, URI> getNamespacePrefixes() {
+		return this.namespacePrefixes;
+	}
+
+	@Override
+	public String getTraceNamespacePrefix() {
+		return this.traceNamespacePrefix;
 	}
 
 	@Override

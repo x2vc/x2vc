@@ -13,6 +13,7 @@ import org.x2vc.stylesheet.extension.IStylesheetExtender;
 import org.x2vc.stylesheet.structure.IStylesheetStructure;
 import org.x2vc.stylesheet.structure.IStylesheetStructureExtractor;
 
+import com.google.common.collect.Multimap;
 import com.google.inject.Inject;
 
 import net.sf.saxon.s9api.Processor;
@@ -26,13 +27,18 @@ public class StylesheetPreprocessor implements IStylesheetPreprocessor {
 
 	private static final Logger logger = LogManager.getLogger();
 
+	private static final String TRACE_NAMESPACE_PFREIX = "trace";
+
 	private Processor processor;
+	private INamespaceExtractor namespaceExtractor;
 	private IStylesheetExtender extender;
 	private IStylesheetStructureExtractor extractor;
 
 	@Inject
-	StylesheetPreprocessor(Processor processor, IStylesheetExtender expander, IStylesheetStructureExtractor extractor) {
+	StylesheetPreprocessor(Processor processor, INamespaceExtractor namespaceExtractor, IStylesheetExtender expander,
+			IStylesheetStructureExtractor extractor) {
 		this.processor = processor;
+		this.namespaceExtractor = namespaceExtractor;
 		this.extender = expander;
 		this.extractor = extractor;
 	}
@@ -42,9 +48,13 @@ public class StylesheetPreprocessor implements IStylesheetPreprocessor {
 		checkNotNull(uri);
 		checkNotNull(originalSource);
 		checkStylesheet(originalSource);
+		final Multimap<String, URI> namespacePrefixes = this.namespaceExtractor.extractNamespaces(originalSource);
+		final String traceNamespacePrefix = this.namespaceExtractor.findUnusedPrefix(namespacePrefixes.keySet(),
+				TRACE_NAMESPACE_PFREIX);
 		final String expandedSource = this.extender.extendStylesheet(originalSource);
 		final IStylesheetStructure structure = this.extractor.extractStructure(expandedSource);
-		return new StylesheetInformation(uri, originalSource, expandedSource, structure);
+		return new StylesheetInformation(uri, originalSource, expandedSource, namespacePrefixes, traceNamespacePrefix,
+				structure);
 	}
 
 	/**

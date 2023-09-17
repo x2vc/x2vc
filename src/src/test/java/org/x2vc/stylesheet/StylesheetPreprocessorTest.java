@@ -19,6 +19,9 @@ import org.x2vc.stylesheet.extension.IStylesheetExtender;
 import org.x2vc.stylesheet.structure.IStylesheetStructure;
 import org.x2vc.stylesheet.structure.IStylesheetStructureExtractor;
 
+import com.google.common.collect.Multimap;
+import com.google.common.collect.MultimapBuilder;
+
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.SaxonApiException;
 
@@ -30,6 +33,12 @@ class StylesheetPreprocessorTest {
 	// TODO XSLT: provide tests that do not require Saxon
 
 	Processor xsltProcessor;
+
+	@Mock
+	INamespaceExtractor namespaceExtractor;
+
+	// need a "real" object here because it will be duplicated in the transfer
+	Multimap<String, URI> namespacePrefixes;
 
 	@Mock
 	IStylesheetExtender stylesheetExtender;
@@ -44,8 +53,12 @@ class StylesheetPreprocessorTest {
 
 	@BeforeEach
 	void prepareInstances() {
+		this.namespacePrefixes = MultimapBuilder.hashKeys().arrayListValues().build();
+		this.namespacePrefixes.put("xsl", URI.create("http://www.w3.org/1999/XSL/Transform"));
+
 		this.xsltProcessor = new Processor();
-		this.preprocessor = new StylesheetPreprocessor(this.xsltProcessor, this.stylesheetExtender,
+		this.preprocessor = new StylesheetPreprocessor(this.xsltProcessor, this.namespaceExtractor,
+				this.stylesheetExtender,
 				this.structureExtractor);
 		lenient().when(this.structureExtractor.extractStructure(anyString())).thenReturn(this.structure);
 	}
@@ -157,15 +170,23 @@ class StylesheetPreprocessorTest {
 	@Test
 	void testStylesheetLocation() throws SaxonApiException {
 		when(this.stylesheetExtender.extendStylesheet(this.minimalStylesheet)).thenReturn(this.minimalStylesheet_Extended);
+		when(this.namespaceExtractor.extractNamespaces(this.minimalStylesheet)).thenReturn(this.namespacePrefixes);
+		when(this.namespaceExtractor.findUnusedPrefix(this.namespacePrefixes.keySet(), "trace")).thenReturn("trace1234");
 		final IStylesheetInformation info = this.preprocessor.prepareStylesheet(URI.create("foobar"), this.minimalStylesheet);
 		assertEquals(URI.create("foobar"), info.getURI());
+		assertEquals(this.namespacePrefixes, info.getNamespacePrefixes());
+		assertEquals("trace1234", info.getTraceNamespacePrefix());
 	}
 
 	@Test
 	void testStylesheetContents() throws SaxonApiException {
 		when(this.stylesheetExtender.extendStylesheet(this.minimalStylesheet)).thenReturn(this.minimalStylesheet_Extended);
+		when(this.namespaceExtractor.extractNamespaces(this.minimalStylesheet)).thenReturn(this.namespacePrefixes);
+		when(this.namespaceExtractor.findUnusedPrefix(this.namespacePrefixes.keySet(), "trace")).thenReturn("trace1234");
 		final IStylesheetInformation info = this.preprocessor.prepareStylesheet(URI.create("foobar"), this.minimalStylesheet);
 		assertEquals(this.minimalStylesheet, info.getOriginalStylesheet());
+		assertEquals(this.namespacePrefixes, info.getNamespacePrefixes());
+		assertEquals("trace1234", info.getTraceNamespacePrefix());
 	}
 
 	// TODO XSLT structure: support XSLT structure extraction
