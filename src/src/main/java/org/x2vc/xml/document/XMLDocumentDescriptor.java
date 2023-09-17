@@ -1,8 +1,6 @@
 package org.x2vc.xml.document;
 
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 import org.x2vc.xml.value.IValueDescriptor;
 
@@ -18,12 +16,14 @@ public class XMLDocumentDescriptor implements IXMLDocumentDescriptor {
 	private int valueLength;
 	private HashMultimap<String, IValueDescriptor> valueDescriptors;
 	private IDocumentModifier modifier;
+	private Map<UUID, UUID> traceIDToRuleIDMap;
 
 	XMLDocumentDescriptor(Builder builder) {
 		this.valuePrefix = builder.valuePrefix;
 		this.valueLength = builder.valueLength;
 		this.valueDescriptors = builder.valueDescriptors;
 		this.modifier = builder.modifier;
+		this.traceIDToRuleIDMap = builder.traceIDToRuleIDMap;
 	}
 
 	@Override
@@ -71,6 +71,11 @@ public class XMLDocumentDescriptor implements IXMLDocumentDescriptor {
 		return Optional.ofNullable(this.modifier);
 	}
 
+	@Override
+	public Map<UUID, UUID> getTraceIDToRuleIDMap() {
+		return this.traceIDToRuleIDMap;
+	}
+
 	/**
 	 * Builder to build {@link XMLDocumentDescriptor}.
 	 */
@@ -79,6 +84,7 @@ public class XMLDocumentDescriptor implements IXMLDocumentDescriptor {
 		private int valueLength;
 		private HashMultimap<String, IValueDescriptor> valueDescriptors = HashMultimap.create();
 		private IDocumentModifier modifier;
+		private Map<UUID, UUID> traceIDToRuleIDMap;
 
 		/**
 		 * Creates a new builder
@@ -125,6 +131,17 @@ public class XMLDocumentDescriptor implements IXMLDocumentDescriptor {
 		}
 
 		/**
+		 * Builder method to set the traceIDToRuleIDMap
+		 *
+		 * @param traceIDToRuleIDMap
+		 * @return builder
+		 */
+		public Builder withTraceIDToRuleIDMap(Map<UUID, UUID> traceIDToRuleIDMap) {
+			this.traceIDToRuleIDMap = traceIDToRuleIDMap;
+			return this;
+		}
+
+		/**
 		 * Builder method of the builder.
 		 *
 		 * @return built class
@@ -136,7 +153,8 @@ public class XMLDocumentDescriptor implements IXMLDocumentDescriptor {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(this.modifier, this.valueDescriptors, this.valueLength, this.valuePrefix);
+		return Objects.hash(this.modifier, this.traceIDToRuleIDMap, this.valueDescriptors, this.valueLength,
+				this.valuePrefix);
 	}
 
 	@Override
@@ -152,7 +170,10 @@ public class XMLDocumentDescriptor implements IXMLDocumentDescriptor {
 		}
 		final XMLDocumentDescriptor other = (XMLDocumentDescriptor) obj;
 		return Objects.equals(this.modifier, other.modifier)
+				&& Objects.equals(this.traceIDToRuleIDMap, other.traceIDToRuleIDMap)
 				&& Objects.equals(this.valueDescriptors, other.valueDescriptors)
-				&& this.valueLength == other.valueLength && Objects.equals(this.valuePrefix, other.valuePrefix);
+				&& this.valueLength == other.valueLength
+				&& Objects.equals(this.valuePrefix, other.valuePrefix);
 	}
+
 }

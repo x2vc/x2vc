@@ -10,6 +10,11 @@ import org.x2vc.xml.request.IDocumentRequest;
 public interface IDocumentGenerator {
 
 	/**
+	 * The namespace used for the trace information generated into the document.
+	 */
+	static final String TRACE_ELEMENT_NAMESPACE = "https://github.com/x2vc/xmlTrace";
+
+	/**
 	 * Generates a document from the request.
 	 *
 	 * @param request

@@ -1,6 +1,8 @@
 package org.x2vc.xml.document;
 
+import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.x2vc.xml.value.IValueDescriptor;
 
@@ -40,5 +42,11 @@ public interface IXMLDocumentDescriptor {
 	 *         object if this is an unmodified document
 	 */
 	Optional<IDocumentModifier> getModifier();
+
+	/**
+	 * @return a map that allows for assigning a trace ID found in the XML document
+	 *         to the ID of the rule that contributed the element
+	 */
+	Map<UUID, UUID> getTraceIDToRuleIDMap();
 
 }

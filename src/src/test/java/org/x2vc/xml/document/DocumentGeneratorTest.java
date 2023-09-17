@@ -12,7 +12,10 @@ import java.io.FileNotFoundException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Optional;
+import java.util.UUID;
+import java.util.regex.Pattern;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -28,6 +31,8 @@ import org.x2vc.schema.structure.IXMLAttribute;
 import org.x2vc.schema.structure.IXMLElementReference;
 import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.schema.structure.XMLSchema;
+import org.x2vc.stylesheet.IStylesheetInformation;
+import org.x2vc.stylesheet.IStylesheetManager;
 import org.x2vc.utilities.URIHandling;
 import org.x2vc.utilities.URIHandling.ObjectType;
 import org.x2vc.xml.request.*;
@@ -58,6 +63,14 @@ class DocumentGeneratorTest {
 	private int schemaVersion;
 	private IXMLSchema schema;
 
+	// stylesheet
+	@Mock
+	private IStylesheetManager stylesheetManager;
+	private URI stylesheetURI;
+	@Mock
+	private IStylesheetInformation stylesheetInformation;
+	private String traceNamespacePrefix = "trace0";
+
 	// value generator
 	@Mock
 	private IValueGeneratorFactory valueGeneratorFactory;
@@ -85,6 +98,11 @@ class DocumentGeneratorTest {
 		this.schemaVersion = 1;
 		lenient().when(this.schemaManager.getSchema(this.schemaURI, this.schemaVersion)).thenAnswer(a -> this.schema);
 
+		// stylesheet
+		this.stylesheetURI = URIHandling.makeMemoryURI(ObjectType.STYLESHEET, "baz");
+		lenient().when(this.stylesheetManager.get(this.stylesheetURI)).thenReturn(this.stylesheetInformation);
+		when(this.stylesheetInformation.getTraceNamespacePrefix()).thenReturn(this.traceNamespacePrefix);
+
 		// value generator
 		lenient().when(this.valueGeneratorFactory.createValueGenerator(this.request)).thenReturn(this.valueGenerator);
 		lenient().when(this.valueGenerator.getValuePrefix()).thenReturn(VALUE_PREFIX);
@@ -96,10 +114,12 @@ class DocumentGeneratorTest {
 		// request
 		lenient().when(this.request.getSchemaURI()).thenReturn(this.schemaURI);
 		lenient().when(this.request.getSchemaVersion()).thenReturn(this.schemaVersion);
+		lenient().when(this.request.getStylesheeURI()).thenReturn(this.stylesheetURI);
 		lenient().when(this.request.getRootElementRule()).thenAnswer(a -> this.rootElementRule);
 
 		// document generator under test
-		this.documentGenerator = new DocumentGenerator(this.schemaManager, this.valueGeneratorFactory);
+		this.documentGenerator = new DocumentGenerator(this.schemaManager, this.stylesheetManager,
+				this.valueGeneratorFactory);
 	}
 
 	@Test
@@ -238,6 +258,35 @@ class DocumentGeneratorTest {
 	}
 
 	@Test
+	void testGenerateDocument_VerifyTraceIDs() throws FileNotFoundException, JAXBException {
+		// same as testGenerateDocument_ElementWithSubElement
+		this.schema = loadSchema("ElementWithSubElement.x2vc_schema");
+		final IXMLElementReference rootElementReference = this.schema.getRootElements().iterator().next();
+		final IXMLElementReference subElementReference = rootElementReference.getElement().getElements().get(0);
+		final AddElementRule subElementRule1 = new AddElementRule.Builder(subElementReference).build();
+		final AddElementRule subElementRule2 = new AddElementRule.Builder(subElementReference).build();
+		final AddElementRule subElementRule3 = new AddElementRule.Builder(subElementReference).build();
+		this.rootElementRule = new AddElementRule.Builder(rootElementReference).addContentRule(subElementRule1)
+			.addContentRule(subElementRule2).addContentRule(subElementRule3).build();
+		final IXMLDocumentContainer document = this.documentGenerator.generateDocument(this.request);
+
+		// extract the trace IDs using regex
+		final String[] matches = Pattern.compile("trace0:elementID=\"([0123456789abcdef-]+)\"")
+			.matcher(document.getDocument())
+			.results()
+			.map(result -> result.group(1))
+			.toArray(String[]::new);
+		assertEquals(4, matches.length);
+
+		final Map<UUID, UUID> idMap = document.getDocumentDescriptor().getTraceIDToRuleIDMap();
+
+		assertEquals(this.rootElementRule.getID(), idMap.get(UUID.fromString(matches[0])));
+		assertEquals(subElementRule1.getID(), idMap.get(UUID.fromString(matches[1])));
+		assertEquals(subElementRule2.getID(), idMap.get(UUID.fromString(matches[2])));
+		assertEquals(subElementRule3.getID(), idMap.get(UUID.fromString(matches[3])));
+	}
+
+	@Test
 	void testGenerateDocument_ElementWithRawContent() throws FileNotFoundException, JAXBException {
 		// load schema and extract relevant objects
 		this.schema = loadSchema("ElementWithRawContent.x2vc_schema");
@@ -284,7 +333,11 @@ class DocumentGeneratorTest {
 
 	private void compareXML(String expected, String actual) {
 		assertNotNull(actual);
-		final Diff d = DiffBuilder.compare(Input.fromString(expected)).ignoreWhitespace().withTest(actual).build();
+		final Diff d = DiffBuilder.compare(Input.fromString(expected))
+			.ignoreWhitespace()
+			.withTest(actual)
+			.withNodeFilter(node -> node.getPrefix() != null && !node.getPrefix().equals(this.traceNamespacePrefix))
+			.build();
 		assertFalse(d.hasDifferences(), d.fullDescription());
 	}
 

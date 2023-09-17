@@ -3,6 +3,7 @@ package org.x2vc.xml.document;
 import java.io.StringWriter;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.UUID;
 
 import javax.xml.XMLConstants;
@@ -10,6 +11,8 @@ import javax.xml.stream.XMLEventFactory;
 import javax.xml.stream.XMLEventWriter;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.events.Attribute;
+import javax.xml.stream.events.Namespace;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,6 +21,8 @@ import org.dom4j.io.OutputFormat;
 import org.dom4j.io.XMLWriter;
 import org.x2vc.schema.ISchemaManager;
 import org.x2vc.schema.structure.IXMLSchema;
+import org.x2vc.stylesheet.IStylesheetInformation;
+import org.x2vc.stylesheet.IStylesheetManager;
 import org.x2vc.xml.document.XMLDocumentDescriptor.Builder;
 import org.x2vc.xml.request.*;
 import org.x2vc.xml.value.IValueGenerator;
@@ -34,17 +39,21 @@ public class DocumentGenerator implements IDocumentGenerator {
 	private static final Logger logger = LogManager.getLogger();
 
 	private ISchemaManager schemaManager;
+	private IStylesheetManager stylesheetManager;
 	private IValueGeneratorFactory valueGeneratorFactory;
 
 	// TODO XML Document Generator: add namespace support
 
 	/**
 	 * @param schemaManager
+	 * @param stylesheetManager
 	 * @param valueGeneratorFactory
 	 */
 	@Inject
-	public DocumentGenerator(ISchemaManager schemaManager, IValueGeneratorFactory valueGeneratorFactory) {
+	public DocumentGenerator(ISchemaManager schemaManager, IStylesheetManager stylesheetManager,
+			IValueGeneratorFactory valueGeneratorFactory) {
 		this.schemaManager = schemaManager;
+		this.stylesheetManager = stylesheetManager;
 		this.valueGeneratorFactory = valueGeneratorFactory;
 	}
 
@@ -53,8 +62,11 @@ public class DocumentGenerator implements IDocumentGenerator {
 		logger.traceEntry();
 		final IValueGenerator valueGenerator = this.valueGeneratorFactory.createValueGenerator(request);
 		final IXMLSchema schema = this.schemaManager.getSchema(request.getSchemaURI(), request.getSchemaVersion());
-		final String document = new Worker(request, valueGenerator, schema).generateXMLDocument();
-		final IXMLDocumentDescriptor descriptor = generateDescriptor(request, valueGenerator);
+		final IStylesheetInformation stylesheetInformation = this.stylesheetManager.get(request.getStylesheeURI());
+		final Worker worker = new Worker(request, valueGenerator, schema, stylesheetInformation);
+		final String document = worker.generateXMLDocument();
+		final IXMLDocumentDescriptor descriptor = generateDescriptor(request, valueGenerator,
+				worker.getTraceIDToRuleIDMap());
 		final XMLDocumentContainer container = new XMLDocumentContainer(request, descriptor, document);
 		return logger.traceExit(container);
 	}
@@ -64,12 +76,15 @@ public class DocumentGenerator implements IDocumentGenerator {
 	 *
 	 * @param request
 	 * @param valueGenerator
+	 * @param traceIDToRuleIDMap
 	 * @return
 	 */
-	private IXMLDocumentDescriptor generateDescriptor(IDocumentRequest request, IValueGenerator valueGenerator) {
+	private IXMLDocumentDescriptor generateDescriptor(IDocumentRequest request, IValueGenerator valueGenerator,
+			Map<UUID, UUID> traceIDToRuleIDMap) {
 		logger.traceEntry();
 		final Builder builder = new XMLDocumentDescriptor.Builder(valueGenerator.getValuePrefix(),
-				valueGenerator.getValueLength());
+				valueGenerator.getValueLength())
+			.withTraceIDToRuleIDMap(traceIDToRuleIDMap);
 		valueGenerator.getValueDescriptors().forEach(builder::addValueDescriptor);
 		final Optional<IDocumentModifier> modifier = request.getModifier();
 		if (modifier.isPresent()) {
@@ -87,19 +102,32 @@ public class DocumentGenerator implements IDocumentGenerator {
 		private IDocumentRequest request;
 		private IValueGenerator valueGenerator;
 		private IXMLSchema schema;
+		private IStylesheetInformation stylesheetInformation;
 		private XMLEventWriter xmlWriter;
 
 		private Map<UUID, String> rawDataReplacementMap = Maps.newHashMap();
+		private Map<UUID, UUID> traceIDToRuleIDMap = Maps.newHashMap();
 
 		/**
 		 * @param request
 		 * @param valueGenerator
 		 * @param schema
+		 * @param stylesheetInformation
 		 */
-		public Worker(IDocumentRequest request, IValueGenerator valueGenerator, IXMLSchema schema) {
+		public Worker(IDocumentRequest request, IValueGenerator valueGenerator, IXMLSchema schema,
+				IStylesheetInformation stylesheetInformation) {
 			this.request = request;
 			this.valueGenerator = valueGenerator;
 			this.schema = schema;
+			this.stylesheetInformation = stylesheetInformation;
+		}
+
+		/**
+		 * @return a map that allows for assigning a trace ID found in the XML document
+		 *         to the ID of the rule that contributed the element
+		 */
+		public Map<UUID, UUID> getTraceIDToRuleIDMap() {
+			return this.traceIDToRuleIDMap;
 		}
 
 		/**
@@ -114,7 +142,7 @@ public class DocumentGenerator implements IDocumentGenerator {
 				final StringWriter stringWriter = new StringWriter();
 				this.xmlWriter = this.outputFactory.createXMLEventWriter(stringWriter);
 				this.xmlWriter.add(this.eventFactory.createStartDocument());
-				processAddElementRule(this.request.getRootElementRule());
+				processAddElementRule(this.request.getRootElementRule(), true);
 				this.xmlWriter.add(this.eventFactory.createEndDocument());
 				final String rawXML = stringWriter.toString();
 				final String postprocessedXML = replaceRawData(rawXML);
@@ -167,27 +195,52 @@ public class DocumentGenerator implements IDocumentGenerator {
 		 * Processes an {@link IAddElementRule}.
 		 *
 		 * @param rule
+		 * @param isRoot if this the first call of the method that generates the root
+		 *               element
 		 * @throws XMLStreamException
 		 */
-		private void processAddElementRule(IAddElementRule rule) throws XMLStreamException {
+		private void processAddElementRule(IAddElementRule rule, boolean isRoot) throws XMLStreamException {
 			logger.traceEntry("for rule {} and element reference {}", rule.getID(), rule.getElementReferenceID());
 			final String elementName = this.schema.getObjectByID(rule.getElementReferenceID()).asReference().getName();
+
+			// produce element including trace ID
+			final String traceNamespacePrefix = this.stylesheetInformation.getTraceNamespacePrefix();
+			final UUID traceElementID = UUID.randomUUID();
+			this.traceIDToRuleIDMap.put(traceElementID, rule.getID());
+			Set<Namespace> namespaces = null;
+			if (isRoot) {
+				// namespace is only added to root element
+				namespaces = Set.of(this.eventFactory
+					.createNamespace(traceNamespacePrefix, TRACE_ELEMENT_NAMESPACE));
+			} else {
+				namespaces = Set.of();
+			}
+			final Set<Attribute> attributes = Set
+				.of(this.eventFactory.createAttribute(traceNamespacePrefix, TRACE_ELEMENT_NAMESPACE,
+						"elementID", traceElementID.toString()));
 			this.xmlWriter.add(this.eventFactory.createStartElement(XMLConstants.DEFAULT_NS_PREFIX,
-					XMLConstants.NULL_NS_URI, elementName));
+					XMLConstants.NULL_NS_URI, elementName, attributes.iterator(), namespaces.iterator()));
+
+			// add attributes if required
 			for (final ISetAttributeRule attributeRule : rule.getAttributeRules()) {
 				processSetAttributeRule(attributeRule);
 			}
+
+			// add content
 			for (final IContentGenerationRule contentRule : rule.getContentRules()) {
 				if (contentRule instanceof final IAddDataContentRule addDataRule) {
 					processAddDataContentRule(addDataRule);
 				} else if (contentRule instanceof final IAddElementRule addElementRule) {
-					processAddElementRule(addElementRule);
+					processAddElementRule(addElementRule, false);
 				} else if (contentRule instanceof final IAddRawContentRule addRawRule) {
 					processAddRawContentRule(addRawRule);
 				}
 			}
+
+			// and end element
 			this.xmlWriter.add(this.eventFactory.createEndElement(XMLConstants.DEFAULT_NS_PREFIX,
 					XMLConstants.NULL_NS_URI, elementName));
+
 			logger.traceExit();
 		}
 
