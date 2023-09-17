@@ -1,7 +1,5 @@
 package org.x2vc.stylesheet.structure;
 
-import java.util.Optional;
-
 import javax.xml.namespace.QName;
 
 import com.google.common.collect.ImmutableList;
@@ -29,11 +27,6 @@ public interface IXSLTDirectiveNode extends IStructureTreeNode {
 	 * @return the non-XSLT attributes of the element
 	 */
 	ImmutableMap<QName, String> getOtherAttributes();
-
-	/**
-	 * @return the trace ID if any is set
-	 */
-	Optional<Integer> getTraceID();
 
 	/**
 	 * @return the elements contained within the current element. May be empty. Note

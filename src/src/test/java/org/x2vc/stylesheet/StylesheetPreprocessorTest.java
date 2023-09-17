@@ -1,22 +1,20 @@
 package org.x2vc.stylesheet;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
+import static org.mockito.hamcrest.MockitoHamcrest.argThat;
 
 import java.net.URI;
 
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.x2vc.stylesheet.extension.IStylesheetExtender;
 import org.x2vc.stylesheet.structure.IStylesheetStructure;
 import org.x2vc.stylesheet.structure.IStylesheetStructureExtractor;
 
@@ -41,9 +39,6 @@ class StylesheetPreprocessorTest {
 	Multimap<String, URI> namespacePrefixes;
 
 	@Mock
-	IStylesheetExtender stylesheetExtender;
-
-	@Mock
 	IStylesheetStructureExtractor structureExtractor;
 
 	@Mock
@@ -55,7 +50,6 @@ class StylesheetPreprocessorTest {
 	void prepareInstances() {
 		this.xsltProcessor = new Processor();
 		this.preprocessor = new StylesheetPreprocessor(this.xsltProcessor, this.namespaceExtractor,
-				this.stylesheetExtender,
 				this.structureExtractor);
 		lenient().when(this.structureExtractor.extractStructure(anyString())).thenReturn(this.structure);
 	}
@@ -155,33 +149,22 @@ class StylesheetPreprocessorTest {
 										</xsl:stylesheet>
 										""";
 
-	final String minimalStylesheet_Extended = """
+	final String minimalStylesheet_Formatted = """
 												<?xml version="1.0" encoding="UTF-8"?>
-												<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-												<xsl:template match="/">
-												<xsl:message>foobar</xsl:message>
-												</xsl:template>
+
+												<xsl:stylesheet xmlns:xsl="http://www.w3.org/1999/XSL/Transform" version="1.0">
+												    <xsl:template match="/"></xsl:template>
 												</xsl:stylesheet>
 												""";
 
 	@Test
-	void testStylesheetLocation() throws SaxonApiException {
-		when(this.stylesheetExtender.extendStylesheet(this.minimalStylesheet)).thenReturn(this.minimalStylesheet_Extended);
-		when(this.namespaceExtractor.extractNamespaces(this.minimalStylesheet)).thenReturn(this.namespacePrefixes);
+	void testStylesheetContents() throws SaxonApiException {
+		when(this.namespaceExtractor.extractNamespaces(argThat(Matchers.equalToCompressingWhiteSpace(this.minimalStylesheet_Formatted)))).thenReturn(this.namespacePrefixes);
 		when(this.namespaceExtractor.findUnusedPrefix(this.namespacePrefixes.keySet(), "trace")).thenReturn("trace1234");
 		final IStylesheetInformation info = this.preprocessor.prepareStylesheet(URI.create("foobar"), this.minimalStylesheet);
 		assertEquals(URI.create("foobar"), info.getURI());
-		assertSame(this.namespacePrefixes, info.getNamespacePrefixes());
-		assertEquals("trace1234", info.getTraceNamespacePrefix());
-	}
-
-	@Test
-	void testStylesheetContents() throws SaxonApiException {
-		when(this.stylesheetExtender.extendStylesheet(this.minimalStylesheet)).thenReturn(this.minimalStylesheet_Extended);
-		when(this.namespaceExtractor.extractNamespaces(this.minimalStylesheet)).thenReturn(this.namespacePrefixes);
-		when(this.namespaceExtractor.findUnusedPrefix(this.namespacePrefixes.keySet(), "trace")).thenReturn("trace1234");
-		final IStylesheetInformation info = this.preprocessor.prepareStylesheet(URI.create("foobar"), this.minimalStylesheet);
 		assertEquals(this.minimalStylesheet, info.getOriginalStylesheet());
+		assertTrue(Matchers.equalToCompressingWhiteSpace(this.minimalStylesheet_Formatted).matches(info.getPreparedStylesheet()));
 		assertSame(this.namespacePrefixes, info.getNamespacePrefixes());
 		assertEquals("trace1234", info.getTraceNamespacePrefix());
 	}

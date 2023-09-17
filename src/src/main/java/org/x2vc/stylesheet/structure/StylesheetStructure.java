@@ -3,12 +3,8 @@ package org.x2vc.stylesheet.structure;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import java.util.Deque;
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -25,9 +21,9 @@ public class StylesheetStructure implements IStylesheetStructure {
 
 	private static final Logger logger = LogManager.getLogger();
 	private IXSLTDirectiveNode rootNode;
-	private transient ImmutableList<IXSLTDirectiveNode> templates;
-	private transient ImmutableList<IXSLTParameterNode> parameters;
-	private transient Map<Integer, IXSLTDirectiveNode> traceDirectives;
+	private ImmutableList<IXSLTDirectiveNode> templates;
+	private ImmutableList<IXSLTParameterNode> parameters;
+	private Map<Integer, IXSLTDirectiveNode> traceDirectives;
 
 	/**
 	 * Default constructor.
@@ -104,7 +100,7 @@ public class StylesheetStructure implements IStylesheetStructure {
 	private ImmutableList<IXSLTDirectiveNode> filterTemplates() {
 		logger.traceEntry();
 		final ImmutableList<IXSLTDirectiveNode> result = ImmutableList.copyOf(this.rootNode.getChildDirectives()
-				.stream().filter(d -> d.getName().equals(XSLTConstants.Elements.TEMPLATE)).iterator());
+			.stream().filter(d -> d.getName().equals(XSLTConstants.Elements.TEMPLATE)).iterator());
 		return logger.traceExit(result);
 	}
 
@@ -124,51 +120,7 @@ public class StylesheetStructure implements IStylesheetStructure {
 	private ImmutableList<IXSLTParameterNode> filterParameters() {
 		logger.traceEntry();
 		final ImmutableList<IXSLTParameterNode> result = ImmutableList.copyOf(this.rootNode.getChildElements().stream()
-				.filter(e -> e.isXSLTParameter()).map(e -> e.asParameter()).iterator());
-		return logger.traceExit(result);
-	}
-
-	@Override
-	public ImmutableList<IXSLTDirectiveNode> getDirectivesWithTraceID() {
-		if (this.traceDirectives == null) {
-			this.traceDirectives = buildTracedDirectives();
-		}
-		return ImmutableList.copyOf(this.traceDirectives.values());
-	}
-
-	@Override
-	public IXSLTDirectiveNode getDirectiveByTraceID(int traceID) {
-		if (this.traceDirectives == null) {
-			this.traceDirectives = buildTracedDirectives();
-		}
-		return this.traceDirectives.get(traceID);
-	}
-
-	/**
-	 * @return a map of all directives in the tree containing a trace ID
-	 */
-	private Map<Integer, IXSLTDirectiveNode> buildTracedDirectives() {
-		logger.traceEntry();
-		final HashMap<Integer, IXSLTDirectiveNode> result = new HashMap<>();
-		final Deque<IStructureTreeNode> remainingNodes = new LinkedList<>();
-		remainingNodes.add(this.rootNode);
-		while (!remainingNodes.isEmpty()) {
-			final IStructureTreeNode currentNode = remainingNodes.remove();
-			if (currentNode.isXSLTDirective()) {
-				final Optional<Integer> nodeID = currentNode.asDirective().getTraceID();
-				if (nodeID.isPresent()) {
-					result.put(nodeID.get(), currentNode.asDirective());
-				}
-				remainingNodes.addAll(currentNode.asDirective().getChildDirectives());
-				remainingNodes.addAll(currentNode.asDirective().getActualParameters());
-				remainingNodes.addAll(currentNode.asDirective().getFormalParameters());
-				remainingNodes.addAll(currentNode.asDirective().getSorting());
-			} else if (currentNode.isXSLTParameter()) {
-				remainingNodes.addAll(currentNode.asParameter().getChildElements());
-			} else if (currentNode.isXML()) {
-				remainingNodes.addAll(currentNode.asXML().getChildElements());
-			}
-		}
+			.filter(e -> e.isXSLTParameter()).map(e -> e.asParameter()).iterator());
 		return logger.traceExit(result);
 	}
 

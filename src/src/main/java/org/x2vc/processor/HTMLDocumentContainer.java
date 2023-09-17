@@ -6,15 +6,11 @@ import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.x2vc.stylesheet.IStylesheetInformation;
 import org.x2vc.stylesheet.IStylesheetManager;
 import org.x2vc.stylesheet.coverage.IStylesheetCoverage;
-import org.x2vc.stylesheet.structure.IStylesheetStructure;
-import org.x2vc.stylesheet.structure.IXSLTDirectiveNode;
 import org.x2vc.xml.document.IXMLDocumentContainer;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Maps;
 
 import net.sf.saxon.s9api.SaxonApiException;
 
@@ -105,18 +101,19 @@ public class HTMLDocumentContainer implements IHTMLDocumentContainer {
 	 */
 	private void buildCoverage() {
 		logger.traceEntry();
-		final IStylesheetInformation stylesheet = this.stylesheetManager.get(this.source.getStylesheeURI());
-		final IStylesheetStructure structure = stylesheet.getStructure();
-		this.coverage = stylesheet.createCoverageStatistics();
-		for (final ITraceEvent traceEvent : this.traceEvents) {
-			final int traceID = traceEvent.getTraceID();
-			final IXSLTDirectiveNode directive = structure.getDirectiveByTraceID(traceID);
-			if (!directive.getName().equals(traceEvent.getElementName())) {
-				logger.warn("Trace event element name {} differs from structure element name {}",
-						traceEvent.getElementName(), directive.getName());
-			}
-			this.coverage.recordElementCoverage(traceID, Maps.newHashMap());
-		}
+		// TODO XSLT Coverage: rebuild after structure extraction changes
+//		final IStylesheetInformation stylesheet = this.stylesheetManager.get(this.source.getStylesheeURI());
+//		final IStylesheetStructure structure = stylesheet.getStructure();
+//		this.coverage = stylesheet.createCoverageStatistics();
+//		for (final ITraceEvent traceEvent : this.traceEvents) {
+//			final int traceID = traceEvent.getTraceID();
+//			final IXSLTDirectiveNode directive = structure.getDirectiveByTraceID(traceID);
+//			if (!directive.getName().equals(traceEvent.getElementName())) {
+//				logger.warn("Trace event element name {} differs from structure element name {}",
+//						traceEvent.getElementName(), directive.getName());
+//			}
+//			this.coverage.recordElementCoverage(traceID, Maps.newHashMap());
+//		}
 		logger.traceExit();
 	}
 

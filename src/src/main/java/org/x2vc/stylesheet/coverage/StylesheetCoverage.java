@@ -3,12 +3,10 @@ package org.x2vc.stylesheet.coverage;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-import java.util.Optional;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.x2vc.stylesheet.structure.IStylesheetStructure;
-import org.x2vc.stylesheet.structure.IXSLTDirectiveNode;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.ImmutableList;
@@ -32,12 +30,13 @@ public class StylesheetCoverage implements IStylesheetCoverage {
 	public StylesheetCoverage(IStylesheetStructure structure) {
 		this.parentStructure = structure;
 		this.executionCount = new HashMap<>();
-		for (final IXSLTDirectiveNode directive : this.parentStructure.getDirectivesWithTraceID()) {
-			final Optional<Integer> traceID = directive.getTraceID();
-			if (traceID.isPresent()) {
-				this.executionCount.put(traceID.get(), 0);
-			}
-		}
+		// TODO XSLT Coverage: rebuild after structure extraction changes
+//		for (final IXSLTDirectiveNode directive : this.parentStructure.getDirectivesWithTraceID()) {
+//			final Optional<Integer> traceID = directive.getTraceID();
+//			if (traceID.isPresent()) {
+//				this.executionCount.put(traceID.get(), 0);
+//			}
+//		}
 		this.executionParameters = HashMultimap.create();
 	}
 

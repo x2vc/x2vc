@@ -9,9 +9,9 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.x2vc.stylesheet.extension.IStylesheetExtender;
 import org.x2vc.stylesheet.structure.IStylesheetStructure;
 import org.x2vc.stylesheet.structure.IStylesheetStructureExtractor;
+import org.x2vc.utilities.XMLUtilities;
 
 import com.google.common.collect.Multimap;
 import com.google.inject.Inject;
@@ -31,15 +31,13 @@ public class StylesheetPreprocessor implements IStylesheetPreprocessor {
 
 	private Processor processor;
 	private INamespaceExtractor namespaceExtractor;
-	private IStylesheetExtender extender;
 	private IStylesheetStructureExtractor extractor;
 
 	@Inject
-	StylesheetPreprocessor(Processor processor, INamespaceExtractor namespaceExtractor, IStylesheetExtender expander,
+	StylesheetPreprocessor(Processor processor, INamespaceExtractor namespaceExtractor,
 			IStylesheetStructureExtractor extractor) {
 		this.processor = processor;
 		this.namespaceExtractor = namespaceExtractor;
-		this.extender = expander;
 		this.extractor = extractor;
 	}
 
@@ -48,12 +46,25 @@ public class StylesheetPreprocessor implements IStylesheetPreprocessor {
 		checkNotNull(uri);
 		checkNotNull(originalSource);
 		checkStylesheet(originalSource);
-		final Multimap<String, URI> namespacePrefixes = this.namespaceExtractor.extractNamespaces(originalSource);
+
+		// pretty-print the stylesheet to make it easier to identify elements by
+		// position
+		final String formattedSource = XMLUtilities.prettyPrint(originalSource, format -> {
+			format.setIndentSize(4);
+			format.setNewlines(true);
+			format.setNewLineAfterNTags(1);
+		});
+
+		// collect the namespaces and prefixes and select an unused one for the trace
+		// elements
+		final Multimap<String, URI> namespacePrefixes = this.namespaceExtractor.extractNamespaces(formattedSource);
 		final String traceNamespacePrefix = this.namespaceExtractor.findUnusedPrefix(namespacePrefixes.keySet(),
 				TRACE_NAMESPACE_PFREIX);
-		final String expandedSource = this.extender.extendStylesheet(originalSource);
-		final IStylesheetStructure structure = this.extractor.extractStructure(expandedSource);
-		return new StylesheetInformation(uri, originalSource, expandedSource, namespacePrefixes, traceNamespacePrefix,
+
+		// extract the stylesheet structure
+		final IStylesheetStructure structure = this.extractor.extractStructure(formattedSource);
+
+		return new StylesheetInformation(uri, originalSource, formattedSource, namespacePrefixes, traceNamespacePrefix,
 				structure);
 	}
 

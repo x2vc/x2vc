@@ -2,16 +2,9 @@ package org.x2vc.stylesheet.structure;
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 import javax.xml.namespace.QName;
-
-import org.x2vc.stylesheet.ExtendedXSLTConstants;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -24,10 +17,8 @@ public class XSLTDirectiveNode extends AbstractStructureTreeNode implements IXSL
 	private String name;
 	private ImmutableMap<String, String> xsltAttributes;
 	private ImmutableMap<QName, String> otherAttributes;
-	private transient boolean traceIDExtracted = false;
-	private transient Integer traceID;
 	private ImmutableList<IStructureTreeNode> childElements;
-	private transient ImmutableList<IXSLTDirectiveNode> childDirectives;
+	private ImmutableList<IXSLTDirectiveNode> childDirectives;
 	private ImmutableList<IXSLTParameterNode> formalParameters;
 	private ImmutableList<IXSLTParameterNode> actualParameters;
 	private ImmutableList<IXSLTSortNode> sorting;
@@ -100,18 +91,6 @@ public class XSLTDirectiveNode extends AbstractStructureTreeNode implements IXSL
 	@Override
 	public ImmutableMap<QName, String> getOtherAttributes() {
 		return this.otherAttributes;
-	}
-
-	@Override
-	public Optional<Integer> getTraceID() {
-		if (!this.traceIDExtracted) {
-			if (this.otherAttributes.containsKey(ExtendedXSLTConstants.QualifiedAttributes.TRACE_ID)) {
-				this.traceID = Integer
-						.parseInt(this.otherAttributes.get(ExtendedXSLTConstants.QualifiedAttributes.TRACE_ID));
-			}
-			this.traceIDExtracted = true;
-		}
-		return Optional.ofNullable(this.traceID);
 	}
 
 	@Override

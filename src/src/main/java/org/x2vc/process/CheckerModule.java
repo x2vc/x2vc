@@ -21,8 +21,6 @@ import org.x2vc.schema.ISchemaManager;
 import org.x2vc.schema.InitialSchemaGenerator;
 import org.x2vc.schema.SchemaManager;
 import org.x2vc.stylesheet.*;
-import org.x2vc.stylesheet.extension.IStylesheetExtender;
-import org.x2vc.stylesheet.extension.StylesheetExtender;
 import org.x2vc.stylesheet.structure.IStylesheetStructureExtractor;
 import org.x2vc.stylesheet.structure.StylesheetStructureExtractor;
 import org.x2vc.utilities.DebugObjectWriter;
@@ -100,9 +98,6 @@ public class CheckerModule extends AbstractModule {
 		bind(INamespaceExtractor.class).to(NamespaceExtractor.class);
 
 		// stylesheet coverage
-
-		// stylesheet extension
-		bind(IStylesheetExtender.class).to(StylesheetExtender.class);
 
 		// stylesheet structure
 		bind(IStylesheetStructureExtractor.class).to(StylesheetStructureExtractor.class);
