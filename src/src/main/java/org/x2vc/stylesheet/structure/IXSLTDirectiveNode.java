@@ -1,6 +1,10 @@
 package org.x2vc.stylesheet.structure;
 
+import java.util.Optional;
+
 import javax.xml.namespace.QName;
+
+import org.x2vc.utilities.PolymorphLocation;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -17,6 +21,16 @@ public interface IXSLTDirectiveNode extends IStructureTreeNode {
 	 * @return the name of the element, like "apply-templates"
 	 */
 	String getName();
+
+	/**
+	 * @return the location the starting element was found
+	 */
+	Optional<PolymorphLocation> getStartLocation();
+
+	/**
+	 * @return the location the closing element was found
+	 */
+	Optional<PolymorphLocation> getEndLocation();
 
 	/**
 	 * @return the XSLT attributes of the element

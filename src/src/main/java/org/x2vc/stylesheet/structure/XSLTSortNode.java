@@ -5,11 +5,15 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.x2vc.utilities.PolymorphLocation;
+
 /**
  * Standard implementation of {@link IXSLTSortNode}.
  */
 public class XSLTSortNode extends AbstractStructureTreeNode implements IXSLTSortNode {
 
+	private PolymorphLocation startLocation;
+	private PolymorphLocation endLocation;
 	private String sortingExpression;
 	private String language;
 	private String dataType;
@@ -23,33 +27,13 @@ public class XSLTSortNode extends AbstractStructureTreeNode implements IXSLTSort
 	 */
 	private XSLTSortNode(Builder builder) {
 		super(builder.parentStructure);
+		this.startLocation = builder.startLocation;
+		this.endLocation = builder.endLocation;
 		this.sortingExpression = builder.sortingExpression;
 		this.language = builder.language;
 		this.dataType = builder.dataType;
 		this.sortOrder = builder.sortOrder;
 		this.caseOrder = builder.caseOrder;
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(this.caseOrder, this.dataType, this.language, this.sortOrder, this.sortingExpression);
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		final XSLTSortNode other = (XSLTSortNode) obj;
-		return Objects.equals(this.caseOrder, other.caseOrder) && Objects.equals(this.dataType, other.dataType)
-				&& Objects.equals(this.language, other.language) && Objects.equals(this.sortOrder, other.sortOrder)
-				&& Objects.equals(this.sortingExpression, other.sortingExpression);
 	}
 
 	@Override
@@ -65,6 +49,16 @@ public class XSLTSortNode extends AbstractStructureTreeNode implements IXSLTSort
 	@Override
 	public IXSLTSortNode asSort() throws IllegalStateException {
 		return this;
+	}
+
+	@Override
+	public Optional<PolymorphLocation> getStartLocation() {
+		return Optional.ofNullable(this.startLocation);
+	}
+
+	@Override
+	public Optional<PolymorphLocation> getEndLocation() {
+		return Optional.ofNullable(this.endLocation);
 	}
 
 	@Override
@@ -97,6 +91,8 @@ public class XSLTSortNode extends AbstractStructureTreeNode implements IXSLTSort
 	 */
 	public static final class Builder implements INodeBuilder {
 		private IStylesheetStructure parentStructure;
+		private PolymorphLocation startLocation;
+		private PolymorphLocation endLocation;
 		private String sortingExpression;
 		private String language;
 		private String dataType;
@@ -110,6 +106,72 @@ public class XSLTSortNode extends AbstractStructureTreeNode implements IXSLTSort
 		 */
 		public Builder(IStylesheetStructure parentStructure) {
 			this.parentStructure = parentStructure;
+		}
+
+		/**
+		 * Adds an start location to the builder.
+		 *
+		 * @param startLocation the location
+		 * @return builder
+		 */
+		public Builder withStartLocation(PolymorphLocation startLocation) {
+			this.startLocation = startLocation;
+			return this;
+		}
+
+		/**
+		 * Adds an start location to the builder.
+		 *
+		 * @param startLocation the location
+		 * @return builder
+		 */
+		public Builder withStartLocation(javax.xml.stream.Location startLocation) {
+			this.startLocation = PolymorphLocation.from(startLocation);
+			return this;
+		}
+
+		/**
+		 * Adds an start location to the builder.
+		 *
+		 * @param startLocation the location
+		 * @return builder
+		 */
+		public Builder withStartLocation(javax.xml.transform.SourceLocator startLocation) {
+			this.startLocation = PolymorphLocation.from(startLocation);
+			return this;
+		}
+
+		/**
+		 * Adds an end location to the builder.
+		 *
+		 * @param endLocation the location
+		 * @return builder
+		 */
+		public Builder withEndLocation(PolymorphLocation endLocation) {
+			this.endLocation = endLocation;
+			return this;
+		}
+
+		/**
+		 * Adds an end location to the builder.
+		 *
+		 * @param endLocation the location
+		 * @return builder
+		 */
+		public Builder withEndLocation(javax.xml.stream.Location endLocation) {
+			this.endLocation = PolymorphLocation.from(endLocation);
+			return this;
+		}
+
+		/**
+		 * Adds an end location to the builder.
+		 *
+		 * @param endLocation the location
+		 * @return builder
+		 */
+		public Builder withEndLocation(javax.xml.transform.SourceLocator endLocation) {
+			this.endLocation = PolymorphLocation.from(endLocation);
+			return this;
 		}
 
 		/**
@@ -180,6 +242,35 @@ public class XSLTSortNode extends AbstractStructureTreeNode implements IXSLTSort
 		public XSLTSortNode build() {
 			return new XSLTSortNode(this);
 		}
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result
+				+ Objects.hash(this.caseOrder, this.dataType, this.endLocation, this.language, this.sortOrder,
+						this.sortingExpression, this.startLocation);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!super.equals(obj)) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final XSLTSortNode other = (XSLTSortNode) obj;
+		return Objects.equals(this.caseOrder, other.caseOrder) && Objects.equals(this.dataType, other.dataType)
+				&& Objects.equals(this.endLocation, other.endLocation) && Objects.equals(this.language, other.language)
+				&& Objects.equals(this.sortOrder, other.sortOrder)
+				&& Objects.equals(this.sortingExpression, other.sortingExpression)
+				&& Objects.equals(this.startLocation, other.startLocation);
 	}
 
 }

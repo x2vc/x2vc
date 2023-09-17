@@ -6,6 +6,8 @@ import java.util.*;
 
 import javax.xml.namespace.QName;
 
+import org.x2vc.utilities.PolymorphLocation;
+
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
@@ -15,6 +17,8 @@ import com.google.common.collect.ImmutableMap;
 public class XSLTDirectiveNode extends AbstractStructureTreeNode implements IXSLTDirectiveNode {
 
 	private String name;
+	private PolymorphLocation startLocation;
+	private PolymorphLocation endLocation;
 	private ImmutableMap<String, String> xsltAttributes;
 	private ImmutableMap<QName, String> otherAttributes;
 	private ImmutableList<IStructureTreeNode> childElements;
@@ -26,41 +30,14 @@ public class XSLTDirectiveNode extends AbstractStructureTreeNode implements IXSL
 	private XSLTDirectiveNode(Builder builder) {
 		super(builder.parentStructure);
 		this.name = builder.name;
+		this.startLocation = builder.startLocation;
+		this.endLocation = builder.endLocation;
 		this.xsltAttributes = ImmutableMap.copyOf(builder.xsltAttributes);
 		this.otherAttributes = ImmutableMap.copyOf(builder.otherAttributes);
 		this.childElements = ImmutableList.copyOf(builder.childElements);
 		this.formalParameters = ImmutableList.copyOf(builder.formalParameters);
 		this.actualParameters = ImmutableList.copyOf(builder.actualParameters);
 		this.sorting = ImmutableList.copyOf(builder.sorting);
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = super.hashCode();
-		result = prime * result + Objects.hash(this.actualParameters, this.childElements, this.formalParameters,
-				this.name, this.otherAttributes, this.sorting, this.xsltAttributes);
-		return result;
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (!super.equals(obj)) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		final XSLTDirectiveNode other = (XSLTDirectiveNode) obj;
-		return Objects.equals(this.actualParameters, other.actualParameters)
-				&& Objects.equals(this.childElements, other.childElements)
-				&& Objects.equals(this.formalParameters, other.formalParameters)
-				&& Objects.equals(this.name, other.name) && Objects.equals(this.otherAttributes, other.otherAttributes)
-				&& Objects.equals(this.sorting, other.sorting)
-				&& Objects.equals(this.xsltAttributes, other.xsltAttributes);
 	}
 
 	@Override
@@ -81,6 +58,16 @@ public class XSLTDirectiveNode extends AbstractStructureTreeNode implements IXSL
 	@Override
 	public String getName() {
 		return this.name;
+	}
+
+	@Override
+	public Optional<PolymorphLocation> getStartLocation() {
+		return Optional.ofNullable(this.startLocation);
+	}
+
+	@Override
+	public Optional<PolymorphLocation> getEndLocation() {
+		return Optional.ofNullable(this.endLocation);
 	}
 
 	@Override
@@ -128,6 +115,8 @@ public class XSLTDirectiveNode extends AbstractStructureTreeNode implements IXSL
 	public static final class Builder implements INodeBuilder {
 		private IStylesheetStructure parentStructure;
 		private String name;
+		private PolymorphLocation startLocation;
+		private PolymorphLocation endLocation;
 		private Map<String, String> xsltAttributes = new HashMap<>();
 		private Map<QName, String> otherAttributes = new HashMap<>();
 		private List<IStructureTreeNode> childElements = new ArrayList<>();
@@ -146,6 +135,72 @@ public class XSLTDirectiveNode extends AbstractStructureTreeNode implements IXSL
 			checkNotNull(name);
 			this.parentStructure = parentStructure;
 			this.name = name;
+		}
+
+		/**
+		 * Adds an start location to the builder.
+		 *
+		 * @param startLocation the location
+		 * @return builder
+		 */
+		public Builder withStartLocation(PolymorphLocation startLocation) {
+			this.startLocation = startLocation;
+			return this;
+		}
+
+		/**
+		 * Adds an start location to the builder.
+		 *
+		 * @param startLocation the location
+		 * @return builder
+		 */
+		public Builder withStartLocation(javax.xml.stream.Location startLocation) {
+			this.startLocation = PolymorphLocation.from(startLocation);
+			return this;
+		}
+
+		/**
+		 * Adds an start location to the builder.
+		 *
+		 * @param startLocation the location
+		 * @return builder
+		 */
+		public Builder withStartLocation(javax.xml.transform.SourceLocator startLocation) {
+			this.startLocation = PolymorphLocation.from(startLocation);
+			return this;
+		}
+
+		/**
+		 * Adds an end location to the builder.
+		 *
+		 * @param endLocation the location
+		 * @return builder
+		 */
+		public Builder withEndLocation(PolymorphLocation endLocation) {
+			this.endLocation = endLocation;
+			return this;
+		}
+
+		/**
+		 * Adds an end location to the builder.
+		 *
+		 * @param endLocation the location
+		 * @return builder
+		 */
+		public Builder withEndLocation(javax.xml.stream.Location endLocation) {
+			this.endLocation = PolymorphLocation.from(endLocation);
+			return this;
+		}
+
+		/**
+		 * Adds an end location to the builder.
+		 *
+		 * @param endLocation the location
+		 * @return builder
+		 */
+		public Builder withEndLocation(javax.xml.transform.SourceLocator endLocation) {
+			this.endLocation = PolymorphLocation.from(endLocation);
+			return this;
 		}
 
 		/**
@@ -232,6 +287,41 @@ public class XSLTDirectiveNode extends AbstractStructureTreeNode implements IXSL
 		public XSLTDirectiveNode build() {
 			return new XSLTDirectiveNode(this);
 		}
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = super.hashCode();
+		result = prime * result
+				+ Objects.hash(this.actualParameters, this.childDirectives, this.childElements, this.endLocation,
+						this.formalParameters, this.name, this.otherAttributes, this.sorting, this.startLocation,
+						this.xsltAttributes);
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!super.equals(obj)) {
+			return false;
+		}
+		if (getClass() != obj.getClass()) {
+			return false;
+		}
+		final XSLTDirectiveNode other = (XSLTDirectiveNode) obj;
+		return Objects.equals(this.actualParameters, other.actualParameters)
+				&& Objects.equals(this.childDirectives, other.childDirectives)
+				&& Objects.equals(this.childElements, other.childElements)
+				&& Objects.equals(this.endLocation, other.endLocation)
+				&& Objects.equals(this.formalParameters, other.formalParameters)
+				&& Objects.equals(this.name, other.name)
+				&& Objects.equals(this.otherAttributes, other.otherAttributes)
+				&& Objects.equals(this.sorting, other.sorting)
+				&& Objects.equals(this.startLocation, other.startLocation)
+				&& Objects.equals(this.xsltAttributes, other.xsltAttributes);
 	}
 
 }

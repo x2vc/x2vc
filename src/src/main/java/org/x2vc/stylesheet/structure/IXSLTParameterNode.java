@@ -2,6 +2,8 @@ package org.x2vc.stylesheet.structure;
 
 import java.util.Optional;
 
+import org.x2vc.utilities.PolymorphLocation;
+
 import com.google.common.collect.ImmutableList;
 
 /**
@@ -14,6 +16,16 @@ public interface IXSLTParameterNode extends IStructureTreeNode {
 	 * @return the name of the parameter
 	 */
 	String getName();
+
+	/**
+	 * @return the location the starting element was found
+	 */
+	Optional<PolymorphLocation> getStartLocation();
+
+	/**
+	 * @return the location the closing element was found
+	 */
+	Optional<PolymorphLocation> getEndLocation();
 
 	/**
 	 * @return the value of the select attribute if it exists
