@@ -7,7 +7,6 @@ import java.util.Objects;
  */
 public class TraceEvent implements ITraceEvent {
 
-	private static final long serialVersionUID = -5689740211638377974L;
 	private int traceID;
 	private String elementName;
 

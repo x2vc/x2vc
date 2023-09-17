@@ -19,7 +19,6 @@ import com.google.common.collect.ImmutableMap;
  */
 public class StylesheetCoverage implements IStylesheetCoverage {
 
-	private static final long serialVersionUID = 8825773547954992141L;
 	private static final Logger logger = LogManager.getLogger();
 	private IStylesheetStructure parentStructure;
 	private Map<Integer, Integer> executionCount;

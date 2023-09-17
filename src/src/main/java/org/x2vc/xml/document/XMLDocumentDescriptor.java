@@ -14,7 +14,6 @@ import com.google.common.collect.ImmutableSet;
  */
 public class XMLDocumentDescriptor implements IXMLDocumentDescriptor {
 
-	private static final long serialVersionUID = -5704343410391161375L;
 	private String valuePrefix;
 	private int valueLength;
 	private HashMultimap<String, IValueDescriptor> valueDescriptors;

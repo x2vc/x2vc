@@ -14,8 +14,6 @@ import org.x2vc.xml.document.IDocumentValueModifier;
  */
 public class RequestedValue implements IRequestedValue {
 
-	private static final long serialVersionUID = 7315736707691499713L;
-
 	private String value;
 
 	@XmlElement(type = DocumentValueModifier.class)

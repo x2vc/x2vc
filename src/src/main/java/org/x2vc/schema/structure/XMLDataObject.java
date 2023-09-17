@@ -16,7 +16,6 @@ import org.apache.logging.log4j.Logger;
  */
 public abstract class XMLDataObject extends AbstractSchemaObject implements IXMLDataObject {
 
-	private static final long serialVersionUID = 3598042537890740459L;
 	private static final Logger logger = LogManager.getLogger();
 
 	@XmlAttribute
@@ -32,7 +31,6 @@ public abstract class XMLDataObject extends AbstractSchemaObject implements IXML
 	protected Integer maxValue;
 
 	@XmlElement(type = XMLDiscreteValue.class, name = "discreteValue")
-	@SuppressWarnings("java:S1948") // every instance used here is serializable
 	protected Set<IXMLDiscreteValue> discreteValues;
 
 	@XmlAttribute

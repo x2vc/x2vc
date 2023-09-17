@@ -8,7 +8,6 @@ import java.util.UUID;
  */
 public class ValueDescriptor implements IValueDescriptor {
 
-	private static final long serialVersionUID = 8574714365246157772L;
 	private UUID schemaElementID;
 	private UUID generationRuleID;
 	private String value;

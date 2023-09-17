@@ -26,7 +26,6 @@ import com.google.common.collect.Sets;
 @XmlRootElement(name = "schema")
 public class XMLSchema implements IXMLSchema {
 
-	private static final long serialVersionUID = -3750868711514667450L;
 	private static final Logger logger = LogManager.getLogger();
 
 	private URI stylesheetURI;

@@ -14,7 +14,6 @@ import org.apache.logging.log4j.Logger;
  */
 public class XMLElementReference extends AbstractSchemaObject implements IXMLElementReference {
 
-	private static final long serialVersionUID = 6174908457125600638L;
 	private static final Logger logger = LogManager.getLogger();
 
 	@XmlAttribute

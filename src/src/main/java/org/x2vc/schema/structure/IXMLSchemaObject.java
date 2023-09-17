@@ -1,13 +1,12 @@
 package org.x2vc.schema.structure;
 
-import java.io.Serializable;
 import java.util.Optional;
 import java.util.UUID;
 
 /**
  * Common interface for all schema objects.
  */
-public interface IXMLSchemaObject extends Serializable {
+public interface IXMLSchemaObject {
 
 	/**
 	 * @return the schema element ID

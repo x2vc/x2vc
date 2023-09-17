@@ -14,8 +14,6 @@ import com.google.common.collect.Sets;
  */
 public class XMLAttribute extends XMLDataObject implements IXMLAttribute {
 
-	private static final long serialVersionUID = -1714282681209635316L;
-
 	@XmlAttribute
 	private String name;
 

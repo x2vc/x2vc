@@ -1,14 +1,12 @@
 package org.x2vc.stylesheet.structure;
 
-import java.io.Serializable;
-
 /**
  * A common interface to encompass all possible elements of the XSLT structure
  * tree. We distinguish between XSLT elements, other XML elements and text nodes
  * here. XSLT elements are further divided into parameters (xsl:param,
  * xsl:with-param), sorting instructions (xsl:sort) and other directives.
  */
-public interface IStructureTreeNode extends Serializable {
+public interface IStructureTreeNode {
 
 	/**
 	 * Possible values to distinguish the node types.

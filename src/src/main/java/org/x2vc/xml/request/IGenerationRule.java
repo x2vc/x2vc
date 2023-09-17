@@ -1,6 +1,5 @@
 package org.x2vc.xml.request;
 
-import java.io.Serializable;
 import java.util.UUID;
 
 /**
@@ -14,7 +13,7 @@ import java.util.UUID;
  * {@link IAddRawContentRule}</li>
  * </ul>
  */
-public interface IGenerationRule extends Serializable {
+public interface IGenerationRule {
 
 	/**
 	 * @return the ID of the generation rule

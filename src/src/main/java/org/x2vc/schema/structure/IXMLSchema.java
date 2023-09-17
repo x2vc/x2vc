@@ -1,6 +1,5 @@
 package org.x2vc.schema.structure;
 
-import java.io.Serializable;
 import java.net.URI;
 import java.util.Set;
 import java.util.UUID;
@@ -24,7 +23,7 @@ import java.util.UUID;
  * created, it is stored automatically.
  *
  */
-public interface IXMLSchema extends Serializable {
+public interface IXMLSchema {
 
 	/**
 	 * @return the URI of the stylesheet for which this schema describes input data

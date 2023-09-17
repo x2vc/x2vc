@@ -13,7 +13,6 @@ import org.apache.logging.log4j.Logger;
  */
 public class XMLDiscreteValue extends AbstractSchemaObject implements IXMLDiscreteValue {
 
-	private static final long serialVersionUID = 7139083422209051401L;
 	private static final Logger logger = LogManager.getLogger();
 
 	@XmlAttribute

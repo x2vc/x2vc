@@ -1,6 +1,5 @@
 package org.x2vc.xml.document;
 
-import java.io.Serializable;
 import java.util.Optional;
 
 import org.x2vc.xml.value.IValueDescriptor;
@@ -18,7 +17,7 @@ import com.google.common.collect.ImmutableSet;
  * value (i. e. whether the value was randomly selected by the document
  * generator or proposed as a possible XSS attack).
  */
-public interface IXMLDocumentDescriptor extends Serializable {
+public interface IXMLDocumentDescriptor {
 
 	/**
 	 * @return the common prefix of all generated string values

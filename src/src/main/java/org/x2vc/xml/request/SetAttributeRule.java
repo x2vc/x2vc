@@ -13,8 +13,6 @@ import org.x2vc.schema.structure.IXMLAttribute;
  */
 public class SetAttributeRule extends AbstractGenerationRule implements ISetAttributeRule {
 
-	private static final long serialVersionUID = 1L;
-
 	private UUID attributeID;
 
 	@XmlElement(type = RequestedValue.class)

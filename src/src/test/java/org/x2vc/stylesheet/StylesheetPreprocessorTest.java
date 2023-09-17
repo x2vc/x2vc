@@ -1,6 +1,7 @@
 package org.x2vc.stylesheet;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -20,7 +21,6 @@ import org.x2vc.stylesheet.structure.IStylesheetStructure;
 import org.x2vc.stylesheet.structure.IStylesheetStructureExtractor;
 
 import com.google.common.collect.Multimap;
-import com.google.common.collect.MultimapBuilder;
 
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.SaxonApiException;
@@ -37,7 +37,7 @@ class StylesheetPreprocessorTest {
 	@Mock
 	INamespaceExtractor namespaceExtractor;
 
-	// need a "real" object here because it will be duplicated in the transfer
+	@Mock
 	Multimap<String, URI> namespacePrefixes;
 
 	@Mock
@@ -53,9 +53,6 @@ class StylesheetPreprocessorTest {
 
 	@BeforeEach
 	void prepareInstances() {
-		this.namespacePrefixes = MultimapBuilder.hashKeys().arrayListValues().build();
-		this.namespacePrefixes.put("xsl", URI.create("http://www.w3.org/1999/XSL/Transform"));
-
 		this.xsltProcessor = new Processor();
 		this.preprocessor = new StylesheetPreprocessor(this.xsltProcessor, this.namespaceExtractor,
 				this.stylesheetExtender,
@@ -174,7 +171,7 @@ class StylesheetPreprocessorTest {
 		when(this.namespaceExtractor.findUnusedPrefix(this.namespacePrefixes.keySet(), "trace")).thenReturn("trace1234");
 		final IStylesheetInformation info = this.preprocessor.prepareStylesheet(URI.create("foobar"), this.minimalStylesheet);
 		assertEquals(URI.create("foobar"), info.getURI());
-		assertEquals(this.namespacePrefixes, info.getNamespacePrefixes());
+		assertSame(this.namespacePrefixes, info.getNamespacePrefixes());
 		assertEquals("trace1234", info.getTraceNamespacePrefix());
 	}
 
@@ -185,7 +182,7 @@ class StylesheetPreprocessorTest {
 		when(this.namespaceExtractor.findUnusedPrefix(this.namespacePrefixes.keySet(), "trace")).thenReturn("trace1234");
 		final IStylesheetInformation info = this.preprocessor.prepareStylesheet(URI.create("foobar"), this.minimalStylesheet);
 		assertEquals(this.minimalStylesheet, info.getOriginalStylesheet());
-		assertEquals(this.namespacePrefixes, info.getNamespacePrefixes());
+		assertSame(this.namespacePrefixes, info.getNamespacePrefixes());
 		assertEquals("trace1234", info.getTraceNamespacePrefix());
 	}
 

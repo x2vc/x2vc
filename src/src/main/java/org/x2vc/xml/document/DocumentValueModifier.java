@@ -15,8 +15,6 @@ import org.x2vc.xml.value.IValueDescriptor;
  */
 public class DocumentValueModifier implements IDocumentValueModifier {
 
-	private static final long serialVersionUID = -1698974074806350109L;
-
 	@XmlTransient
 	private IModifierPayload payload;
 

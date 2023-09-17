@@ -10,7 +10,6 @@ import org.x2vc.xml.request.IDocumentRequest;
  */
 public class XMLDocumentContainer implements IXMLDocumentContainer {
 
-	private static final long serialVersionUID = -8667524487320644817L;
 	private IDocumentRequest request;
 	private IXMLDocumentDescriptor descriptor;
 	private String document;

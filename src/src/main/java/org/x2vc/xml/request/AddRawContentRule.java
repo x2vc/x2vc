@@ -12,8 +12,6 @@ import javax.xml.bind.annotation.XmlElement;
  */
 public class AddRawContentRule extends AbstractGenerationRule implements IAddRawContentRule {
 
-	private static final long serialVersionUID = 6302144710732981152L;
-
 	@XmlAttribute
 	private UUID elementID;
 

@@ -16,7 +16,6 @@ import com.google.common.collect.Sets;
  */
 public class XMLElementType extends XMLDataObject implements IXMLElementType {
 
-	private static final long serialVersionUID = -1422448896072065357L;
 	private static final Logger logger = LogManager.getLogger();
 
 	@XmlElement(type = XMLAttribute.class, name = "attribute")

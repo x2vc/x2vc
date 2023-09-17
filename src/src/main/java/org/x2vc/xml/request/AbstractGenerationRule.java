@@ -10,8 +10,6 @@ import javax.xml.bind.annotation.XmlAttribute;
  */
 public abstract class AbstractGenerationRule implements IGenerationRule {
 
-	private static final long serialVersionUID = -2034672049201245565L;
-
 	@XmlAttribute
 	private UUID ruleID;
 

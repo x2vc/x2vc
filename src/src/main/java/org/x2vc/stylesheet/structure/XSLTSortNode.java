@@ -10,7 +10,6 @@ import java.util.Optional;
  */
 public class XSLTSortNode extends AbstractStructureTreeNode implements IXSLTSortNode {
 
-	private static final long serialVersionUID = -1698150116946209012L;
 	private String sortingExpression;
 	private String language;
 	private String dataType;

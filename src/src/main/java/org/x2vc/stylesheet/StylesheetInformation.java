@@ -9,7 +9,6 @@ import org.x2vc.stylesheet.coverage.IStylesheetCoverage;
 import org.x2vc.stylesheet.coverage.StylesheetCoverage;
 import org.x2vc.stylesheet.structure.IStylesheetStructure;
 
-import com.google.common.collect.ArrayListMultimap;
 import com.google.common.collect.Multimap;
 
 /**
@@ -21,12 +20,10 @@ import com.google.common.collect.Multimap;
  */
 public class StylesheetInformation implements IStylesheetInformation {
 
-	private static final long serialVersionUID = 7037605400818305891L;
-
 	private URI uri;
 	private String originalStylesheet;
 	private String preparedStylesheet;
-	private ArrayListMultimap<String, URI> namespacePrefixes;
+	private Multimap<String, URI> namespacePrefixes;
 	private String traceNamespacePrefix;
 	private IStylesheetStructure structure;
 
@@ -40,7 +37,7 @@ public class StylesheetInformation implements IStylesheetInformation {
 		this.uri = uri;
 		this.originalStylesheet = originalStylesheet;
 		this.preparedStylesheet = preparedStylesheet;
-		this.namespacePrefixes = ArrayListMultimap.create(namespacePrefixes);
+		this.namespacePrefixes = namespacePrefixes;
 		this.traceNamespacePrefix = traceNamespacePrefix;
 		this.structure = structure;
 	}

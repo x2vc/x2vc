@@ -1,6 +1,5 @@
 package org.x2vc.xml.document;
 
-import java.io.Serializable;
 import java.util.Optional;
 
 /**
@@ -8,7 +7,7 @@ import java.util.Optional;
  * generation request to either test for XSS vulnerabilites or improve the XSLT
  * coverage.
  */
-public interface IDocumentModifier extends Serializable {
+public interface IDocumentModifier {
 
 	/**
 	 * @return the ID of the analyzer rule if this modifier was produced by an

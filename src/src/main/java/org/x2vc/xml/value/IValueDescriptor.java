@@ -1,6 +1,5 @@
 package org.x2vc.xml.value;
 
-import java.io.Serializable;
 import java.util.UUID;
 
 import org.x2vc.schema.structure.IXMLSchemaObject;
@@ -9,7 +8,7 @@ import org.x2vc.xml.request.IGenerationRule;
 /**
  * A description of an input value used to generate an XML document.
  */
-public interface IValueDescriptor extends Serializable {
+public interface IValueDescriptor {
 
 	/**
 	 * @return the ID of the schema element {@link IXMLSchemaObject} that describes

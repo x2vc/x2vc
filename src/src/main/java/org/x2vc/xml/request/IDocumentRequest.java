@@ -1,6 +1,5 @@
 package org.x2vc.xml.request;
 
-import java.io.Serializable;
 import java.net.URI;
 import java.util.Optional;
 import java.util.UUID;
@@ -33,7 +32,7 @@ import com.google.common.collect.Multimap;
  * XML document requests offer efficient comparison and hash value generation
  * (required for task reconciliation).
  */
-public interface IDocumentRequest extends Serializable {
+public interface IDocumentRequest {
 
 	/**
 	 * @return the URI of the schema the document request is based on

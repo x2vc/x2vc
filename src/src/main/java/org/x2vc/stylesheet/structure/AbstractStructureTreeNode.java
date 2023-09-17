@@ -12,7 +12,6 @@ import org.apache.logging.log4j.Logger;
  */
 public abstract class AbstractStructureTreeNode implements IStructureTreeNode {
 
-	private static final long serialVersionUID = -4581883325565055335L;
 	private static final Logger logger = LogManager.getLogger();
 	private IStylesheetStructure parentStructure;
 

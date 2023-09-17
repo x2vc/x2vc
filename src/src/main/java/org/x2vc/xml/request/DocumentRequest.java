@@ -25,7 +25,6 @@ import com.google.common.collect.MultimapBuilder;
 @XmlRootElement(name = "request")
 public class DocumentRequest implements IDocumentRequest {
 
-	private static final long serialVersionUID = -7197115634513136166L;
 	private static final Logger logger = LogManager.getLogger();
 
 	@XmlAttribute

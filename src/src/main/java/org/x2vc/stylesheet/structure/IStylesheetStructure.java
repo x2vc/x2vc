@@ -1,7 +1,5 @@
 package org.x2vc.stylesheet.structure;
 
-import java.io.Serializable;
-
 import com.google.common.collect.ImmutableList;
 
 /**
@@ -19,7 +17,7 @@ import com.google.common.collect.ImmutableList;
  * It can be serialized and deserialized to create a local copy.
  */
 
-public interface IStylesheetStructure extends Serializable {
+public interface IStylesheetStructure {
 
 	/**
 	 * @return the XSLT root node (xsl:transform or xsl:stylesheet)

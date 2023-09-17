@@ -21,7 +21,6 @@ import com.google.common.collect.ImmutableMap;
  */
 public class XSLTDirectiveNode extends AbstractStructureTreeNode implements IXSLTDirectiveNode {
 
-	private static final long serialVersionUID = 767926132327224364L;
 	private String name;
 	private ImmutableMap<String, String> xsltAttributes;
 	private ImmutableMap<QName, String> otherAttributes;

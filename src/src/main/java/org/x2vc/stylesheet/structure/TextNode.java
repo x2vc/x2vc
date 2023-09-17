@@ -9,7 +9,6 @@ import java.util.Objects;
  */
 public class TextNode extends AbstractStructureTreeNode implements ITextNode {
 
-	private static final long serialVersionUID = -4649767702919548805L;
 	private String text;
 
 	private TextNode(Builder builder) {

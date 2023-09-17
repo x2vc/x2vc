@@ -152,7 +152,6 @@ class AbstractRuleTest {
 		final IDocumentModifier modifier = mock(IDocumentModifier.class);
 		when(documentDescriptor.getModifier()).thenReturn(Optional.of(modifier));
 		when(modifier.getPayload()).thenReturn(Optional.of(new IModifierPayload() {
-			private static final long serialVersionUID = -6630813475107736706L;
 		}));
 		assertThrows(IllegalArgumentException.class, () -> this.rule.getElementSelectors(documentContainer));
 	}

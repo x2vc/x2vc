@@ -23,7 +23,6 @@ import com.google.common.collect.ImmutableList;
  */
 public class StylesheetStructure implements IStylesheetStructure {
 
-	private static final long serialVersionUID = 657884766610226773L;
 	private static final Logger logger = LogManager.getLogger();
 	private IXSLTDirectiveNode rootNode;
 	private transient ImmutableList<IXSLTDirectiveNode> templates;

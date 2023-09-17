@@ -9,8 +9,6 @@ import java.util.UUID;
  */
 public class AnalyzerRulePayload implements IAnalyzerRulePayload {
 
-	private static final long serialVersionUID = -3278256598860982838L;
-
 	private String injectedValue;
 	private UUID schemaElementID;
 	private String elementSelector;

@@ -22,8 +22,6 @@ import com.google.common.collect.Sets;
  */
 public class AddElementRule extends AbstractGenerationRule implements IAddElementRule {
 
-	private static final long serialVersionUID = 7708211517867960929L;
-
 	@XmlAttribute
 	private UUID elementReferenceID;
 

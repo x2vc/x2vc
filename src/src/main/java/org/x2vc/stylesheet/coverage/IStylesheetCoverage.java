@@ -1,6 +1,5 @@
 package org.x2vc.stylesheet.coverage;
 
-import java.io.Serializable;
 import java.util.Map;
 
 import com.google.common.collect.ImmutableList;
@@ -13,7 +12,7 @@ import com.google.common.collect.ImmutableMap;
  * This object can be serialized to transmit the results. It is possible to add
  * coverage statistics.
  */
-public interface IStylesheetCoverage extends Serializable {
+public interface IStylesheetCoverage {
 
 	/**
 	 * Records the coverage of an element that has been marked for tracing.

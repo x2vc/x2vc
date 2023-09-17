@@ -1,6 +1,5 @@
 package org.x2vc.stylesheet;
 
-import java.io.Serializable;
 import java.net.URI;
 
 import org.x2vc.stylesheet.coverage.IStylesheetCoverage;
@@ -15,7 +14,7 @@ import com.google.common.collect.Multimap;
  *
  * This object can be serialized and deserialized to create a local copy.
  */
-public interface IStylesheetInformation extends Serializable {
+public interface IStylesheetInformation {
 
 	/**
 	 * @return the URI of the stylesheet (either a local file URI or a temporary,

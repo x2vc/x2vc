@@ -14,7 +14,6 @@ import com.google.common.collect.ImmutableList;
  */
 public class XSLTParameterNode extends AbstractStructureTreeNode implements IXSLTParameterNode {
 
-	private static final long serialVersionUID = 2146219899310217992L;
 	private String name;
 	private String selection;
 	private ImmutableList<IStructureTreeNode> childElements;
