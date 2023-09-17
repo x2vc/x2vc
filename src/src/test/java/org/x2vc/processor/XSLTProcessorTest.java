@@ -73,16 +73,13 @@ class XSLTProcessorTest {
 	void testBasicProcessing() {
 		final String xslt = """
 							<?xml version="1.0"?>
-							<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ext0="http://www.github.com/vwegert/x2vc/XSLTExtension">
-							<xsl:template match="root" ext0:trace-id="1">
-							<xsl:message><ext0:trace element="template" trace-id="1"/></xsl:message>
+							<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+							<xsl:template match="root">
 							<html><body><ul>
-							<xsl:message><ext0:trace element="apply-templates" trace-id="2"/></xsl:message>
-							<xsl:apply-templates ext0:trace-id="2"/>
+							<xsl:apply-templates/>
 							</ul></body></html>
 							</xsl:template>
-							<xsl:template match="elem" ext0:trace-id="3">
-							<xsl:message><ext0:trace element="template" trace-id="3"/></xsl:message>
+							<xsl:template match="elem">
 							<li>
 							<xsl:value-of select="@name"/>
 							<xsl:message>some unrelated text that may not cause trouble</xsl:message>
@@ -129,7 +126,7 @@ class XSLTProcessorTest {
 	void testCompilationError() {
 		final String xslt = """
 							<?xml version="1.0"?>
-							<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ext0="http://www.github.com/vwegert/x2vc/XSLTExtension">
+							<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 							<xsl:this-is-not-a-valid-stylesheet/>
 							</xsl:stylesheet>
 							""";
@@ -150,8 +147,8 @@ class XSLTProcessorTest {
 	void testProcessingError() {
 		final String xslt = """
 							<?xml version="1.0"?>
-							<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ext0="http://www.github.com/vwegert/x2vc/XSLTExtension">
-							<xsl:template match="root" ext0:trace-id="1">
+							<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+							<xsl:template match="root">
 							</xsl:template>
 							</xsl:stylesheet>
 							""";

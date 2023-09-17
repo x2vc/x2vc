@@ -45,9 +45,8 @@ class PrefixSelectorTest {
 	void simpleTest() {
 		final String stylesheet = """
 									<?xml version="1.0"?>
-									<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ext0="http://www.github.com/vwegert/x2vc/XSLTExtension">
-									<xsl:template name="bar" ext0:trace-id="1">
-									<xsl:message>trace type=elem name=template id=1</xsl:message>
+									<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+									<xsl:template name="bar">
 									<p>foobar</p>
 									</xsl:template>
 									</xsl:stylesheet>
@@ -84,9 +83,8 @@ class PrefixSelectorTest {
 
 		final String stylesheet = """
 									<?xml version="1.0"?>
-									<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:ext0="http://www.github.com/vwegert/x2vc/XSLTExtension">
-									<xsl:template name="bar" ext0:trace-id="1">
-									<xsl:message>trace type=elem name=template id=1</xsl:message>
+									<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+									<xsl:template name="bar">
 									"""
 				+ valueText + """
 								</xsl:template>

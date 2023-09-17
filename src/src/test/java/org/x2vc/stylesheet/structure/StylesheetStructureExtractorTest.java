@@ -30,7 +30,6 @@ class StylesheetStructureExtractorTest {
 							<?xml version="1.0"?>
 							<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 							<xsl:template name="bar">
-							<xsl:message>trace type=elem name=template id=1</xsl:message>
 							<p>foobar&apos;<![CDATA[Some<>Content]]></p>
 							</xsl:template>
 							</xsl:stylesheet>
@@ -44,15 +43,11 @@ class StylesheetStructureExtractorTest {
 		assertTrue(child1.isXSLTDirective());
 		assertEquals("template", child1.asDirective().getName());
 		assertEquals("bar", child1.asDirective().getXSLTAttributes().get("name"));
-		assertEquals(2, child1.asDirective().getChildElements().size());
+		assertEquals(1, child1.asDirective().getChildElements().size());
 
 		final IStructureTreeNode child1_1 = child1.asDirective().getChildElements().get(0);
-		assertTrue(child1_1.isXSLTDirective());
-		assertEquals("message", child1_1.asDirective().getName());
-
-		final IStructureTreeNode child1_2 = child1.asDirective().getChildElements().get(1);
-		assertTrue(child1_2.isXML());
-		assertEquals("p", child1_2.asXML().getName().getLocalPart());
+		assertTrue(child1_1.isXML());
+		assertEquals("p", child1_1.asXML().getName().getLocalPart());
 	}
 
 	/**
@@ -68,7 +63,6 @@ class StylesheetStructureExtractorTest {
 							<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 							<xsl:param name="foo" select="bar"/>
 							<xsl:template name="bar">
-							<xsl:message>trace type=elem name=template id=1</xsl:message>
 							<p>foobar&apos;<![CDATA[Some<>Content]]></p>
 							</xsl:template>
 							</xsl:stylesheet>
@@ -96,7 +90,6 @@ class StylesheetStructureExtractorTest {
 							<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 							<xsl:template name="bar">
 							<xsl:param name="foo" select="bar"/>
-							<xsl:message>trace type=elem name=template id=1</xsl:message>
 							<p>foobar&apos;<![CDATA[Some<>Content]]></p>
 							</xsl:template>
 							</xsl:stylesheet>
@@ -128,8 +121,6 @@ class StylesheetStructureExtractorTest {
 							<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 							<xsl:template name="bar">
 							<xsl:param name="foo" select="bar"/>
-							<xsl:message>trace type=elem name=template id=1</xsl:message>
-							<xsl:message>trace type=elem name=call-template id=2</xsl:message>
 							<xsl:call-template name="bar">
 							<xsl:with-param name="foo" select="baz"/>
 							</xsl:call-template>
@@ -145,11 +136,11 @@ class StylesheetStructureExtractorTest {
 		assertTrue(child1.isXSLTDirective());
 		assertEquals("template", child1.asDirective().getName());
 
-		final IStructureTreeNode child1_3 = child1.asDirective().getChildElements().get(2);
-		assertTrue(child1_3.isXSLTDirective());
-		assertEquals("call-template", child1_3.asDirective().getName());
+		final IStructureTreeNode child1_1 = child1.asDirective().getChildElements().get(0);
+		assertTrue(child1_1.isXSLTDirective());
+		assertEquals("call-template", child1_1.asDirective().getName());
 
-		final ImmutableList<IXSLTParameterNode> params = child1_3.asDirective().getActualParameters();
+		final ImmutableList<IXSLTParameterNode> params = child1_1.asDirective().getActualParameters();
 		assertEquals(1, params.size());
 		final IXSLTParameterNode param = params.get(0);
 		assertEquals("foo", param.getName());
@@ -170,8 +161,6 @@ class StylesheetStructureExtractorTest {
 							<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 							<xsl:template name="bar">
 							<xsl:param name="foo"/>
-							<xsl:message>trace type=elem name=template id=1</xsl:message>
-							<xsl:message>trace type=elem name=call-template id=2</xsl:message>
 							<xsl:call-template name="bar">
 							<xsl:with-param name="foo">baz</xsl:with-param>
 							</xsl:call-template>
@@ -187,11 +176,11 @@ class StylesheetStructureExtractorTest {
 		assertTrue(child1.isXSLTDirective());
 		assertEquals("template", child1.asDirective().getName());
 
-		final IStructureTreeNode child1_3 = child1.asDirective().getChildElements().get(2);
-		assertTrue(child1_3.isXSLTDirective());
-		assertEquals("call-template", child1_3.asDirective().getName());
+		final IStructureTreeNode child1_1 = child1.asDirective().getChildElements().get(0);
+		assertTrue(child1_1.isXSLTDirective());
+		assertEquals("call-template", child1_1.asDirective().getName());
 
-		final ImmutableList<IXSLTParameterNode> params = child1_3.asDirective().getActualParameters();
+		final ImmutableList<IXSLTParameterNode> params = child1_1.asDirective().getActualParameters();
 		assertEquals(1, params.size());
 		final IXSLTParameterNode param = params.get(0);
 		assertEquals("foo", param.getName());
@@ -213,10 +202,8 @@ class StylesheetStructureExtractorTest {
 							<?xml version="1.0"?>
 							<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 							<xsl:template name="foo">
-							<xsl:message>trace type=elem name=template id=1</xsl:message>
 							<xsl:for-each select="bar">
 							<xsl:sort select="baz" lang="bazlang" data-type="baztype" order="descending" case-order="lower-first" />
-							<xsl:message>trace type=elem name=for-each id=2</xsl:message>
 							<p>test</p>
 							</xsl:for-each>
 							</xsl:template>
@@ -231,12 +218,12 @@ class StylesheetStructureExtractorTest {
 		assertTrue(child1.isXSLTDirective());
 		assertEquals("template", child1.asDirective().getName());
 
-		final IStructureTreeNode child1_2 = child1.asDirective().getChildElements().get(1);
-		assertTrue(child1_2.isXSLTDirective());
-		assertEquals("for-each", child1_2.asDirective().getName());
-		assertEquals("bar", child1_2.asDirective().getXSLTAttributes().get("select"));
+		final IStructureTreeNode child1_1 = child1.asDirective().getChildElements().get(0);
+		assertTrue(child1_1.isXSLTDirective());
+		assertEquals("for-each", child1_1.asDirective().getName());
+		assertEquals("bar", child1_1.asDirective().getXSLTAttributes().get("select"));
 
-		final ImmutableList<IXSLTSortNode> sort = child1_2.asDirective().getSorting();
+		final ImmutableList<IXSLTSortNode> sort = child1_1.asDirective().getSorting();
 		assertEquals(1, sort.size());
 		assertTrue(sort.get(0).getSortingExpression().isPresent());
 		assertEquals("baz", sort.get(0).getSortingExpression().get());
