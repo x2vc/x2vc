@@ -19,8 +19,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.stylesheet.IStylesheetInformation;
 import org.x2vc.stylesheet.IStylesheetManager;
-import org.x2vc.utilities.URIHandling;
-import org.x2vc.utilities.URIHandling.ObjectType;
+import org.x2vc.utilities.URIUtilities;
+import org.x2vc.utilities.URIUtilities.ObjectType;
 
 @ExtendWith(MockitoExtension.class)
 class SchemaManagerTest {
@@ -49,7 +49,7 @@ class SchemaManagerTest {
 
 	@Test
 	void testGetInitialInMemoryWithoutVersion() {
-		final URI stylesheetURI = URIHandling.makeMemoryURI(ObjectType.STYLESHEET, "foobar");
+		final URI stylesheetURI = URIUtilities.makeMemoryURI(ObjectType.STYLESHEET, "foobar");
 		when(this.stylesheetManager.get(stylesheetURI)).thenReturn(this.stylesheetInformation);
 		when(this.schemaGenerator.generateSchema(eq(this.stylesheetInformation), any())).thenReturn(this.schema);
 		final IXMLSchema s = this.schemaManager.getSchema(stylesheetURI);
@@ -58,7 +58,7 @@ class SchemaManagerTest {
 
 	@Test
 	void testGetInitialInMemoryWithVersion1() {
-		final URI stylesheetURI = URIHandling.makeMemoryURI(ObjectType.STYLESHEET, "foobar");
+		final URI stylesheetURI = URIUtilities.makeMemoryURI(ObjectType.STYLESHEET, "foobar");
 		when(this.stylesheetManager.get(stylesheetURI)).thenReturn(this.stylesheetInformation);
 		when(this.schemaGenerator.generateSchema(eq(this.stylesheetInformation), any())).thenReturn(this.schema);
 		final IXMLSchema s = this.schemaManager.getSchema(stylesheetURI, 1);
@@ -67,7 +67,7 @@ class SchemaManagerTest {
 
 	@Test
 	void testGetInitialInMemoryWithVersionAbove1() {
-		final URI stylesheetURI = URIHandling.makeMemoryURI(ObjectType.STYLESHEET, "foobar");
+		final URI stylesheetURI = URIUtilities.makeMemoryURI(ObjectType.STYLESHEET, "foobar");
 		assertThrows(IllegalStateException.class, () -> this.schemaManager.getSchema(stylesheetURI, 42));
 	}
 
@@ -102,7 +102,7 @@ class SchemaManagerTest {
 			.toURI();
 		final IXMLSchema s = this.schemaManager.getSchema(stylesheetURI);
 		assertEquals(stylesheetURI, s.getStylesheetURI());
-		assertTrue(URIHandling.isMemoryURI(s.getURI()));
+		assertTrue(URIUtilities.isMemoryURI(s.getURI()));
 		assertEquals(3, s.getRootElements().size());
 	}
 
@@ -113,7 +113,7 @@ class SchemaManagerTest {
 			.toURI();
 		final IXMLSchema s = this.schemaManager.getSchema(stylesheetURI, 1);
 		assertEquals(stylesheetURI, s.getStylesheetURI());
-		assertTrue(URIHandling.isMemoryURI(s.getURI()));
+		assertTrue(URIUtilities.isMemoryURI(s.getURI()));
 		assertEquals(3, s.getRootElements().size());
 	}
 

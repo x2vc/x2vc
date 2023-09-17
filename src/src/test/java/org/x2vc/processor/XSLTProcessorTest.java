@@ -15,8 +15,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.x2vc.stylesheet.IStylesheetInformation;
 import org.x2vc.stylesheet.IStylesheetManager;
-import org.x2vc.utilities.URIHandling;
-import org.x2vc.utilities.URIHandling.ObjectType;
+import org.x2vc.utilities.URIUtilities;
+import org.x2vc.utilities.URIUtilities.ObjectType;
 import org.x2vc.xml.document.IXMLDocumentContainer;
 
 import com.google.common.collect.ImmutableList;
@@ -57,11 +57,11 @@ class XSLTProcessorTest {
 		this.documentFactory = new HTMLDocumentFactory(this.stylesheetManager);
 		this.wrapper = new XSLTProcessor(this.stylesheetManager, this.saxonProcessor, this.documentFactory, 25);
 
-		this.stylesheetURI = URIHandling.makeMemoryURI(ObjectType.STYLESHEET, "foo");
+		this.stylesheetURI = URIUtilities.makeMemoryURI(ObjectType.STYLESHEET, "foo");
 		lenient().when(this.xmlDocument.getStylesheeURI()).thenReturn(this.stylesheetURI);
 		lenient().when(this.stylesheetManager.get(this.stylesheetURI)).thenReturn(this.stylesheet);
 
-		this.schemaURI = URIHandling.makeMemoryURI(ObjectType.SCHEMA, "bar");
+		this.schemaURI = URIUtilities.makeMemoryURI(ObjectType.SCHEMA, "bar");
 		lenient().when(this.xmlDocument.getSchemaURI()).thenReturn(this.schemaURI);
 		this.schemaVersion = 1;
 		lenient().when(this.xmlDocument.getSchemaVersion()).thenReturn(this.schemaVersion);

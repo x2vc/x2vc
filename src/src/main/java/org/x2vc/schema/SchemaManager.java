@@ -20,8 +20,8 @@ import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.schema.structure.XMLSchema;
 import org.x2vc.stylesheet.IStylesheetInformation;
 import org.x2vc.stylesheet.IStylesheetManager;
-import org.x2vc.utilities.URIHandling;
-import org.x2vc.utilities.URIHandling.ObjectType;
+import org.x2vc.utilities.URIUtilities;
+import org.x2vc.utilities.URIUtilities.ObjectType;
 
 import com.github.racc.tscg.TypesafeConfig;
 import com.google.common.base.Supplier;
@@ -79,7 +79,7 @@ public class SchemaManager implements ISchemaManager {
 	public IXMLSchema getSchema(URI stylesheetURI) {
 		logger.traceEntry();
 		// determine the schema URI without version number
-		final URI schemaURI = URIHandling.makeMemoryURI(ObjectType.SCHEMA, determineSchemaIdentifier(stylesheetURI));
+		final URI schemaURI = URIUtilities.makeMemoryURI(ObjectType.SCHEMA, determineSchemaIdentifier(stylesheetURI));
 		// add the schema URI to the stylesheet register
 		this.stylesheetURIRegister.computeIfAbsent(schemaURI, key -> stylesheetURI);
 		// have the loader provide the initial schema version
@@ -91,7 +91,7 @@ public class SchemaManager implements ISchemaManager {
 	public IXMLSchema getSchema(URI stylesheetURI, int schemaVersion) {
 		logger.traceEntry();
 		// determine the schema URI with version number
-		final URI schemaURI = URIHandling.makeMemoryURI(ObjectType.SCHEMA, determineSchemaIdentifier(stylesheetURI),
+		final URI schemaURI = URIUtilities.makeMemoryURI(ObjectType.SCHEMA, determineSchemaIdentifier(stylesheetURI),
 				schemaVersion);
 		// except for the special case of "version 1", which is in Part handled by the
 		// cache loader, versioned schema instances have to be inserted
@@ -117,9 +117,9 @@ public class SchemaManager implements ISchemaManager {
 	 */
 	private String determineSchemaIdentifier(URI stylesheetURI) throws IllegalArgumentException {
 		String identifier;
-		if (URIHandling.isMemoryURI(stylesheetURI)) {
+		if (URIUtilities.isMemoryURI(stylesheetURI)) {
 			// for in-memory stylesheets, use the object identifier
-			identifier = URIHandling.getIdentifier(stylesheetURI);
+			identifier = URIUtilities.getIdentifier(stylesheetURI);
 		} else {
 			// for file-based stylesheets, use a hash of the URI in combination with the
 			// file name to make debugging easier
@@ -172,7 +172,7 @@ public class SchemaManager implements ISchemaManager {
 			IXMLSchema schema = null;
 
 			// for file-based stylesheets, try to load an existing schema file
-			if (!URIHandling.isMemoryURI(stylesheetURI)) {
+			if (!URIUtilities.isMemoryURI(stylesheetURI)) {
 				final Optional<IXMLSchema> loadedSchema = loadSchemaIfExists(schemaURI, stylesheetURI);
 				if (loadedSchema.isPresent()) {
 					schema = loadedSchema.get();

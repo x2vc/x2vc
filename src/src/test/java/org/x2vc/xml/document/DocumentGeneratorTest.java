@@ -33,8 +33,8 @@ import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.schema.structure.XMLSchema;
 import org.x2vc.stylesheet.IStylesheetInformation;
 import org.x2vc.stylesheet.IStylesheetManager;
-import org.x2vc.utilities.URIHandling;
-import org.x2vc.utilities.URIHandling.ObjectType;
+import org.x2vc.utilities.URIUtilities;
+import org.x2vc.utilities.URIUtilities.ObjectType;
 import org.x2vc.xml.request.*;
 import org.x2vc.xml.value.IValueDescriptor;
 import org.x2vc.xml.value.IValueGenerator;
@@ -94,12 +94,12 @@ class DocumentGeneratorTest {
 		this.unmarshaller = this.context.createUnmarshaller();
 
 		// schema
-		this.schemaURI = URIHandling.makeMemoryURI(ObjectType.SCHEMA, "bar");
+		this.schemaURI = URIUtilities.makeMemoryURI(ObjectType.SCHEMA, "bar");
 		this.schemaVersion = 1;
 		lenient().when(this.schemaManager.getSchema(this.schemaURI, this.schemaVersion)).thenAnswer(a -> this.schema);
 
 		// stylesheet
-		this.stylesheetURI = URIHandling.makeMemoryURI(ObjectType.STYLESHEET, "baz");
+		this.stylesheetURI = URIUtilities.makeMemoryURI(ObjectType.STYLESHEET, "baz");
 		lenient().when(this.stylesheetManager.get(this.stylesheetURI)).thenReturn(this.stylesheetInformation);
 		when(this.stylesheetInformation.getTraceNamespacePrefix()).thenReturn(this.traceNamespacePrefix);
 

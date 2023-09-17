@@ -19,8 +19,8 @@ import org.x2vc.stylesheet.coverage.IStylesheetCoverage;
 import org.x2vc.stylesheet.coverage.StylesheetCoverage;
 import org.x2vc.stylesheet.structure.IStylesheetStructure;
 import org.x2vc.stylesheet.structure.XSLTDirectiveNode;
-import org.x2vc.utilities.URIHandling;
-import org.x2vc.utilities.URIHandling.ObjectType;
+import org.x2vc.utilities.URIUtilities;
+import org.x2vc.utilities.URIUtilities.ObjectType;
 import org.x2vc.xml.document.IXMLDocumentContainer;
 
 import com.google.common.collect.ImmutableList;
@@ -49,7 +49,7 @@ class HTMLDocumentContainerTest {
 	 */
 	@BeforeEach
 	void setUp() throws Exception {
-		this.stylesheetURI = URIHandling.makeMemoryURI(ObjectType.STYLESHEET, "foobar");
+		this.stylesheetURI = URIUtilities.makeMemoryURI(ObjectType.STYLESHEET, "foobar");
 		lenient().when(this.source.getStylesheeURI()).thenReturn(this.stylesheetURI);
 		lenient().when(this.stylesheetManager.get(this.stylesheetURI)).thenReturn(this.stylesheet);
 		lenient().when(this.stylesheet.getStructure()).thenReturn(this.structure);

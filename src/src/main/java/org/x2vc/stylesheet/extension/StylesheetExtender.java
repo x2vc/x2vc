@@ -16,7 +16,7 @@ import org.x2vc.stylesheet.ExtendedXSLTConstants;
 import org.x2vc.stylesheet.XSLTConstants;
 import org.x2vc.utilities.IPushbackXMLEventReader;
 import org.x2vc.utilities.PushbackXMLEventReader;
-import org.x2vc.utilities.XMLEventTypeFormatter;
+import org.x2vc.utilities.XMLUtilities;
 
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
@@ -384,7 +384,7 @@ public class StylesheetExtender implements IStylesheetExtender {
 				}
 			} else {
 				// any other event - don't know what to do yet
-				final String eventType = XMLEventTypeFormatter.toString(nextEvent.getEventType());
+				final String eventType = XMLUtilities.convertEventTypeToString(nextEvent.getEventType());
 				Worker.logger.warn("Unclear whether to delay message output with event type {}, check situation",
 						eventType);
 				// push back all events and write message immediately

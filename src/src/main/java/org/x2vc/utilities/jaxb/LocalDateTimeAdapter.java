@@ -1,4 +1,4 @@
-package org.x2vc.utilities;
+package org.x2vc.utilities.jaxb;
 
 import java.time.LocalDateTime;
 

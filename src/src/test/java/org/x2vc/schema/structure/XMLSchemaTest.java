@@ -20,8 +20,8 @@ import org.x2vc.schema.structure.IXMLElementType.ContentType;
 import org.x2vc.schema.structure.IXMLElementType.ElementArrangement;
 import org.x2vc.schema.structure.XMLSchema.Builder;
 import org.x2vc.stylesheet.IStylesheetInformation;
-import org.x2vc.utilities.URIHandling;
-import org.x2vc.utilities.URIHandling.ObjectType;
+import org.x2vc.utilities.URIUtilities;
+import org.x2vc.utilities.URIUtilities.ObjectType;
 
 @ExtendWith(MockitoExtension.class)
 class XMLSchemaTest {
@@ -31,8 +31,8 @@ class XMLSchemaTest {
 
 	@Test
 	void testIndexByID() {
-		final URI stylesheetURI = URIHandling.makeMemoryURI(ObjectType.STYLESHEET, "foo");
-		final URI schemaURI = URIHandling.makeMemoryURI(ObjectType.SCHEMA, "bar");
+		final URI stylesheetURI = URIUtilities.makeMemoryURI(ObjectType.STYLESHEET, "foo");
+		final URI schemaURI = URIUtilities.makeMemoryURI(ObjectType.SCHEMA, "bar");
 		final Builder schemaBuilder = new XMLSchema.Builder(stylesheetURI, schemaURI, 1);
 
 		final XMLElementType.Builder builderRootA = new XMLElementType.Builder().withComment("root sequence")
@@ -136,8 +136,8 @@ class XMLSchemaTest {
 	 */
 	@Test
 	void testSerializeDeserialize() throws JAXBException {
-		final URI stylesheetURI = URIHandling.makeMemoryURI(ObjectType.STYLESHEET, "foo");
-		final URI schemaURI = URIHandling.makeMemoryURI(ObjectType.SCHEMA, "bar");
+		final URI stylesheetURI = URIUtilities.makeMemoryURI(ObjectType.STYLESHEET, "foo");
+		final URI schemaURI = URIUtilities.makeMemoryURI(ObjectType.SCHEMA, "bar");
 		final Builder schemaBuilder = new XMLSchema.Builder(stylesheetURI, schemaURI, 1);
 
 		final XMLElementType.Builder builderRootA = new XMLElementType.Builder().withComment("root sequence")
@@ -236,8 +236,8 @@ class XMLSchemaTest {
 	@Test
 	void testGetObjectPaths() {
 
-		final URI stylesheetURI = URIHandling.makeMemoryURI(ObjectType.STYLESHEET, "foo");
-		final URI schemaURI = URIHandling.makeMemoryURI(ObjectType.SCHEMA, "bar");
+		final URI stylesheetURI = URIUtilities.makeMemoryURI(ObjectType.STYLESHEET, "foo");
+		final URI schemaURI = URIUtilities.makeMemoryURI(ObjectType.SCHEMA, "bar");
 		final Builder schemaBuilder = new XMLSchema.Builder(stylesheetURI, schemaURI, 1);
 
 		final XMLElementType.Builder builderRootA = new XMLElementType.Builder().withComment("root sequence")

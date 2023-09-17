@@ -15,8 +15,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.x2vc.stylesheet.IStylesheetInformation;
 import org.x2vc.stylesheet.IStylesheetManager;
-import org.x2vc.utilities.URIHandling;
-import org.x2vc.utilities.URIHandling.ObjectType;
+import org.x2vc.utilities.URIUtilities;
+import org.x2vc.utilities.URIUtilities.ObjectType;
 import org.x2vc.xml.value.IPrefixSelector.PrefixData;
 
 import com.google.common.collect.Lists;
@@ -36,7 +36,7 @@ class PrefixSelectorTest {
 
 	@BeforeEach
 	void setUp() throws Exception {
-		this.stylesheetURI = URIHandling.makeMemoryURI(ObjectType.STYLESHEET, "foobar");
+		this.stylesheetURI = URIUtilities.makeMemoryURI(ObjectType.STYLESHEET, "foobar");
 		when(this.stylesheetManager.get(this.stylesheetURI)).thenReturn(this.stylesheetInformation);
 		this.prefixSelector = new PrefixSelector(this.stylesheetManager);
 	}

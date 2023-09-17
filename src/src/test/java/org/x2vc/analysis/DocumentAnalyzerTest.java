@@ -26,8 +26,8 @@ import org.x2vc.report.IVulnerabilityReport;
 import org.x2vc.report.IVulnerabilityReportSection;
 import org.x2vc.schema.ISchemaManager;
 import org.x2vc.schema.structure.IXMLSchema;
-import org.x2vc.utilities.URIHandling;
-import org.x2vc.utilities.URIHandling.ObjectType;
+import org.x2vc.utilities.URIUtilities;
+import org.x2vc.utilities.URIUtilities.ObjectType;
 import org.x2vc.xml.document.IDocumentModifier;
 import org.x2vc.xml.document.IXMLDocumentContainer;
 import org.x2vc.xml.document.IXMLDocumentDescriptor;
@@ -71,7 +71,7 @@ class DocumentAnalyzerTest {
 	@BeforeEach
 	void setUp() throws Exception {
 		this.taskID = UUID.randomUUID();
-		this.stylesheetURI = URIHandling.makeMemoryURI(ObjectType.STYLESHEET, "foobar");
+		this.stylesheetURI = URIUtilities.makeMemoryURI(ObjectType.STYLESHEET, "foobar");
 		lenient().when(this.container.isFailed()).thenReturn(false);
 		lenient().when(this.container.getSource()).thenReturn(this.source);
 		lenient().when(this.source.getDocumentDescriptor()).thenReturn(this.descriptor);

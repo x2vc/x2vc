@@ -10,7 +10,7 @@ import org.apache.logging.log4j.Logger;
 /**
  * Auxiliary methods to handle URIs within X2VC.
  */
-public class URIHandling {
+public class URIUtilities {
 
 	private static final Logger logger = LogManager.getLogger();
 

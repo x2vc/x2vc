@@ -10,8 +10,8 @@ import java.net.URISyntaxException;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.x2vc.utilities.URIHandling;
-import org.x2vc.utilities.URIHandling.ObjectType;
+import org.x2vc.utilities.URIUtilities;
+import org.x2vc.utilities.URIUtilities.ObjectType;
 
 /**
  *
@@ -27,85 +27,85 @@ class URIHandlingTest {
 
 	/**
 	 * Test method for
-	 * {@link org.x2vc.utilities.URIHandling#makeMemoryURI(org.x2vc.utilities.URIHandling.ObjectType, java.lang.String)}.
+	 * {@link org.x2vc.utilities.URIUtilities#makeMemoryURI(org.x2vc.utilities.URIUtilities.ObjectType, java.lang.String)}.
 	 */
 	@Test
 	void testMakeMemoryURI() {
-		final URI uri1 = URIHandling.makeMemoryURI(ObjectType.STYLESHEET, "foobar");
+		final URI uri1 = URIUtilities.makeMemoryURI(ObjectType.STYLESHEET, "foobar");
 		assertEquals("memory:stylesheet/foobar", uri1.toString());
-		final URI uri2 = URIHandling.makeMemoryURI(ObjectType.SCHEMA, "boofar");
+		final URI uri2 = URIUtilities.makeMemoryURI(ObjectType.SCHEMA, "boofar");
 		assertEquals("memory:schema/boofar", uri2.toString());
 	}
 
 	/**
 	 * Test method for
-	 * {@link org.x2vc.utilities.URIHandling#makeMemoryURI(org.x2vc.utilities.URIHandling.ObjectType, java.lang.String, int)}.
+	 * {@link org.x2vc.utilities.URIUtilities#makeMemoryURI(org.x2vc.utilities.URIUtilities.ObjectType, java.lang.String, int)}.
 	 */
 	@Test
 	void testMakeMemoryURIWithVersion() {
-		final URI uri1 = URIHandling.makeMemoryURI(ObjectType.STYLESHEET, "foobar", 1);
+		final URI uri1 = URIUtilities.makeMemoryURI(ObjectType.STYLESHEET, "foobar", 1);
 		assertEquals("memory:stylesheet/foobar#v1", uri1.toString());
-		final URI uri2 = URIHandling.makeMemoryURI(ObjectType.SCHEMA, "boofar", 42);
+		final URI uri2 = URIUtilities.makeMemoryURI(ObjectType.SCHEMA, "boofar", 42);
 		assertEquals("memory:schema/boofar#v42", uri2.toString());
 	}
 
 	/**
 	 * Test method for
-	 * {@link org.x2vc.utilities.URIHandling#isMemoryURI(java.net.URI)}.
+	 * {@link org.x2vc.utilities.URIUtilities#isMemoryURI(java.net.URI)}.
 	 */
 	@Test
 	void testIsMemoryURI() {
-		assertTrue(URIHandling.isMemoryURI(URI.create("memory:stylesheet/foobar")));
-		assertTrue(URIHandling.isMemoryURI(URI.create("memory:schema/foobar#v56")));
-		assertFalse(URIHandling.isMemoryURI(URI.create("file:///dev/null")));
-		assertFalse(URIHandling.isMemoryURI(URI.create("http://in.val.id")));
+		assertTrue(URIUtilities.isMemoryURI(URI.create("memory:stylesheet/foobar")));
+		assertTrue(URIUtilities.isMemoryURI(URI.create("memory:schema/foobar#v56")));
+		assertFalse(URIUtilities.isMemoryURI(URI.create("file:///dev/null")));
+		assertFalse(URIUtilities.isMemoryURI(URI.create("http://in.val.id")));
 	}
 
 	/**
 	 * Test method for
-	 * {@link org.x2vc.utilities.URIHandling#getObjectType(java.net.URI)}.
+	 * {@link org.x2vc.utilities.URIUtilities#getObjectType(java.net.URI)}.
 	 *
 	 * @throws URISyntaxException
 	 * @throws IllegalArgumentException
 	 */
 	@Test
 	void testGetObjectType() throws IllegalArgumentException, URISyntaxException {
-		assertEquals(ObjectType.STYLESHEET, URIHandling.getObjectType(URI.create("memory:stylesheet/foobar")));
-		assertEquals(ObjectType.SCHEMA, URIHandling.getObjectType(URI.create("memory:schema/foobar#v78")));
+		assertEquals(ObjectType.STYLESHEET, URIUtilities.getObjectType(URI.create("memory:stylesheet/foobar")));
+		assertEquals(ObjectType.SCHEMA, URIUtilities.getObjectType(URI.create("memory:schema/foobar#v78")));
 		final URI testURI = URI.create("file:///dev/null");
-		assertThrows(IllegalArgumentException.class, () -> URIHandling.getObjectType(testURI));
+		assertThrows(IllegalArgumentException.class, () -> URIUtilities.getObjectType(testURI));
 	}
 
 	/**
 	 * Test method for
-	 * {@link org.x2vc.utilities.URIHandling#getIdentifier(java.net.URI)}.
+	 * {@link org.x2vc.utilities.URIUtilities#getIdentifier(java.net.URI)}.
 	 *
 	 * @throws IllegalArgumentException
 	 */
 	@Test
 	void testGetIdentifier() throws IllegalArgumentException, URISyntaxException {
-		assertEquals("foobar", URIHandling.getIdentifier(URI.create("memory:stylesheet/foobar")));
-		assertEquals("foobar", URIHandling.getIdentifier(URI.create("memory:schema/foobar#v78")));
+		assertEquals("foobar", URIUtilities.getIdentifier(URI.create("memory:stylesheet/foobar")));
+		assertEquals("foobar", URIUtilities.getIdentifier(URI.create("memory:schema/foobar#v78")));
 		final URI testURI1 = URI.create("file:///dev/null");
-		assertThrows(IllegalArgumentException.class, () -> URIHandling.getIdentifier(testURI1));
+		assertThrows(IllegalArgumentException.class, () -> URIUtilities.getIdentifier(testURI1));
 		final URI testURI2 = URI.create("memory:stylesheet/foo/bar");
-		assertThrows(IllegalArgumentException.class, () -> URIHandling.getIdentifier(testURI2));
+		assertThrows(IllegalArgumentException.class, () -> URIUtilities.getIdentifier(testURI2));
 	}
 
 	/**
-	 * Test method for {@link org.x2vc.utilities.URIHandling#getVersion(java.net.URI)}.
+	 * Test method for {@link org.x2vc.utilities.URIUtilities#getVersion(java.net.URI)}.
 	 */
 	@Test
 	void testGetVersion() {
-		assertFalse(URIHandling.getVersion(URI.create("memory:stylesheet/foobar")).isPresent());
-		assertTrue(URIHandling.getVersion(URI.create("memory:stylesheet/foobar#v42")).isPresent());
-		assertEquals(42, URIHandling.getVersion(URI.create("memory:stylesheet/foobar#v42")).get());
+		assertFalse(URIUtilities.getVersion(URI.create("memory:stylesheet/foobar")).isPresent());
+		assertTrue(URIUtilities.getVersion(URI.create("memory:stylesheet/foobar#v42")).isPresent());
+		assertEquals(42, URIUtilities.getVersion(URI.create("memory:stylesheet/foobar#v42")).get());
 		final URI testURI1 = URI.create("file:///dev/null");
-		assertThrows(IllegalArgumentException.class, () -> URIHandling.getVersion(testURI1));
+		assertThrows(IllegalArgumentException.class, () -> URIUtilities.getVersion(testURI1));
 		final URI testURI2 = URI.create("memory:stylesheet/foobar#78");
-		assertThrows(IllegalArgumentException.class, () -> URIHandling.getVersion(testURI2));
+		assertThrows(IllegalArgumentException.class, () -> URIUtilities.getVersion(testURI2));
 		final URI testURI3 = URI.create("memory:stylesheet/foobar#vasdf");
-		assertThrows(IllegalArgumentException.class, () -> URIHandling.getVersion(testURI3));
+		assertThrows(IllegalArgumentException.class, () -> URIUtilities.getVersion(testURI3));
 	}
 
 }

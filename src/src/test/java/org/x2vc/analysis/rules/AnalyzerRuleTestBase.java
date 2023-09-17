@@ -22,8 +22,8 @@ import org.x2vc.schema.structure.IXMLElementType;
 import org.x2vc.schema.structure.IXMLElementType.ContentType;
 import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.schema.structure.XMLDatatype;
-import org.x2vc.utilities.URIHandling;
-import org.x2vc.utilities.URIHandling.ObjectType;
+import org.x2vc.utilities.URIUtilities;
+import org.x2vc.utilities.URIUtilities.ObjectType;
 import org.x2vc.xml.document.IDocumentModifier;
 import org.x2vc.xml.document.IXMLDocumentContainer;
 import org.x2vc.xml.document.IXMLDocumentDescriptor;
@@ -68,7 +68,7 @@ public abstract class AnalyzerRuleTestBase {
 	 */
 	@BeforeEach
 	void setUp() throws Exception {
-		this.stylesheetURI = URIHandling.makeMemoryURI(ObjectType.STYLESHEET, "foobar");
+		this.stylesheetURI = URIUtilities.makeMemoryURI(ObjectType.STYLESHEET, "foobar");
 
 		this.schemaManager = mock(ISchemaManager.class);
 		this.schema = mock(IXMLSchema.class);

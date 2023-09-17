@@ -9,8 +9,8 @@ import java.util.concurrent.ExecutionException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.x2vc.utilities.URIHandling;
-import org.x2vc.utilities.URIHandling.ObjectType;
+import org.x2vc.utilities.URIUtilities;
+import org.x2vc.utilities.URIUtilities.ObjectType;
 
 import com.github.racc.tscg.TypesafeConfig;
 import com.google.common.base.Supplier;
@@ -69,7 +69,7 @@ public class StylesheetManager implements IStylesheetManager {
 	@Override
 	public URI insert(String source) {
 		logger.traceEntry();
-		final URI newURI = URIHandling.makeMemoryURI(ObjectType.STYLESHEET, UUID.randomUUID().toString());
+		final URI newURI = URIUtilities.makeMemoryURI(ObjectType.STYLESHEET, UUID.randomUUID().toString());
 		logger.debug("URI for inserted stylesheet is {}", newURI);
 		final IStylesheetInformation stylesheet = this.preprocessor.prepareStylesheet(newURI, source);
 		this.stylesheetCacheSupplier.get().put(newURI, stylesheet);
@@ -81,7 +81,7 @@ public class StylesheetManager implements IStylesheetManager {
 		@Override
 		public IStylesheetInformation load(URI uri) throws Exception {
 			logger.traceEntry("for stylesheet {}", uri);
-			if (URIHandling.isMemoryURI(uri)) {
+			if (URIUtilities.isMemoryURI(uri)) {
 				throw logger.throwing(new IllegalArgumentException(
 						"temporary stylesheets have to be inserted explicitly before use"));
 			}

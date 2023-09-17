@@ -21,8 +21,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.x2vc.schema.ISchemaManager;
 import org.x2vc.schema.structure.*;
 import org.x2vc.stylesheet.IStylesheetInformation;
-import org.x2vc.utilities.URIHandling;
-import org.x2vc.utilities.URIHandling.ObjectType;
+import org.x2vc.utilities.URIUtilities;
+import org.x2vc.utilities.URIUtilities.ObjectType;
 import org.x2vc.xml.request.*;
 import org.x2vc.xml.value.IPrefixSelector.PrefixData;
 
@@ -88,11 +88,11 @@ class ValueGeneratorTest {
 	@BeforeEach
 	void setUp() throws Exception {
 		// stylesheet
-		this.stylesheetURI = URIHandling.makeMemoryURI(ObjectType.STYLESHEET, "foo");
+		this.stylesheetURI = URIUtilities.makeMemoryURI(ObjectType.STYLESHEET, "foo");
 		lenient().when(this.stylesheet.getURI()).thenReturn(this.stylesheetURI);
 
 		// schema
-		this.schemaURI = URIHandling.makeMemoryURI(ObjectType.SCHEMA, "bar");
+		this.schemaURI = URIUtilities.makeMemoryURI(ObjectType.SCHEMA, "bar");
 		this.schemaVersion = 1;
 		lenient().when(this.schemaManager.getSchema(this.schemaURI, this.schemaVersion)).thenReturn(this.schema);
 		lenient().when(this.schema.getURI()).thenReturn(this.schemaURI);
