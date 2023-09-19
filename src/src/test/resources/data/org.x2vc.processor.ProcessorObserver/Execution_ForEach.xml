@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<root>
+<elem attrib="foo">number 1</elem>
+<elem attrib="bar">number 2</elem>
+<elem attrib="foo">number 3</elem>
+</root>

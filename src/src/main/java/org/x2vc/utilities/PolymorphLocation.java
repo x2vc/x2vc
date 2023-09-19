@@ -3,8 +3,7 @@ package org.x2vc.utilities;
 import java.util.Objects;
 
 /**
- * Implementation of various interfaces that all represent the same thing - a
- * location in an XML or XSLT file.
+ * Implementation of various interfaces that all represent the same thing - a location in an XML or XSLT file.
  */
 public class PolymorphLocation implements javax.xml.stream.Location, javax.xml.transform.SourceLocator {
 
@@ -14,8 +13,16 @@ public class PolymorphLocation implements javax.xml.stream.Location, javax.xml.t
 	private String publicId;
 	private String systemId;
 
+	private PolymorphLocation(Builder builder) {
+		this.lineNumber = builder.lineNumber;
+		this.columnNumber = builder.columnNumber;
+		this.characterOffset = builder.characterOffset;
+		this.publicId = builder.publicId;
+		this.systemId = builder.systemId;
+	}
+
 	/**
-	 * Private constructor - use one of the factory methods to initialize.
+	 * Private constructor - use one of the factory methods or a builder to initialize.
 	 *
 	 * @see #fromStreamLocation(javax.xml.stream.Location)
 	 * @param lineNumber
@@ -31,29 +38,6 @@ public class PolymorphLocation implements javax.xml.stream.Location, javax.xml.t
 		this.characterOffset = characterOffset;
 		this.publicId = publicId;
 		this.systemId = systemId;
-	}
-
-	/**
-	 * Creates a new instance based on a {@link javax.xml.stream.Location} object.
-	 *
-	 * @param location
-	 * @return a copy of the location
-	 */
-	public static PolymorphLocation from(javax.xml.stream.Location location) {
-		return new PolymorphLocation(location.getLineNumber(), location.getColumnNumber(),
-				location.getCharacterOffset(), location.getPublicId(), location.getSystemId());
-	}
-
-	/**
-	 * Creates a new instance based on a {@link javax.xml.transform.SourceLocator}
-	 * object.
-	 *
-	 * @param locator
-	 * @return a copy of the location
-	 */
-	public static PolymorphLocation from(javax.xml.transform.SourceLocator locator) {
-		return new PolymorphLocation(locator.getLineNumber(), locator.getColumnNumber(),
-				-1, locator.getPublicId(), locator.getSystemId());
 	}
 
 	@Override
@@ -110,6 +94,115 @@ public class PolymorphLocation implements javax.xml.stream.Location, javax.xml.t
 		return this.characterOffset == other.characterOffset && this.columnNumber == other.columnNumber
 				&& this.lineNumber == other.lineNumber && Objects.equals(this.publicId, other.publicId)
 				&& Objects.equals(this.systemId, other.systemId);
+	}
+
+	/**
+	 * Creates builder to build {@link PolymorphLocation}.
+	 *
+	 * @return created builder
+	 */
+	public static Builder builder() {
+		return new Builder();
+	}
+
+	/**
+	 * Creates a new instance based on a {@link javax.xml.stream.Location} object.
+	 *
+	 * @param location
+	 * @return a copy of the location
+	 */
+	public static PolymorphLocation from(javax.xml.stream.Location location) {
+		return new PolymorphLocation(location.getLineNumber(), location.getColumnNumber(),
+				location.getCharacterOffset(), location.getPublicId(), location.getSystemId());
+	}
+
+	/**
+	 * Creates a new instance based on a {@link javax.xml.transform.SourceLocator} object.
+	 *
+	 * @param locator
+	 * @return a copy of the location
+	 */
+	public static PolymorphLocation from(javax.xml.transform.SourceLocator locator) {
+		return new PolymorphLocation(locator.getLineNumber(), locator.getColumnNumber(),
+				-1, locator.getPublicId(), locator.getSystemId());
+	}
+
+	/**
+	 * Builder to build {@link PolymorphLocation}.
+	 */
+	public static final class Builder {
+		private int lineNumber;
+		private int columnNumber;
+		private int characterOffset;
+		private String publicId;
+		private String systemId;
+
+		private Builder() {
+		}
+
+		/**
+		 * Builder method for lineNumber parameter.
+		 *
+		 * @param lineNumber field to set
+		 * @return builder
+		 */
+		public Builder withLineNumber(int lineNumber) {
+			this.lineNumber = lineNumber;
+			return this;
+		}
+
+		/**
+		 * Builder method for columnNumber parameter.
+		 *
+		 * @param columnNumber field to set
+		 * @return builder
+		 */
+		public Builder withColumnNumber(int columnNumber) {
+			this.columnNumber = columnNumber;
+			return this;
+		}
+
+		/**
+		 * Builder method for characterOffset parameter.
+		 *
+		 * @param characterOffset field to set
+		 * @return builder
+		 */
+		public Builder withCharacterOffset(int characterOffset) {
+			this.characterOffset = characterOffset;
+			return this;
+		}
+
+		/**
+		 * Builder method for publicId parameter.
+		 *
+		 * @param publicId field to set
+		 * @return builder
+		 */
+		public Builder withPublicId(String publicId) {
+			this.publicId = publicId;
+			return this;
+		}
+
+		/**
+		 * Builder method for systemId parameter.
+		 *
+		 * @param systemId field to set
+		 * @return builder
+		 */
+		public Builder withSystemId(String systemId) {
+			this.systemId = systemId;
+			return this;
+		}
+
+		/**
+		 * Builder method of the builder.
+		 *
+		 * @return built class
+		 */
+		public PolymorphLocation build() {
+			return new PolymorphLocation(this);
+		}
 	}
 
 }

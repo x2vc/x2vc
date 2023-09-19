@@ -71,14 +71,14 @@ public class XSLTProcessor implements IXSLTProcessor {
 			try {
 				final StringWriter stringWriter = new StringWriter();
 				final Serializer out = this.processor.newSerializer(stringWriter);
-				final TraceMessageCollector messageCollector = new TraceMessageCollector();
-				final XSLTErrorListener errorListener = new XSLTErrorListener();
+				final ProcessorObserver observer = new ProcessorObserver();
 				final Xslt30Transformer transformer = stylesheet.load30();
-				transformer.setMessageHandler(messageCollector);
-				transformer.setErrorListener(errorListener);
+				transformer.setMessageHandler(observer);
+				transformer.setErrorListener(observer);
+				transformer.setTraceListener(observer);
 				transformer.transform(new StreamSource(new StringReader(xmlDocument.getDocument())), out);
 				builder.withHtmlDocument(stringWriter.toString());
-				builder.withTraceEvents(messageCollector.getTraceEvents());
+				builder.withTraceEvents(observer.getTraceEvents());
 			} catch (final SaxonApiException e) {
 				// we expect some errors due to the explorative nature of the tests (monkey
 				// testing), so don't log them, just add them to the result object
@@ -102,6 +102,7 @@ public class XSLTProcessor implements IXSLTProcessor {
 		 */
 		private StylesheetCacheLoader(Processor processor) {
 			this.compiler = processor.newXsltCompiler();
+			this.compiler.setCompileWithTracing(true);
 		}
 
 		@Override
