@@ -97,15 +97,6 @@ public class PolymorphLocation implements javax.xml.stream.Location, javax.xml.t
 	}
 
 	/**
-	 * Creates builder to build {@link PolymorphLocation}.
-	 *
-	 * @return created builder
-	 */
-	public static Builder builder() {
-		return new Builder();
-	}
-
-	/**
 	 * Creates a new instance based on a {@link javax.xml.stream.Location} object.
 	 *
 	 * @param location
@@ -125,6 +116,15 @@ public class PolymorphLocation implements javax.xml.stream.Location, javax.xml.t
 	public static PolymorphLocation from(javax.xml.transform.SourceLocator locator) {
 		return new PolymorphLocation(locator.getLineNumber(), locator.getColumnNumber(),
 				-1, locator.getPublicId(), locator.getSystemId());
+	}
+
+	/**
+	 * Creates builder to build {@link PolymorphLocation}.
+	 *
+	 * @return created builder
+	 */
+	public static Builder builder() {
+		return new Builder();
 	}
 
 	/**

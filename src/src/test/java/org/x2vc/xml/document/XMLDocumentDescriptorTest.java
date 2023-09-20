@@ -29,7 +29,7 @@ class XMLDocumentDescriptorTest {
 
 	@Test
 	void testMinimal() {
-		final XMLDocumentDescriptor descriptor = new XMLDocumentDescriptor.Builder("abcd", 8).build();
+		final XMLDocumentDescriptor descriptor = XMLDocumentDescriptor.builder("abcd", 8).build();
 		assertEquals("abcd", descriptor.getValuePrefix());
 		assertEquals(8, descriptor.getValueLength());
 		assertFalse(descriptor.getModifier().isPresent());
@@ -37,7 +37,7 @@ class XMLDocumentDescriptorTest {
 
 	@Test
 	void testModifier() {
-		final XMLDocumentDescriptor descriptor = new XMLDocumentDescriptor.Builder("abcd", 8)
+		final XMLDocumentDescriptor descriptor = XMLDocumentDescriptor.builder("abcd", 8)
 			.withModifier(this.modifier).build();
 		final Optional<IDocumentModifier> mod = descriptor.getModifier();
 		assertTrue(mod.isPresent());
@@ -60,7 +60,7 @@ class XMLDocumentDescriptorTest {
 	})
 	void testValueDescriptor_Match(String testValue, String testQuery) {
 		when(this.valueDescriptor.getValue()).thenReturn(testValue);
-		final XMLDocumentDescriptor descriptor = new XMLDocumentDescriptor.Builder("abcd", 8)
+		final XMLDocumentDescriptor descriptor = XMLDocumentDescriptor.builder("abcd", 8)
 				.addValueDescriptor(this.valueDescriptor).build();
 		final Optional<ImmutableSet<IValueDescriptor>> vd = descriptor.getValueDescriptors(testQuery);
 		assertTrue(vd.isPresent());
@@ -83,7 +83,7 @@ class XMLDocumentDescriptorTest {
 	})
 	void testValueDescriptor_NoMatch(String testValue, String testQuery) {
 		when(this.valueDescriptor.getValue()).thenReturn(testValue);
-		final XMLDocumentDescriptor descriptor = new XMLDocumentDescriptor.Builder("abcd", 8)
+		final XMLDocumentDescriptor descriptor = XMLDocumentDescriptor.builder("abcd", 8)
 				.addValueDescriptor(this.valueDescriptor).build();
 		final Optional<ImmutableSet<IValueDescriptor>> vd = descriptor.getValueDescriptors(testQuery);
 		assertFalse(vd.isPresent());

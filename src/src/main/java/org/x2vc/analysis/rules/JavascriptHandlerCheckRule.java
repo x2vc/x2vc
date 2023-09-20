@@ -117,7 +117,7 @@ public class JavascriptHandlerCheckRule extends AbstractAttributeRule {
 				logger.debug(
 						"attribute \"{}\" contains injected content \"{}\" from input data, follow-up check positive",
 						attributeName, checkValue);
-				new VulnerabilityCandidate.Builder(RULE_ID, taskID)
+				VulnerabilityCandidate.builder(RULE_ID, taskID)
 					.withAffectingSchemaObject(schemaElementID.get())
 					.withAffectedOutputElement(getPathToNode(node))
 					.withInputSample(xmlContainer.getDocument())

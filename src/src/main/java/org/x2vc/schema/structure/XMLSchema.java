@@ -4,10 +4,7 @@ import java.net.URI;
 import java.util.*;
 
 import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.*;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -44,7 +41,8 @@ public class XMLSchema implements IXMLSchema {
 	@XmlElement(type = XMLElementReference.class, name = "rootElement")
 	private Set<IXMLElementReference> rootElements;
 
-	private transient Map<UUID, IXMLSchemaObject> objectMap;
+	@XmlTransient
+	private Map<UUID, IXMLSchemaObject> objectMap;
 
 	/**
 	 * Parameterless constructor for deserialization only.
@@ -69,8 +67,7 @@ public class XMLSchema implements IXMLSchema {
 	}
 
 	/**
-	 * Change the stylesheet URI. Used after deserialization to adjust to the
-	 * potentially changed local path.
+	 * Change the stylesheet URI. Used after deserialization to adjust to the potentially changed local path.
 	 *
 	 * @param stylesheetURI the stylesheetURI to set
 	 */
@@ -89,8 +86,7 @@ public class XMLSchema implements IXMLSchema {
 	}
 
 	/**
-	 * Change the schema URI. Used after deserialization to adjust to the new
-	 * in-memory ID.
+	 * Change the schema URI. Used after deserialization to adjust to the new in-memory ID.
 	 *
 	 * @param newURI the new schema URI
 	 */
@@ -121,9 +117,8 @@ public class XMLSchema implements IXMLSchema {
 	}
 
 	/**
-	 * This method is called after all the properties (except IDREF) are
-	 * unmarshalled for this object, but before this object is set to the parent
-	 * object.
+	 * This method is called after all the properties (except IDREF) are unmarshalled for this object, but before this
+	 * object is set to the parent object.
 	 *
 	 * @param unmarshaller the unmarshaller used
 	 * @param parent       the parent object
@@ -215,8 +210,9 @@ public class XMLSchema implements IXMLSchema {
 		}
 	}
 
+	@XmlTransient
 	@SuppressWarnings("java:S4738") // Java supplier does not support memoization
-	private transient Supplier<Multimap<UUID, String>> objectPathMapSupplier = Suppliers.memoize(() -> {
+	private Supplier<Multimap<UUID, String>> objectPathMapSupplier = Suppliers.memoize(() -> {
 		logger.traceEntry();
 		final Multimap<UUID, String> map = MultimapBuilder.hashKeys().arrayListValues().build();
 		this.rootElements.forEach(elem -> addToPathMap(map, elem, "/"));
@@ -268,14 +264,25 @@ public class XMLSchema implements IXMLSchema {
 	}
 
 	/**
-	 * Creates a builder to build {@link XMLSchema} and initialize it with the given
-	 * object.
+	 * Creates a builder to build {@link XMLSchema} and initialize it with the given object.
 	 *
 	 * @param xMLSchema to initialize the builder with
 	 * @return created builder
 	 */
 	public static Builder builderFrom(XMLSchema xMLSchema) {
 		return new Builder(xMLSchema);
+	}
+
+	/**
+	 * Creates a new builder.
+	 *
+	 * @param stylesheetURI
+	 * @param schemaURI
+	 * @param version
+	 * @return the builder
+	 */
+	public static Builder builder(URI stylesheetURI, URI schemaURI, int version) {
+		return new Builder(stylesheetURI, schemaURI, version);
 	}
 
 	/**
@@ -295,7 +302,7 @@ public class XMLSchema implements IXMLSchema {
 		 * @param schemaURI
 		 * @param version
 		 */
-		public Builder(URI stylesheetURI, URI schemaURI, int version) {
+		private Builder(URI stylesheetURI, URI schemaURI, int version) {
 			this.stylesheetURI = stylesheetURI;
 			this.schemaURI = schemaURI;
 			this.version = version;

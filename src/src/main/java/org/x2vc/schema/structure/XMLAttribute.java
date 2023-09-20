@@ -71,14 +71,34 @@ public class XMLAttribute extends XMLDataObject implements IXMLAttribute {
 	}
 
 	/**
-	 * Creates a builder to build {@link XMLAttribute} and initialize it with the
-	 * given object.
+	 * Creates a builder to build {@link XMLAttribute} and initialize it with the given object.
 	 *
-	 * @param xMLAttribute to initialize the builder with
+	 * @param xmlAttribute to initialize the builder with
 	 * @return created builder
 	 */
-	public static Builder builderFrom(IXMLAttribute xMLAttribute) {
-		return new Builder(xMLAttribute);
+	public static Builder builderFrom(IXMLAttribute xmlAttribute) {
+		return new Builder(xmlAttribute);
+	}
+
+	/**
+	 * Provides a builder to create a {@link XMLAttribute} instance.
+	 *
+	 * @param name
+	 * @return a new builder
+	 */
+	public static Builder builder(String name) {
+		return new Builder(name);
+	}
+
+	/**
+	 * Provides a builder to create a {@link XMLAttribute} instance.
+	 *
+	 * @param id
+	 * @param name
+	 * @return a new builder
+	 */
+	public static Builder builder(UUID id, String name) {
+		return new Builder(id, name);
 	}
 
 	/**
@@ -102,7 +122,7 @@ public class XMLAttribute extends XMLDataObject implements IXMLAttribute {
 		 *
 		 * @param name
 		 */
-		public Builder(String name) {
+		private Builder(String name) {
 			this.id = UUID.randomUUID();
 			this.name = name;
 		}
@@ -113,7 +133,7 @@ public class XMLAttribute extends XMLDataObject implements IXMLAttribute {
 		 * @param id
 		 * @param name
 		 */
-		public Builder(UUID id, String name) {
+		private Builder(UUID id, String name) {
 			this.id = id;
 			this.name = name;
 		}
@@ -248,8 +268,7 @@ public class XMLAttribute extends XMLDataObject implements IXMLAttribute {
 		}
 
 		/**
-		 * Adds the resulting object to an {@link XMLElementType} builder and returns
-		 * the object for further processing.
+		 * Adds the resulting object to an {@link XMLElementType} builder and returns the object for further processing.
 		 *
 		 * @param elementBuilder
 		 * @return the built attribute

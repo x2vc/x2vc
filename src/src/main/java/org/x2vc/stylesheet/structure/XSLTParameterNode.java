@@ -77,6 +77,17 @@ public class XSLTParameterNode extends AbstractStructureTreeNode implements IXSL
 	}
 
 	/**
+	 * Creates a new builder
+	 *
+	 * @param parentStructure the {@link IStylesheetStructure} the node belongs to
+	 * @param name            the name of the element
+	 * @return the builder
+	 */
+	public static Builder builder(IStylesheetStructure parentStructure, String name) {
+		return new Builder(parentStructure, name);
+	}
+
+	/**
 	 * Builder to build {@link XSLTParameterNode}.
 	 */
 	public static final class Builder implements INodeBuilder {
@@ -93,7 +104,7 @@ public class XSLTParameterNode extends AbstractStructureTreeNode implements IXSL
 		 * @param parentStructure the {@link IStylesheetStructure} the node belongs to
 		 * @param name            the name of the element
 		 */
-		public Builder(IStylesheetStructure parentStructure, String name) {
+		private Builder(IStylesheetStructure parentStructure, String name) {
 			checkNotNull(parentStructure);
 			checkNotNull(name);
 			this.parentStructure = parentStructure;

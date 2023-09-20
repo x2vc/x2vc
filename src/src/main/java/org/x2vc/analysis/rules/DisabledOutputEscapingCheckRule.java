@@ -26,9 +26,8 @@ import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
 
 /**
- * Rule E.2: Check the text content of every element that contains the prefix
- * used to generate the values whether it is possible to inject arbitrary code
- * in case disable-output-escaping is activated.
+ * Rule E.2: Check the text content of every element that contains the prefix used to generate the values whether it is
+ * possible to inject arbitrary code in case disable-output-escaping is activated.
  */
 public class DisabledOutputEscapingCheckRule extends AbstractTextRule {
 
@@ -136,7 +135,7 @@ public class DisabledOutputEscapingCheckRule extends AbstractTextRule {
 					logger.debug(
 							"tag \"{}\" injected from input data contains search string \"{}\", follow-up check positive",
 							injectedElement.tagName(), injectedContent);
-					new VulnerabilityCandidate.Builder(RULE_ID, taskID)
+					VulnerabilityCandidate.builder(RULE_ID, taskID)
 						.withAffectingSchemaObject(schemaElementID.get())
 						.withAffectedOutputElement(getPathToNode(injectedElement.parentNode()))
 						.withInputSample(xmlContainer.getDocument())

@@ -99,14 +99,36 @@ public class XMLElementReference extends AbstractSchemaObject implements IXMLEle
 	}
 
 	/**
-	 * Creates a builder to build {@link XMLElementReference} and initialize it with
-	 * the given object.
+	 * Creates a builder to build {@link XMLElementReference} and initialize it with the given object.
 	 *
 	 * @param xMLElementReference to initialize the builder with
 	 * @return created builder
 	 */
 	public static Builder builderFrom(IXMLElementReference xMLElementReference) {
 		return new Builder(xMLElementReference);
+	}
+
+	/**
+	 * Create a new builder instance.
+	 *
+	 * @param name
+	 * @param element
+	 * @return the builder
+	 */
+	public static Builder builder(String name, IXMLElementType element) {
+		return new Builder(name, element);
+	}
+
+	/**
+	 * Create a new builder instance.
+	 *
+	 * @param id
+	 * @param name
+	 * @param element
+	 * @return the builder
+	 */
+	public static Builder builder(UUID id, String name, IXMLElementType element) {
+		return new Builder(id, name, element);
 	}
 
 	/**
@@ -127,7 +149,7 @@ public class XMLElementReference extends AbstractSchemaObject implements IXMLEle
 		 * @param name
 		 * @param element
 		 */
-		public Builder(String name, IXMLElementType element) {
+		private Builder(String name, IXMLElementType element) {
 			this.id = UUID.randomUUID();
 			this.name = name;
 			this.element = element;
@@ -141,7 +163,7 @@ public class XMLElementReference extends AbstractSchemaObject implements IXMLEle
 		 * @param name
 		 * @param element
 		 */
-		public Builder(UUID id, String name, IXMLElementType element) {
+		private Builder(UUID id, String name, IXMLElementType element) {
 			this.id = id;
 			this.name = name;
 			this.element = element;
@@ -203,8 +225,7 @@ public class XMLElementReference extends AbstractSchemaObject implements IXMLEle
 		}
 
 		/**
-		 * Adds the resulting object to an {@link XMLElementType} builder and returns
-		 * the object for further processing.
+		 * Adds the resulting object to an {@link XMLElementType} builder and returns the object for further processing.
 		 *
 		 * @param elementBuilder
 		 * @return the built reference
@@ -216,8 +237,7 @@ public class XMLElementReference extends AbstractSchemaObject implements IXMLEle
 		}
 
 		/**
-		 * Adds the resulting object to an {@link XMLSchema} builder and returns the
-		 * object for further processing.
+		 * Adds the resulting object to an {@link XMLSchema} builder and returns the object for further processing.
 		 *
 		 * @param schemaBuilder
 		 * @return the built element

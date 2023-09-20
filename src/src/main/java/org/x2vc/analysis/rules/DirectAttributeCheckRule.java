@@ -24,9 +24,8 @@ import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
 
 /**
- * Rule A.1: Check every attribute that contains the prefix used to generate the
- * values whether it is possible to inject new attributes by modifying the input
- * data.
+ * Rule A.1: Check every attribute that contains the prefix used to generate the values whether it is possible to inject
+ * new attributes by modifying the input data.
  */
 public class DirectAttributeCheckRule extends AbstractAttributeRule {
 
@@ -116,7 +115,7 @@ public class DirectAttributeCheckRule extends AbstractAttributeRule {
 				logger.debug("attribute \"{}\" not found, follow-up check negative", attributeName);
 			} else {
 				logger.debug("attribute \"{}\" injected from input data, follow-up check positive", attributeName);
-				new VulnerabilityCandidate.Builder(RULE_ID, taskID)
+				VulnerabilityCandidate.builder(RULE_ID, taskID)
 					.withAffectingSchemaObject(schemaElementID.get())
 					.withAffectedOutputElement(getPathToNode(node))
 					.withInputSample(xmlContainer.getDocument())

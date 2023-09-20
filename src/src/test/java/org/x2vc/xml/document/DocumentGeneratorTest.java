@@ -131,7 +131,7 @@ class DocumentGeneratorTest {
 
 		// prepare generation rules and request
 		final ISetAttributeRule rootAttributeRule = new SetAttributeRule(rootAttribute);
-		this.rootElementRule = new AddElementRule.Builder(rootElementReference).addAttributeRule(rootAttributeRule)
+		this.rootElementRule = AddElementRule.builder(rootElementReference).addAttributeRule(rootAttributeRule)
 			.build();
 
 		// prepare value generator
@@ -167,7 +167,7 @@ class DocumentGeneratorTest {
 
 		// prepare generation rules and request
 		final AddDataContentRule dataContentRule = new AddDataContentRule(rootElementReference.getID());
-		this.rootElementRule = new AddElementRule.Builder(rootElementReference).addContentRule(dataContentRule).build();
+		this.rootElementRule = AddElementRule.builder(rootElementReference).addContentRule(dataContentRule).build();
 
 		// prepare value generator
 		when(this.valueGenerator.generateValue(dataContentRule)).thenReturn("foobar");
@@ -202,7 +202,7 @@ class DocumentGeneratorTest {
 
 		// prepare generation rules and request
 		final AddDataContentRule dataContentRule = new AddDataContentRule(rootElementReference.getID());
-		this.rootElementRule = new AddElementRule.Builder(rootElementReference).addContentRule(dataContentRule).build();
+		this.rootElementRule = AddElementRule.builder(rootElementReference).addContentRule(dataContentRule).build();
 
 		// prepare value generator
 		when(this.valueGenerator.generateValue(dataContentRule)).thenReturn("foo&lt;br/&gt;bar");
@@ -238,10 +238,10 @@ class DocumentGeneratorTest {
 		final IXMLElementReference subElementReference = rootElementReference.getElement().getElements().get(0);
 
 		// prepare generation rules and request
-		final AddElementRule subElementRule1 = new AddElementRule.Builder(subElementReference).build();
-		final AddElementRule subElementRule2 = new AddElementRule.Builder(subElementReference).build();
-		final AddElementRule subElementRule3 = new AddElementRule.Builder(subElementReference).build();
-		this.rootElementRule = new AddElementRule.Builder(rootElementReference).addContentRule(subElementRule1)
+		final AddElementRule subElementRule1 = AddElementRule.builder(subElementReference).build();
+		final AddElementRule subElementRule2 = AddElementRule.builder(subElementReference).build();
+		final AddElementRule subElementRule3 = AddElementRule.builder(subElementReference).build();
+		this.rootElementRule = AddElementRule.builder(rootElementReference).addContentRule(subElementRule1)
 			.addContentRule(subElementRule2).addContentRule(subElementRule3).build();
 
 		final IXMLDocumentContainer document = this.documentGenerator.generateDocument(this.request);
@@ -263,10 +263,10 @@ class DocumentGeneratorTest {
 		this.schema = loadSchema("ElementWithSubElement.x2vc_schema");
 		final IXMLElementReference rootElementReference = this.schema.getRootElements().iterator().next();
 		final IXMLElementReference subElementReference = rootElementReference.getElement().getElements().get(0);
-		final AddElementRule subElementRule1 = new AddElementRule.Builder(subElementReference).build();
-		final AddElementRule subElementRule2 = new AddElementRule.Builder(subElementReference).build();
-		final AddElementRule subElementRule3 = new AddElementRule.Builder(subElementReference).build();
-		this.rootElementRule = new AddElementRule.Builder(rootElementReference).addContentRule(subElementRule1)
+		final AddElementRule subElementRule1 = AddElementRule.builder(subElementReference).build();
+		final AddElementRule subElementRule2 = AddElementRule.builder(subElementReference).build();
+		final AddElementRule subElementRule3 = AddElementRule.builder(subElementReference).build();
+		this.rootElementRule = AddElementRule.builder(rootElementReference).addContentRule(subElementRule1)
 			.addContentRule(subElementRule2).addContentRule(subElementRule3).build();
 		final IXMLDocumentContainer document = this.documentGenerator.generateDocument(this.request);
 
@@ -294,7 +294,7 @@ class DocumentGeneratorTest {
 
 		// prepare generation rules and request
 		final AddRawContentRule rawContentRule = new AddRawContentRule(rootElementReference.getID());
-		this.rootElementRule = new AddElementRule.Builder(rootElementReference).addContentRule(rawContentRule).build();
+		this.rootElementRule = AddElementRule.builder(rootElementReference).addContentRule(rawContentRule).build();
 
 		// prepare value generator
 		when(this.valueGenerator.generateValue(rawContentRule)).thenReturn("<b>foo</b><i>bar</i>");

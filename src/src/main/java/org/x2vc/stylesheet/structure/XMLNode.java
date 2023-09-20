@@ -72,6 +72,17 @@ public class XMLNode extends AbstractStructureTreeNode implements IXMLNode {
 	}
 
 	/**
+	 * Creates a new builder instance.
+	 *
+	 * @param parentStructure the {@link IStylesheetStructure} the node belongs to
+	 * @param name            the name of the element
+	 * @return the builder
+	 */
+	public static Builder builder(IStylesheetStructure parentStructure, QName name) {
+		return new Builder(parentStructure, name);
+	}
+
+	/**
 	 * Builder to build {@link XMLNode}.
 	 */
 	public static final class Builder implements INodeBuilder {
@@ -88,7 +99,7 @@ public class XMLNode extends AbstractStructureTreeNode implements IXMLNode {
 		 * @param parentStructure the {@link IStylesheetStructure} the node belongs to
 		 * @param name            the name of the element
 		 */
-		public Builder(IStylesheetStructure parentStructure, QName name) {
+		private Builder(IStylesheetStructure parentStructure, QName name) {
 			checkNotNull(parentStructure);
 			checkNotNull(name);
 			this.parentStructure = parentStructure;

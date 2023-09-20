@@ -93,14 +93,32 @@ public class XMLDiscreteValue extends AbstractSchemaObject implements IXMLDiscre
 	}
 
 	/**
-	 * Creates a builder to build {@link XMLDiscreteValue} and initialize it with
-	 * the given object.
+	 * Creates a builder to build {@link XMLDiscreteValue} and initialize it with the given object.
 	 *
 	 * @param xMLDiscreteValue to initialize the builder with
 	 * @return created builder
 	 */
 	public static Builder builderFrom(IXMLDiscreteValue xMLDiscreteValue) {
 		return new Builder(xMLDiscreteValue);
+	}
+
+	/**
+	 * Create a new builder.
+	 *
+	 * @return the builder
+	 */
+	public static Builder builder() {
+		return new Builder();
+	}
+
+	/**
+	 * Create a new builder.
+	 *
+	 * @param id
+	 * @return the builder
+	 */
+	public static Builder builder(UUID id) {
+		return new Builder(id);
 	}
 
 	/**
@@ -116,7 +134,7 @@ public class XMLDiscreteValue extends AbstractSchemaObject implements IXMLDiscre
 		/**
 		 * Create a new builder.
 		 */
-		public Builder() {
+		private Builder() {
 			this.id = UUID.randomUUID();
 		}
 
@@ -125,7 +143,7 @@ public class XMLDiscreteValue extends AbstractSchemaObject implements IXMLDiscre
 		 *
 		 * @param id
 		 */
-		public Builder(UUID id) {
+		private Builder(UUID id) {
 			this.id = id;
 		}
 
@@ -210,8 +228,7 @@ public class XMLDiscreteValue extends AbstractSchemaObject implements IXMLDiscre
 		}
 
 		/**
-		 * Adds the resulting object to an {@link XMLElementType} builder and returns
-		 * the object for further processing.
+		 * Adds the resulting object to an {@link XMLElementType} builder and returns the object for further processing.
 		 *
 		 * @param elementBuilder
 		 * @return the built value

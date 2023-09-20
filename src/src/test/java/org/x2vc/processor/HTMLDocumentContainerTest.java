@@ -55,11 +55,11 @@ class HTMLDocumentContainerTest {
 	void testGetCoverage() {
 		// TODO XSLT Coverage: rebuild after structure extraction changes
 //
-//		final XSLTDirectiveNode directive1 = new XSLTDirectiveNode.Builder(this.structure, "foo")
+//		final XSLTDirectiveNode directive1 = XSLTDirectiveNode.builder(this.structure, "foo")
 //			.addOtherAttribute(ExtendedXSLTConstants.QualifiedAttributes.TRACE_ID, "1").build();
-//		final XSLTDirectiveNode directive2 = new XSLTDirectiveNode.Builder(this.structure, "bar")
+//		final XSLTDirectiveNode directive2 = XSLTDirectiveNode.builder(this.structure, "bar")
 //			.addOtherAttribute(ExtendedXSLTConstants.QualifiedAttributes.TRACE_ID, "2").build();
-//		final XSLTDirectiveNode directive3 = new XSLTDirectiveNode.Builder(this.structure, "baz")
+//		final XSLTDirectiveNode directive3 = XSLTDirectiveNode.builder(this.structure, "baz")
 //			.addOtherAttribute(ExtendedXSLTConstants.QualifiedAttributes.TRACE_ID, "3").build();
 //		lenient().when(this.structure.getDirectiveByTraceID(1)).thenReturn(directive1);
 //		lenient().when(this.structure.getDirectiveByTraceID(2)).thenReturn(directive2);

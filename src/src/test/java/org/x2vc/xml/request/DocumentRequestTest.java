@@ -24,7 +24,7 @@ class DocumentRequestTest {
 	void testRequestedValueIndex() {
 		final UUID rootReferenceUUID = UUID.randomUUID();
 		final UUID rootElementUUID = UUID.randomUUID();
-		final Builder rootBuilder = new AddElementRule.Builder(rootReferenceUUID);
+		final Builder rootBuilder = AddElementRule.builder(rootReferenceUUID);
 
 		final UUID rootAttribUUID = UUID.randomUUID();
 		final RequestedValue rootAttribValue = new RequestedValue("rootAttrib");
@@ -38,7 +38,7 @@ class DocumentRequestTest {
 
 		final UUID subReferenceUUID = UUID.randomUUID();
 		final UUID subElementUUID = UUID.randomUUID();
-		final Builder subBuilder = new AddElementRule.Builder(subReferenceUUID);
+		final Builder subBuilder = AddElementRule.builder(subReferenceUUID);
 
 		final UUID subAttribUUID = UUID.randomUUID();
 		final RequestedValue subAttribValue = new RequestedValue("subAttrib");

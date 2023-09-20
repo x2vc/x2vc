@@ -87,6 +87,16 @@ public class XSLTSortNode extends AbstractStructureTreeNode implements IXSLTSort
 	}
 
 	/**
+	 * Creates a new builder instance.
+	 *
+	 * @param parentStructure the {@link IStylesheetStructure} the node belongs to
+	 * @return the builder
+	 */
+	public static Builder builder(IStylesheetStructure parentStructure) {
+		return new Builder(parentStructure);
+	}
+
+	/**
 	 * Builder to build {@link XSLTSortNode}.
 	 */
 	public static final class Builder implements INodeBuilder {
@@ -104,7 +114,7 @@ public class XSLTSortNode extends AbstractStructureTreeNode implements IXSLTSort
 		 *
 		 * @param parentStructure the {@link IStylesheetStructure} the node belongs to
 		 */
-		public Builder(IStylesheetStructure parentStructure) {
+		private Builder(IStylesheetStructure parentStructure) {
 			this.parentStructure = parentStructure;
 		}
 

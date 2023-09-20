@@ -77,6 +77,17 @@ public class XMLDocumentDescriptor implements IXMLDocumentDescriptor {
 	}
 
 	/**
+	 * Creates a new builder
+	 *
+	 * @param valuePrefix
+	 * @param valueLength
+	 * @return the builder
+	 */
+	public static Builder builder(String valuePrefix, int valueLength) {
+		return new Builder(valuePrefix, valueLength);
+	}
+
+	/**
 	 * Builder to build {@link XMLDocumentDescriptor}.
 	 */
 	public static final class Builder {
@@ -92,7 +103,7 @@ public class XMLDocumentDescriptor implements IXMLDocumentDescriptor {
 		 * @param valuePrefix
 		 * @param valueLength
 		 */
-		public Builder(String valuePrefix, int valueLength) {
+		private Builder(String valuePrefix, int valueLength) {
 			this.valuePrefix = valuePrefix;
 			this.valueLength = valueLength;
 		}

@@ -38,7 +38,7 @@ class AddElementRuleTest {
 		final UUID ruleID = UUID.randomUUID();
 		final UUID elementReferenceID = UUID.randomUUID();
 
-		final AddElementRule originalRule = new AddElementRule.Builder(elementReferenceID).withRuleID(ruleID)
+		final AddElementRule originalRule = AddElementRule.builder(elementReferenceID).withRuleID(ruleID)
 			.addAttributeRule(originalAttributeRule).addContentRule(originalContentRule1)
 			.addContentRule(originalContentRule2).build();
 		final AddElementRule normalizedRule = (AddElementRule) originalRule.normalize();

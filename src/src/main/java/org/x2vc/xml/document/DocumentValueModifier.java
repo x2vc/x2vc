@@ -84,6 +84,28 @@ public class DocumentValueModifier implements IDocumentValueModifier {
 	}
 
 	/**
+	 * Creates a new builder
+	 *
+	 * @param valueDescriptor the descriptor of the value to modify
+	 * @return the builder
+	 */
+	public static Builder builder(IValueDescriptor valueDescriptor) {
+		return new Builder(valueDescriptor);
+	}
+
+	/**
+	 * Creates a new builder
+	 *
+	 * @param schemaElementID
+	 * @param generationRuleID
+	 * @return the builder
+	 *
+	 */
+	public static Builder builder(UUID schemaElementID, UUID generationRuleID) {
+		return new Builder(schemaElementID, generationRuleID);
+	}
+
+	/**
 	 * Builder to build {@link DocumentValueModifier}.
 	 */
 	public static final class Builder {
@@ -99,7 +121,7 @@ public class DocumentValueModifier implements IDocumentValueModifier {
 		 *
 		 * @param valueDescriptor the descriptor of the value to modify
 		 */
-		public Builder(IValueDescriptor valueDescriptor) {
+		private Builder(IValueDescriptor valueDescriptor) {
 			this.schemaElementID = valueDescriptor.getSchemaElementID();
 			this.generationRuleID = valueDescriptor.getGenerationRuleID();
 		}
@@ -111,7 +133,7 @@ public class DocumentValueModifier implements IDocumentValueModifier {
 		 * @param generationRuleID
 		 *
 		 */
-		public Builder(UUID schemaElementID, UUID generationRuleID) {
+		private Builder(UUID schemaElementID, UUID generationRuleID) {
 			this.schemaElementID = schemaElementID;
 			this.generationRuleID = generationRuleID;
 		}

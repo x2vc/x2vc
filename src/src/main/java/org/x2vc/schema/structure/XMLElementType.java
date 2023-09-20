@@ -179,14 +179,32 @@ public class XMLElementType extends XMLDataObject implements IXMLElementType {
 	}
 
 	/**
-	 * Creates a builder to build {@link XMLElementType} and initialize it with the
-	 * given object.
+	 * Creates a builder to build {@link XMLElementType} and initialize it with the given object.
 	 *
 	 * @param xMLElementType to initialize the builder with
 	 * @return created builder
 	 */
 	public static Builder builderFrom(IXMLElementType xMLElementType) {
 		return new Builder(xMLElementType);
+	}
+
+	/**
+	 * Create a new builder.
+	 *
+	 * @return the builder
+	 */
+	public static Builder builder() {
+		return new Builder();
+	}
+
+	/**
+	 * Creates a new builder.
+	 *
+	 * @param id
+	 * @return the builder
+	 */
+	public static Builder builder(UUID id) {
+		return new Builder(id);
 	}
 
 	/**
@@ -210,7 +228,7 @@ public class XMLElementType extends XMLDataObject implements IXMLElementType {
 		/**
 		 * Create a new builder.
 		 */
-		public Builder() {
+		private Builder() {
 			this.id = UUID.randomUUID();
 		}
 
@@ -219,7 +237,7 @@ public class XMLElementType extends XMLDataObject implements IXMLElementType {
 		 *
 		 * @param id
 		 */
-		public Builder(UUID id) {
+		private Builder(UUID id) {
 			this.id = id;
 		}
 
@@ -401,8 +419,7 @@ public class XMLElementType extends XMLDataObject implements IXMLElementType {
 		}
 
 		/**
-		 * Adds the resulting object to an {@link XMLSchema} builder and returns the
-		 * object for further processing.
+		 * Adds the resulting object to an {@link XMLSchema} builder and returns the object for further processing.
 		 *
 		 * @param schemaBuilder
 		 * @return the built element

@@ -74,6 +74,26 @@ public class AddElementRule extends AbstractGenerationRule implements IAddElemen
 	}
 
 	/**
+	 * Creates a new builder
+	 *
+	 * @param elementReferenceID
+	 * @return the builder
+	 */
+	public static Builder builder(UUID elementReferenceID) {
+		return new Builder(elementReferenceID);
+	}
+
+	/**
+	 * Creates a new builder
+	 *
+	 * @param elementReference
+	 * @return the builder
+	 */
+	public static Builder builder(IXMLElementReference elementReference) {
+		return new Builder(elementReference);
+	}
+
+	/**
 	 * Builder to build {@link AddElementRule}.
 	 */
 	public static final class Builder {
@@ -87,7 +107,7 @@ public class AddElementRule extends AbstractGenerationRule implements IAddElemen
 		 *
 		 * @param elementReferenceID
 		 */
-		public Builder(UUID elementReferenceID) {
+		private Builder(UUID elementReferenceID) {
 			this.elementReferenceID = elementReferenceID;
 		}
 
@@ -96,7 +116,7 @@ public class AddElementRule extends AbstractGenerationRule implements IAddElemen
 		 *
 		 * @param elementReference
 		 */
-		public Builder(IXMLElementReference elementReference) {
+		private Builder(IXMLElementReference elementReference) {
 			this.elementReferenceID = elementReference.getID();
 		}
 

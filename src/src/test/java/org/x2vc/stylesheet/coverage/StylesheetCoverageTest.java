@@ -15,15 +15,15 @@ class StylesheetCoverageTest {
 //	@BeforeEach
 //	void setUp() throws Exception {
 //		this.structure = StylesheetStructureTestFactory.createStylesheetStructure((structure) -> {
-//			XSLTParameterNode param1 = new XSLTParameterNode.Builder(structure, "param1").build();
-//			XSLTParameterNode param2 = new XSLTParameterNode.Builder(structure, "param2").build();
-//			XSLTDirectiveNode template1 = new XSLTDirectiveNode.Builder(structure, XSLTConstants.Elements.TEMPLATE)
+//			XSLTParameterNode param1 = XSLTParameterNode.builder(structure, "param1").build();
+//			XSLTParameterNode param2 = XSLTParameterNode.builder(structure, "param2").build();
+//			XSLTDirectiveNode template1 = XSLTDirectiveNode.builder(structure, XSLTConstants.Elements.TEMPLATE)
 //					.addXSLTAttribute("name", "template1")
 //					.addOtherAttribute(ExtendedXSLTConstants.QualifiedAttributes.TRACE_ID, "1").build();
-//			XSLTDirectiveNode template2 = new XSLTDirectiveNode.Builder(structure, XSLTConstants.Elements.TEMPLATE)
+//			XSLTDirectiveNode template2 = XSLTDirectiveNode.builder(structure, XSLTConstants.Elements.TEMPLATE)
 //					.addXSLTAttribute("name", "template2")
 //					.addOtherAttribute(ExtendedXSLTConstants.QualifiedAttributes.TRACE_ID, "2").build();
-//			XSLTDirectiveNode rootNode = new XSLTDirectiveNode.Builder(structure, XSLTConstants.Elements.STYLESHEET)
+//			XSLTDirectiveNode rootNode = XSLTDirectiveNode.builder(structure, XSLTConstants.Elements.STYLESHEET)
 //					.addChildElement(param1).addChildElement(param2).addChildElement(template1)
 //					.addChildElement(template2).build();
 //			return rootNode;

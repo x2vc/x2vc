@@ -22,8 +22,7 @@ import org.x2vc.xml.value.IValueDescriptor;
 import com.google.common.collect.*;
 
 /**
- * Base class for all {@link IAnalyzerRule} implementations that provides some
- * common implementations.
+ * Base class for all {@link IAnalyzerRule} implementations that provides some common implementations.
  */
 public abstract class AbstractRule implements IAnalyzerRule {
 
@@ -32,8 +31,7 @@ public abstract class AbstractRule implements IAnalyzerRule {
 	protected static final String DEFAULT_SECTION = "Default"; //$NON-NLS-1$
 
 	/**
-	 * Determines an XPath selector string to make it easier to relocate an element
-	 * inside the HTML document later.
+	 * Determines an XPath selector string to make it easier to relocate an element inside the HTML document later.
 	 *
 	 * @param node the node in question
 	 * @return the selection path
@@ -96,8 +94,8 @@ public abstract class AbstractRule implements IAnalyzerRule {
 			Consumer<IVulnerabilityCandidate> collector);
 
 	/**
-	 * Retrieves the {@link IModifierPayload} of an {@link IDocumentModifier} used
-	 * to generate a document, checking its type and casting it in the process.
+	 * Retrieves the {@link IModifierPayload} of an {@link IDocumentModifier} used to generate a document, checking its
+	 * type and casting it in the process.
 	 *
 	 * @param <T>
 	 * @param xmlContainer
@@ -123,8 +121,8 @@ public abstract class AbstractRule implements IAnalyzerRule {
 	}
 
 	/**
-	 * Retrieves the {@link IAnalyzerRulePayload} of an {@link IDocumentModifier}
-	 * used to generate a document, checking its type and casting it in the process.
+	 * Retrieves the {@link IAnalyzerRulePayload} of an {@link IDocumentModifier} used to generate a document, checking
+	 * its type and casting it in the process.
 	 *
 	 * @param xmlContainer
 	 * @return
@@ -146,10 +144,9 @@ public abstract class AbstractRule implements IAnalyzerRule {
 	}
 
 	/**
-	 * Retrieves the {@link IAnalyzerRulePayload} of an {@link IDocumentModifier}
-	 * used to generate a document, checking its type and casting it in the process.
-	 * This will return an empty object if no payload is present or the wrong type
-	 * was used.
+	 * Retrieves the {@link IAnalyzerRulePayload} of an {@link IDocumentModifier} used to generate a document, checking
+	 * its type and casting it in the process. This will return an empty object if no payload is present or the wrong
+	 * type was used.
 	 *
 	 * @param xmlContainer
 	 * @return
@@ -203,33 +200,30 @@ public abstract class AbstractRule implements IAnalyzerRule {
 	}
 
 	/**
-	 * Provides the list of section IDs that this rule is able to provide for the
-	 * final report. The base class provides a default section; subclasses may
-	 * override to provide more sections.
+	 * Provides the list of section IDs that this rule is able to provide for the final report. The base class provides
+	 * a default section; subclasses may override to provide more sections.
 	 *
-	 * @return the list of section IDs that this rule is able to provide for the
-	 *         final report
+	 * @return the list of section IDs that this rule is able to provide for the final report
 	 */
 	protected List<String> getReportSectionIDs() {
 		return List.of(DEFAULT_SECTION);
 	}
 
 	/**
-	 * Provides the section ID that a candidate belongs to. The base class assigns
-	 * all candidates to the default section; subclasses may override to fill
-	 * different sections.
+	 * Provides the section ID that a candidate belongs to. The base class assigns all candidates to the default
+	 * section; subclasses may override to fill different sections.
 	 *
 	 * @param candidate
 	 * @return the section ID that a candidate belongs to
 	 */
+	@SuppressWarnings("java:S1172") // parameter is provisional for overrides
 	protected String getReportSectionID(IVulnerabilityCandidate candidate) {
 		return DEFAULT_SECTION;
 	}
 
 	/**
-	 * Provides the section title. The base class provides a default implementation
-	 * to read from externalized strings using the rule ID and the section ID as a
-	 * key.
+	 * Provides the section title. The base class provides a default implementation to read from externalized strings
+	 * using the rule ID and the section ID as a key.
 	 *
 	 * @param sectionID
 	 * @return the section title
@@ -240,9 +234,8 @@ public abstract class AbstractRule implements IAnalyzerRule {
 	}
 
 	/**
-	 * Provides the shortened section title. The base class provides a default
-	 * implementation to read from externalized strings using the rule ID and the
-	 * section ID as a key.
+	 * Provides the shortened section title. The base class provides a default implementation to read from externalized
+	 * strings using the rule ID and the section ID as a key.
 	 *
 	 * @param sectionID
 	 * @return the section title
@@ -253,9 +246,9 @@ public abstract class AbstractRule implements IAnalyzerRule {
 	}
 
 	/**
-	 * Provides a placeholder introduction for an empty section (that is, a section
-	 * without issue reports). The base class provides a default implementation to
-	 * read from externalized strings using the rule ID and the section ID as a key.
+	 * Provides a placeholder introduction for an empty section (that is, a section without issue reports). The base
+	 * class provides a default implementation to read from externalized strings using the rule ID and the section ID as
+	 * a key.
 	 *
 	 * @param sectionID
 	 * @return
@@ -266,9 +259,8 @@ public abstract class AbstractRule implements IAnalyzerRule {
 	}
 
 	/**
-	 * Provides an introduction for a section. The base class provides a default
-	 * implementation to read from externalized strings using the rule ID and the
-	 * section ID as a key.
+	 * Provides an introduction for a section. The base class provides a default implementation to read from
+	 * externalized strings using the rule ID and the section ID as a key.
 	 *
 	 * @param sectionID
 	 * @return
@@ -279,9 +271,8 @@ public abstract class AbstractRule implements IAnalyzerRule {
 	}
 
 	/**
-	 * Provides an description of the vulnerability for a section. The base class
-	 * provides a default implementation to read from externalized strings using the
-	 * rule ID and the section ID as a key.
+	 * Provides an description of the vulnerability for a section. The base class provides a default implementation to
+	 * read from externalized strings using the rule ID and the section ID as a key.
 	 *
 	 * @param sectionID
 	 * @return
@@ -292,9 +283,8 @@ public abstract class AbstractRule implements IAnalyzerRule {
 	}
 
 	/**
-	 * Provides an description of countermeasures for a section. The base class
-	 * provides a default implementation to read from externalized strings using the
-	 * rule ID and the section ID as a key.
+	 * Provides an description of countermeasures for a section. The base class provides a default implementation to
+	 * read from externalized strings using the rule ID and the section ID as a key.
 	 *
 	 * @param sectionID
 	 * @return
@@ -305,9 +295,9 @@ public abstract class AbstractRule implements IAnalyzerRule {
 	}
 
 	/**
-	 * Produces the issues contained in a section of the vulnerability report. The
-	 * default implementation in the base class will combine all candidates that
-	 * affect the same output element and select one example for each input element.
+	 * Produces the issues contained in a section of the vulnerability report. The default implementation in the base
+	 * class will combine all candidates that affect the same output element and select one example for each input
+	 * element.
 	 *
 	 * @param sectionCandidates
 	 * @return the issues to be reported from the candidates
@@ -328,8 +318,7 @@ public abstract class AbstractRule implements IAnalyzerRule {
 	}
 
 	/**
-	 * Issues a modification request if the requested value is valid for the
-	 * attribute in question.
+	 * Issues a modification request if the requested value is valid for the attribute in question.
 	 *
 	 * @param schema
 	 * @param valueDescriptor
@@ -374,7 +363,7 @@ public abstract class AbstractRule implements IAnalyzerRule {
 			if (attribute.getDatatype() == XMLDatatype.STRING) {
 				final Integer maxLength = attribute.getMaxLength().orElse(Integer.MAX_VALUE);
 				if (replacementValue.length() <= maxLength) {
-					new DocumentValueModifier.Builder(valueDescriptor)
+					DocumentValueModifier.builder(valueDescriptor)
 						.withAnalyzerRuleID(getRuleID())
 						.withOriginalValue(originalValue)
 						.withReplacementValue(replacementValue)
@@ -444,7 +433,7 @@ public abstract class AbstractRule implements IAnalyzerRule {
 		switch (element.getDatatype()) {
 		case BOOLEAN:
 			if (replacementValue.equals("true") || replacementValue.equals("false")) {
-				new DocumentValueModifier.Builder(valueDescriptor)
+				DocumentValueModifier.builder(valueDescriptor)
 					.withAnalyzerRuleID(getRuleID())
 					.withOriginalValue(originalValue)
 					.withReplacementValue(replacementValue)
@@ -459,7 +448,7 @@ public abstract class AbstractRule implements IAnalyzerRule {
 				final Integer minValue = element.getMinValue().orElse(Integer.MIN_VALUE);
 				final Integer maxValue = element.getMaxValue().orElse(Integer.MAX_VALUE);
 				if ((intValue >= minValue) && (intValue <= maxValue)) {
-					new DocumentValueModifier.Builder(valueDescriptor)
+					DocumentValueModifier.builder(valueDescriptor)
 						.withAnalyzerRuleID(getRuleID())
 						.withOriginalValue(originalValue)
 						.withReplacementValue(replacementValue)
@@ -474,7 +463,7 @@ public abstract class AbstractRule implements IAnalyzerRule {
 		case STRING:
 			final Integer maxLength = element.getMaxLength().orElse(Integer.MAX_VALUE);
 			if (replacementValue.length() <= maxLength) {
-				new DocumentValueModifier.Builder(valueDescriptor)
+				DocumentValueModifier.builder(valueDescriptor)
 					.withAnalyzerRuleID(getRuleID())
 					.withOriginalValue(originalValue)
 					.withReplacementValue(replacementValue)
@@ -506,7 +495,7 @@ public abstract class AbstractRule implements IAnalyzerRule {
 			String originalValue, String replacementValue, IModifierPayload payload,
 			Consumer<IDocumentModifier> collector) {
 		logger.traceEntry();
-		new DocumentValueModifier.Builder(valueDescriptor)
+		DocumentValueModifier.builder(valueDescriptor)
 			.withAnalyzerRuleID(getRuleID())
 			.withOriginalValue(originalValue)
 			.withReplacementValue(replacementValue)

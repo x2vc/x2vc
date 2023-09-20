@@ -108,7 +108,7 @@ public class CSSAttributeCheckRule extends AbstractAttributeRule {
 				logger.debug(
 						"attribute \"style\" contains injected content \"{}\" from input data, follow-up check positive",
 						checkValue);
-				new VulnerabilityCandidate.Builder(RULE_ID, taskID)
+				VulnerabilityCandidate.builder(RULE_ID, taskID)
 					.withAffectingSchemaObject(schemaElementID.get())
 					.withAffectedOutputElement(getPathToNode(node))
 					.withInputSample(xmlContainer.getDocument())

@@ -173,7 +173,7 @@ class ValueGeneratorTest {
 	 */
 	void prepareAttributeForString(@Nullable Integer maxLength, boolean fixedValueset, String... discreteValues) {
 		final List<XMLDiscreteValue> valueList = Arrays.stream(discreteValues)
-			.map(val -> new XMLDiscreteValue.Builder().withStringValue(val).build()).toList();
+			.map(val -> XMLDiscreteValue.builder().withStringValue(val).build()).toList();
 		lenient().when(this.attribute.getDatatype()).thenReturn(XMLDatatype.STRING);
 		lenient().when(this.attribute.getDiscreteValues()).thenReturn(Set.copyOf(valueList));
 		lenient().when(this.attribute.isFixedValueset()).thenReturn(Optional.of(fixedValueset));
@@ -213,7 +213,7 @@ class ValueGeneratorTest {
 	 */
 	void prepareAttributeForInteger(boolean fixedValueset, Integer... discreteValues) {
 		final List<XMLDiscreteValue> valueList = Arrays.stream(discreteValues)
-			.map(val -> new XMLDiscreteValue.Builder().withIntegerValue(val).build()).toList();
+			.map(val -> XMLDiscreteValue.builder().withIntegerValue(val).build()).toList();
 		lenient().when(this.attribute.getDatatype()).thenReturn(XMLDatatype.INTEGER);
 		lenient().when(this.attribute.getDiscreteValues()).thenReturn(Set.copyOf(valueList));
 		lenient().when(this.attribute.isFixedValueset()).thenReturn(Optional.of(fixedValueset));
@@ -724,7 +724,7 @@ class ValueGeneratorTest {
 	 */
 	void prepareElementForString(@Nullable Integer maxLength, boolean fixedValueset, String... discreteValues) {
 		final List<XMLDiscreteValue> valueList = Arrays.stream(discreteValues)
-			.map(val -> new XMLDiscreteValue.Builder().withStringValue(val).build()).toList();
+			.map(val -> XMLDiscreteValue.builder().withStringValue(val).build()).toList();
 		lenient().when(this.element.getDatatype()).thenReturn(XMLDatatype.STRING);
 		lenient().when(this.element.getDiscreteValues()).thenReturn(Set.copyOf(valueList));
 		lenient().when(this.element.isFixedValueset()).thenReturn(Optional.of(fixedValueset));
@@ -764,7 +764,7 @@ class ValueGeneratorTest {
 	 */
 	void prepareElementForInteger(boolean fixedValueset, Integer... discreteValues) {
 		final List<XMLDiscreteValue> valueList = Arrays.stream(discreteValues)
-			.map(val -> new XMLDiscreteValue.Builder().withIntegerValue(val).build()).toList();
+			.map(val -> XMLDiscreteValue.builder().withIntegerValue(val).build()).toList();
 		lenient().when(this.element.getDatatype()).thenReturn(XMLDatatype.INTEGER);
 		lenient().when(this.element.getDiscreteValues()).thenReturn(Set.copyOf(valueList));
 		lenient().when(this.element.isFixedValueset()).thenReturn(Optional.of(fixedValueset));

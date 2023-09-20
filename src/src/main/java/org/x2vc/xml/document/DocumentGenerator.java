@@ -80,7 +80,7 @@ public class DocumentGenerator implements IDocumentGenerator {
 	private IXMLDocumentDescriptor generateDescriptor(IDocumentRequest request, IValueGenerator valueGenerator,
 			Map<UUID, UUID> traceIDToRuleIDMap) {
 		logger.traceEntry();
-		final Builder builder = new XMLDocumentDescriptor.Builder(valueGenerator.getValuePrefix(),
+		final Builder builder = XMLDocumentDescriptor.builder(valueGenerator.getValuePrefix(),
 				valueGenerator.getValueLength())
 			.withTraceIDToRuleIDMap(traceIDToRuleIDMap);
 		valueGenerator.getValueDescriptors().forEach(builder::addValueDescriptor);

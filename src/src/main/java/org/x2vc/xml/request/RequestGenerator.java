@@ -78,7 +78,7 @@ public class RequestGenerator implements IRequestGenerator {
 	private IAddElementRule generateSingleRuleForElementReference(IXMLElementReference elementReference) {
 		logger.traceEntry("element reference {} for element {}", elementReference.getID(),
 				elementReference.getElementID());
-		final Builder builder = new AddElementRule.Builder(elementReference);
+		final Builder builder = AddElementRule.builder(elementReference);
 		final IXMLElementType element = elementReference.getElement();
 
 		// add attributes if required
@@ -259,7 +259,7 @@ public class RequestGenerator implements IRequestGenerator {
 	private IAddElementRule copyAndModifyAddElementRule(IAddElementRule originalRule,
 			IDocumentValueModifier valueModifier) {
 		logger.traceEntry();
-		final Builder builder = new AddElementRule.Builder(originalRule.getElementReferenceID())
+		final Builder builder = AddElementRule.builder(originalRule.getElementReferenceID())
 			.withRuleID(originalRule.getID());
 		originalRule.getAttributeRules().forEach(
 				attributeRule -> builder.addAttributeRule(copyAndModifySetAttributeRule(attributeRule, valueModifier)));

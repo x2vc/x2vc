@@ -23,8 +23,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
 
 /**
- * Rule S.3: Check whether the href attribute of a link rel=stylesheet tag can
- * be manipulated via the input data.
+ * Rule S.3: Check whether the href attribute of a link rel=stylesheet tag can be manipulated via the input data.
  */
 public class CSSURLCheckRule extends AbstractAttributeRule {
 
@@ -110,7 +109,7 @@ public class CSSURLCheckRule extends AbstractAttributeRule {
 				logger.debug(
 						"attribute \"href\" contains injected data \"{}\" from input data, follow-up check positive",
 						injectedData);
-				new VulnerabilityCandidate.Builder(RULE_ID, taskID)
+				VulnerabilityCandidate.builder(RULE_ID, taskID)
 					.withAffectingSchemaObject(schemaElementID.get())
 					.withAffectedOutputElement(getPathToNode(node))
 					.withInputSample(xmlContainer.getDocument())

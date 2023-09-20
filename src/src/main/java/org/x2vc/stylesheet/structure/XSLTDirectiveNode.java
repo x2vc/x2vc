@@ -110,6 +110,17 @@ public class XSLTDirectiveNode extends AbstractStructureTreeNode implements IXSL
 	}
 
 	/**
+	 * Create a builder instance.
+	 *
+	 * @param parentStructure the parent {@link IStylesheetStructure}
+	 * @param name            the name of the directive
+	 * @return the builder
+	 */
+	public static Builder builder(IStylesheetStructure parentStructure, String name) {
+		return new Builder(parentStructure, name);
+	}
+
+	/**
 	 * Builder to build {@link XSLTDirectiveNode}.
 	 */
 	public static final class Builder implements INodeBuilder {
@@ -130,7 +141,7 @@ public class XSLTDirectiveNode extends AbstractStructureTreeNode implements IXSL
 		 * @param parentStructure the parent {@link IStylesheetStructure}
 		 * @param name            the name of the directive
 		 */
-		public Builder(IStylesheetStructure parentStructure, String name) {
+		private Builder(IStylesheetStructure parentStructure, String name) {
 			checkNotNull(parentStructure);
 			checkNotNull(name);
 			this.parentStructure = parentStructure;

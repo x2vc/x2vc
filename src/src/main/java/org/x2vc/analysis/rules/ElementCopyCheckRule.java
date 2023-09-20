@@ -132,7 +132,7 @@ public class ElementCopyCheckRule extends AbstractTextRule {
 					logger.debug(
 							"tag \"{}\" injected from input data contains search string \"{}\", follow-up check positive",
 							injectedElement.tagName(), injectedContent);
-					new VulnerabilityCandidate.Builder(RULE_ID, taskID)
+					VulnerabilityCandidate.builder(RULE_ID, taskID)
 						.withAffectingSchemaObject(schemaElementID.get())
 						.withAffectedOutputElement(getPathToNode(injectedElement.parentNode()))
 						.withInputSample(xmlContainer.getDocument())

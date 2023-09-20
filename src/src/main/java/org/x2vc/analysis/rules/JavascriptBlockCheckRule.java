@@ -93,7 +93,7 @@ public class JavascriptBlockCheckRule extends AbstractElementRule {
 			final String injectedText = injectedValue.get();
 			if (scriptContents.contains(injectedText)) {
 				logger.debug("script element contains injected text from input data, follow-up check positive");
-				new VulnerabilityCandidate.Builder(RULE_ID, taskID)
+				VulnerabilityCandidate.builder(RULE_ID, taskID)
 					.withAffectingSchemaObject(schemaElementID.get())
 					.withAffectedOutputElement(getPathToNode(element))
 					.withInputSample(xmlContainer.getDocument())

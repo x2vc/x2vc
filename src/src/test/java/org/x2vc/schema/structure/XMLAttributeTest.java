@@ -11,7 +11,7 @@ class XMLAttributeTest {
 
 	@Test
 	void testBuilderMinimal() {
-		final XMLAttribute attrib = new XMLAttribute.Builder("aName").withType(XMLDatatype.OTHER).build();
+		final XMLAttribute attrib = XMLAttribute.builder("aName").withType(XMLDatatype.OTHER).build();
 		assertTrue(attrib.isAttribute());
 		assertFalse(attrib.isElement());
 		assertFalse(attrib.isReference());
@@ -28,27 +28,27 @@ class XMLAttributeTest {
 
 	@Test
 	void testBuilderWithComment() {
-		final XMLAttribute attrib = new XMLAttribute.Builder("aName").withComment("rhubarb").build();
+		final XMLAttribute attrib = XMLAttribute.builder("aName").withComment("rhubarb").build();
 		assertTrue(attrib.getComment().isPresent());
 		assertEquals("rhubarb", attrib.getComment().get());
 	}
 
 	@Test
 	void testBuilderWithOptional() {
-		final XMLAttribute attrib = new XMLAttribute.Builder("aName").withOptional(true).build();
+		final XMLAttribute attrib = XMLAttribute.builder("aName").withOptional(true).build();
 		assertTrue(attrib.isOptional());
 	}
 
 	@Test
 	void testBuilderUnrestrictedString() {
-		final XMLAttribute attrib = new XMLAttribute.Builder("aName").withType(XMLDatatype.STRING).build();
+		final XMLAttribute attrib = XMLAttribute.builder("aName").withType(XMLDatatype.STRING).build();
 		assertEquals(XMLDatatype.STRING, attrib.getDatatype());
 		assertFalse(attrib.getMaxLength().isPresent());
 	}
 
 	@Test
 	void testBuilderLengthRestrictedString() {
-		final XMLAttribute attrib = new XMLAttribute.Builder("aName").withType(XMLDatatype.STRING).withMaxLength(42)
+		final XMLAttribute attrib = XMLAttribute.builder("aName").withType(XMLDatatype.STRING).withMaxLength(42)
 			.build();
 		assertEquals(XMLDatatype.STRING, attrib.getDatatype());
 		assertTrue(attrib.getMaxLength().isPresent());
@@ -57,7 +57,7 @@ class XMLAttributeTest {
 
 	@Test
 	void testBuilderUnrestrictedInteger() {
-		final XMLAttribute attrib = new XMLAttribute.Builder("aName").withType(XMLDatatype.INTEGER).build();
+		final XMLAttribute attrib = XMLAttribute.builder("aName").withType(XMLDatatype.INTEGER).build();
 		assertEquals(XMLDatatype.INTEGER, attrib.getDatatype());
 		assertFalse(attrib.getMinValue().isPresent());
 		assertFalse(attrib.getMaxValue().isPresent());
@@ -65,7 +65,7 @@ class XMLAttributeTest {
 
 	@Test
 	void testBuilderRestrictedInteger() {
-		final XMLAttribute attrib = new XMLAttribute.Builder("aName").withType(XMLDatatype.INTEGER).withMinValue(1)
+		final XMLAttribute attrib = XMLAttribute.builder("aName").withType(XMLDatatype.INTEGER).withMinValue(1)
 			.withMaxValue(42).build();
 		assertEquals(XMLDatatype.INTEGER, attrib.getDatatype());
 		assertTrue(attrib.getMinValue().isPresent());
@@ -76,8 +76,8 @@ class XMLAttributeTest {
 
 	@Test
 	void testBuilderWithDiscreteValue() {
-		final Builder builder = new XMLAttribute.Builder("aName").withType(XMLDatatype.STRING);
-		new XMLDiscreteValue.Builder().withStringValue("foobar").addTo(builder);
+		final Builder builder = XMLAttribute.builder("aName").withType(XMLDatatype.STRING);
+		XMLDiscreteValue.builder().withStringValue("foobar").addTo(builder);
 		final XMLAttribute attrib = builder.build();
 		assertEquals(1, attrib.getDiscreteValues().size());
 		assertEquals("foobar", attrib.getDiscreteValues().toArray(new IXMLDiscreteValue[0])[0].asString());
@@ -85,8 +85,8 @@ class XMLAttributeTest {
 
 	@Test
 	void testBuilderCopyOf() {
-		final XMLDiscreteValue value = new XMLDiscreteValue.Builder().withStringValue("foobar").build();
-		final XMLAttribute attrib = new XMLAttribute.Builder("aName").withType(XMLDatatype.STRING).withMaxLength(42)
+		final XMLDiscreteValue value = XMLDiscreteValue.builder().withStringValue("foobar").build();
+		final XMLAttribute attrib = XMLAttribute.builder("aName").withType(XMLDatatype.STRING).withMaxLength(42)
 			.addDiscreteValue(value).build();
 
 		final XMLAttribute copy = XMLAttribute.builderFrom(attrib).build();
@@ -104,7 +104,7 @@ class XMLAttributeTest {
 	@Test
 	void testBuilderWithID() {
 		final UUID id = UUID.randomUUID();
-		final XMLAttribute attrib = new XMLAttribute.Builder(id, "aName").withType(XMLDatatype.OTHER).build();
+		final XMLAttribute attrib = XMLAttribute.builder(id, "aName").withType(XMLDatatype.OTHER).build();
 		assertEquals(id, attrib.getID());
 	}
 }

@@ -22,9 +22,8 @@ import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
 
 /**
- * Rule E.1: Check every element that contains the prefix used to generate the
- * values whether it is possible to inject new elements by modifying the input
- * data.
+ * Rule E.1: Check every element that contains the prefix used to generate the values whether it is possible to inject
+ * new elements by modifying the input data.
  */
 public class DirectElementCheckRule extends AbstractElementRule {
 
@@ -95,7 +94,7 @@ public class DirectElementCheckRule extends AbstractElementRule {
 			final String injectedName = injectedValue.get();
 			if (elementName.equals(injectedName)) {
 				logger.debug("element \"{}\" injected from input data, follow-up check positive", elementName);
-				new VulnerabilityCandidate.Builder(RULE_ID, taskID)
+				VulnerabilityCandidate.builder(RULE_ID, taskID)
 					.withAffectingSchemaObject(schemaElementID.get())
 					.withAffectedOutputElement(getPathToNode(element))
 					.withInputSample(xmlContainer.getDocument())

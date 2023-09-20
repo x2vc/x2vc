@@ -27,7 +27,7 @@ class DocumentValueModifierTest {
 		final String analyzerRuleID = "Rule-42-ABC";
 		final IModifierPayload payload = mock(IModifierPayload.class);
 
-		final DocumentValueModifier originalModifier = new DocumentValueModifier.Builder(schemaElementID,
+		final DocumentValueModifier originalModifier = DocumentValueModifier.builder(schemaElementID,
 				generationRuleID)
 			.withOriginalValue(originalValue).withReplacementValue(replacementValue).withAnalyzerRuleID(analyzerRuleID)
 			.withPayload(payload).build();

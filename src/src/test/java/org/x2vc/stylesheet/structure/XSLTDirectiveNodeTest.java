@@ -33,7 +33,7 @@ class XSLTDirectiveNodeTest {
 		lenient().when(nonDirective2.isXSLTDirective()).thenReturn(false);
 		lenient().when(nonDirective2.getType()).thenReturn(NodeType.XML);
 
-		final XSLTDirectiveNode node = new XSLTDirectiveNode.Builder(this.parentStructure, "someName")
+		final XSLTDirectiveNode node = XSLTDirectiveNode.builder(this.parentStructure, "someName")
 			.addChildElement(nonDirective1).addChildElement(nonDirective2).build();
 
 		assertTrue(node.getChildDirectives().isEmpty());
@@ -50,7 +50,7 @@ class XSLTDirectiveNodeTest {
 		lenient().when(nonDirective2.isXSLTDirective()).thenReturn(false);
 		lenient().when(nonDirective2.getType()).thenReturn(NodeType.XML);
 
-		final XSLTDirectiveNode node = new XSLTDirectiveNode.Builder(this.parentStructure, "someName")
+		final XSLTDirectiveNode node = XSLTDirectiveNode.builder(this.parentStructure, "someName")
 			.addChildElement(nonDirective1).addChildElement(directive1).addChildElement(nonDirective2).build();
 
 		final ImmutableList<IXSLTDirectiveNode> directives = node.getChildDirectives();

@@ -60,6 +60,16 @@ public class TextNode extends AbstractStructureTreeNode implements ITextNode {
 	}
 
 	/**
+	 * Create a new builder instance.
+	 *
+	 * @param parentStructure the {@link IStylesheetStructure} the node belongs to
+	 * @return the builder
+	 */
+	public static Builder builder(IStylesheetStructure parentStructure) {
+		return new Builder(parentStructure);
+	}
+
+	/**
 	 * Builder to build {@link TextNode}.
 	 */
 	public static final class Builder implements INodeBuilder {
@@ -71,7 +81,7 @@ public class TextNode extends AbstractStructureTreeNode implements ITextNode {
 		 *
 		 * @param parentStructure the {@link IStylesheetStructure} the node belongs to
 		 */
-		public Builder(IStylesheetStructure parentStructure) {
+		private Builder(IStylesheetStructure parentStructure) {
 			this.parentStructure = parentStructure;
 		}
 

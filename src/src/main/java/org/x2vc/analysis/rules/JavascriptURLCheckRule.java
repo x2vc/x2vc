@@ -107,7 +107,7 @@ public class JavascriptURLCheckRule extends AbstractAttributeRule {
 				logger.debug(
 						"attribute \"src\" contains injected data \"{}\" from input data, follow-up check positive",
 						injectedData);
-				new VulnerabilityCandidate.Builder(RULE_ID, taskID)
+				VulnerabilityCandidate.builder(RULE_ID, taskID)
 					.withAffectingSchemaObject(schemaElementID.get())
 					.withAffectedOutputElement(getPathToNode(node))
 					.withInputSample(xmlContainer.getDocument())
