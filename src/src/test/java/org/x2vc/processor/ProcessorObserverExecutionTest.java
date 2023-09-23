@@ -1,32 +1,22 @@
 package org.x2vc.processor;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
-import java.io.File;
-import java.io.StringWriter;
 import java.util.List;
 import java.util.Optional;
 
-import javax.xml.transform.stream.StreamSource;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.x2vc.processor.IExecutionTraceEvent.ExecutionEventType;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 
-import net.sf.saxon.s9api.*;
+import net.sf.saxon.s9api.SaxonApiException;
 
 @ExtendWith(MockitoExtension.class)
-class ProcessorObserverTest {
-
-	private static final Logger logger = LogManager.getLogger();
+class ProcessorObserverExecutionTest extends ProcessorObserverTestBase {
 
 	@Test
 	void test_Execution_SimpleTemplate() throws SaxonApiException {
@@ -183,7 +173,7 @@ class ProcessorObserverTest {
 
 	// ===== auxiliary methods ==============================================================================
 
-	private void assertEventRecorded(ImmutableList<ITraceEvent> events, ExecutionEventType eventType,
+	protected void assertEventRecorded(ImmutableList<ITraceEvent> events, ExecutionEventType eventType,
 			String executedElement, int expectedLineNumber) {
 		final List<IExecutionTraceEvent> filteredEvents = events.stream()
 			.filter(IExecutionTraceEvent.class::isInstance)
@@ -204,39 +194,6 @@ class ProcessorObserverTest {
 						.toList()
 						.toString()));
 		}
-	}
-
-	private ImmutableList<ITraceEvent> transformAndObserve(String fileName) throws SaxonApiException {
-		final String fileBase = "src/test/resources/data/org.x2vc.processor.ProcessorObserver/" + fileName;
-		final File xslt = new File(fileBase + ".xslt");
-		final File xml = new File(fileBase + ".xml");
-		final Processor processor = new Processor();
-		final StringWriter outputWriter = new StringWriter();
-		final Serializer out = processor.newSerializer(outputWriter);
-		final ProcessorObserver observer = new ProcessorObserver();
-		final XsltCompiler compiler = processor.newXsltCompiler();
-		compiler.setCompileWithTracing(true);
-		final XsltExecutable stylesheet = compiler.compile(xslt);
-		final Xslt30Transformer transformer = stylesheet.load30();
-		transformer.setMessageHandler(observer);
-		transformer.setErrorListener(observer);
-		transformer.setTraceListener(observer);
-		transformer.transform(new StreamSource(xml), out);
-		final String xmlOutput = outputWriter.toString();
-		assertFalse(Strings.isNullOrEmpty(xmlOutput));
-		logger.debug("===== file {}: XML output =====", fileName);
-		logger.debug("\n" + xmlOutput);
-		final ImmutableList<ITraceEvent> traceEvents = observer.getTraceEvents();
-		logger.debug("===== file {}: collected {} events =====", fileName, traceEvents.size());
-		traceEvents.forEach(event -> logger.debug(event.toString()));
-		traceEvents.stream()
-			.filter(IExecutionTraceEvent.class::isInstance)
-			.map(IExecutionTraceEvent.class::cast)
-			.forEach(event -> logger
-				.trace(String.format("assertEventRecorded(events, ExecutionEventType.%s, \"%s\", %d);",
-						event.getEventType(), event.getExecutedElement().orElse(""),
-						event.getElementLocation().getLineNumber())));
-		return traceEvents;
 	}
 
 }
