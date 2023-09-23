@@ -40,11 +40,6 @@ public class TextNode extends AbstractStructureTreeNode implements ITextNode {
 	}
 
 	@Override
-	public NodeType getType() {
-		return NodeType.TEXT;
-	}
-
-	@Override
 	public boolean isText() {
 		return true;
 	}

@@ -37,11 +37,6 @@ public class XSLTSortNode extends AbstractStructureTreeNode implements IXSLTSort
 	}
 
 	@Override
-	public NodeType getType() {
-		return NodeType.XSLT_SORT;
-	}
-
-	@Override
 	public boolean isXSLTSort() {
 		return true;
 	}

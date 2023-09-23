@@ -41,11 +41,6 @@ public class XSLTDirectiveNode extends AbstractStructureTreeNode implements IXSL
 	}
 
 	@Override
-	public NodeType getType() {
-		return NodeType.XSLT_DIRECTIVE;
-	}
-
-	@Override
 	public boolean isXSLTDirective() {
 		return true;
 	}

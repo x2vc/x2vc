@@ -37,11 +37,6 @@ public class XSLTParameterNode extends AbstractStructureTreeNode implements IXSL
 	}
 
 	@Override
-	public NodeType getType() {
-		return NodeType.XSLT_PARAM;
-	}
-
-	@Override
 	public boolean isXSLTParameter() {
 		return true;
 	}

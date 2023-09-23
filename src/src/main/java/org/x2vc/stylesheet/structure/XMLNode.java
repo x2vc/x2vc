@@ -32,11 +32,6 @@ public class XMLNode extends AbstractStructureTreeNode implements IXMLNode {
 	}
 
 	@Override
-	public NodeType getType() {
-		return NodeType.XML;
-	}
-
-	@Override
 	public boolean isXML() {
 		return true;
 	}

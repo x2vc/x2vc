@@ -10,7 +10,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.x2vc.stylesheet.structure.IStructureTreeNode.NodeType;
 
 import com.google.common.collect.ImmutableList;
 
@@ -21,17 +20,16 @@ class XSLTDirectiveNodeTest {
 	private IStylesheetStructure parentStructure;
 
 	/**
-	 * Test method for
-	 * {@link org.x2vc.stylesheet.structure.XSLTDirectiveNode#getChildDirectives()}.
+	 * Test method for {@link org.x2vc.stylesheet.structure.XSLTDirectiveNode#getChildDirectives()}.
 	 */
 	@Test
 	void testGetChildDirectives_WithChildDirectivesAbsent() {
 		final IStructureTreeNode nonDirective1 = mock(IStructureTreeNode.class);
 		lenient().when(nonDirective1.isXSLTDirective()).thenReturn(false);
-		lenient().when(nonDirective1.getType()).thenReturn(NodeType.TEXT);
+		lenient().when(nonDirective1.isText()).thenReturn(true);
 		final IStructureTreeNode nonDirective2 = mock(IStructureTreeNode.class);
 		lenient().when(nonDirective2.isXSLTDirective()).thenReturn(false);
-		lenient().when(nonDirective2.getType()).thenReturn(NodeType.XML);
+		lenient().when(nonDirective2.isXML()).thenReturn(true);
 
 		final XSLTDirectiveNode node = XSLTDirectiveNode.builder(this.parentStructure, "someName")
 			.addChildElement(nonDirective1).addChildElement(nonDirective2).build();
@@ -42,13 +40,12 @@ class XSLTDirectiveNodeTest {
 	void testGetChildDirectives_WithChildDirectivesPresent() {
 		final IStructureTreeNode nonDirective1 = mock(IStructureTreeNode.class);
 		lenient().when(nonDirective1.isXSLTDirective()).thenReturn(false);
-		lenient().when(nonDirective1.getType()).thenReturn(NodeType.TEXT);
+		lenient().when(nonDirective1.isText()).thenReturn(true);
 		final IStructureTreeNode directive1 = mock(IStructureTreeNode.class);
 		lenient().when(directive1.isXSLTDirective()).thenReturn(true);
-		lenient().when(directive1.getType()).thenReturn(NodeType.XSLT_DIRECTIVE);
 		final IStructureTreeNode nonDirective2 = mock(IStructureTreeNode.class);
 		lenient().when(nonDirective2.isXSLTDirective()).thenReturn(false);
-		lenient().when(nonDirective2.getType()).thenReturn(NodeType.XML);
+		lenient().when(nonDirective2.isXML()).thenReturn(true);
 
 		final XSLTDirectiveNode node = XSLTDirectiveNode.builder(this.parentStructure, "someName")
 			.addChildElement(nonDirective1).addChildElement(directive1).addChildElement(nonDirective2).build();
