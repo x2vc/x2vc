@@ -3,27 +3,26 @@ package org.x2vc.stylesheet.structure;
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
 
-import java.util.Map;
 import java.util.Objects;
+
+import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.x2vc.stylesheet.XSLTConstants;
 
+import com.google.common.base.Supplier;
+import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableList;
 
 /**
- * Standard implementation of {@link IStylesheetStructure}. Use the
- * {@link IStylesheetStructureExtractor} implementations to instantiate this
- * object.
+ * Standard implementation of {@link IStylesheetStructure}. Use the {@link IStylesheetStructureExtractor}
+ * implementations to instantiate this object.
  */
 public class StylesheetStructure implements IStylesheetStructure {
 
 	private static final Logger logger = LogManager.getLogger();
 	private IXSLTDirectiveNode rootNode;
-	private ImmutableList<IXSLTDirectiveNode> templates;
-	private ImmutableList<IXSLTParameterNode> parameters;
-	private Map<Integer, IXSLTDirectiveNode> traceDirectives;
 
 	/**
 	 * Default constructor.
@@ -53,9 +52,8 @@ public class StylesheetStructure implements IStylesheetStructure {
 	}
 
 	/**
-	 * Completes the construction by setting the root node reference. Motivation:
-	 * Resolution of the circular dependency between the tree elements (@see
-	 * IStructureTreeNode#getParentStructure()) and the parent structure.
+	 * Completes the construction by setting the root node reference. Motivation: Resolution of the circular dependency
+	 * between the tree elements (@see IStructureTreeNode#getParentStructure()) and the parent structure.
 	 *
 	 * @param rootNode the XSLT root node (xsl:transform or xsl:stylesheet)
 	 */
@@ -69,8 +67,7 @@ public class StylesheetStructure implements IStylesheetStructure {
 	}
 
 	/**
-	 * Ensures that {@link #setRootNode(IXSLTDirectiveNode)} was called to complete
-	 * the initialization of the instance.
+	 * Ensures that {@link #setRootNode(IXSLTDirectiveNode)} was called to complete the initialization of the instance.
 	 */
 	private void checkInitializationComplete() {
 		if (this.rootNode == null) {
@@ -84,44 +81,41 @@ public class StylesheetStructure implements IStylesheetStructure {
 		return this.rootNode;
 	}
 
+	@XmlTransient
+	@SuppressWarnings("java:S4738") // Java supplier does not support memoization
+	Supplier<ImmutableList<IXSLTTemplateNode>> templateSupplier = Suppliers.memoize(() -> {
+		logger.traceEntry();
+		final ImmutableList<IXSLTTemplateNode> result = ImmutableList.copyOf(
+				this.rootNode.getChildDirectives().stream()
+					.filter(d -> d.isXSLTTemplate())
+					.map(d -> d.asTemplate())
+					.iterator());
+		return logger.traceExit(result);
+	});
+
 	@Override
-	public ImmutableList<IXSLTDirectiveNode> getTemplates() {
+	public ImmutableList<IXSLTTemplateNode> getTemplates() {
 		logger.traceEntry();
 		checkInitializationComplete();
-		if (this.templates == null) {
-			this.templates = filterTemplates();
-		}
-		return this.templates;
+		return this.templateSupplier.get();
 	}
 
-	/**
-	 * @return the intended result of {@link #getTemplates()}
-	 */
-	private ImmutableList<IXSLTDirectiveNode> filterTemplates() {
+	@XmlTransient
+	@SuppressWarnings("java:S4738") // Java supplier does not support memoization
+	Supplier<ImmutableList<IXSLTParameterNode>> parameterSupplier = Suppliers.memoize(() -> {
 		logger.traceEntry();
-		final ImmutableList<IXSLTDirectiveNode> result = ImmutableList.copyOf(this.rootNode.getChildDirectives()
-			.stream().filter(d -> d.getName().equals(XSLTConstants.Elements.TEMPLATE)).iterator());
+		final ImmutableList<IXSLTParameterNode> result = ImmutableList.copyOf(
+				this.rootNode.getChildElements().stream()
+					.filter(d -> d.isXSLTParameter())
+					.map(d -> d.asParameter())
+					.iterator());
 		return logger.traceExit(result);
-	}
+	});
 
 	@Override
 	public ImmutableList<IXSLTParameterNode> getParameters() {
 		checkInitializationComplete();
-		if (this.parameters == null) {
-			this.parameters = filterParameters();
-		}
-		return this.parameters;
-	}
-
-	/**
-	 * @return
-	 *
-	 */
-	private ImmutableList<IXSLTParameterNode> filterParameters() {
-		logger.traceEntry();
-		final ImmutableList<IXSLTParameterNode> result = ImmutableList.copyOf(this.rootNode.getChildElements().stream()
-			.filter(e -> e.isXSLTParameter()).map(e -> e.asParameter()).iterator());
-		return logger.traceExit(result);
+		return this.parameterSupplier.get();
 	}
 
 }

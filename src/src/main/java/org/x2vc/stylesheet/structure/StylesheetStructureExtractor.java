@@ -56,8 +56,7 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 	}
 
 	/**
-	 * This class is used for the actual implementation in order to ensure thread
-	 * safety.
+	 * This class is used for the actual implementation in order to ensure thread safety.
 	 */
 	private class Worker {
 
@@ -75,8 +74,7 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 		}
 
 		/**
-		 * Processes an extended stylesheet document and populates the structure
-		 * information.
+		 * Processes an extended stylesheet document and populates the structure information.
 		 *
 		 * @param xmlReader the input stream to read the extended stylesheet from
 		 * @return the root node of the structure extracted from the stylesheet
@@ -128,7 +126,7 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 						logger.warn("expected a single remaining element at end of document, but {} elements remained",
 								this.builderChain.size());
 					}
-					final XSLTDirectiveNode result = ((XSLTDirectiveNode.Builder) this.builderChain
+					final IXSLTDirectiveNode result = ((XSLTDirectiveNode.Builder) this.builderChain
 						.getFirst()).build();
 					return logger.traceExit(result);
 
@@ -387,7 +385,7 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 				final XSLTDirectiveNode.Builder directiveBuilder = (XSLTDirectiveNode.Builder) this.builderChain
 					.removeLast();
 				directiveBuilder.withEndLocation(element.getLocation());
-				final XSLTDirectiveNode directiveNode = directiveBuilder.build();
+				final IXSLTDirectiveNode directiveNode = directiveBuilder.build();
 				logger.trace("end of XSLT directive {}", directiveNode.getName());
 				addChildNodeToLastBuilder(directiveNode);
 			} else {
@@ -453,14 +451,12 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 		}
 
 		/**
-		 * Retrieves the value of an XSLT attribute. This method will first try to look
-		 * for a fully prefixed attribute name (which is rather unusual) and then
-		 * fallback to an attribute without a namespace prefix.
+		 * Retrieves the value of an XSLT attribute. This method will first try to look for a fully prefixed attribute
+		 * name (which is rather unusual) and then fallback to an attribute without a namespace prefix.
 		 *
 		 * @param element       the element to examine
 		 * @param attributeName the name of the attribute to retrieve
-		 * @return an {@link Optional} containing the value or nothing if the attribute
-		 *         was not found
+		 * @return an {@link Optional} containing the value or nothing if the attribute was not found
 		 */
 		private Optional<String> getAttributeValue(StartElement element, String attributeName) {
 			Attribute attrib = element.getAttributeByName(new QName(XSLTConstants.NAMESPACE, attributeName));

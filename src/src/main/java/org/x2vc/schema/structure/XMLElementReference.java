@@ -237,7 +237,8 @@ public class XMLElementReference extends AbstractSchemaObject implements IXMLEle
 		}
 
 		/**
-		 * Adds the resulting object to an {@link XMLSchema} builder and returns the object for further processing.
+		 * Adds the resulting object as a root element reference to an {@link XMLSchema} builder and returns the object
+		 * for further processing.
 		 *
 		 * @param schemaBuilder
 		 * @return the built element

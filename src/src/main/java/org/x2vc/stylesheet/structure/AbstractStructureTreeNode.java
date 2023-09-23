@@ -56,6 +56,16 @@ public abstract class AbstractStructureTreeNode implements IStructureTreeNode {
 	}
 
 	@Override
+	public boolean isXSLTTemplate() {
+		return false;
+	}
+
+	@Override
+	public IXSLTTemplateNode asTemplate() throws IllegalStateException {
+		throw logger.throwing(new IllegalStateException("This structure node can not be cast to IXSLTTemplateNode"));
+	}
+
+	@Override
 	public boolean isXSLTParameter() {
 		return false;
 	}

@@ -6,6 +6,7 @@ import java.util.*;
 
 import javax.xml.namespace.QName;
 
+import org.x2vc.stylesheet.XSLTConstants;
 import org.x2vc.utilities.PolymorphLocation;
 
 import com.google.common.collect.ImmutableList;
@@ -27,7 +28,7 @@ public class XSLTDirectiveNode extends AbstractStructureTreeNode implements IXSL
 	private ImmutableList<IXSLTParameterNode> actualParameters;
 	private ImmutableList<IXSLTSortNode> sorting;
 
-	private XSLTDirectiveNode(Builder builder) {
+	protected XSLTDirectiveNode(Builder builder) {
 		super(builder.parentStructure);
 		this.name = builder.name;
 		this.startLocation = builder.startLocation;
@@ -68,6 +69,15 @@ public class XSLTDirectiveNode extends AbstractStructureTreeNode implements IXSL
 	@Override
 	public ImmutableMap<String, String> getXSLTAttributes() {
 		return this.xsltAttributes;
+	}
+
+	@Override
+	public Optional<String> getXSLTAttribute(String name) {
+		if (this.xsltAttributes.containsKey(name)) {
+			return Optional.of(this.xsltAttributes.get(name));
+		} else {
+			return Optional.empty();
+		}
 	}
 
 	@Override
@@ -290,8 +300,12 @@ public class XSLTDirectiveNode extends AbstractStructureTreeNode implements IXSL
 		 *
 		 * @return built class
 		 */
-		public XSLTDirectiveNode build() {
-			return new XSLTDirectiveNode(this);
+		public IXSLTDirectiveNode build() {
+			if (this.name.equals(XSLTConstants.Elements.TEMPLATE)) {
+				return new XSLTTemplateNode(this);
+			} else {
+				return new XSLTDirectiveNode(this);
+			}
 		}
 	}
 

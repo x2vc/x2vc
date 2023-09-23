@@ -19,6 +19,17 @@ public interface IStructureTreeNode {
 	IXSLTDirectiveNode asDirective() throws IllegalStateException;
 
 	/**
+	 * @return <code>true</code> if the element is an XSLT template that can be cast to {@link IXSLTTemplateNode}
+	 */
+	boolean isXSLTTemplate();
+
+	/**
+	 * @return the element reference as an {@link IXSLTTemplateNode} if it is of the correct type
+	 * @throws IllegalStateException if the type of the tree node does not match
+	 */
+	IXSLTTemplateNode asTemplate() throws IllegalStateException;
+
+	/**
 	 * @return <code>true</code> if the element is an XSLT parameter that can be cast to {@link IXSLTParameterNode}
 	 */
 	boolean isXSLTParameter();
