@@ -24,8 +24,6 @@ class StylesheetStructureExtractorTest {
 	 */
 	@Test
 	void test_SingleTemplate() {
-		// TODO remove message statements from test case when adapting to new
-		// position-based approach
 		final String in = """
 							<?xml version="1.0"?>
 							<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
@@ -64,8 +62,6 @@ class StylesheetStructureExtractorTest {
 	 */
 	@Test
 	void test_TopLevelParameters() {
-		// TODO remove message statements from test case when adapting to new
-		// position-based approach
 		final String in = """
 							<?xml version="1.0"?>
 							<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
@@ -98,8 +94,6 @@ class StylesheetStructureExtractorTest {
 	 */
 	@Test
 	void test_TemplateWithFormalParameters() {
-		// TODO remove message statements from test case when adapting to new
-		// position-based approach
 		final String in = """
 							<?xml version="1.0"?>
 							<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
@@ -138,8 +132,6 @@ class StylesheetStructureExtractorTest {
 	 */
 	@Test
 	void test_TemplateWithActualParametersAsAttribute() {
-		// TODO remove message statements from test case when adapting to new
-		// position-based approach
 		final String in = """
 							<?xml version="1.0"?>
 							<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
@@ -188,8 +180,6 @@ class StylesheetStructureExtractorTest {
 	 */
 	@Test
 	void test_TemplateWithActualParametersAsText() {
-		// TODO remove message statements from test case when adapting to new
-		// position-based approach
 		final String in = """
 							<?xml version="1.0"?>
 							<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
@@ -240,8 +230,6 @@ class StylesheetStructureExtractorTest {
 	 */
 	@Test
 	void test_ForEachWithSort() {
-		// TODO remove message statements from test case when adapting to new
-		// position-based approach
 		final String in = """
 							<?xml version="1.0"?>
 							<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
