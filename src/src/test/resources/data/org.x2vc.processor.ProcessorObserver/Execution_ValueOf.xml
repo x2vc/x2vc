@@ -1,4 +1,4 @@
 <?xml version="1.0"?>
-<root attrib="foo">
+<root attrib="foo" ext0:elementID="d7a47d15-6055-41c1-ac31-a4e580dff805" xmlns:ext0="https://github.com/x2vc/xmlTrace">
 bar
 </root>

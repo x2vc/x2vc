@@ -1,3 +1,3 @@
 <?xml version="1.0"?>
-<root value1="bar" value2="foo">
+<root value1="bar" value2="foo" ext0:elementID="b8356865-467d-422e-a588-daa7a1bd02a2" xmlns:ext0="https://github.com/x2vc/xmlTrace">
 </root>

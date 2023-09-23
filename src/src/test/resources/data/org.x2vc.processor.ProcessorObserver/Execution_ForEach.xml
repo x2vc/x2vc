@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<root>
-<elem attrib="foo">number 1</elem>
-<elem attrib="bar">number 2</elem>
-<elem attrib="foo">number 3</elem>
+<root ext0:elementID="a367302a-ac92-4aff-ae26-f33e0f6f0b96" xmlns:ext0="https://github.com/x2vc/xmlTrace">
+<elem attrib="foo" ext0:elementID="83f6f091-d284-4197-9e4d-fb214fb48198">number 1</elem>
+<elem attrib="bar" ext0:elementID="25f2d381-9c4a-44a3-9620-bf99d6b8c17a">number 2</elem>
+<elem attrib="foo" ext0:elementID="d3d85316-c264-4f1f-95cb-0497b6b4fde4">number 3</elem>
 </root>
