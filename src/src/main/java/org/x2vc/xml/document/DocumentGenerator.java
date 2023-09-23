@@ -121,8 +121,8 @@ public class DocumentGenerator implements IDocumentGenerator {
 		}
 
 		/**
-		 * @return a map that allows for assigning a trace ID found in the XML document
-		 *         to the ID of the rule that contributed the element
+		 * @return a map that allows for assigning a trace ID found in the XML document to the ID of the rule that
+		 *         contributed the element
 		 */
 		public Map<UUID, UUID> getTraceIDToRuleIDMap() {
 			return this.traceIDToRuleIDMap;
@@ -178,8 +178,7 @@ public class DocumentGenerator implements IDocumentGenerator {
 		 * Processes an {@link IAddElementRule}.
 		 *
 		 * @param rule
-		 * @param isRoot if this the first call of the method that generates the root
-		 *               element
+		 * @param isRoot if this the first call of the method that generates the root element
 		 * @throws XMLStreamException
 		 */
 		private void processAddElementRule(IAddElementRule rule, boolean isRoot) throws XMLStreamException {
@@ -200,7 +199,7 @@ public class DocumentGenerator implements IDocumentGenerator {
 			}
 			final Set<Attribute> attributes = Set
 				.of(this.eventFactory.createAttribute(traceNamespacePrefix, TRACE_ELEMENT_NAMESPACE,
-						"elementID", traceElementID.toString()));
+						TRACE_ATTRIBUTE_ELEMENT_ID, traceElementID.toString()));
 			this.xmlWriter.add(this.eventFactory.createStartElement(XMLConstants.DEFAULT_NS_PREFIX,
 					XMLConstants.NULL_NS_URI, elementName, attributes.iterator(), namespaces.iterator()));
 
