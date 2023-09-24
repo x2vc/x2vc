@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<root ext0:elementID="d9a68d96-b6c9-404b-89ec-a9cddddb449c" xmlns:ext0="https://github.com/x2vc/xmlTrace">
+<elem attrib="foo" ext0:elementID="833148ee-068f-4436-96a2-f5d5605e74b2">number 1</elem>
+<elem attrib="bar" ext0:elementID="ae27bd9b-e1c2-447e-8528-49fdca124f54">number 2</elem>
+<elem attrib="foo" ext0:elementID="07172937-4229-4689-b360-59bcc267caec">number 3</elem>
+</root>
