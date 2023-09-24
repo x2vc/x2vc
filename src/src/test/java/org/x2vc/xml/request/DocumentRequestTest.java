@@ -17,8 +17,7 @@ import com.google.common.collect.ImmutableMultimap;
 class DocumentRequestTest {
 
 	/**
-	 * Test method for
-	 * {@link org.x2vc.xml.request.DocumentRequest#buildRequestedValues()}.
+	 * Test method for {@link org.x2vc.xml.request.DocumentRequest#buildRequestedValues()}.
 	 */
 	@Test
 	void testRequestedValueIndex() {
@@ -133,6 +132,63 @@ class DocumentRequestTest {
 		assertEquals(stylesheetURI, normalizedRequest.getStylesheeURI());
 		assertSame(normalizedRootRule, normalizedRequest.getRootElementRule());
 		assertSame(normalizedModifier, normalizedRequest.getModifier().get());
+	}
+
+	/**
+	 * Test method for {@link org.x2vc.xml.request.DocumentRequest#getRuleByID(UUID)}.
+	 */
+	@Test
+	void testGetRuleByID() {
+		final UUID rootReferenceUUID = UUID.randomUUID();
+		final UUID rootElementUUID = UUID.randomUUID();
+		final Builder rootBuilder = AddElementRule.builder(rootReferenceUUID);
+
+		final UUID rootAttribUUID = UUID.randomUUID();
+		final RequestedValue rootAttribValue = new RequestedValue("rootAttrib");
+		final SetAttributeRule rootAttribRule = new SetAttributeRule(rootAttribUUID, rootAttribValue);
+		rootBuilder.addAttributeRule(rootAttribRule);
+
+		final RequestedValue rootTextValue = new RequestedValue("rootText");
+		final AddDataContentRule rootDataContentRule = new AddDataContentRule(rootElementUUID, rootTextValue);
+		rootBuilder.addContentRule(rootDataContentRule);
+
+		final RequestedValue rootRawValue = new RequestedValue("rootRaw");
+		final AddRawContentRule rootRawContentRule = new AddRawContentRule(rootElementUUID, rootRawValue);
+		rootBuilder.addContentRule(rootRawContentRule);
+
+		final UUID subReferenceUUID = UUID.randomUUID();
+		final UUID subElementUUID = UUID.randomUUID();
+		final Builder subBuilder = AddElementRule.builder(subReferenceUUID);
+
+		final UUID subAttribUUID = UUID.randomUUID();
+		final RequestedValue subAttribValue = new RequestedValue("subAttrib");
+		final SetAttributeRule subAttributeRule = new SetAttributeRule(subAttribUUID, subAttribValue);
+		subBuilder.addAttributeRule(subAttributeRule);
+
+		final RequestedValue subTextValue = new RequestedValue("subText");
+		final AddDataContentRule subDataContentRule = new AddDataContentRule(subElementUUID, subTextValue);
+		subBuilder.addContentRule(subDataContentRule);
+
+		final RequestedValue subRawValue = new RequestedValue("subRaw");
+		final AddRawContentRule subRawContentRule = new AddRawContentRule(subElementUUID, subRawValue);
+		subBuilder.addContentRule(subRawContentRule);
+
+		final AddElementRule subRule = subBuilder.build();
+		rootBuilder.addContentRule(subRule);
+		final AddElementRule rootRule = rootBuilder.build();
+
+		final URI stylesheetURI = URI.create("bar:foo");
+		final URI schemaURI = URI.create("foo:bar");
+		final IDocumentRequest request = new DocumentRequest(schemaURI, 1, stylesheetURI, rootRule);
+
+		assertSame(rootAttribRule, request.getRuleByID(rootAttribRule.getID()));
+		assertSame(rootDataContentRule, request.getRuleByID(rootDataContentRule.getID()));
+		assertSame(rootRawContentRule, request.getRuleByID(rootRawContentRule.getID()));
+		assertSame(subAttributeRule, request.getRuleByID(subAttributeRule.getID()));
+		assertSame(subDataContentRule, request.getRuleByID(subDataContentRule.getID()));
+		assertSame(subRawContentRule, request.getRuleByID(subRawContentRule.getID()));
+		assertSame(subRule, request.getRuleByID(subRule.getID()));
+		assertSame(rootRule, request.getRuleByID(rootRule.getID()));
 	}
 
 }
