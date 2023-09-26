@@ -44,8 +44,7 @@ public class AddDataContentRule extends AbstractGenerationRule implements IAddDa
 	}
 
 	/**
-	 * Create a new rule with a specified ID and without a requested value
-	 * specified.
+	 * Create a new rule with a specified ID and without a requested value specified.
 	 *
 	 * @param ruleID
 	 * @param elementID
@@ -68,6 +67,11 @@ public class AddDataContentRule extends AbstractGenerationRule implements IAddDa
 	@Override
 	public UUID getElementID() {
 		return this.elementID;
+	}
+
+	@Override
+	public Optional<UUID> getSchemaObjectID() {
+		return Optional.of(this.elementID);
 	}
 
 	@Override

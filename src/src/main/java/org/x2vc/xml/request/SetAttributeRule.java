@@ -19,8 +19,7 @@ public class SetAttributeRule extends AbstractGenerationRule implements ISetAttr
 	private IRequestedValue requestedValue;
 
 	/**
-	 * Creates a new attribute rule with a specified ID and a requested value
-	 * specified.
+	 * Creates a new attribute rule with a specified ID and a requested value specified.
 	 *
 	 * @param ruleID
 	 * @param attributeID
@@ -33,8 +32,7 @@ public class SetAttributeRule extends AbstractGenerationRule implements ISetAttr
 	}
 
 	/**
-	 * Creates a new attribute rule with a random ID and a requested value
-	 * specified.
+	 * Creates a new attribute rule with a random ID and a requested value specified.
 	 *
 	 * @param attributeID
 	 * @param requestedValue
@@ -46,8 +44,7 @@ public class SetAttributeRule extends AbstractGenerationRule implements ISetAttr
 	}
 
 	/**
-	 * Creates a new attribute rule with a specified ID and a requested value
-	 * specified.
+	 * Creates a new attribute rule with a specified ID and a requested value specified.
 	 *
 	 * @param ruleID
 	 * @param attribute
@@ -60,8 +57,7 @@ public class SetAttributeRule extends AbstractGenerationRule implements ISetAttr
 	}
 
 	/**
-	 * Creates a new attribute rule with a random ID and a requested value
-	 * specified.
+	 * Creates a new attribute rule with a random ID and a requested value specified.
 	 *
 	 * @param attribute
 	 * @param requestedValue
@@ -73,8 +69,7 @@ public class SetAttributeRule extends AbstractGenerationRule implements ISetAttr
 	}
 
 	/**
-	 * Creates a new attribute rule with a specified ID and without a requested
-	 * value specified.
+	 * Creates a new attribute rule with a specified ID and without a requested value specified.
 	 *
 	 * @param ruleID
 	 * @param attributeID
@@ -85,8 +80,7 @@ public class SetAttributeRule extends AbstractGenerationRule implements ISetAttr
 	}
 
 	/**
-	 * Creates a new attribute rule with a random ID and without a requested value
-	 * specified.
+	 * Creates a new attribute rule with a random ID and without a requested value specified.
 	 *
 	 * @param attributeID
 	 */
@@ -96,8 +90,7 @@ public class SetAttributeRule extends AbstractGenerationRule implements ISetAttr
 	}
 
 	/**
-	 * Creates a new attribute rule with a specified ID and without a requested
-	 * value specified.
+	 * Creates a new attribute rule with a specified ID and without a requested value specified.
 	 *
 	 * @param ruleID
 	 * @param attribute
@@ -108,8 +101,7 @@ public class SetAttributeRule extends AbstractGenerationRule implements ISetAttr
 	}
 
 	/**
-	 * Creates a new attribute rule with a random ID and without a requested value
-	 * specified.
+	 * Creates a new attribute rule with a random ID and without a requested value specified.
 	 *
 	 * @param attribute
 	 */
@@ -121,6 +113,11 @@ public class SetAttributeRule extends AbstractGenerationRule implements ISetAttr
 	@Override
 	public UUID getAttributeID() {
 		return this.attributeID;
+	}
+
+	@Override
+	public Optional<UUID> getSchemaObjectID() {
+		return Optional.of(this.attributeID);
 	}
 
 	/**

@@ -1,9 +1,6 @@
 package org.x2vc.xml.request;
 
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -52,6 +49,11 @@ public class AddElementRule extends AbstractGenerationRule implements IAddElemen
 	@Override
 	public UUID getElementReferenceID() {
 		return this.elementReferenceID;
+	}
+
+	@Override
+	public Optional<UUID> getSchemaObjectID() {
+		return Optional.of(this.elementReferenceID);
 	}
 
 	@Override
