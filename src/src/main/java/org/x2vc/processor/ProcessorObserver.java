@@ -216,7 +216,7 @@ class ProcessorObserver implements Consumer<Message>, ErrorListener, TraceListen
 					IDocumentGenerator.TRACE_ATTRIBUTE_ELEMENT_ID);
 		}
 		if (Strings.isNullOrEmpty(elementIDAsString)) {
-			logger.warn("Context node is either missing or has no trace ID assigned");
+			logger.debug("Context node is either missing or has no trace ID assigned");
 		} else {
 			try {
 				final UUID elementID = UUID.fromString(elementIDAsString);
