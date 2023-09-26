@@ -8,9 +8,13 @@ import org.x2vc.analysis.IDocumentAnalyzer;
 import org.x2vc.process.IWorkerProcessManager;
 import org.x2vc.processor.IHTMLDocumentContainer;
 import org.x2vc.processor.IXSLTProcessor;
+import org.x2vc.report.IVulnerabilityCandidate;
 import org.x2vc.report.IVulnerabilityCandidateCollector;
+import org.x2vc.schema.evolution.ISchemaEvolver;
+import org.x2vc.schema.evolution.ISchemaModifier;
 import org.x2vc.utilities.IDebugObjectWriter;
 import org.x2vc.xml.document.IDocumentGenerator;
+import org.x2vc.xml.document.IDocumentModifier;
 import org.x2vc.xml.document.IXMLDocumentContainer;
 import org.x2vc.xml.request.ICompletedRequestRegistry;
 import org.x2vc.xml.request.IDocumentRequest;
@@ -20,8 +24,8 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
 /**
- * This task is used to process a single {@link IDocumentRequest} and follow up
- * on the results depending on the {@link ProcessingMode}.
+ * This task is used to process a single {@link IDocumentRequest} and follow up on the results depending on the
+ * {@link ProcessingMode}.
  */
 public class RequestProcessingTask implements IRequestProcessingTask {
 
@@ -30,6 +34,7 @@ public class RequestProcessingTask implements IRequestProcessingTask {
 	private IDocumentGenerator documentGenerator;
 	private IXSLTProcessor processor;
 	private IDocumentAnalyzer analyzer;
+	private ISchemaEvolver evolver;
 	private IRequestGenerator requestGenerator;
 	private ICompletedRequestRegistry completedRequestRegistry;
 	private IRequestProcessingTaskFactory requestProcessingTaskFactory;
@@ -46,14 +51,16 @@ public class RequestProcessingTask implements IRequestProcessingTask {
 	@SuppressWarnings("java:S107") // large number of parameters due to dependency injection
 	@Inject
 	RequestProcessingTask(IDocumentGenerator documentGenerator, IXSLTProcessor processor, IDocumentAnalyzer analyzer,
-			IRequestGenerator requestGenerator, ICompletedRequestRegistry completedRequestRegistry,
-			IRequestProcessingTaskFactory taskFactory, IWorkerProcessManager workerProcessManager,
-			IDebugObjectWriter debugObjectWriter, IVulnerabilityCandidateCollector vulnerabilityCandidateCollector,
+			ISchemaEvolver evolver, IRequestGenerator requestGenerator,
+			ICompletedRequestRegistry completedRequestRegistry, IRequestProcessingTaskFactory taskFactory,
+			IWorkerProcessManager workerProcessManager, IDebugObjectWriter debugObjectWriter,
+			IVulnerabilityCandidateCollector vulnerabilityCandidateCollector,
 			@Assisted IDocumentRequest request, @Assisted ProcessingMode mode) {
 		super();
 		this.documentGenerator = documentGenerator;
 		this.processor = processor;
 		this.analyzer = analyzer;
+		this.evolver = evolver;
 		this.requestGenerator = requestGenerator;
 		this.completedRequestRegistry = completedRequestRegistry;
 		this.requestProcessingTaskFactory = taskFactory;
@@ -87,30 +94,44 @@ public class RequestProcessingTask implements IRequestProcessingTask {
 
 				if (!htmlDocument.isFailed()) {
 					if (this.mode == ProcessingMode.FULL || this.mode == ProcessingMode.XSS_ONLY) {
-						this.analyzer.analyzeDocument(this.taskID, htmlDocument, modifier -> {
-							final IDocumentRequest modifiedRequest = this.requestGenerator.modifyRequest(this.request,
-									modifier);
-							logger.debug("adding new task for modification request");
-							final IRequestProcessingTask task = this.requestProcessingTaskFactory
-								.create(modifiedRequest, this.mode);
-							this.workerProcessManager.submit(task);
-						}, candidate -> {
-							this.debugObjectWriter.writeVulnerabilityCandidate(this.taskID, this.nextCandidateNumber,
-									candidate);
-							this.nextCandidateNumber++;
-							logger.debug("storing vulnerability candidate for later processing");
-							this.vulnerabilityCandidateCollector.add(this.request.getStylesheeURI(), candidate);
-						});
+						// perform XSS analysis
+						this.analyzer.analyzeDocument(this.taskID, htmlDocument,
+								this::handleDocumentModificationRequest, this::handleVulnerabilityCandidate);
 					}
-
 					if (this.mode == ProcessingMode.FULL || this.mode == ProcessingMode.SCHEMA_ONLY) {
-						// TODO XML Schema Evolution: implement
+						// extend schema to cover more input data elements if possible
+						this.evolver.analyzeDocument(this.taskID, htmlDocument, this::handleSchemaModificationRequest);
 					}
 				}
 			}
 		} catch (final Exception ex) {
 			logger.error("unhandled exception in request processing task", ex);
 		}
+		logger.traceExit();
+	}
+
+	private void handleDocumentModificationRequest(IDocumentModifier modifier) {
+		logger.traceEntry();
+		final IDocumentRequest modifiedRequest = this.requestGenerator.modifyRequest(this.request, modifier);
+		logger.debug("adding new task for modification request");
+		final IRequestProcessingTask task = this.requestProcessingTaskFactory.create(modifiedRequest, this.mode);
+		this.workerProcessManager.submit(task);
+		logger.traceExit();
+	}
+
+	private void handleVulnerabilityCandidate(IVulnerabilityCandidate candidate) {
+		logger.traceEntry();
+		this.debugObjectWriter.writeVulnerabilityCandidate(this.taskID, this.nextCandidateNumber, candidate);
+		this.nextCandidateNumber++;
+		logger.debug("storing vulnerability candidate for later processing");
+		this.vulnerabilityCandidateCollector.add(this.request.getStylesheeURI(), candidate);
+		logger.traceExit();
+	}
+
+	private void handleSchemaModificationRequest(ISchemaModifier modifier) {
+		logger.traceEntry();
+		logger.info("received schema modifier {}", modifier);
+		// FIXME implement this
 		logger.traceExit();
 	}
 

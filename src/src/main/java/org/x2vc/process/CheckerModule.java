@@ -16,10 +16,9 @@ import org.x2vc.report.IReportWriter;
 import org.x2vc.report.IVulnerabilityCandidateCollector;
 import org.x2vc.report.ReportWriter;
 import org.x2vc.report.VulnerabilityCandidateCollector;
-import org.x2vc.schema.IInitialSchemaGenerator;
-import org.x2vc.schema.ISchemaManager;
-import org.x2vc.schema.InitialSchemaGenerator;
-import org.x2vc.schema.SchemaManager;
+import org.x2vc.schema.*;
+import org.x2vc.schema.evolution.ISchemaEvolver;
+import org.x2vc.schema.evolution.SchemaEvolver;
 import org.x2vc.stylesheet.*;
 import org.x2vc.stylesheet.structure.IStylesheetStructureExtractor;
 import org.x2vc.stylesheet.structure.StylesheetStructureExtractor;
@@ -91,6 +90,7 @@ public class CheckerModule extends AbstractModule {
 		// schema
 		bind(ISchemaManager.class).to(SchemaManager.class);
 		bind(IInitialSchemaGenerator.class).to(InitialSchemaGenerator.class);
+		bind(ISchemaEvolver.class).to(SchemaEvolver.class);
 
 		// stylesheet
 		bind(IStylesheetManager.class).to(StylesheetManager.class);
