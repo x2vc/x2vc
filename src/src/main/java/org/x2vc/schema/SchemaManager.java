@@ -66,6 +66,12 @@ public class SchemaManager implements ISchemaManager {
 		this.cacheSize = cacheSize;
 	}
 
+	@Override
+	public boolean schemaExists(URI stylesheetURI) {
+		final File schemaFile = getSchemaForStylesheet(stylesheetURI);
+		return schemaFile.canRead();
+	}
+
 	@SuppressWarnings("java:S4738") // Java supplier does not support memoization
 	Supplier<LoadingCache<URI, IXMLSchema>> schemaCacheSupplier = Suppliers.memoize(() -> {
 		logger.traceEntry();
@@ -150,6 +156,18 @@ public class SchemaManager implements ISchemaManager {
 		}
 	}
 
+	/**
+	 * @param stylesheetURI
+	 * @return
+	 */
+	protected File getSchemaForStylesheet(URI stylesheetURI) {
+		final File stylesheetFile = new File(stylesheetURI);
+		final String schemaFilename = stylesheetFile.getParent() + File.separator
+				+ Files.getNameWithoutExtension(stylesheetFile.getName()) + ".x2vc_schema";
+		final File schemaFile = new File(schemaFilename);
+		return schemaFile;
+	}
+
 	class SchemaCacheLoader extends CacheLoader<URI, IXMLSchema> {
 
 		@SuppressWarnings("java:S4738") // Java supplier does not support memoization
@@ -232,15 +250,12 @@ public class SchemaManager implements ISchemaManager {
 		 */
 		private Optional<IXMLSchema> loadSchemaIfExists(URI schemaURI, URI stylesheetURI) {
 			logger.traceEntry();
-			final File stylesheetFile = new File(stylesheetURI);
-			final String schemaFilename = stylesheetFile.getParent() + File.separator
-					+ Files.getNameWithoutExtension(stylesheetFile.getName()) + ".x2vc_schema";
+			final File schemaFile = getSchemaForStylesheet(stylesheetURI);
 			logger.debug("will attempt to locate existing schema for stylesheet {} at {}", stylesheetURI,
-					schemaFilename);
-			final File schemaFile = new File(schemaFilename);
+					schemaFile);
 			if (schemaFile.canRead()) {
 				XMLSchema schema = null;
-				logger.debug("schema file {} found, will attempt to load", schemaFilename);
+				logger.debug("schema file {} found, will attempt to load", schemaFile);
 				try {
 					final Unmarshaller unmarshaller = this.contextSupplier.get().createUnmarshaller();
 					schema = (XMLSchema) unmarshaller.unmarshal(Files.newReader(schemaFile, StandardCharsets.UTF_8));
@@ -248,7 +263,7 @@ public class SchemaManager implements ISchemaManager {
 					schema.setStylesheetURI(stylesheetURI);
 				} catch (FileNotFoundException | JAXBException e) {
 					logger.throwing(new IllegalStateException(
-							String.format("Unable to read existing schema file %s", schemaFilename), e));
+							String.format("Unable to read existing schema file %s", schemaFile), e));
 				}
 				return logger.traceExit(Optional.of(schema));
 			} else {

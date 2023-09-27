@@ -6,7 +6,6 @@ import java.util.function.Consumer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.x2vc.schema.ISchemaManager;
-import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.stylesheet.IStylesheetInformation;
 import org.x2vc.stylesheet.IStylesheetManager;
 
@@ -48,11 +47,15 @@ public class InitializationTask implements IInitializationTask {
 
 			// get the schema (generate new or load existing)
 			logger.debug("preparing schema for stylesheet {}", this.xsltFile);
-			final IXMLSchema schema = this.schemaManager.getSchema(stylesheetInfo.getURI());
+			if ((this.mode == ProcessingMode.XSS_ONLY) && (!this.schemaManager.schemaExists(stylesheetInfo.getURI()))) {
+				logger.error("Schema for stylesheet {} is missing and will not be generated in XSS-only mode.",
+						this.xsltFile);
+				this.callback.accept(false);
+			} else {
+				this.schemaManager.getSchema(stylesheetInfo.getURI());
+				this.callback.accept(true);
+			}
 
-			// FIXME only generate new schema if mode is not XSS ONLY
-
-			this.callback.accept(true);
 		} catch (final Exception ex) {
 			logger.error("unhandled exception in initialization task", ex);
 			this.callback.accept(false);
