@@ -3,6 +3,7 @@ package org.x2vc.process.tasks;
 import java.io.File;
 import java.net.URI;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,8 +29,9 @@ public class ReportGeneratorTask implements IReportGeneratorTask {
 	private IVulnerabilityCandidateCollector vulnerabilityCandidateCollector;
 	private IReportWriter reportWriter;
 	private File xsltFile;
+	private Consumer<Boolean> callback;
 
-	private UUID taskID;
+	private UUID taskID = UUID.randomUUID();
 
 	int nextCandidateNumber = 1;
 
@@ -38,13 +40,13 @@ public class ReportGeneratorTask implements IReportGeneratorTask {
 	@SuppressWarnings("java:S107") // large number of parameters due to dependency injection
 	@Inject
 	ReportGeneratorTask(IDocumentAnalyzer analyzer, IVulnerabilityCandidateCollector vulnerabilityCandidateCollector,
-			IReportWriter reportWriter, @Assisted File xsltFile) {
+			IReportWriter reportWriter, @Assisted File xsltFile, @Assisted Consumer<Boolean> callback) {
 		super();
 		this.analyzer = analyzer;
 		this.vulnerabilityCandidateCollector = vulnerabilityCandidateCollector;
 		this.reportWriter = reportWriter;
 		this.xsltFile = xsltFile;
-		this.taskID = UUID.randomUUID();
+		this.callback = callback;
 	}
 
 	@Override
@@ -63,8 +65,10 @@ public class ReportGeneratorTask implements IReportGeneratorTask {
 			final IVulnerabilityReport report = this.analyzer.consolidateResults(stylesheetURI,
 					vulnerabilityCandidates);
 			this.reportWriter.write(report, outputFile);
+			this.callback.accept(true);
 		} catch (final Exception ex) {
 			logger.error("unhandled exception in report generator task", ex);
+			this.callback.accept(false);
 		}
 		logger.traceExit();
 	}

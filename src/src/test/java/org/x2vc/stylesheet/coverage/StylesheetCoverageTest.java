@@ -1,11 +1,12 @@
 package org.x2vc.stylesheet.coverage;
 
-import org.x2vc.stylesheet.structure.IStylesheetStructure;
+import org.junit.jupiter.api.Disabled;
 
+@Disabled("rebuild after structure extraction changes")
 class StylesheetCoverageTest {
 
-	private IStylesheetStructure structure;
-	private StylesheetCoverage coverage;
+//	private IStylesheetStructure structure;
+//	private StylesheetCoverage coverage;
 
 	// TODO XSLT Coverage: rebuild after structure extraction changes
 //

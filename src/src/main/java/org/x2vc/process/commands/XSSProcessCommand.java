@@ -3,8 +3,6 @@ package org.x2vc.process.commands;
 import java.util.concurrent.Callable;
 
 import org.x2vc.process.IWorkerProcessManager;
-import org.x2vc.process.tasks.IInitializationTaskFactory;
-import org.x2vc.process.tasks.IReportGeneratorTaskFactory;
 import org.x2vc.process.tasks.ProcessingMode;
 
 import com.google.inject.Inject;
@@ -17,14 +15,9 @@ import picocli.CommandLine.Command;
 @Command(name = "xss", mixinStandardHelpOptions = true, description = "Only performs the XSS check.")
 public class XSSProcessCommand extends AbstractProcessCommand implements Callable<Integer> {
 
-	/**
-	 * @param taskFactory
-	 * @param workerProcessManager
-	 */
 	@Inject
-	XSSProcessCommand(IInitializationTaskFactory initializationTaskFactory,
-			IReportGeneratorTaskFactory reportGeneratorTaskFactory, IWorkerProcessManager workerProcessManager) {
-		super(initializationTaskFactory, reportGeneratorTaskFactory, workerProcessManager);
+	XSSProcessCommand(IProcessDirector processDirector, IWorkerProcessManager workerProcessManager) {
+		super(processDirector, workerProcessManager);
 	}
 
 	@Override

@@ -7,6 +7,8 @@ import org.apache.logging.log4j.Logger;
 import org.x2vc.analysis.DocumentAnalyzer;
 import org.x2vc.analysis.IAnalyzerRule;
 import org.x2vc.analysis.IDocumentAnalyzer;
+import org.x2vc.process.commands.IProcessDirector;
+import org.x2vc.process.commands.ProcessDirector;
 import org.x2vc.process.tasks.*;
 import org.x2vc.processor.HTMLDocumentFactory;
 import org.x2vc.processor.IHTMLDocumentFactory;
@@ -16,7 +18,10 @@ import org.x2vc.report.IReportWriter;
 import org.x2vc.report.IVulnerabilityCandidateCollector;
 import org.x2vc.report.ReportWriter;
 import org.x2vc.report.VulnerabilityCandidateCollector;
-import org.x2vc.schema.*;
+import org.x2vc.schema.IInitialSchemaGenerator;
+import org.x2vc.schema.ISchemaManager;
+import org.x2vc.schema.InitialSchemaGenerator;
+import org.x2vc.schema.SchemaManager;
 import org.x2vc.schema.evolution.ISchemaEvolver;
 import org.x2vc.schema.evolution.SchemaEvolver;
 import org.x2vc.stylesheet.*;
@@ -69,15 +74,28 @@ public class CheckerModule extends AbstractModule {
 		bind(IWorkerProcessManager.class).to(WorkerProcessManager.class);
 
 		// process commands
+		bind(IProcessDirector.class).to(ProcessDirector.class);
 
 		// process tasks
 		bind(IDebugObjectWriter.class).to(DebugObjectWriter.class);
-		install(new FactoryModuleBuilder().implement(IInitializationTask.class, InitializationTask.class)
+		install(new FactoryModuleBuilder()
+			.implement(IInitializationTask.class, InitializationTask.class)
 			.build(IInitializationTaskFactory.class));
-		install(new FactoryModuleBuilder().implement(IRequestProcessingTask.class, RequestProcessingTask.class)
-			.build(IRequestProcessingTaskFactory.class));
-		install(new FactoryModuleBuilder().implement(IReportGeneratorTask.class, ReportGeneratorTask.class)
+		install(new FactoryModuleBuilder()
+			.implement(IInitialVulnerabilityCheckTask.class, InitialVulnerabilityCheckTask.class)
+			.build(IInitialVulnerabilityCheckTaskFactory.class));
+		install(new FactoryModuleBuilder()
+			.implement(IFollowUpVulnerabilityCheckTask.class, FollowUpVulnerabilityCheckTask.class)
+			.build(IFollowUpVulnerabilityCheckTaskFactory.class));
+		install(new FactoryModuleBuilder()
+			.implement(IReportGeneratorTask.class, ReportGeneratorTask.class)
 			.build(IReportGeneratorTaskFactory.class));
+		install(new FactoryModuleBuilder()
+			.implement(ISchemaEvolutionTask.class, SchemaEvolutionTask.class)
+			.build(ISchemaEvolutionTaskFactory.class));
+		install(new FactoryModuleBuilder()
+			.implement(ISchemaExplorationTask.class, SchemaExplorationTask.class)
+			.build(ISchemaExplorationTaskFactory.class));
 
 		// processor
 		bind(IHTMLDocumentFactory.class).to(HTMLDocumentFactory.class);

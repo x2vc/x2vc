@@ -8,8 +8,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.x2vc.process.IWorkerProcessManager;
 import org.x2vc.process.LoggingMixin;
-import org.x2vc.process.tasks.IInitializationTaskFactory;
-import org.x2vc.process.tasks.IReportGeneratorTaskFactory;
 import org.x2vc.process.tasks.ProcessingMode;
 
 import com.google.inject.Inject;
@@ -30,15 +28,12 @@ public abstract class AbstractProcessCommand implements Callable<Integer> {
 	@Parameters(description = "XSLT files to check", arity = "1..*")
 	private List<File> xsltFiles;
 
-	private IInitializationTaskFactory initializationTaskFactory;
-	private IReportGeneratorTaskFactory reportGeneratorTaskFactory;
+	private IProcessDirector processDirector;
 	private IWorkerProcessManager workerProcessManager;
 
 	@Inject
-	AbstractProcessCommand(IInitializationTaskFactory initializationTaskFactory,
-			IReportGeneratorTaskFactory reportGeneratorTaskFactory, IWorkerProcessManager workerProcessManager) {
-		this.initializationTaskFactory = initializationTaskFactory;
-		this.reportGeneratorTaskFactory = reportGeneratorTaskFactory;
+	AbstractProcessCommand(IProcessDirector processDirector, IWorkerProcessManager workerProcessManager) {
+		this.processDirector = processDirector;
 		this.workerProcessManager = workerProcessManager;
 	}
 
@@ -51,17 +46,12 @@ public abstract class AbstractProcessCommand implements Callable<Integer> {
 			return logger.traceExit(1);
 		}
 
-		// generate the initialization tasks for all files
+		// hand off to the process director
 		for (final File file : this.xsltFiles) {
-			this.workerProcessManager.submit(this.initializationTaskFactory.create(file, getProcessingMode()));
+			this.processDirector.startProcess(file, getProcessingMode());
 		}
 
-		this.workerProcessManager.awaitCompletion();
-
-		// generate the report tasks for all files
-		for (final File file : this.xsltFiles) {
-			this.workerProcessManager.submit(this.reportGeneratorTaskFactory.create(file));
-		}
+		this.processDirector.awaitCompletion();
 
 		this.workerProcessManager.shutdown();
 
