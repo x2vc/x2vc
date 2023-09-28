@@ -1,7 +1,6 @@
 package org.x2vc.process.tasks;
 
 import java.io.File;
-import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -11,6 +10,7 @@ import org.x2vc.schema.ISchemaManager;
 import org.x2vc.schema.evolution.ISchemaModifier;
 import org.x2vc.stylesheet.IStylesheetManager;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
@@ -25,7 +25,7 @@ public class SchemaEvolutionTask implements ISchemaEvolutionTask {
 	private IStylesheetManager stylesheetManager;
 	private ISchemaManager schemaManager;
 	private File xsltFile;
-	private List<ISchemaModifier> modifiers;
+	private ImmutableSet<ISchemaModifier> modifiers;
 	private Consumer<Boolean> callback;
 
 	private UUID taskID = UUID.randomUUID();
@@ -34,7 +34,7 @@ public class SchemaEvolutionTask implements ISchemaEvolutionTask {
 	@Inject
 	SchemaEvolutionTask(IStylesheetManager stylesheetManager, ISchemaManager schemaManager,
 			@Assisted File xsltFile,
-			@Assisted List<ISchemaModifier> modifiers,
+			@Assisted ImmutableSet<ISchemaModifier> modifiers,
 			@Assisted Consumer<Boolean> callback) {
 		super();
 		this.stylesheetManager = stylesheetManager;

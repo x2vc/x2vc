@@ -1,10 +1,11 @@
 package org.x2vc.process.tasks;
 
 import java.io.File;
-import java.util.List;
 import java.util.function.Consumer;
 
 import org.x2vc.schema.evolution.ISchemaModifier;
+
+import com.google.common.collect.ImmutableSet;
 
 /**
  * Factory to obtain instances of {@link ISchemaEvolutionTask}.
@@ -19,7 +20,7 @@ public interface ISchemaEvolutionTaskFactory {
 	 * @param callback
 	 * @return the task
 	 */
-	ISchemaEvolutionTask create(File xsltFile, List<ISchemaModifier> modifiers,
+	ISchemaEvolutionTask create(File xsltFile, ImmutableSet<ISchemaModifier> modifiers,
 			Consumer<Boolean> callback);
 
 }

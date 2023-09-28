@@ -16,7 +16,7 @@ import picocli.CommandLine.Command;
 public class XSSProcessCommand extends AbstractProcessCommand implements Callable<Integer> {
 
 	@Inject
-	XSSProcessCommand(IProcessDirector processDirector, IWorkerProcessManager workerProcessManager) {
+	XSSProcessCommand(IProcessDirectorManager processDirector, IWorkerProcessManager workerProcessManager) {
 		super(processDirector, workerProcessManager);
 	}
 

@@ -7,8 +7,7 @@ import org.apache.logging.log4j.Logger;
 import org.x2vc.analysis.DocumentAnalyzer;
 import org.x2vc.analysis.IAnalyzerRule;
 import org.x2vc.analysis.IDocumentAnalyzer;
-import org.x2vc.process.commands.IProcessDirector;
-import org.x2vc.process.commands.ProcessDirector;
+import org.x2vc.process.commands.*;
 import org.x2vc.process.tasks.*;
 import org.x2vc.processor.HTMLDocumentFactory;
 import org.x2vc.processor.IHTMLDocumentFactory;
@@ -23,7 +22,9 @@ import org.x2vc.schema.ISchemaManager;
 import org.x2vc.schema.InitialSchemaGenerator;
 import org.x2vc.schema.SchemaManager;
 import org.x2vc.schema.evolution.ISchemaEvolver;
+import org.x2vc.schema.evolution.ISchemaModifierCollector;
 import org.x2vc.schema.evolution.SchemaEvolver;
+import org.x2vc.schema.evolution.SchemaModifierCollector;
 import org.x2vc.stylesheet.*;
 import org.x2vc.stylesheet.structure.IStylesheetStructureExtractor;
 import org.x2vc.stylesheet.structure.StylesheetStructureExtractor;
@@ -74,7 +75,10 @@ public class CheckerModule extends AbstractModule {
 		bind(IWorkerProcessManager.class).to(WorkerProcessManager.class);
 
 		// process commands
-		bind(IProcessDirector.class).to(ProcessDirector.class);
+		bind(IProcessDirectorManager.class).to(ProcessDirectorManager.class);
+		install(new FactoryModuleBuilder()
+			.implement(IProcessDirector.class, ProcessDirector.class)
+			.build(IProcessDirectorFactory.class));
 
 		// process tasks
 		bind(IDebugObjectWriter.class).to(DebugObjectWriter.class);
@@ -105,10 +109,13 @@ public class CheckerModule extends AbstractModule {
 		bind(IVulnerabilityCandidateCollector.class).to(VulnerabilityCandidateCollector.class);
 		bind(IReportWriter.class).to(ReportWriter.class);
 
+		// schema evolution
+		bind(ISchemaEvolver.class).to(SchemaEvolver.class);
+		bind(ISchemaModifierCollector.class).to(SchemaModifierCollector.class);
+
 		// schema
 		bind(ISchemaManager.class).to(SchemaManager.class);
 		bind(IInitialSchemaGenerator.class).to(InitialSchemaGenerator.class);
-		bind(ISchemaEvolver.class).to(SchemaEvolver.class);
 
 		// stylesheet
 		bind(IStylesheetManager.class).to(StylesheetManager.class);

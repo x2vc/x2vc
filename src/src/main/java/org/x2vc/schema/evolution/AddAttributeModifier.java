@@ -1,7 +1,5 @@
 package org.x2vc.schema.evolution;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.net.URI;
 import java.util.*;
 
@@ -21,10 +19,6 @@ public class AddAttributeModifier implements IAddAttributeModifier {
 	private XMLDatatype datatype;
 
 	private AddAttributeModifier(Builder builder) {
-		checkNotNull(builder.elementID);
-		checkNotNull(builder.attributeID);
-		checkNotNull(builder.name);
-		checkNotNull(builder.datatype);
 		this.schemaURI = builder.schemaURI;
 		this.schemaVersion = builder.schemaVersion;
 		this.elementID = builder.elementID;
@@ -143,6 +137,16 @@ public class AddAttributeModifier implements IAddAttributeModifier {
 	}
 
 	/**
+	 * Creates a builder to build {@link AddAttributeModifier} and initialize it with the given object.
+	 *
+	 * @param addAttributeModifier to initialize the builder with
+	 * @return created builder
+	 */
+	public static Builder builderFrom(IAddAttributeModifier addAttributeModifier) {
+		return new Builder(addAttributeModifier);
+	}
+
+	/**
 	 * Builder to build {@link AddAttributeModifier}.
 	 */
 	public static final class Builder {
@@ -157,6 +161,16 @@ public class AddAttributeModifier implements IAddAttributeModifier {
 		private Builder(URI schemaURI, int schemaVersion) {
 			this.schemaURI = schemaURI;
 			this.schemaVersion = schemaVersion;
+		}
+
+		private Builder(IAddAttributeModifier addAttributeModifier) {
+			this.schemaURI = addAttributeModifier.getSchemaURI();
+			this.schemaVersion = addAttributeModifier.getSchemaVersion();
+			this.elementID = addAttributeModifier.getElementID();
+			this.dependencies = addAttributeModifier.getDependencies();
+			this.attributeID = addAttributeModifier.getAttributeID();
+			this.name = addAttributeModifier.getName();
+			this.datatype = addAttributeModifier.getDatatype();
 		}
 
 		/**

@@ -28,11 +28,11 @@ public abstract class AbstractProcessCommand implements Callable<Integer> {
 	@Parameters(description = "XSLT files to check", arity = "1..*")
 	private List<File> xsltFiles;
 
-	private IProcessDirector processDirector;
+	private IProcessDirectorManager processDirector;
 	private IWorkerProcessManager workerProcessManager;
 
 	@Inject
-	AbstractProcessCommand(IProcessDirector processDirector, IWorkerProcessManager workerProcessManager) {
+	AbstractProcessCommand(IProcessDirectorManager processDirector, IWorkerProcessManager workerProcessManager) {
 		this.processDirector = processDirector;
 		this.workerProcessManager = workerProcessManager;
 	}

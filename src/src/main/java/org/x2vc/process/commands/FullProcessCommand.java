@@ -16,7 +16,7 @@ import picocli.CommandLine.Command;
 public class FullProcessCommand extends AbstractProcessCommand implements Callable<Integer> {
 
 	@Inject
-	FullProcessCommand(IProcessDirector processDirector, IWorkerProcessManager workerProcessManager) {
+	FullProcessCommand(IProcessDirectorManager processDirector, IWorkerProcessManager workerProcessManager) {
 		super(processDirector, workerProcessManager);
 	}
 

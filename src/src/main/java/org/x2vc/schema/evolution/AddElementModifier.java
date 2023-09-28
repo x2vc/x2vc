@@ -1,7 +1,5 @@
 package org.x2vc.schema.evolution;
 
-import static com.google.common.base.Preconditions.checkNotNull;
-
 import java.net.URI;
 import java.util.*;
 
@@ -29,11 +27,6 @@ public class AddElementModifier implements IAddElementModifier {
 	private Set<IAddAttributeModifier> attributeModifiers = new HashSet<>();
 
 	private AddElementModifier(Builder builder) {
-		checkNotNull(builder.elementID);
-		checkNotNull(builder.referenceID);
-		checkNotNull(builder.typeID);
-		checkNotNull(builder.name);
-		checkNotNull(builder.contentType);
 		this.schemaURI = builder.schemaURI;
 		this.schemaVersion = builder.schemaVersion;
 		this.elementID = builder.elementID;
@@ -180,6 +173,17 @@ public class AddElementModifier implements IAddElementModifier {
 	}
 
 	/**
+	 * Creates a builder to build {@link AddElementModifier} and initialize it with the given object. <b>CAUTION:</b>
+	 * Performs a shallow copy, i.e. does NOT copy the contained attribute and element modifiers.
+	 *
+	 * @param addElementModifier to initialize the builder with
+	 * @return created builder
+	 */
+	public static Builder builderFrom(IAddElementModifier addElementModifier) {
+		return new Builder(addElementModifier);
+	}
+
+	/**
 	 * Builder to build {@link AddElementModifier}.
 	 */
 	public static final class Builder {
@@ -197,6 +201,19 @@ public class AddElementModifier implements IAddElementModifier {
 		private Builder(URI schemaURI, int schemaVersion) {
 			this.schemaURI = schemaURI;
 			this.schemaVersion = schemaVersion;
+		}
+
+		private Builder(IAddElementModifier addElementModifier) {
+			this.schemaURI = addElementModifier.getSchemaURI();
+			this.schemaVersion = addElementModifier.getSchemaVersion();
+			this.elementID = addElementModifier.getElementID();
+			this.dependencies = addElementModifier.getDependencies();
+			this.referenceID = addElementModifier.getReferenceID();
+			this.name = addElementModifier.getName();
+			this.typeID = addElementModifier.getTypeID();
+			this.minOccurrence = addElementModifier.getMinOccurrence();
+			this.maxOccurrence = addElementModifier.getMinOccurrence();
+			this.contentType = addElementModifier.getContentType();
 		}
 
 		/**

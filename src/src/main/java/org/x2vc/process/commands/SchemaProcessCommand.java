@@ -16,7 +16,7 @@ import picocli.CommandLine.Command;
 public class SchemaProcessCommand extends AbstractProcessCommand implements Callable<Integer> {
 
 	@Inject
-	SchemaProcessCommand(IProcessDirector processDirector, IWorkerProcessManager workerProcessManager) {
+	SchemaProcessCommand(IProcessDirectorManager processDirector, IWorkerProcessManager workerProcessManager) {
 		super(processDirector, workerProcessManager);
 	}
 
