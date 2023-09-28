@@ -1,13 +1,16 @@
 package org.x2vc.process.tasks;
 
 import java.io.File;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.x2vc.schema.ISchemaManager;
+import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.stylesheet.IStylesheetInformation;
 import org.x2vc.stylesheet.IStylesheetManager;
+import org.x2vc.utilities.IDebugObjectWriter;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
@@ -21,16 +24,21 @@ public class InitializationTask implements IInitializationTask {
 
 	private IStylesheetManager stylesheetManager;
 	private ISchemaManager schemaManager;
+	private IDebugObjectWriter debugObjectWriter;
 	private File xsltFile;
 	private ProcessingMode mode;
 	private Consumer<Boolean> callback;
 
+	private UUID taskID = UUID.randomUUID();
+
 	@Inject
 	InitializationTask(IStylesheetManager stylesheetManager, ISchemaManager schemaManager,
+			IDebugObjectWriter debugObjectWriter,
 			@Assisted File xsltFile, @Assisted ProcessingMode mode, @Assisted Consumer<Boolean> callback) {
 		super();
 		this.stylesheetManager = stylesheetManager;
 		this.schemaManager = schemaManager;
+		this.debugObjectWriter = debugObjectWriter;
 		this.xsltFile = xsltFile;
 		this.mode = mode;
 		this.callback = callback;
@@ -52,7 +60,8 @@ public class InitializationTask implements IInitializationTask {
 						this.xsltFile);
 				this.callback.accept(false);
 			} else {
-				this.schemaManager.getSchema(stylesheetInfo.getURI());
+				final IXMLSchema schema = this.schemaManager.getSchema(stylesheetInfo.getURI());
+				this.debugObjectWriter.writeSchema(this.taskID, schema);
 				this.callback.accept(true);
 			}
 

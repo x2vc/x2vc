@@ -15,6 +15,8 @@ import org.apache.logging.log4j.Logger;
 import org.x2vc.processor.IHTMLDocumentContainer;
 import org.x2vc.report.IVulnerabilityCandidate;
 import org.x2vc.report.VulnerabilityCandidate;
+import org.x2vc.schema.structure.IXMLSchema;
+import org.x2vc.schema.structure.XMLSchema;
 import org.x2vc.xml.document.IXMLDocumentContainer;
 import org.x2vc.xml.request.DocumentRequest;
 import org.x2vc.xml.request.IDocumentRequest;
@@ -37,17 +39,20 @@ public class DebugObjectWriter implements IDebugObjectWriter {
 	private boolean xmlOutputEnabled;
 	private boolean htmlOutputEnabled;
 	private boolean vulnerabilityCandidateOutputEnabled;
+	private boolean schemaOutputEnabled;
 	private File outputPath;
 
 	@Inject
 	DebugObjectWriter(@TypesafeConfig("x2vc.xml.request.write_to_file") boolean requestOutputEnabled,
 			@TypesafeConfig("x2vc.xml.document.write_to_file") boolean xmlOutputEnabled,
 			@TypesafeConfig("x2vc.html.document.write_to_file") boolean htmlOutputEnabled,
-			@TypesafeConfig("x2vc.analysis.candidates.write_to_file") boolean vulnerabilityCandidateOutputEnabled) {
+			@TypesafeConfig("x2vc.analysis.candidates.write_to_file") boolean vulnerabilityCandidateOutputEnabled,
+			@TypesafeConfig("x2vc.schema.write_to_file") boolean schemaOutputEnabled) {
 		this.requestOutputEnabled = requestOutputEnabled;
 		this.xmlOutputEnabled = xmlOutputEnabled;
 		this.htmlOutputEnabled = htmlOutputEnabled;
 		this.vulnerabilityCandidateOutputEnabled = vulnerabilityCandidateOutputEnabled;
+		this.schemaOutputEnabled = schemaOutputEnabled;
 		this.outputPath = new File("debugOutput");
 	}
 
@@ -131,6 +136,32 @@ public class DebugObjectWriter implements IDebugObjectWriter {
 				marshaller.marshal(vulnerabilityCandidate, outputFile);
 			} catch (final Exception e) {
 				logger.error("Unable to write vulnerability candidate to file", e);
+			}
+		}
+		logger.traceExit();
+	}
+
+	@SuppressWarnings("java:S4738") // Java supplier does not support memoization
+	Supplier<JAXBContext> schemaContextSupplier = Suppliers.memoize(() -> {
+		try {
+			return JAXBContext.newInstance(XMLSchema.class);
+		} catch (final JAXBException e) {
+			logger.error("Unable to provide JAXB context for vulnerability candidates", e);
+			throw new DebugOutputError(e);
+		}
+	});
+
+	@Override
+	public void writeSchema(UUID taskID, IXMLSchema schema) {
+		logger.traceEntry("for task ID {}", taskID);
+		if (this.schemaOutputEnabled) {
+			try {
+				final File outputFile = provideOutputFile(taskID, "schema", "xml");
+				final Marshaller marshaller = this.schemaContextSupplier.get().createMarshaller();
+				marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+				marshaller.marshal(schema, outputFile);
+			} catch (final Exception e) {
+				logger.error("Unable to write schema to file", e);
 			}
 		}
 		logger.traceExit();
