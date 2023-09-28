@@ -353,4 +353,12 @@ public class AddElementModifier implements IAddElementModifier {
 		this.elementModifiers.add(elementModifier);
 	}
 
+	@Override
+	public int count() {
+		int result = 1;
+		result += this.attributeModifiers.stream().mapToInt(IAddAttributeModifier::count).sum();
+		result += this.elementModifiers.stream().mapToInt(IAddElementModifier::count).sum();
+		return result;
+	}
+
 }

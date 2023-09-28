@@ -25,6 +25,7 @@ public class SchemaModifierCollector implements ISchemaModifierCollector {
 
 	private Multimap<ModifierKey, IAddAttributeModifier> attributeModifiers;
 	private Multimap<ModifierKey, IAddElementModifier> elementModifiers;
+	int collectedModifierCount;
 
 	SchemaModifierCollector() {
 		clear();
@@ -37,6 +38,7 @@ public class SchemaModifierCollector implements ISchemaModifierCollector {
 		this.schemaVersion = 0;
 		this.attributeModifiers = MultimapBuilder.hashKeys().arrayListValues().build();
 		this.elementModifiers = MultimapBuilder.hashKeys().arrayListValues().build();
+		this.collectedModifierCount = 0;
 		logger.traceExit();
 	}
 
@@ -44,6 +46,7 @@ public class SchemaModifierCollector implements ISchemaModifierCollector {
 	public void addModifier(ISchemaModifier modifier) throws IllegalArgumentException {
 		logger.traceEntry();
 		checkSchemaCoherence(modifier);
+		this.collectedModifierCount += modifier.count();
 		if (modifier instanceof final IAddAttributeModifier attributeModifier) {
 			addAttributeModifier(attributeModifier);
 		} else if (modifier instanceof final IAddElementModifier elementModifier) {
@@ -238,6 +241,9 @@ public class SchemaModifierCollector implements ISchemaModifierCollector {
 		final Set<ISchemaModifier> result = new HashSet<>();
 		result.addAll(this.attributeModifiers.values());
 		result.addAll(this.elementModifiers.values());
+		final int consolidatedModifierCount = result.stream().mapToInt(ISchemaModifier::count).sum();
+		logger.debug("Consolidated {} schema modification requests to {} unique requests.", this.collectedModifierCount,
+				consolidatedModifierCount);
 		return logger.traceExit(ImmutableSet.copyOf(result));
 	}
 

@@ -257,4 +257,10 @@ public class AddAttributeModifier implements IAddAttributeModifier {
 				+ this.attributeID + ", datatype=" + this.datatype + "]";
 	}
 
+	@Override
+	public int count() {
+		// this modifier has a fixed structure
+		return 1;
+	}
+
 }

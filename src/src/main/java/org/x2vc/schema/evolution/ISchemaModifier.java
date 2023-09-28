@@ -42,4 +42,9 @@ public interface ISchemaModifier {
 	 */
 	int hashCodeIgnoringIDs();
 
+	/**
+	 * @return the total number of modifiers including this modifier and all sub-modifiers
+	 */
+	int count();
+
 }
