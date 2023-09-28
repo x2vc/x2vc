@@ -663,7 +663,6 @@ public class ValueTraceAnalyzer implements IValueTraceAnalyzer {
 				.builder(this.schemaURI, this.schemaVersion)
 				.withElementID(schemaElement.getID())
 				.withName(elementName)
-				.withDependency(schemaElement.getModifier())
 				.build();
 		}
 
@@ -717,7 +716,6 @@ public class ValueTraceAnalyzer implements IValueTraceAnalyzer {
 				.builder(this.schemaURI, this.schemaVersion)
 				.withElementID(schemaElement.getID())
 				.withName(attributeName)
-				.withDependency(schemaElement.getModifier())
 				.build();
 		}
 	}

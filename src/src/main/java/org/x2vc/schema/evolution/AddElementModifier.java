@@ -15,7 +15,6 @@ public class AddElementModifier implements IAddElementModifier {
 	private URI schemaURI;
 	private int schemaVersion;
 	private UUID elementID;
-	private Set<ISchemaModifier> dependencies;
 	private UUID referenceID;
 	private String name;
 	private UUID typeID;
@@ -30,7 +29,6 @@ public class AddElementModifier implements IAddElementModifier {
 		this.schemaURI = builder.schemaURI;
 		this.schemaVersion = builder.schemaVersion;
 		this.elementID = builder.elementID;
-		this.dependencies = builder.dependencies;
 		this.referenceID = builder.referenceID;
 		this.name = builder.name;
 		this.typeID = builder.typeID;
@@ -52,11 +50,6 @@ public class AddElementModifier implements IAddElementModifier {
 	@Override
 	public UUID getElementID() {
 		return this.elementID;
-	}
-
-	@Override
-	public Set<ISchemaModifier> getDependencies() {
-		return this.dependencies;
 	}
 
 	@Override
@@ -93,7 +86,6 @@ public class AddElementModifier implements IAddElementModifier {
 	public int hashCode() {
 		return Objects.hash(
 				this.contentType,
-				this.dependencies,
 				this.elementID,
 				this.maxOccurrence,
 				this.minOccurrence,
@@ -129,7 +121,6 @@ public class AddElementModifier implements IAddElementModifier {
 		}
 		final AddElementModifier other = (AddElementModifier) obj;
 		return this.contentType == other.contentType
-				&& Objects.equals(this.dependencies, other.dependencies)
 				&& Objects.equals(this.elementID, other.elementID)
 				&& Objects.equals(this.maxOccurrence, other.maxOccurrence)
 				&& Objects.equals(this.minOccurrence, other.minOccurrence)
@@ -190,7 +181,6 @@ public class AddElementModifier implements IAddElementModifier {
 		private URI schemaURI;
 		private int schemaVersion;
 		private UUID elementID;
-		private Set<ISchemaModifier> dependencies = new HashSet<>();
 		private UUID referenceID = UUID.randomUUID();
 		private String name;
 		private UUID typeID = UUID.randomUUID();
@@ -207,7 +197,6 @@ public class AddElementModifier implements IAddElementModifier {
 			this.schemaURI = addElementModifier.getSchemaURI();
 			this.schemaVersion = addElementModifier.getSchemaVersion();
 			this.elementID = addElementModifier.getElementID();
-			this.dependencies = addElementModifier.getDependencies();
 			this.referenceID = addElementModifier.getReferenceID();
 			this.name = addElementModifier.getName();
 			this.typeID = addElementModifier.getTypeID();
@@ -224,30 +213,6 @@ public class AddElementModifier implements IAddElementModifier {
 		 */
 		public Builder withElementID(UUID elementID) {
 			this.elementID = elementID;
-			return this;
-		}
-
-		/**
-		 * Builder method for dependencies parameter.
-		 *
-		 * @param dependency field to set
-		 * @return builder
-		 */
-		public Builder withDependency(ISchemaModifier dependency) {
-			this.dependencies.add(dependency);
-			return this;
-		}
-
-		/**
-		 * Builder method for dependencies parameter.
-		 *
-		 * @param dependency field to set
-		 * @return builder
-		 */
-		public Builder withDependency(Optional<? extends ISchemaModifier> dependency) {
-			if (dependency.isPresent()) {
-				this.dependencies.add(dependency.get());
-			}
 			return this;
 		}
 

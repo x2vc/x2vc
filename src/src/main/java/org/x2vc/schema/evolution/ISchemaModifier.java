@@ -1,7 +1,6 @@
 package org.x2vc.schema.evolution;
 
 import java.net.URI;
-import java.util.Set;
 import java.util.UUID;
 
 /**
@@ -23,12 +22,6 @@ public interface ISchemaModifier {
 	 * @return the ID of the schema element being modified
 	 */
 	UUID getElementID();
-
-	/**
-	 * @return the modifiers that this modifier depends upon (e.g. because the dependency adds an element that this
-	 *         modifier then adds an attribute to)
-	 */
-	Set<ISchemaModifier> getDependencies();
 
 	/**
 	 * @param otherModifier

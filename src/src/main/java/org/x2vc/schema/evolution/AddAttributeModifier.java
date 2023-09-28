@@ -1,7 +1,8 @@
 package org.x2vc.schema.evolution;
 
 import java.net.URI;
-import java.util.*;
+import java.util.Objects;
+import java.util.UUID;
 
 import org.x2vc.schema.structure.XMLDatatype;
 
@@ -13,7 +14,6 @@ public class AddAttributeModifier implements IAddAttributeModifier {
 	private URI schemaURI;
 	private int schemaVersion;
 	private UUID elementID;
-	private Set<ISchemaModifier> dependencies;
 	private UUID attributeID;
 	private String name;
 	private XMLDatatype datatype;
@@ -22,7 +22,6 @@ public class AddAttributeModifier implements IAddAttributeModifier {
 		this.schemaURI = builder.schemaURI;
 		this.schemaVersion = builder.schemaVersion;
 		this.elementID = builder.elementID;
-		this.dependencies = builder.dependencies;
 		this.attributeID = builder.attributeID;
 		this.name = builder.name;
 		this.datatype = builder.datatype;
@@ -44,11 +43,6 @@ public class AddAttributeModifier implements IAddAttributeModifier {
 	}
 
 	@Override
-	public Set<ISchemaModifier> getDependencies() {
-		return this.dependencies;
-	}
-
-	@Override
 	public UUID getAttributeID() {
 		return this.attributeID;
 	}
@@ -67,7 +61,6 @@ public class AddAttributeModifier implements IAddAttributeModifier {
 	public int hashCode() {
 		return Objects.hash(
 				this.datatype,
-				this.dependencies,
 				this.elementID,
 				this.name,
 				this.attributeID,
@@ -98,7 +91,6 @@ public class AddAttributeModifier implements IAddAttributeModifier {
 		}
 		final AddAttributeModifier other = (AddAttributeModifier) obj;
 		return this.datatype == other.datatype
-				&& Objects.equals(this.dependencies, other.dependencies)
 				&& Objects.equals(this.elementID, other.elementID)
 				&& Objects.equals(this.name, other.name)
 				&& Objects.equals(this.attributeID, other.attributeID)
@@ -153,7 +145,6 @@ public class AddAttributeModifier implements IAddAttributeModifier {
 		private URI schemaURI;
 		private int schemaVersion;
 		private UUID elementID;
-		private Set<ISchemaModifier> dependencies = new HashSet<>();
 		private UUID attributeID = UUID.randomUUID();
 		private String name;
 		private XMLDatatype datatype = XMLDatatype.STRING;
@@ -167,7 +158,6 @@ public class AddAttributeModifier implements IAddAttributeModifier {
 			this.schemaURI = addAttributeModifier.getSchemaURI();
 			this.schemaVersion = addAttributeModifier.getSchemaVersion();
 			this.elementID = addAttributeModifier.getElementID();
-			this.dependencies = addAttributeModifier.getDependencies();
 			this.attributeID = addAttributeModifier.getAttributeID();
 			this.name = addAttributeModifier.getName();
 			this.datatype = addAttributeModifier.getDatatype();
@@ -181,30 +171,6 @@ public class AddAttributeModifier implements IAddAttributeModifier {
 		 */
 		public Builder withElementID(UUID elementID) {
 			this.elementID = elementID;
-			return this;
-		}
-
-		/**
-		 * Builder method for dependencies parameter.
-		 *
-		 * @param dependency field to set
-		 * @return builder
-		 */
-		public Builder withDependency(ISchemaModifier dependency) {
-			this.dependencies.add(dependency);
-			return this;
-		}
-
-		/**
-		 * Builder method for dependencies parameter.
-		 *
-		 * @param dependency field to set
-		 * @return builder
-		 */
-		public Builder withDependency(Optional<? extends ISchemaModifier> dependency) {
-			if (dependency.isPresent()) {
-				this.dependencies.add(dependency.get());
-			}
 			return this;
 		}
 
