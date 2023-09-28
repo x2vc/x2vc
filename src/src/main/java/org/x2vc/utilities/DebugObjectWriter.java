@@ -3,6 +3,8 @@ package org.x2vc.utilities;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.Charset;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -176,7 +178,8 @@ public class DebugObjectWriter implements IDebugObjectWriter {
 		if (!this.outputPath.exists()) {
 			this.outputPath.mkdir();
 		}
-		return new File(this.outputPath, String.format("%s__%s.%s", taskID, nameTag, extension));
+		final String timestamp = new SimpleDateFormat("yyyy-MM-dd__HH-mm-ss-SSS").format(new Date());
+		return new File(this.outputPath, String.format("%s__%s__%s.%s", timestamp, nameTag, taskID, extension));
 	}
 
 	class DebugOutputError extends RuntimeException {
