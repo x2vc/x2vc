@@ -10,8 +10,8 @@ import org.apache.logging.log4j.Logger;
 import org.x2vc.processor.IHTMLDocumentContainer;
 import org.x2vc.processor.IXSLTProcessor;
 import org.x2vc.schema.ISchemaManager;
-import org.x2vc.schema.evolution.ISchemaEvolver;
 import org.x2vc.schema.evolution.ISchemaModifier;
+import org.x2vc.schema.evolution.IValueTraceAnalyzer;
 import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.stylesheet.IStylesheetInformation;
 import org.x2vc.stylesheet.IStylesheetManager;
@@ -35,7 +35,7 @@ public class SchemaExplorationTask implements ISchemaExplorationTask {
 	private ISchemaManager schemaManager;
 	private IDocumentGenerator documentGenerator;
 	private IXSLTProcessor processor;
-	private ISchemaEvolver evolver;
+	private IValueTraceAnalyzer valueTraceAnalyuer;
 	private IRequestGenerator requestGenerator;
 	private IDebugObjectWriter debugObjectWriter;
 	private File xsltFile;
@@ -47,7 +47,7 @@ public class SchemaExplorationTask implements ISchemaExplorationTask {
 	@SuppressWarnings("java:S107") // large number of parameters due to dependency injection
 	@Inject
 	SchemaExplorationTask(IStylesheetManager stylesheetManager, ISchemaManager schemaManager,
-			IDocumentGenerator documentGenerator, IXSLTProcessor processor, ISchemaEvolver evolver,
+			IDocumentGenerator documentGenerator, IXSLTProcessor processor, IValueTraceAnalyzer valueTraceAnalyuer,
 			IRequestGenerator requestGenerator, IDebugObjectWriter debugObjectWriter,
 			@Assisted File xsltFile,
 			@Assisted Consumer<ISchemaModifier> modifierCollector,
@@ -57,7 +57,7 @@ public class SchemaExplorationTask implements ISchemaExplorationTask {
 		this.schemaManager = schemaManager;
 		this.documentGenerator = documentGenerator;
 		this.processor = processor;
-		this.evolver = evolver;
+		this.valueTraceAnalyuer = valueTraceAnalyuer;
 		this.requestGenerator = requestGenerator;
 		this.debugObjectWriter = debugObjectWriter;
 		this.xsltFile = xsltFile;
@@ -85,7 +85,7 @@ public class SchemaExplorationTask implements ISchemaExplorationTask {
 			this.debugObjectWriter.writeHTMLDocument(this.taskID, htmlDocument);
 
 			if (!htmlDocument.isFailed()) {
-				this.evolver.analyzeDocument(this.taskID, htmlDocument, this.modifierCollector);
+				this.valueTraceAnalyuer.analyzeDocument(this.taskID, htmlDocument, this.modifierCollector);
 			}
 			this.callback.accept(this.taskID, true);
 		} catch (final Exception ex) {

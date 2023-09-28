@@ -37,16 +37,16 @@ import net.sf.saxon.pattern.NodeKindTest;
 import net.sf.saxon.pattern.NodeTest;
 
 /**
- * Standard implementation of {@link ISchemaEvolver}.
+ * Standard implementation of {@link IValueTraceAnalyzer}.
  */
-public class SchemaEvolver implements ISchemaEvolver {
+public class ValueTraceAnalyzer implements IValueTraceAnalyzer {
 
 	private static final Logger logger = LogManager.getLogger();
 
 	private ISchemaManager schemaManager;
 
 	@Inject
-	protected SchemaEvolver(ISchemaManager schemaManager) {
+	protected ValueTraceAnalyzer(ISchemaManager schemaManager) {
 		super();
 		this.schemaManager = schemaManager;
 	}
@@ -82,7 +82,7 @@ public class SchemaEvolver implements ISchemaEvolver {
 	}
 
 	/**
-	 * Extract the trace events relevant to the schema evolver.
+	 * Extract the trace events relevant to the schema analyzer.
 	 *
 	 * @param container
 	 * @return

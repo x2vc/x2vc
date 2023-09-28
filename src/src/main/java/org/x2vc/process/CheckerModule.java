@@ -21,9 +21,9 @@ import org.x2vc.schema.IInitialSchemaGenerator;
 import org.x2vc.schema.ISchemaManager;
 import org.x2vc.schema.InitialSchemaGenerator;
 import org.x2vc.schema.SchemaManager;
-import org.x2vc.schema.evolution.ISchemaEvolver;
+import org.x2vc.schema.evolution.IValueTraceAnalyzer;
 import org.x2vc.schema.evolution.ISchemaModifierCollector;
-import org.x2vc.schema.evolution.SchemaEvolver;
+import org.x2vc.schema.evolution.ValueTraceAnalyzer;
 import org.x2vc.schema.evolution.SchemaModifierCollector;
 import org.x2vc.stylesheet.*;
 import org.x2vc.stylesheet.structure.IStylesheetStructureExtractor;
@@ -110,7 +110,7 @@ public class CheckerModule extends AbstractModule {
 		bind(IReportWriter.class).to(ReportWriter.class);
 
 		// schema evolution
-		bind(ISchemaEvolver.class).to(SchemaEvolver.class);
+		bind(IValueTraceAnalyzer.class).to(ValueTraceAnalyzer.class);
 		bind(ISchemaModifierCollector.class).to(SchemaModifierCollector.class);
 
 		// schema
