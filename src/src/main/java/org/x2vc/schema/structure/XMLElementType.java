@@ -9,7 +9,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 
 /**
  * Standard implementation of {@link IXMLElementType}.
@@ -38,7 +37,7 @@ public class XMLElementType extends XMLDataObject implements IXMLElementType {
 	 */
 	XMLElementType() {
 		this.attributes = Lists.newArrayList();
-		this.discreteValues = Sets.newHashSet();
+		this.discreteValues = Lists.newArrayList();
 		this.elements = Lists.newArrayList();
 	}
 
@@ -52,7 +51,9 @@ public class XMLElementType extends XMLDataObject implements IXMLElementType {
 		this.maxLength = builder.maxLength;
 		this.minValue = builder.minValue;
 		this.maxValue = builder.maxValue;
-		this.discreteValues = Set.copyOf(builder.discreteValues);
+		this.discreteValues = builder.discreteValues.stream()
+			.sorted((v1, v2) -> v1.getID().compareTo(v2.getID()))
+			.toList();
 		this.fixedValueset = builder.fixedValueset;
 		this.userModifiable = builder.userModifiable;
 		this.elements = List.copyOf(builder.elements);
@@ -132,7 +133,7 @@ public class XMLElementType extends XMLDataObject implements IXMLElementType {
 	}
 
 	@Override
-	public Set<IXMLDiscreteValue> getDiscreteValues() {
+	public Collection<IXMLDiscreteValue> getDiscreteValues() {
 		if (this.contentType == ContentType.DATA) {
 			return this.discreteValues;
 		} else {

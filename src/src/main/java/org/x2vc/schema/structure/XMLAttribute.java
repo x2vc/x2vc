@@ -7,7 +7,7 @@ import java.util.UUID;
 
 import javax.xml.bind.annotation.XmlAttribute;
 
-import com.google.common.collect.Sets;
+import com.google.common.collect.Lists;
 
 /**
  * Standard implementation of {@link IXMLAttribute}.
@@ -27,7 +27,7 @@ public class XMLAttribute extends XMLDataObject implements IXMLAttribute {
 	 * Parameterless constructor for deserialization only.
 	 */
 	XMLAttribute() {
-		this.discreteValues = Sets.newHashSet();
+		this.discreteValues = Lists.newArrayList();
 	}
 
 	private XMLAttribute(Builder builder) {
@@ -39,7 +39,9 @@ public class XMLAttribute extends XMLDataObject implements IXMLAttribute {
 		this.maxLength = builder.maxLength;
 		this.minValue = builder.minValue;
 		this.maxValue = builder.maxValue;
-		this.discreteValues = Set.copyOf(builder.discreteValues);
+		this.discreteValues = builder.discreteValues.stream()
+			.sorted((v1, v2) -> v1.getID().compareTo(v2.getID()))
+			.toList();
 		this.fixedValueset = builder.fixedValueset;
 		this.userModifiable = builder.userModifiable;
 		// TODO XML Schema: Validate XMLAttribute attribute combinations

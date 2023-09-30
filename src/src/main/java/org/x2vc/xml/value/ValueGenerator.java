@@ -1,8 +1,8 @@
 package org.x2vc.xml.value;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.apache.logging.log4j.LogManager;
@@ -185,7 +185,7 @@ public class ValueGenerator implements IValueGenerator {
 						maxValue.get());
 				result = false;
 			}
-			final Set<IXMLDiscreteValue> discreteValues = schemaObject.getDiscreteValues();
+			final Collection<IXMLDiscreteValue> discreteValues = schemaObject.getDiscreteValues();
 			if (!discreteValues.isEmpty() && schemaObject.isFixedValueset().orElse(false) && (discreteValues.stream()
 				.noneMatch(dv -> (dv.getDataType() == XMLDataType.INTEGER) && (dv.asInteger() == intValue)))) {
 				logger.warn("requested value {} is not part of the fixed value set", value);
@@ -215,7 +215,7 @@ public class ValueGenerator implements IValueGenerator {
 					maxLength.get());
 			result = false;
 		}
-		final Set<IXMLDiscreteValue> discreteValues = schemaObject.getDiscreteValues();
+		final Collection<IXMLDiscreteValue> discreteValues = schemaObject.getDiscreteValues();
 		if (!discreteValues.isEmpty() && schemaObject.isFixedValueset().orElse(false) && (discreteValues.stream()
 			.noneMatch(dv -> (dv.getDataType() == XMLDataType.STRING) && (dv.asString().equals(value))))) {
 			logger.warn("requested value {} is not part of the fixed value set", value);

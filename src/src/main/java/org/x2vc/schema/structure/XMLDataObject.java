@@ -1,8 +1,9 @@
 package org.x2vc.schema.structure;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -31,7 +32,7 @@ public abstract class XMLDataObject extends AbstractSchemaObject implements IXML
 	protected Integer maxValue;
 
 	@XmlElement(type = XMLDiscreteValue.class, name = "discreteValue")
-	protected Set<IXMLDiscreteValue> discreteValues;
+	protected List<IXMLDiscreteValue> discreteValues;
 
 	@XmlAttribute
 	protected Boolean fixedValueset;
@@ -69,7 +70,7 @@ public abstract class XMLDataObject extends AbstractSchemaObject implements IXML
 	}
 
 	@Override
-	public Set<IXMLDiscreteValue> getDiscreteValues() {
+	public Collection<IXMLDiscreteValue> getDiscreteValues() {
 		return this.discreteValues;
 	}
 
