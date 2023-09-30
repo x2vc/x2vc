@@ -12,6 +12,7 @@ import org.x2vc.process.tasks.*;
 import org.x2vc.schema.evolution.ISchemaModifierCollector;
 import org.x2vc.xml.request.IDocumentRequest;
 
+import com.github.racc.tscg.TypesafeConfig;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
@@ -32,16 +33,13 @@ public class ProcessDirector implements IProcessDirector {
 	private IWorkerProcessManager workerProcessManager;
 	private ISchemaModifierCollector schemaModifierCollector;
 
+	private int schemaExplorationDocumentCount;
+	private int schemaEvolutionPassLimit;
+	private int xssInitialDocumentCount;
 	private File xsltFile;
 	private ProcessingMode processingMode;
 	private ProcessState processState;
 	private int currentSchemaIteration = 0;
-
-	private static final int SCHEMA_EXPLORATION_DOC_COUNT = 5; // TODO make this configurable
-	private static final int NUM_SCHEMA_ITERATIONS = 5; // TODO make this configurable
-
-	private static final int NUM_XSS_INITIAL_DOCUMENTS = 5; // TODO make this configurable
-	// @TypesafeConfig("x2vc.xml.initial_documents") Integer initialDocumentCount
 
 	private Set<UUID> schemaExplorationTasks = new HashSet<>();
 	private int failedExplorationTasks = 0;
@@ -56,6 +54,9 @@ public class ProcessDirector implements IProcessDirector {
 			IReportGeneratorTaskFactory reportGeneratorTaskFactory,
 			IWorkerProcessManager workerProcessManager,
 			ISchemaModifierCollector schemaModifierCollector,
+			@TypesafeConfig("x2vc.schema.document_count") Integer schemaExplorationDocumentCount,
+			@TypesafeConfig("x2vc.schema.evolution_pass_limit") Integer schemaEvolutionPassLimit,
+			@TypesafeConfig("x2vc.xml.initial_documents") Integer xssInitialDocumentCount,
 			@Assisted File xsltFile,
 			@Assisted ProcessingMode mode) {
 		this.initializationTaskFactory = initializationTaskFactory;
@@ -66,6 +67,9 @@ public class ProcessDirector implements IProcessDirector {
 		this.reportGeneratorTaskFactory = reportGeneratorTaskFactory;
 		this.workerProcessManager = workerProcessManager;
 		this.schemaModifierCollector = schemaModifierCollector;
+		this.schemaExplorationDocumentCount = schemaExplorationDocumentCount;
+		this.schemaEvolutionPassLimit = schemaEvolutionPassLimit;
+		this.xssInitialDocumentCount = xssInitialDocumentCount;
 		this.xsltFile = xsltFile;
 		this.processingMode = mode;
 		this.processState = ProcessState.NEW;
@@ -127,9 +131,9 @@ public class ProcessDirector implements IProcessDirector {
 		this.currentSchemaIteration++;
 		// generate a number of initial document requests
 		logger.debug("submitting {} document requests for schema exploration of stylesheet {}",
-				SCHEMA_EXPLORATION_DOC_COUNT,
+				this.schemaExplorationDocumentCount,
 				this.xsltFile);
-		for (int i = 0; i < SCHEMA_EXPLORATION_DOC_COUNT; i++) {
+		for (int i = 0; i < this.schemaExplorationDocumentCount; i++) {
 			final ISchemaExplorationTask explorationTask = this.schemaExplorationTaskFactory
 				.create(
 						this.xsltFile, this.schemaModifierCollector::addModifier, this::handleExplorationComplete);
@@ -153,7 +157,7 @@ public class ProcessDirector implements IProcessDirector {
 		this.schemaExplorationTasks.remove(taskID);
 		if (this.schemaExplorationTasks.isEmpty()) {
 			// when the last task has completed, decide what to do
-			if (this.failedExplorationTasks == SCHEMA_EXPLORATION_DOC_COUNT) {
+			if (this.failedExplorationTasks == this.schemaExplorationDocumentCount) {
 				// something has gone VERY wrong, abort
 				logger.error("All {} attempts to explore the schema use of stylesheet {} have failed",
 						this.failedExplorationTasks, this.xsltFile);
@@ -196,8 +200,8 @@ public class ProcessDirector implements IProcessDirector {
 	private synchronized void handleEvolutionComplete(Boolean result) {
 		logger.traceEntry();
 		logger.debug("round {} of {} of schema evolution of stylesheet {} completed, schema changes: {}",
-				this.currentSchemaIteration, NUM_SCHEMA_ITERATIONS, this.xsltFile, result);
-		if (Boolean.TRUE.equals(result) && (this.currentSchemaIteration < NUM_SCHEMA_ITERATIONS)) {
+				this.currentSchemaIteration, this.schemaEvolutionPassLimit, this.xsltFile, result);
+		if (Boolean.TRUE.equals(result) && (this.currentSchemaIteration < this.schemaEvolutionPassLimit)) {
 			// new schema version generated AND maximum count not yet reached - try again, sam
 			startSchemaExploration();
 		} else {
@@ -217,9 +221,9 @@ public class ProcessDirector implements IProcessDirector {
 		logger.traceEntry();
 		this.processState = ProcessState.CHECK_XSS;
 		logger.debug("submitting {} document requests for vulnerability analysis of stylesheet {}",
-				NUM_XSS_INITIAL_DOCUMENTS,
+				this.xssInitialDocumentCount,
 				this.xsltFile);
-		for (int i = 0; i < NUM_XSS_INITIAL_DOCUMENTS; i++) {
+		for (int i = 0; i < this.xssInitialDocumentCount; i++) {
 			final IInitialVulnerabilityCheckTask checkTask = this.initialVulnerabilityCheckTaskFactory
 				.create(
 						this.xsltFile, this::collectFollowupRequest, this::handleVulnerabilityCheckComplete);
