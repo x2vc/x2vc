@@ -21,7 +21,7 @@ import org.x2vc.schema.structure.IXMLAttribute;
 import org.x2vc.schema.structure.IXMLElementType;
 import org.x2vc.schema.structure.IXMLElementType.ContentType;
 import org.x2vc.schema.structure.IXMLSchema;
-import org.x2vc.schema.structure.XMLDatatype;
+import org.x2vc.schema.structure.XMLDataType;
 import org.x2vc.utilities.URIUtilities;
 import org.x2vc.utilities.URIUtilities.ObjectType;
 import org.x2vc.xml.document.IDocumentModifier;
@@ -122,7 +122,7 @@ public abstract class AnalyzerRuleTestBase {
 		lenient().when(attribute.isAttribute()).thenReturn(true);
 		lenient().when(attribute.asAttribute()).thenReturn(attribute);
 		lenient().when(attribute.isUserModifiable()).thenReturn(true);
-		lenient().when(attribute.getDatatype()).thenReturn(XMLDatatype.STRING);
+		lenient().when(attribute.getDataType()).thenReturn(XMLDataType.STRING);
 		lenient().when(attribute.getMaxLength()).thenReturn(Optional.empty());
 		return attribute;
 	}
@@ -141,7 +141,7 @@ public abstract class AnalyzerRuleTestBase {
 		lenient().when(elementType.isUserModifiable()).thenReturn(Optional.of(true));
 		lenient().when(elementType.getContentType()).thenReturn(ContentType.DATA);
 		lenient().when(elementType.hasDataContent()).thenReturn(true);
-		lenient().when(elementType.getDatatype()).thenReturn(XMLDatatype.STRING);
+		lenient().when(elementType.getDataType()).thenReturn(XMLDataType.STRING);
 		lenient().when(elementType.getMaxLength()).thenReturn(Optional.empty());
 		return elementType;
 	}

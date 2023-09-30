@@ -34,7 +34,7 @@ public class XMLAttribute extends XMLDataObject implements IXMLAttribute {
 		this.id = builder.id;
 		this.comment = builder.comment;
 		this.name = builder.name;
-		this.datatype = builder.datatype;
+		this.dataType = builder.dataType;
 		this.optional = builder.optional;
 		this.maxLength = builder.maxLength;
 		this.minValue = builder.minValue;
@@ -108,7 +108,7 @@ public class XMLAttribute extends XMLDataObject implements IXMLAttribute {
 		private UUID id;
 		private String comment;
 		private String name;
-		private XMLDatatype datatype;
+		private XMLDataType dataType;
 		private Boolean optional = false;
 		private Integer maxLength;
 		private Integer minValue;
@@ -142,12 +142,12 @@ public class XMLAttribute extends XMLDataObject implements IXMLAttribute {
 			this.id = xMLAttribute.getID();
 			this.comment = xMLAttribute.getComment().orElse(null);
 			this.name = xMLAttribute.getName();
-			this.datatype = xMLAttribute.getDatatype();
+			this.dataType = xMLAttribute.getDataType();
 			this.optional = xMLAttribute.isOptional();
-			if (this.datatype == XMLDatatype.STRING) {
+			if (this.dataType == XMLDataType.STRING) {
 				this.maxLength = xMLAttribute.getMaxLength().orElse(null);
 			}
-			if (this.datatype == XMLDatatype.INTEGER) {
+			if (this.dataType == XMLDataType.INTEGER) {
 				this.minValue = xMLAttribute.getMinValue().orElse(null);
 				this.maxValue = xMLAttribute.getMaxValue().orElse(null);
 			}
@@ -176,8 +176,8 @@ public class XMLAttribute extends XMLDataObject implements IXMLAttribute {
 		 * @param type field to set
 		 * @return builder
 		 */
-		public Builder withType(XMLDatatype type) {
-			this.datatype = type;
+		public Builder withType(XMLDataType type) {
+			this.dataType = type;
 			return this;
 		}
 

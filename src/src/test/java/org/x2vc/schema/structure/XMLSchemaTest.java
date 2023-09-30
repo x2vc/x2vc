@@ -40,17 +40,17 @@ class XMLSchemaTest {
 
 		final XMLElementType elemChildStringType = XMLElementType.builder()
 			.withComment("sequence element with string type").withContentType(ContentType.DATA)
-			.withDatatype(XMLDatatype.STRING).withMaxLength(42).addTo(schemaBuilder);
+			.withDataType(XMLDataType.STRING).withMaxLength(42).addTo(schemaBuilder);
 		XMLElementReference.builder("stringChild", elemChildStringType)
 			.withComment("reference to sequence element with string type").addTo(builderRootA);
 		final XMLElementType elemChildBoolType = XMLElementType.builder()
 			.withComment("sequence element with boolean type").withContentType(ContentType.DATA)
-			.withDatatype(XMLDatatype.BOOLEAN).addTo(schemaBuilder);
+			.withDataType(XMLDataType.BOOLEAN).addTo(schemaBuilder);
 		XMLElementReference.builder("boolChild", elemChildBoolType)
 			.withComment("reference to sequence element with boolean type").withMinOccurrence(1).addTo(builderRootA);
 		final XMLElementType elemChildIntType = XMLElementType.builder()
 			.withComment("sequence element with integer type").withContentType(ContentType.DATA)
-			.withDatatype(XMLDatatype.INTEGER).withMinValue(1).withMaxValue(42).addTo(schemaBuilder);
+			.withDataType(XMLDataType.INTEGER).withMinValue(1).withMaxValue(42).addTo(schemaBuilder);
 		XMLElementReference.builder("intChild", elemChildIntType)
 			.withComment("reference to sequence element with integer type").withMaxOccurrence(42).addTo(builderRootA);
 
@@ -60,7 +60,7 @@ class XMLSchemaTest {
 			.withContentType(ContentType.ELEMENT).withElementArrangement(ElementArrangement.ALL);
 
 		final XMLElementType elemTextContent = XMLElementType.builder().withComment("all element with data content")
-			.withContentType(ContentType.DATA).withDatatype(XMLDatatype.STRING).withUserModifiable(true)
+			.withContentType(ContentType.DATA).withDataType(XMLDataType.STRING).withUserModifiable(true)
 			.addTo(schemaBuilder);
 		XMLElementReference.builder("text", elemTextContent)
 			.withComment("reference to all element with text content").addTo(builderRootB);
@@ -76,7 +76,7 @@ class XMLSchemaTest {
 			.withContentType(ContentType.ELEMENT).withElementArrangement(ElementArrangement.CHOICE);
 
 		final XMLAttribute attrStringChoice = XMLAttribute.builder("stringAttribute")
-			.withComment("string attribute of choice element").withType(XMLDatatype.STRING).withMaxLength(42)
+			.withComment("string attribute of choice element").withType(XMLDataType.STRING).withMaxLength(42)
 			.withUserModifiable(true).withFixedValueset(true)
 			.addDiscreteValue(XMLDiscreteValue.builder().withComment("first choice").withStringValue("foo").build())
 			.build();
@@ -87,7 +87,7 @@ class XMLSchemaTest {
 			.withComment("reference to choice element with string value").addTo(builderRootC);
 
 		final XMLAttribute attrIntChoice = XMLAttribute.builder("intAttribute")
-			.withComment("int attribute of choice element").withType(XMLDatatype.INTEGER).withMinValue(1)
+			.withComment("int attribute of choice element").withType(XMLDataType.INTEGER).withMinValue(1)
 			.withMaxValue(42).withUserModifiable(true).build();
 		final XMLElementType elemChildIntChoice = XMLElementType.builder()
 			.withComment("choice element with int value").withContentType(ContentType.ELEMENT)
@@ -96,7 +96,7 @@ class XMLSchemaTest {
 			.withComment("reference to choice element with int value").addTo(builderRootC);
 
 		final XMLAttribute attrBoolChoice = XMLAttribute.builder("boolAttribute")
-			.withComment("bool attribute of choice element").withType(XMLDatatype.BOOLEAN).build();
+			.withComment("bool attribute of choice element").withType(XMLDataType.BOOLEAN).build();
 		final XMLElementType elemChildBoolChoice = XMLElementType.builder()
 			.withComment("choice element with bool value").withContentType(ContentType.ELEMENT)
 			.addAttribute(attrBoolChoice).addTo(schemaBuilder);
@@ -145,17 +145,17 @@ class XMLSchemaTest {
 
 		final XMLElementType elemChildStringType = XMLElementType.builder()
 			.withComment("sequence element with string type").withContentType(ContentType.DATA)
-			.withDatatype(XMLDatatype.STRING).withMaxLength(42).addTo(schemaBuilder);
+			.withDataType(XMLDataType.STRING).withMaxLength(42).addTo(schemaBuilder);
 		XMLElementReference.builder("stringChild", elemChildStringType)
 			.withComment("reference to sequence element with string type").addTo(builderRootA);
 		final XMLElementType elemChildBoolType = XMLElementType.builder()
 			.withComment("sequence element with boolean type").withContentType(ContentType.DATA)
-			.withDatatype(XMLDatatype.BOOLEAN).addTo(schemaBuilder);
+			.withDataType(XMLDataType.BOOLEAN).addTo(schemaBuilder);
 		XMLElementReference.builder("boolChild", elemChildBoolType)
 			.withComment("reference to sequence element with boolean type").withMinOccurrence(1).addTo(builderRootA);
 		final XMLElementType elemChildIntType = XMLElementType.builder()
 			.withComment("sequence element with integer type").withContentType(ContentType.DATA)
-			.withDatatype(XMLDatatype.INTEGER).withMinValue(1).withMaxValue(42).addTo(schemaBuilder);
+			.withDataType(XMLDataType.INTEGER).withMinValue(1).withMaxValue(42).addTo(schemaBuilder);
 		XMLElementReference.builder("intChild", elemChildIntType)
 			.withComment("reference to sequence element with integer type").withMaxOccurrence(42).addTo(builderRootA);
 
@@ -165,7 +165,7 @@ class XMLSchemaTest {
 			.withContentType(ContentType.ELEMENT).withElementArrangement(ElementArrangement.ALL);
 
 		final XMLElementType elemTextContent = XMLElementType.builder().withComment("all element with text content")
-			.withContentType(ContentType.DATA).withDatatype(XMLDatatype.STRING).withUserModifiable(true)
+			.withContentType(ContentType.DATA).withDataType(XMLDataType.STRING).withUserModifiable(true)
 			.addTo(schemaBuilder);
 		XMLElementReference.builder("text", elemTextContent)
 			.withComment("reference to all element with text content").addTo(builderRootB);
@@ -181,7 +181,7 @@ class XMLSchemaTest {
 			.withContentType(ContentType.ELEMENT).withElementArrangement(ElementArrangement.CHOICE);
 
 		final XMLAttribute attrStringChoice = XMLAttribute.builder("stringAttribute")
-			.withComment("string attribute of choice element").withType(XMLDatatype.STRING).withMaxLength(42)
+			.withComment("string attribute of choice element").withType(XMLDataType.STRING).withMaxLength(42)
 			.withUserModifiable(true).withFixedValueset(true)
 			.addDiscreteValue(XMLDiscreteValue.builder().withComment("first choice").withStringValue("foo").build())
 			.build();
@@ -192,7 +192,7 @@ class XMLSchemaTest {
 			.withComment("reference to choice element with string value").addTo(builderRootC);
 
 		final XMLAttribute attrIntChoice = XMLAttribute.builder("intAttribute")
-			.withComment("int attribute of choice element").withType(XMLDatatype.INTEGER).withMinValue(1)
+			.withComment("int attribute of choice element").withType(XMLDataType.INTEGER).withMinValue(1)
 			.withMaxValue(42).withUserModifiable(true).build();
 		final XMLElementType elemChildIntChoice = XMLElementType.builder()
 			.withComment("choice element with int value").withContentType(ContentType.ELEMENT)
@@ -201,7 +201,7 @@ class XMLSchemaTest {
 			.withComment("reference to choice element with int value").addTo(builderRootC);
 
 		final XMLAttribute attrBoolChoice = XMLAttribute.builder("boolAttribute")
-			.withComment("bool attribute of choice element").withType(XMLDatatype.BOOLEAN).build();
+			.withComment("bool attribute of choice element").withType(XMLDataType.BOOLEAN).build();
 		final XMLElementType elemChildBoolChoice = XMLElementType.builder()
 			.withComment("choice element with bool value").withContentType(ContentType.ELEMENT)
 			.addAttribute(attrBoolChoice).addTo(schemaBuilder);
@@ -245,18 +245,18 @@ class XMLSchemaTest {
 
 		final XMLElementType elemChildStringType = XMLElementType.builder()
 			.withComment("sequence element with string type").withContentType(ContentType.DATA)
-			.withDatatype(XMLDatatype.STRING).withMaxLength(42).addTo(schemaBuilder);
+			.withDataType(XMLDataType.STRING).withMaxLength(42).addTo(schemaBuilder);
 		final XMLElementReference elemChildString = XMLElementReference.builder("stringChild",
 				elemChildStringType)
 			.withComment("reference to sequence element with string type").addTo(builderRootA);
 		final XMLElementType elemChildBoolType = XMLElementType.builder()
 			.withComment("sequence element with boolean type").withContentType(ContentType.DATA)
-			.withDatatype(XMLDatatype.BOOLEAN).addTo(schemaBuilder);
+			.withDataType(XMLDataType.BOOLEAN).addTo(schemaBuilder);
 		final XMLElementReference elemChildBool = XMLElementReference.builder("boolChild", elemChildBoolType)
 			.withComment("reference to sequence element with boolean type").withMinOccurrence(1).addTo(builderRootA);
 		final XMLElementType elemChildIntType = XMLElementType.builder()
 			.withComment("sequence element with integer type").withContentType(ContentType.DATA)
-			.withDatatype(XMLDatatype.INTEGER).withMinValue(1).withMaxValue(42).addTo(schemaBuilder);
+			.withDataType(XMLDataType.INTEGER).withMinValue(1).withMaxValue(42).addTo(schemaBuilder);
 		final XMLElementReference elemChildInt = XMLElementReference.builder("intChild", elemChildIntType)
 			.withComment("reference to sequence element with integer type").withMaxOccurrence(42).addTo(builderRootA);
 
@@ -266,7 +266,7 @@ class XMLSchemaTest {
 			.withContentType(ContentType.ELEMENT).withElementArrangement(ElementArrangement.ALL);
 
 		final XMLElementType elemTextContent = XMLElementType.builder().withComment("all element with data content")
-			.withContentType(ContentType.DATA).withDatatype(XMLDatatype.STRING).withUserModifiable(true)
+			.withContentType(ContentType.DATA).withDataType(XMLDataType.STRING).withUserModifiable(true)
 			.addTo(schemaBuilder);
 		final XMLElementReference elemText = XMLElementReference.builder("text", elemTextContent)
 			.withComment("reference to all element with text content").addTo(builderRootB);
@@ -282,7 +282,7 @@ class XMLSchemaTest {
 			.withContentType(ContentType.ELEMENT).withElementArrangement(ElementArrangement.CHOICE);
 
 		final XMLAttribute attrStringChoice = XMLAttribute.builder("stringAttribute")
-			.withComment("string attribute of choice element").withType(XMLDatatype.STRING).withMaxLength(42)
+			.withComment("string attribute of choice element").withType(XMLDataType.STRING).withMaxLength(42)
 			.withUserModifiable(true).withFixedValueset(true)
 			.addDiscreteValue(XMLDiscreteValue.builder().withComment("first choice").withStringValue("foo").build())
 			.build();
@@ -294,7 +294,7 @@ class XMLSchemaTest {
 			.withComment("reference to choice element with string value").addTo(builderRootC);
 
 		final XMLAttribute attrIntChoice = XMLAttribute.builder("intAttribute")
-			.withComment("int attribute of choice element").withType(XMLDatatype.INTEGER).withMinValue(1)
+			.withComment("int attribute of choice element").withType(XMLDataType.INTEGER).withMinValue(1)
 			.withMaxValue(42).withUserModifiable(true).build();
 		final XMLElementType elemChildIntChoiceType = XMLElementType.builder()
 			.withComment("choice element with int value").withContentType(ContentType.ELEMENT)
@@ -303,7 +303,7 @@ class XMLSchemaTest {
 			.withComment("reference to choice element with int value").addTo(builderRootC);
 
 		final XMLAttribute attrBoolChoice = XMLAttribute.builder("boolAttribute")
-			.withComment("bool attribute of choice element").withType(XMLDatatype.BOOLEAN).build();
+			.withComment("bool attribute of choice element").withType(XMLDataType.BOOLEAN).build();
 		final XMLElementType elemChildBoolChoiceType = XMLElementType.builder()
 			.withComment("choice element with bool value").withContentType(ContentType.ELEMENT)
 			.addAttribute(attrBoolChoice).addTo(schemaBuilder);

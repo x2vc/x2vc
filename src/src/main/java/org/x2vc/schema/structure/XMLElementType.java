@@ -48,7 +48,7 @@ public class XMLElementType extends XMLDataObject implements IXMLElementType {
 		// sort the attributes by name - irrelevant for the actual function, but makes unit testing A LOT easier
 		this.attributes = builder.attributes.stream().sorted((a1, a2) -> a1.getName().compareTo(a2.getName())).toList();
 		this.contentType = builder.contentType;
-		this.datatype = builder.datatype;
+		this.dataType = builder.dataType;
 		this.maxLength = builder.maxLength;
 		this.minValue = builder.minValue;
 		this.maxValue = builder.maxValue;
@@ -96,11 +96,11 @@ public class XMLElementType extends XMLDataObject implements IXMLElementType {
 	}
 
 	@Override
-	public XMLDatatype getDatatype() {
+	public XMLDataType getDataType() {
 		if (this.contentType == ContentType.DATA) {
-			return super.getDatatype();
+			return super.getDataType();
 		} else {
-			throw logger.throwing(new IllegalStateException("Datatype is only supported for data elements"));
+			throw logger.throwing(new IllegalStateException("DataType is only supported for data elements"));
 		}
 	}
 
@@ -109,7 +109,7 @@ public class XMLElementType extends XMLDataObject implements IXMLElementType {
 		if (this.contentType == ContentType.DATA) {
 			return super.getMaxLength();
 		} else {
-			throw logger.throwing(new IllegalStateException("Datatype is only supported for data elements"));
+			throw logger.throwing(new IllegalStateException("DataType is only supported for data elements"));
 		}
 	}
 
@@ -118,7 +118,7 @@ public class XMLElementType extends XMLDataObject implements IXMLElementType {
 		if (this.contentType == ContentType.DATA) {
 			return super.getMinValue();
 		} else {
-			throw logger.throwing(new IllegalStateException("Datatype is only supported for data elements"));
+			throw logger.throwing(new IllegalStateException("DataType is only supported for data elements"));
 		}
 	}
 
@@ -127,7 +127,7 @@ public class XMLElementType extends XMLDataObject implements IXMLElementType {
 		if (this.contentType == ContentType.DATA) {
 			return super.getMaxValue();
 		} else {
-			throw logger.throwing(new IllegalStateException("Datatype is only supported for data elements"));
+			throw logger.throwing(new IllegalStateException("DataType is only supported for data elements"));
 		}
 	}
 
@@ -218,7 +218,7 @@ public class XMLElementType extends XMLDataObject implements IXMLElementType {
 		private String comment;
 		private Set<IXMLAttribute> attributes = new HashSet<>();
 		private ContentType contentType;
-		private XMLDatatype datatype;
+		private XMLDataType dataType;
 		private Integer maxLength;
 		private Integer minValue;
 		private Integer maxValue;
@@ -249,11 +249,11 @@ public class XMLElementType extends XMLDataObject implements IXMLElementType {
 			this.comment = xMLElementType.getComment().orElse(null);
 			this.contentType = xMLElementType.getContentType();
 			if (this.contentType == ContentType.DATA) {
-				this.datatype = xMLElementType.getDatatype();
-				if (this.datatype == XMLDatatype.STRING) {
+				this.dataType = xMLElementType.getDataType();
+				if (this.dataType == XMLDataType.STRING) {
 					this.maxLength = xMLElementType.getMaxLength().orElse(null);
 				}
-				if (this.datatype == XMLDatatype.INTEGER) {
+				if (this.dataType == XMLDataType.INTEGER) {
 					this.minValue = xMLElementType.getMinValue().orElse(null);
 					this.maxValue = xMLElementType.getMaxValue().orElse(null);
 				}
@@ -320,13 +320,13 @@ public class XMLElementType extends XMLDataObject implements IXMLElementType {
 		}
 
 		/**
-		 * Builder method for datatype parameter.
+		 * Builder method for dataType parameter.
 		 *
-		 * @param datatype field to set
+		 * @param dataType field to set
 		 * @return builder
 		 */
-		public Builder withDatatype(XMLDatatype datatype) {
-			this.datatype = datatype;
+		public Builder withDataType(XMLDataType dataType) {
+			this.dataType = dataType;
 			return this;
 		}
 
@@ -445,7 +445,7 @@ public class XMLElementType extends XMLDataObject implements IXMLElementType {
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + Objects.hash(this.attributes, this.contentType, this.datatype, this.discreteValues,
+		result = prime * result + Objects.hash(this.attributes, this.contentType, this.dataType, this.discreteValues,
 				this.elementArrangement, this.elements, this.fixedValueset, this.maxLength, this.maxValue,
 				this.minValue, this.userModifiable);
 		return result;
@@ -464,7 +464,7 @@ public class XMLElementType extends XMLDataObject implements IXMLElementType {
 		}
 		final XMLElementType other = (XMLElementType) obj;
 		return Objects.equals(this.attributes, other.attributes) && this.contentType == other.contentType
-				&& this.datatype == other.datatype && Objects.equals(this.discreteValues, other.discreteValues)
+				&& this.dataType == other.dataType && Objects.equals(this.discreteValues, other.discreteValues)
 				&& this.elementArrangement == other.elementArrangement && Objects.equals(this.elements, other.elements)
 				&& Objects.equals(this.fixedValueset, other.fixedValueset)
 				&& Objects.equals(this.maxLength, other.maxLength) && Objects.equals(this.maxValue, other.maxValue)

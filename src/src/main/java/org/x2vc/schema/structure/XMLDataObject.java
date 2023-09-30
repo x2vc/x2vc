@@ -19,7 +19,7 @@ public abstract class XMLDataObject extends AbstractSchemaObject implements IXML
 	private static final Logger logger = LogManager.getLogger();
 
 	@XmlAttribute
-	protected XMLDatatype datatype;
+	protected XMLDataType dataType;
 
 	@XmlAttribute
 	protected Integer maxLength;
@@ -37,13 +37,13 @@ public abstract class XMLDataObject extends AbstractSchemaObject implements IXML
 	protected Boolean fixedValueset;
 
 	@Override
-	public XMLDatatype getDatatype() {
-		return this.datatype;
+	public XMLDataType getDataType() {
+		return this.dataType;
 	}
 
 	@Override
 	public Optional<Integer> getMaxLength() {
-		if (this.datatype == XMLDatatype.STRING) {
+		if (this.dataType == XMLDataType.STRING) {
 			return Optional.ofNullable(this.maxLength);
 		} else {
 			throw (logger.throwing(new IllegalStateException("A maximum length is only supported for type STRING")));
@@ -52,7 +52,7 @@ public abstract class XMLDataObject extends AbstractSchemaObject implements IXML
 
 	@Override
 	public Optional<Integer> getMinValue() {
-		if (this.datatype == XMLDatatype.INTEGER) {
+		if (this.dataType == XMLDataType.INTEGER) {
 			return Optional.ofNullable(this.minValue);
 		} else {
 			throw (logger.throwing(new IllegalStateException("A minimum value is only supported for type INTEGER")));
@@ -61,7 +61,7 @@ public abstract class XMLDataObject extends AbstractSchemaObject implements IXML
 
 	@Override
 	public Optional<Integer> getMaxValue() {
-		if (this.datatype == XMLDatatype.INTEGER) {
+		if (this.dataType == XMLDataType.INTEGER) {
 			return Optional.ofNullable(this.maxValue);
 		} else {
 			throw (logger.throwing(new IllegalStateException("A maximum value is only supported for type INTEGER")));
@@ -87,7 +87,7 @@ public abstract class XMLDataObject extends AbstractSchemaObject implements IXML
 		final int prime = 31;
 		int result = super.hashCode();
 		result = prime * result + Objects.hash(this.discreteValues, this.fixedValueset, this.maxLength, this.maxValue,
-				this.minValue, this.datatype);
+				this.minValue, this.dataType);
 		return result;
 	}
 
@@ -106,7 +106,7 @@ public abstract class XMLDataObject extends AbstractSchemaObject implements IXML
 		return Objects.equals(this.discreteValues, other.discreteValues)
 				&& Objects.equals(this.fixedValueset, other.fixedValueset)
 				&& Objects.equals(this.maxLength, other.maxLength) && Objects.equals(this.maxValue, other.maxValue)
-				&& Objects.equals(this.minValue, other.minValue) && this.datatype == other.datatype;
+				&& Objects.equals(this.minValue, other.minValue) && this.dataType == other.dataType;
 	}
 
 }

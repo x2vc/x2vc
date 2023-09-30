@@ -28,15 +28,13 @@ public class ValueGenerator implements IValueGenerator {
 	}
 
 	/**
-	 * When an element or attribute with non-fixed discrete values is encountered:
-	 * What should be the ratio of the discrete values selected as opposed to
-	 * randomly generated values?
+	 * When an element or attribute with non-fixed discrete values is encountered: What should be the ratio of the
+	 * discrete values selected as opposed to randomly generated values?
 	 */
 	private double discreteValueSelectionRatio;
 
 	/**
-	 * When a string value is generated, how many words should be generated
-	 * randomly?
+	 * When a string value is generated, how many words should be generated randomly?
 	 */
 	private int stringMinWordCount;
 	private int stringMaxWordCount;
@@ -114,8 +112,7 @@ public class ValueGenerator implements IValueGenerator {
 	}
 
 	/**
-	 * Generate a value for a schema object (an attribute or an element), taking
-	 * into account a requested value.
+	 * Generate a value for a schema object (an attribute or an element), taking into account a requested value.
 	 *
 	 * @param schemaObject
 	 * @param requestedValue
@@ -151,7 +148,7 @@ public class ValueGenerator implements IValueGenerator {
 	 * @return whether the requested value is valid for the schema object
 	 */
 	private boolean requestedValueIsValidForDataObject(String value, IXMLDataObject schemaObject) {
-		switch (schemaObject.getDatatype()) {
+		switch (schemaObject.getDataType()) {
 		case BOOLEAN:
 			return (value.equals("true") || value.equals("false"));
 		case INTEGER:
@@ -190,7 +187,7 @@ public class ValueGenerator implements IValueGenerator {
 			}
 			final Set<IXMLDiscreteValue> discreteValues = schemaObject.getDiscreteValues();
 			if (!discreteValues.isEmpty() && schemaObject.isFixedValueset().orElse(false) && (discreteValues.stream()
-				.noneMatch(dv -> (dv.getDatatype() == XMLDatatype.INTEGER) && (dv.asInteger() == intValue)))) {
+				.noneMatch(dv -> (dv.getDataType() == XMLDataType.INTEGER) && (dv.asInteger() == intValue)))) {
 				logger.warn("requested value {} is not part of the fixed value set", value);
 				result = false;
 
@@ -220,7 +217,7 @@ public class ValueGenerator implements IValueGenerator {
 		}
 		final Set<IXMLDiscreteValue> discreteValues = schemaObject.getDiscreteValues();
 		if (!discreteValues.isEmpty() && schemaObject.isFixedValueset().orElse(false) && (discreteValues.stream()
-			.noneMatch(dv -> (dv.getDatatype() == XMLDatatype.STRING) && (dv.asString().equals(value))))) {
+			.noneMatch(dv -> (dv.getDataType() == XMLDataType.STRING) && (dv.asString().equals(value))))) {
 			logger.warn("requested value {} is not part of the fixed value set", value);
 			result = false;
 
@@ -235,12 +232,12 @@ public class ValueGenerator implements IValueGenerator {
 	 * @return
 	 */
 	private String generateValueForDataObject(IXMLDataObject schemaObject) {
-		final XMLDatatype datatype = schemaObject.getDatatype();
-		if (datatype == null) {
+		final XMLDataType dataType = schemaObject.getDataType();
+		if (dataType == null) {
 			throw logger.throwing(new IllegalStateException(
-					String.format("schema object %s has no valid datatype set", schemaObject.getID())));
+					String.format("schema object %s has no valid data type set", schemaObject.getID())));
 		}
-		switch (datatype) {
+		switch (dataType) {
 		case BOOLEAN:
 			return (ThreadLocalRandom.current().nextBoolean()) ? "true" : "false";
 		case INTEGER:
@@ -250,7 +247,7 @@ public class ValueGenerator implements IValueGenerator {
 		default:
 			// no generation for other types at the moment
 			throw new IllegalStateException(
-					String.format("no value generation for data type %s implemented", schemaObject.getDatatype()));
+					String.format("no value generation for data type %s implemented", schemaObject.getDataType()));
 		}
 	}
 
@@ -391,8 +388,7 @@ public class ValueGenerator implements IValueGenerator {
 	}
 
 	/**
-	 * Uses the {@link IPrefixSelector} to determine a unique prefix and a default
-	 * length for the generated values.
+	 * Uses the {@link IPrefixSelector} to determine a unique prefix and a default length for the generated values.
 	 */
 	private void selectPrefixAndLength() {
 		logger.traceEntry();

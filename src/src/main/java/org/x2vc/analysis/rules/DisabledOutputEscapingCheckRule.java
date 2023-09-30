@@ -17,7 +17,7 @@ import org.x2vc.report.VulnerabilityCandidate;
 import org.x2vc.schema.ISchemaManager;
 import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.schema.structure.IXMLSchemaObject;
-import org.x2vc.schema.structure.XMLDatatype;
+import org.x2vc.schema.structure.XMLDataType;
 import org.x2vc.xml.document.IDocumentModifier;
 import org.x2vc.xml.document.IXMLDocumentContainer;
 import org.x2vc.xml.value.IValueDescriptor;
@@ -84,7 +84,7 @@ public class DisabledOutputEscapingCheckRule extends AbstractTextRule {
 				// elements
 				final IXMLSchemaObject schemaElement = schema.getObjectByID(schemaElementID);
 				if (schemaElement.isElement() && schemaElement.asElement().hasDataContent()
-						&& schemaElement.asElement().getDatatype() == XMLDatatype.STRING) {
+						&& schemaElement.asElement().getDataType() == XMLDataType.STRING) {
 					// try to replace the entire element with script element
 					logger.debug("attempt to replace \"{}\" with \"&lt;script&gt;...\" for schema element {}",
 							currentValue,

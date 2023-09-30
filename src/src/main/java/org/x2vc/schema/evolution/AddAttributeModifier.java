@@ -4,7 +4,7 @@ import java.net.URI;
 import java.util.Objects;
 import java.util.UUID;
 
-import org.x2vc.schema.structure.XMLDatatype;
+import org.x2vc.schema.structure.XMLDataType;
 
 /**
  * Standard implementation of {@link IAddAttributeModifier}.
@@ -16,7 +16,7 @@ public class AddAttributeModifier implements IAddAttributeModifier {
 	private UUID elementID;
 	private UUID attributeID;
 	private String name;
-	private XMLDatatype datatype;
+	private XMLDataType dataType;
 
 	private AddAttributeModifier(Builder builder) {
 		this.schemaURI = builder.schemaURI;
@@ -24,7 +24,7 @@ public class AddAttributeModifier implements IAddAttributeModifier {
 		this.elementID = builder.elementID;
 		this.attributeID = builder.attributeID;
 		this.name = builder.name;
-		this.datatype = builder.datatype;
+		this.dataType = builder.dataType;
 	}
 
 	@Override
@@ -53,14 +53,14 @@ public class AddAttributeModifier implements IAddAttributeModifier {
 	}
 
 	@Override
-	public XMLDatatype getDatatype() {
-		return this.datatype;
+	public XMLDataType getDataType() {
+		return this.dataType;
 	}
 
 	@Override
 	public int hashCode() {
 		return Objects.hash(
-				this.datatype,
+				this.dataType,
 				this.elementID,
 				this.name,
 				this.attributeID,
@@ -71,7 +71,7 @@ public class AddAttributeModifier implements IAddAttributeModifier {
 	@Override
 	public int hashCodeIgnoringIDs() {
 		return Objects.hash(
-				this.datatype,
+				this.dataType,
 				this.elementID,
 				this.name,
 				this.schemaURI,
@@ -90,7 +90,7 @@ public class AddAttributeModifier implements IAddAttributeModifier {
 			return false;
 		}
 		final AddAttributeModifier other = (AddAttributeModifier) obj;
-		return this.datatype == other.datatype
+		return this.dataType == other.dataType
 				&& Objects.equals(this.elementID, other.elementID)
 				&& Objects.equals(this.name, other.name)
 				&& Objects.equals(this.attributeID, other.attributeID)
@@ -110,7 +110,7 @@ public class AddAttributeModifier implements IAddAttributeModifier {
 			return false;
 		}
 		final AddAttributeModifier other = (AddAttributeModifier) otherModifier;
-		return this.datatype == other.datatype
+		return this.dataType == other.dataType
 				&& Objects.equals(this.elementID, other.elementID)
 				&& Objects.equals(this.name, other.name)
 				&& Objects.equals(this.schemaURI, other.schemaURI)
@@ -147,7 +147,7 @@ public class AddAttributeModifier implements IAddAttributeModifier {
 		private UUID elementID;
 		private UUID attributeID = UUID.randomUUID();
 		private String name;
-		private XMLDatatype datatype = XMLDatatype.STRING;
+		private XMLDataType dataType = XMLDataType.STRING;
 
 		private Builder(URI schemaURI, int schemaVersion) {
 			this.schemaURI = schemaURI;
@@ -160,7 +160,7 @@ public class AddAttributeModifier implements IAddAttributeModifier {
 			this.elementID = addAttributeModifier.getElementID();
 			this.attributeID = addAttributeModifier.getAttributeID();
 			this.name = addAttributeModifier.getName();
-			this.datatype = addAttributeModifier.getDatatype();
+			this.dataType = addAttributeModifier.getDataType();
 		}
 
 		/**
@@ -197,13 +197,13 @@ public class AddAttributeModifier implements IAddAttributeModifier {
 		}
 
 		/**
-		 * Builder method for datatype parameter.
+		 * Builder method for dataType parameter.
 		 *
-		 * @param datatype field to set
+		 * @param dataType field to set
 		 * @return builder
 		 */
-		public Builder withXMLDatatype(XMLDatatype datatype) {
-			this.datatype = datatype;
+		public Builder withXMLDataType(XMLDataType dataType) {
+			this.dataType = dataType;
 			return this;
 		}
 
@@ -220,7 +220,7 @@ public class AddAttributeModifier implements IAddAttributeModifier {
 	@Override
 	public String toString() {
 		return "AddAttributeModifier [name=" + this.name + ", elementID=" + this.elementID + ", attributeID="
-				+ this.attributeID + ", datatype=" + this.datatype + "]";
+				+ this.attributeID + ", dataType=" + this.dataType + "]";
 	}
 
 	@Override

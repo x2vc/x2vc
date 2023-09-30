@@ -7,9 +7,9 @@ package org.x2vc.schema.structure;
 public interface IXMLDiscreteValue extends IXMLSchemaObject {
 
 	/**
-	 * @return the data type of the value, represented as {@link XMLDatatype}.
+	 * @return the data type of the value, represented as {@link XMLDataType}.
 	 */
-	XMLDatatype getDatatype();
+	XMLDataType getDataType();
 
 	/**
 	 * @return the value represented as String, if supported

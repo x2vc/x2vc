@@ -3,24 +3,24 @@
     <elementTypes>
         <elementType contentType="ELEMENT" elementArrangement="ALL" id="c9fdfe14-1c10-4f9f-b42e-5e72b157b262">
             <comment>choice element with int value</comment>
-            <attribute name="intAttribute" datatype="INTEGER" optional="false" minValue="1" maxValue="42" fixedValueset="false" userModifiable="true" id="73a9b784-7a61-48c4-8110-9855cef81cef">
+            <attribute name="intAttribute" dataType="INTEGER" optional="false" minValue="1" maxValue="42" fixedValueset="false" userModifiable="true" id="73a9b784-7a61-48c4-8110-9855cef81cef">
                 <comment>int attribute of choice element</comment>
             </attribute>
         </elementType>
-        <elementType contentType="DATA" datatype="INTEGER" minValue="1" maxValue="42" elementArrangement="ALL" id="5233330c-1ff2-44ff-a6e5-347482ed14a2">
+        <elementType contentType="DATA" dataType="INTEGER" minValue="1" maxValue="42" elementArrangement="ALL" id="5233330c-1ff2-44ff-a6e5-347482ed14a2">
             <comment>sequence element with integer type</comment>
         </elementType>
         <elementType contentType="ELEMENT" elementArrangement="ALL" id="3b5123d0-ea2c-4066-a29c-cd179dd2159b">
             <comment>choice element with bool value</comment>
-            <attribute name="boolAttribute" datatype="BOOLEAN" optional="false" fixedValueset="false" userModifiable="false" id="2e43dd5e-48a2-483d-a14f-805cbdb7a996">
+            <attribute name="boolAttribute" dataType="BOOLEAN" optional="false" fixedValueset="false" userModifiable="false" id="2e43dd5e-48a2-483d-a14f-805cbdb7a996">
                 <comment>bool attribute of choice element</comment>
             </attribute>
         </elementType>
         <elementType contentType="ELEMENT" elementArrangement="ALL" id="f222aa20-1b8a-438a-a2f6-5e573320b66f">
             <comment>choice element with string value</comment>
-            <attribute name="stringAttribute" datatype="STRING" optional="false" maxLength="42" fixedValueset="true" userModifiable="true" id="68a174ff-ef1d-48ae-aa09-accf2566f390">
+            <attribute name="stringAttribute" dataType="STRING" optional="false" maxLength="42" fixedValueset="true" userModifiable="true" id="68a174ff-ef1d-48ae-aa09-accf2566f390">
                 <comment>string attribute of choice element</comment>
-                <discreteValue datatype="STRING" stringValue="foo" id="2c756514-c092-43da-91dc-493a62db88bd">
+                <discreteValue dataType="STRING" stringValue="foo" id="2c756514-c092-43da-91dc-493a62db88bd">
                     <comment>first choice</comment>
                 </discreteValue>
             </attribute>
@@ -37,13 +37,13 @@
                 <comment>reference to choice element with bool value</comment>
             </subElement>
         </elementType>
-        <elementType contentType="DATA" datatype="BOOLEAN" elementArrangement="ALL" id="027c06b3-63e0-40ab-9861-91cbeb78796c">
+        <elementType contentType="DATA" dataType="BOOLEAN" elementArrangement="ALL" id="027c06b3-63e0-40ab-9861-91cbeb78796c">
             <comment>sequence element with boolean type</comment>
         </elementType>
         <elementType contentType="MIXED" userModifiable="true" elementArrangement="ALL" id="00771113-ee28-4cfe-b348-f55cb8861f62">
             <comment>all element with mixed content</comment>
         </elementType>
-        <elementType contentType="DATA" datatype="STRING" maxLength="42" elementArrangement="ALL" id="bc25c48f-b7ff-4ee9-9d8d-a1ef8e106be1">
+        <elementType contentType="DATA" dataType="STRING" maxLength="42" elementArrangement="ALL" id="bc25c48f-b7ff-4ee9-9d8d-a1ef8e106be1">
             <comment>sequence element with string type</comment>
         </elementType>
         <elementType contentType="ELEMENT" elementArrangement="SEQUENCE" id="270055b5-074a-4e84-b3b2-3184839e9090">

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <schema stylesheetURI="file://somewhere/SampleStylesheet.xslt" schemaURI="memory:schema/bar" version="1">
     <elementTypes>
-        <elementType contentType="DATA" datatype="STRING" maxLength="42" elementArrangement="ALL" id="bc25c48f-b7ff-4ee9-9d8d-a1ef8e106be1">
+        <elementType contentType="DATA" dataType="STRING" maxLength="42" elementArrangement="ALL" id="bc25c48f-b7ff-4ee9-9d8d-a1ef8e106be1">
             <comment>root element with string content</comment>
         </elementType>
     </elementTypes>

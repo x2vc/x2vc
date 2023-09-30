@@ -66,7 +66,7 @@ public class InitialSchemaGenerator implements IInitialSchemaGenerator {
 		// add attributes
 		constructionNode.attributes.forEach(atributeName -> {
 			XMLAttribute.builder(atributeName)
-				.withType(XMLDatatype.STRING)
+				.withType(XMLDataType.STRING)
 				.withUserModifiable(true) // assume the worst
 				.addTo(elementBuilder);
 		});

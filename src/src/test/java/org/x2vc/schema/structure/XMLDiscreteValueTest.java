@@ -20,7 +20,7 @@ class XMLDiscreteValueTest {
 		assertTrue(value.isValue());
 
 		assertFalse(value.getComment().isPresent());
-		assertEquals(XMLDatatype.STRING, value.getDatatype());
+		assertEquals(XMLDataType.STRING, value.getDataType());
 		assertEquals("foo", value.asString());
 
 		assertThrows(IllegalStateException.class, () -> value.asInteger());
@@ -36,7 +36,7 @@ class XMLDiscreteValueTest {
 		assertTrue(value.isValue());
 
 		assertFalse(value.getComment().isPresent());
-		assertEquals(XMLDatatype.BOOLEAN, value.getDatatype());
+		assertEquals(XMLDataType.BOOLEAN, value.getDataType());
 		assertEquals(true, value.asBoolean());
 
 		assertThrows(IllegalStateException.class, () -> value.asInteger());
@@ -52,7 +52,7 @@ class XMLDiscreteValueTest {
 		assertTrue(value.isValue());
 
 		assertFalse(value.getComment().isPresent());
-		assertEquals(XMLDatatype.INTEGER, value.getDatatype());
+		assertEquals(XMLDataType.INTEGER, value.getDataType());
 		assertEquals(42, value.asInteger());
 
 		assertThrows(IllegalStateException.class, () -> value.asString());
@@ -68,7 +68,7 @@ class XMLDiscreteValueTest {
 		assertTrue(value.isValue());
 
 		assertFalse(value.getComment().isPresent());
-		assertEquals(XMLDatatype.OTHER, value.getDatatype());
+		assertEquals(XMLDataType.OTHER, value.getDataType());
 
 		assertThrows(IllegalStateException.class, () -> value.asInteger());
 		assertThrows(IllegalStateException.class, () -> value.asString());
@@ -105,7 +105,7 @@ class XMLDiscreteValueTest {
 		assertTrue(copy.getComment().isPresent());
 		assertEquals("rhubarb", copy.getComment().get());
 
-		assertEquals(XMLDatatype.STRING, copy.getDatatype());
+		assertEquals(XMLDataType.STRING, copy.getDataType());
 		assertEquals("foo", copy.asString());
 
 		assertThrows(IllegalStateException.class, () -> copy.asInteger());

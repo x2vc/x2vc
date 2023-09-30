@@ -360,7 +360,7 @@ public abstract class AbstractRule implements IAnalyzerRule {
 			Consumer<IDocumentModifier> collector) {
 		logger.traceEntry();
 		if (attribute.isUserModifiable()) {
-			if (attribute.getDatatype() == XMLDatatype.STRING) {
+			if (attribute.getDataType() == XMLDataType.STRING) {
 				final Integer maxLength = attribute.getMaxLength().orElse(Integer.MAX_VALUE);
 				if (replacementValue.length() <= maxLength) {
 					DocumentValueModifier.builder(valueDescriptor)
@@ -430,7 +430,7 @@ public abstract class AbstractRule implements IAnalyzerRule {
 			String originalValue, String replacementValue, IModifierPayload payload,
 			Consumer<IDocumentModifier> collector) {
 		logger.traceEntry();
-		switch (element.getDatatype()) {
+		switch (element.getDataType()) {
 		case BOOLEAN:
 			if (replacementValue.equals("true") || replacementValue.equals("false")) {
 				DocumentValueModifier.builder(valueDescriptor)
@@ -477,7 +477,7 @@ public abstract class AbstractRule implements IAnalyzerRule {
 			break;
 		default:
 			final String message = String.format("Modification requests are not implemented for data type %s",
-					element.getDatatype());
+					element.getDataType());
 			throw logger.throwing(new IllegalArgumentException(message));
 		}
 		logger.traceExit();

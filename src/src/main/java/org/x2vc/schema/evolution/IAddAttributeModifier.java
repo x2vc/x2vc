@@ -2,7 +2,7 @@ package org.x2vc.schema.evolution;
 
 import java.util.UUID;
 
-import org.x2vc.schema.structure.XMLDatatype;
+import org.x2vc.schema.structure.XMLDataType;
 
 /**
  * An {@link ISchemaModifier} to add a new attribute to an existing element or an element to be created. The UUID of the
@@ -24,6 +24,6 @@ public interface IAddAttributeModifier extends ISchemaModifier {
 	/**
 	 * @return the data type of the data. Defaults to STRING if not set.
 	 */
-	XMLDatatype getDatatype();
+	XMLDataType getDataType();
 
 }

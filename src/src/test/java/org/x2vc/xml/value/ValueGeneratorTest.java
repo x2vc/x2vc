@@ -159,7 +159,7 @@ class ValueGeneratorTest {
 	 * @param maxLength
 	 */
 	void prepareAttributeForString(@Nullable Integer maxLength) {
-		lenient().when(this.attribute.getDatatype()).thenReturn(XMLDatatype.STRING);
+		lenient().when(this.attribute.getDataType()).thenReturn(XMLDataType.STRING);
 		lenient().when(this.attribute.getDiscreteValues()).thenReturn(Set.of());
 		lenient().when(this.attribute.isFixedValueset()).thenReturn(Optional.empty());
 		lenient().when(this.attribute.getMaxLength()).thenReturn(Optional.ofNullable(maxLength));
@@ -174,7 +174,7 @@ class ValueGeneratorTest {
 	void prepareAttributeForString(@Nullable Integer maxLength, boolean fixedValueset, String... discreteValues) {
 		final List<XMLDiscreteValue> valueList = Arrays.stream(discreteValues)
 			.map(val -> XMLDiscreteValue.builder().withStringValue(val).build()).toList();
-		lenient().when(this.attribute.getDatatype()).thenReturn(XMLDatatype.STRING);
+		lenient().when(this.attribute.getDataType()).thenReturn(XMLDataType.STRING);
 		lenient().when(this.attribute.getDiscreteValues()).thenReturn(Set.copyOf(valueList));
 		lenient().when(this.attribute.isFixedValueset()).thenReturn(Optional.of(fixedValueset));
 		lenient().when(this.attribute.getMaxLength()).thenReturn(Optional.ofNullable(maxLength));
@@ -186,7 +186,7 @@ class ValueGeneratorTest {
 	 * Prepares the {@link IXMLAttribute} mockup as boolean
 	 */
 	void prepareAttributeForBoolean() {
-		lenient().when(this.attribute.getDatatype()).thenReturn(XMLDatatype.BOOLEAN);
+		lenient().when(this.attribute.getDataType()).thenReturn(XMLDataType.BOOLEAN);
 		lenient().when(this.attribute.getDiscreteValues()).thenReturn(Set.of());
 		lenient().when(this.attribute.isFixedValueset()).thenReturn(Optional.empty());
 		lenient().when(this.attribute.getMaxLength()).thenThrow(new IllegalStateException()); // n/a for boolean
@@ -199,7 +199,7 @@ class ValueGeneratorTest {
 	 * values
 	 */
 	void prepareAttributeForInteger(@Nullable Integer minValue, @Nullable Integer maxValue) {
-		lenient().when(this.attribute.getDatatype()).thenReturn(XMLDatatype.INTEGER);
+		lenient().when(this.attribute.getDataType()).thenReturn(XMLDataType.INTEGER);
 		lenient().when(this.attribute.getDiscreteValues()).thenReturn(Set.of());
 		lenient().when(this.attribute.isFixedValueset()).thenReturn(Optional.empty());
 		lenient().when(this.attribute.getMaxLength()).thenThrow(new IllegalStateException()); // n/a for integer
@@ -214,7 +214,7 @@ class ValueGeneratorTest {
 	void prepareAttributeForInteger(boolean fixedValueset, Integer... discreteValues) {
 		final List<XMLDiscreteValue> valueList = Arrays.stream(discreteValues)
 			.map(val -> XMLDiscreteValue.builder().withIntegerValue(val).build()).toList();
-		lenient().when(this.attribute.getDatatype()).thenReturn(XMLDatatype.INTEGER);
+		lenient().when(this.attribute.getDataType()).thenReturn(XMLDataType.INTEGER);
 		lenient().when(this.attribute.getDiscreteValues()).thenReturn(Set.copyOf(valueList));
 		lenient().when(this.attribute.isFixedValueset()).thenReturn(Optional.of(fixedValueset));
 		lenient().when(this.attribute.getMaxLength()).thenThrow(new IllegalStateException()); // n/a for integer
@@ -710,7 +710,7 @@ class ValueGeneratorTest {
 	 * @param maxLength
 	 */
 	void prepareElementForString(@Nullable Integer maxLength) {
-		lenient().when(this.element.getDatatype()).thenReturn(XMLDatatype.STRING);
+		lenient().when(this.element.getDataType()).thenReturn(XMLDataType.STRING);
 		lenient().when(this.element.getDiscreteValues()).thenReturn(Set.of());
 		lenient().when(this.element.isFixedValueset()).thenReturn(Optional.empty());
 		lenient().when(this.element.getMaxLength()).thenReturn(Optional.ofNullable(maxLength));
@@ -725,7 +725,7 @@ class ValueGeneratorTest {
 	void prepareElementForString(@Nullable Integer maxLength, boolean fixedValueset, String... discreteValues) {
 		final List<XMLDiscreteValue> valueList = Arrays.stream(discreteValues)
 			.map(val -> XMLDiscreteValue.builder().withStringValue(val).build()).toList();
-		lenient().when(this.element.getDatatype()).thenReturn(XMLDatatype.STRING);
+		lenient().when(this.element.getDataType()).thenReturn(XMLDataType.STRING);
 		lenient().when(this.element.getDiscreteValues()).thenReturn(Set.copyOf(valueList));
 		lenient().when(this.element.isFixedValueset()).thenReturn(Optional.of(fixedValueset));
 		lenient().when(this.element.getMaxLength()).thenReturn(Optional.ofNullable(maxLength));
@@ -737,7 +737,7 @@ class ValueGeneratorTest {
 	 * Prepares the {@link IXMLElementType} mockup as boolean
 	 */
 	void prepareElementForBoolean() {
-		lenient().when(this.element.getDatatype()).thenReturn(XMLDatatype.BOOLEAN);
+		lenient().when(this.element.getDataType()).thenReturn(XMLDataType.BOOLEAN);
 		lenient().when(this.element.getDiscreteValues()).thenReturn(Set.of());
 		lenient().when(this.element.isFixedValueset()).thenReturn(Optional.empty());
 		lenient().when(this.element.getMaxLength()).thenThrow(new IllegalStateException()); // n/a for boolean
@@ -750,7 +750,7 @@ class ValueGeneratorTest {
 	 * discrete values
 	 */
 	void prepareElementForInteger(@Nullable Integer minValue, @Nullable Integer maxValue) {
-		lenient().when(this.element.getDatatype()).thenReturn(XMLDatatype.INTEGER);
+		lenient().when(this.element.getDataType()).thenReturn(XMLDataType.INTEGER);
 		lenient().when(this.element.getDiscreteValues()).thenReturn(Set.of());
 		lenient().when(this.element.isFixedValueset()).thenReturn(Optional.empty());
 		lenient().when(this.element.getMaxLength()).thenThrow(new IllegalStateException()); // n/a for integer
@@ -765,7 +765,7 @@ class ValueGeneratorTest {
 	void prepareElementForInteger(boolean fixedValueset, Integer... discreteValues) {
 		final List<XMLDiscreteValue> valueList = Arrays.stream(discreteValues)
 			.map(val -> XMLDiscreteValue.builder().withIntegerValue(val).build()).toList();
-		lenient().when(this.element.getDatatype()).thenReturn(XMLDatatype.INTEGER);
+		lenient().when(this.element.getDataType()).thenReturn(XMLDataType.INTEGER);
 		lenient().when(this.element.getDiscreteValues()).thenReturn(Set.copyOf(valueList));
 		lenient().when(this.element.isFixedValueset()).thenReturn(Optional.of(fixedValueset));
 		lenient().when(this.element.getMaxLength()).thenThrow(new IllegalStateException()); // n/a for integer

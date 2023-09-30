@@ -12,23 +12,23 @@ public interface IXMLDataObject extends IXMLSchemaObject {
 	/**
 	 * @return the data type of the data
 	 */
-	XMLDatatype getDatatype();
+	XMLDataType getDataType();
 
 	/**
 	 * @return the maximum length of the data. Supported for
-	 *         {@link XMLDatatype#STRING}.
+	 *         {@link XMLDataType#STRING}.
 	 */
 	Optional<Integer> getMaxLength();
 
 	/**
 	 * @return The minimum value of the data. Supported for
-	 *         {@link XMLDatatype#INTEGER}.
+	 *         {@link XMLDataType#INTEGER}.
 	 */
 	Optional<Integer> getMinValue();
 
 	/**
 	 * @return The maximum value of the data. Supported for
-	 *         {@link XMLDatatype#INTEGER}.
+	 *         {@link XMLDataType#INTEGER}.
 	 */
 	Optional<Integer> getMaxValue();
 

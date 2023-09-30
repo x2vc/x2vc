@@ -13,7 +13,10 @@ class XMLElementTypeTest {
 
 	@Test
 	void testBuilderMinimal() {
-		final XMLElementType elem = XMLElementType.builder().withContentType(ContentType.ELEMENT).build();
+		final XMLElementType elem = XMLElementType.builder()
+			.withContentType(ContentType.ELEMENT)
+			.withElementArrangement(ElementArrangement.ALL)
+			.build();
 		assertFalse(elem.isAttribute());
 		assertTrue(elem.isElement());
 		assertFalse(elem.isReference());
@@ -23,7 +26,7 @@ class XMLElementTypeTest {
 		assertFalse(elem.hasDataContent());
 		assertTrue(elem.hasElementContent());
 		assertFalse(elem.hasMixedContent());
-		assertThrows(IllegalStateException.class, () -> elem.getDatatype());
+		assertThrows(IllegalStateException.class, () -> elem.getDataType());
 		assertThrows(IllegalStateException.class, () -> elem.getMaxLength());
 		assertThrows(IllegalStateException.class, () -> elem.getMinValue());
 		assertThrows(IllegalStateException.class, () -> elem.getMaxValue());
@@ -45,7 +48,7 @@ class XMLElementTypeTest {
 	@Test
 	void testBuilderWithUserModifiable() {
 		final XMLElementType elem = XMLElementType.builder().withContentType(ContentType.DATA)
-			.withDatatype(XMLDatatype.STRING).withUserModifiable(true).build();
+			.withDataType(XMLDataType.STRING).withUserModifiable(true).build();
 		assertTrue(elem.isUserModifiable().isPresent());
 		assertTrue(elem.isUserModifiable().get());
 	}
@@ -53,9 +56,9 @@ class XMLElementTypeTest {
 	@Test
 	void testBuilderWithLengthRestrictedString() {
 		final XMLElementType elem = XMLElementType.builder().withContentType(ContentType.DATA)
-			.withDatatype(XMLDatatype.STRING).withMaxLength(42).build();
+			.withDataType(XMLDataType.STRING).withMaxLength(42).build();
 		assertEquals(ContentType.DATA, elem.getContentType());
-		assertEquals(XMLDatatype.STRING, elem.getDatatype());
+		assertEquals(XMLDataType.STRING, elem.getDataType());
 		assertTrue(elem.getMaxLength().isPresent());
 		assertEquals(42, elem.getMaxLength().get());
 
@@ -66,9 +69,9 @@ class XMLElementTypeTest {
 	@Test
 	void testBuilderWithRestrictedInteger() {
 		final XMLElementType elem = XMLElementType.builder().withContentType(ContentType.DATA)
-			.withDatatype(XMLDatatype.INTEGER).withMinValue(1).withMaxValue(42).build();
+			.withDataType(XMLDataType.INTEGER).withMinValue(1).withMaxValue(42).build();
 		assertEquals(ContentType.DATA, elem.getContentType());
-		assertEquals(XMLDatatype.INTEGER, elem.getDatatype());
+		assertEquals(XMLDataType.INTEGER, elem.getDataType());
 		assertTrue(elem.getMinValue().isPresent());
 		assertEquals(1, elem.getMinValue().get());
 		assertTrue(elem.getMaxValue().isPresent());
@@ -80,8 +83,8 @@ class XMLElementTypeTest {
 	@Test
 	void testBuilderWithAttribute() {
 		final Builder builder = XMLElementType.builder().withContentType(ContentType.DATA)
-			.withDatatype(XMLDatatype.STRING);
-		XMLAttribute.builder("aName").withType(XMLDatatype.OTHER).addTo(builder);
+			.withDataType(XMLDataType.STRING);
+		XMLAttribute.builder("aName").withType(XMLDataType.OTHER).addTo(builder);
 		final XMLElementType elem = builder.build();
 		assertEquals(1, elem.getAttributes().size());
 		assertEquals("aName", elem.getAttributes().toArray(new IXMLAttribute[0])[0].getName());
@@ -90,7 +93,7 @@ class XMLElementTypeTest {
 	@Test
 	void testBuilderWithDiscreteValue() {
 		final Builder builder = XMLElementType.builder().withContentType(ContentType.DATA)
-			.withDatatype(XMLDatatype.STRING);
+			.withDataType(XMLDataType.STRING);
 		XMLDiscreteValue.builder().withStringValue("foobar").addTo(builder);
 		final XMLElementType elem = builder.build();
 		assertEquals(1, elem.getDiscreteValues().size());
@@ -99,16 +102,19 @@ class XMLElementTypeTest {
 
 	@Test
 	void testBuilderCopyOfString() {
-		final XMLAttribute attrib = XMLAttribute.builder("aName").withType(XMLDatatype.OTHER).build();
+		final XMLAttribute attrib = XMLAttribute.builder("aName").withType(XMLDataType.OTHER).build();
 		final XMLDiscreteValue value = XMLDiscreteValue.builder().withStringValue("foobar").build();
 
-		final XMLElementType elem = XMLElementType.builder().withContentType(ContentType.DATA)
-			.withDatatype(XMLDatatype.STRING).addAttribute(attrib).addDiscreteValue(value).build();
+		final XMLElementType elem = XMLElementType.builder()
+			.withContentType(ContentType.DATA)
+			.withDataType(XMLDataType.STRING)
+			.addAttribute(attrib)
+			.addDiscreteValue(value).build();
 
-		final XMLElementType copy = XMLElementType.builderFrom(elem).build();
+		final XMLElementType copy = XMLElementType.builderFrom(elem, true, true).build();
 
 		assertEquals(ContentType.DATA, copy.getContentType());
-		assertEquals(XMLDatatype.STRING, copy.getDatatype());
+		assertEquals(XMLDataType.STRING, copy.getDataType());
 		assertEquals("foobar", copy.getDiscreteValues().toArray(new IXMLDiscreteValue[0])[0].asString());
 
 		// attributes need to be copies, not the same objects reused
@@ -120,12 +126,12 @@ class XMLElementTypeTest {
 	@Test
 	void testBuilderCopyOfInteger() {
 		final XMLElementType elem = XMLElementType.builder().withContentType(ContentType.DATA)
-			.withDatatype(XMLDatatype.INTEGER).build();
+			.withDataType(XMLDataType.INTEGER).build();
 
-		final XMLElementType copy = XMLElementType.builderFrom(elem).build();
+		final XMLElementType copy = XMLElementType.builderFrom(elem, true, true).build();
 
 		assertEquals(ContentType.DATA, copy.getContentType());
-		assertEquals(XMLDatatype.INTEGER, copy.getDatatype());
+		assertEquals(XMLDataType.INTEGER, copy.getDataType());
 	}
 
 	@Test
@@ -133,7 +139,7 @@ class XMLElementTypeTest {
 		final XMLElementType elem = XMLElementType.builder().withContentType(ContentType.ELEMENT)
 			.withElementArrangement(ElementArrangement.CHOICE).build();
 
-		final XMLElementType copy = XMLElementType.builderFrom(elem).build();
+		final XMLElementType copy = XMLElementType.builderFrom(elem, true, true).build();
 
 		assertEquals(ContentType.ELEMENT, copy.getContentType());
 		assertEquals(ElementArrangement.CHOICE, copy.getElementArrangement());

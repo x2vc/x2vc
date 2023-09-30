@@ -1,9 +1,9 @@
 package org.x2vc.schema.structure;
 
 /**
- * The base data types suported by the XML schema.
+ * The base data types supported by the XML schema.
  */
-public enum XMLDatatype {
+public enum XMLDataType {
 
 	/**
 	 * A character string value. Additional specifications: maxLength.
@@ -16,8 +16,7 @@ public enum XMLDatatype {
 	BOOLEAN,
 
 	/**
-	 * An integer value, optionally signed. Additional specifications: minValue,
-	 * maxValue).
+	 * An integer value, optionally signed. Additional specifications: minValue, maxValue).
 	 */
 	INTEGER,
 

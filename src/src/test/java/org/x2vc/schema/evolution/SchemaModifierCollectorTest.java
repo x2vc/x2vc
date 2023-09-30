@@ -212,7 +212,7 @@ class SchemaModifierCollectorTest {
 	/**
 	 * @param elementID
 	 * @param name
-	 * @param datatype
+	 * @param dataType
 	 * @return
 	 */
 	protected IAddAttributeModifier createAddAttributeMock(final UUID elementID, final String name) {
