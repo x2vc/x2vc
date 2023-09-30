@@ -177,13 +177,11 @@ public class RequestGenerator implements IRequestGenerator {
 	}
 
 	/**
-	 * Adds random {@link IAddRawContentRule} to the rules to simulate mixed
-	 * content.
+	 * Adds random {@link IAddRawContentRule} to the rules to simulate mixed content.
 	 *
 	 * @param element       the parent element
 	 * @param originalRules the {@link IContentGenerationRule} list
-	 * @return the {@link IContentGenerationRule} list with additional
-	 *         {@link IAddRawContentRule} instances mixed in.
+	 * @return the {@link IContentGenerationRule} list with additional {@link IAddRawContentRule} instances mixed in.
 	 */
 	private List<IContentGenerationRule> addRandomRawRules(IXMLElementType element,
 			List<IContentGenerationRule> originalRules) {
@@ -232,7 +230,7 @@ public class RequestGenerator implements IRequestGenerator {
 	@Override
 	public IDocumentRequest modifyRequest(IDocumentRequest originalRequest, IDocumentModifier modifier) {
 		logger.traceEntry();
-		final IXMLSchema schema = this.schemaManager.getSchema(originalRequest.getSchemaURI(),
+		final IXMLSchema schema = this.schemaManager.getSchema(originalRequest.getStylesheeURI(),
 				originalRequest.getSchemaVersion());
 		IAddElementRule rootElementRule = null;
 
@@ -249,8 +247,8 @@ public class RequestGenerator implements IRequestGenerator {
 	}
 
 	/**
-	 * Creates a copy of the {@link IAddElementRule} while applying the modification
-	 * specified by a {@link IDocumentValueModifier}.
+	 * Creates a copy of the {@link IAddElementRule} while applying the modification specified by a
+	 * {@link IDocumentValueModifier}.
 	 *
 	 * @param originalRule  the original element generation rule
 	 * @param valueModifier the modifier to apply
@@ -280,8 +278,8 @@ public class RequestGenerator implements IRequestGenerator {
 	}
 
 	/**
-	 * Creates a copy of the {@link IAddDataContentRule} while applying the
-	 * modification specified by a {@link IDocumentValueModifier}.
+	 * Creates a copy of the {@link IAddDataContentRule} while applying the modification specified by a
+	 * {@link IDocumentValueModifier}.
 	 *
 	 * @param originalRule  the original generation rule
 	 * @param valueModifier the modifier to apply
@@ -303,8 +301,8 @@ public class RequestGenerator implements IRequestGenerator {
 	}
 
 	/**
-	 * Creates a copy of the {@link IAddRawContentRule} while applying the
-	 * modification specified by a {@link IDocumentValueModifier}.
+	 * Creates a copy of the {@link IAddRawContentRule} while applying the modification specified by a
+	 * {@link IDocumentValueModifier}.
 	 *
 	 * @param originalRule  the original generation rule
 	 * @param valueModifier the modifier to apply
@@ -326,8 +324,8 @@ public class RequestGenerator implements IRequestGenerator {
 	}
 
 	/**
-	 * Creates a copy of the {@link ISetAttributeRule} while applying the
-	 * modification specified by a {@link IDocumentValueModifier}.
+	 * Creates a copy of the {@link ISetAttributeRule} while applying the modification specified by a
+	 * {@link IDocumentValueModifier}.
 	 *
 	 * @param originalRule  the original generation rule
 	 * @param valueModifier the modifier to apply

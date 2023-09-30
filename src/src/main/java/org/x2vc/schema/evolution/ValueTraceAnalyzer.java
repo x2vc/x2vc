@@ -62,7 +62,7 @@ public class ValueTraceAnalyzer implements IValueTraceAnalyzer {
 		// The raw trace events point to the document elements - resolve these to the
 		// schema element references the elements are based on.
 		final IDocumentRequest request = htmlContainer.getSource().getRequest();
-		final IXMLSchema schema = this.schemaManager.getSchema(request.getSchemaURI(), request.getSchemaVersion());
+		final IXMLSchema schema = this.schemaManager.getSchema(request.getStylesheeURI(), request.getSchemaVersion());
 		final Multimap<IXMLSchemaObject, Expression> schemaTraceEvents = mapEventsToSchema(valueTraceEvents,
 				htmlContainer.getSource(), schema);
 

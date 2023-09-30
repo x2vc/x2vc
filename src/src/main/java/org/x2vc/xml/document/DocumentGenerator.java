@@ -59,7 +59,7 @@ public class DocumentGenerator implements IDocumentGenerator {
 	public IXMLDocumentContainer generateDocument(IDocumentRequest request) {
 		logger.traceEntry();
 		final IValueGenerator valueGenerator = this.valueGeneratorFactory.createValueGenerator(request);
-		final IXMLSchema schema = this.schemaManager.getSchema(request.getSchemaURI(), request.getSchemaVersion());
+		final IXMLSchema schema = this.schemaManager.getSchema(request.getStylesheeURI(), request.getSchemaVersion());
 		final IStylesheetInformation stylesheetInformation = this.stylesheetManager.get(request.getStylesheeURI());
 		final Worker worker = new Worker(request, valueGenerator, schema, stylesheetInformation);
 		final String document = worker.generateXMLDocument();
