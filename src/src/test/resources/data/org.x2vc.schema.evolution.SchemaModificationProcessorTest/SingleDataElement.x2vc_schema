@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<schema stylesheetURI="file://somewhere/SampleStylesheet.xslt" schemaURI="memory:schema/bar" version="1">
+    <elementTypes>
+        <elementType contentType="DATA" dataType="STRING" fixedValueset="false" id="45023ac4-9c79-4247-bbe5-36f893bd7eaa">
+            <comment>root element</comment>
+        </elementType>
+    </elementTypes>
+    <rootElements>
+        <rootElement name="root" elementID="45023ac4-9c79-4247-bbe5-36f893bd7eaa" minOccurrence="1" maxOccurrence="1" id="fe3fa767-685a-4c5a-8531-ca717a7cb72b">
+            <comment>reference to root element</comment>
+        </rootElement>
+    </rootElements>
+    <URI>memory:schema/bar</URI>
+</schema>

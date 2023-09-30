@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<schema stylesheetURI="file://somewhere/SampleStylesheet.xslt" schemaURI="memory:schema/bar" version="1">
+    <elementTypes>
+        <elementType contentType="EMPTY" id="00771113-ee28-4cfe-b348-f55cb8861f62">
+            <comment>element without content</comment>
+        </elementType>
+        <elementType contentType="DATA" dataType="STRING" userModifiable="true" fixedValueset="false" id="0fe9b06d-559b-412a-954b-89a9b441c4d1">
+            <comment>element with text content</comment>
+        </elementType>
+        <elementType contentType="MIXED" id="45023ac4-9c79-4247-bbe5-36f893bd7eaa">
+            <comment>root element</comment>
+            <subElement name="text" elementID="0fe9b06d-559b-412a-954b-89a9b441c4d1" minOccurrence="1" maxOccurrence="10" id="c90f6614-362f-4c50-a040-ebeb8f9eb113">
+                <comment>reference to element with text content</comment>
+            </subElement>
+            <subElement name="empty" elementID="00771113-ee28-4cfe-b348-f55cb8861f62" minOccurrence="1" maxOccurrence="10" id="dd7fa303-9fe6-49fb-8257-66608a7e434f">
+                <comment>reference to element without content</comment>
+            </subElement>
+        </elementType>
+    </elementTypes>
+    <rootElements>
+        <rootElement name="root" elementID="45023ac4-9c79-4247-bbe5-36f893bd7eaa" minOccurrence="1" id="fe3fa767-685a-4c5a-8531-ca717a7cb72b">
+            <comment>reference to root element</comment>
+        </rootElement>
+    </rootElements>
+    <URI>memory:schema/bar</URI>
+</schema>
