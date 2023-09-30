@@ -24,10 +24,8 @@ public class XMLSchema implements IXMLSchema {
 
 	private URI stylesheetURI;
 
-	@XmlAttribute
 	private URI schemaURI;
 
-	@XmlAttribute
 	private int version;
 
 	@XmlElementWrapper(name = "elementTypes")
@@ -74,11 +72,20 @@ public class XMLSchema implements IXMLSchema {
 		this.stylesheetURI = stylesheetURI;
 	}
 
+	@XmlAttribute
 	@Override
 	public int getVersion() {
 		return this.version;
 	}
 
+	/**
+	 * @param version the version to set
+	 */
+	public void setVersion(int version) {
+		this.version = version;
+	}
+
+	@XmlAttribute(name = "schemaURI")
 	@Override
 	public URI getURI() {
 		return this.schemaURI;
