@@ -19,7 +19,7 @@ public class XMLElementType extends XMLDataObject implements IXMLElementType {
 	private static final Logger logger = LogManager.getLogger();
 
 	@XmlElement(type = XMLAttribute.class, name = "attribute")
-	private Set<IXMLAttribute> attributes;
+	private List<IXMLAttribute> attributes;
 
 	@XmlAttribute
 	private ContentType contentType;
@@ -37,7 +37,7 @@ public class XMLElementType extends XMLDataObject implements IXMLElementType {
 	 * Parameterless constructor for deserialization only.
 	 */
 	XMLElementType() {
-		this.attributes = Sets.newHashSet();
+		this.attributes = Lists.newArrayList();
 		this.discreteValues = Sets.newHashSet();
 		this.elements = Lists.newArrayList();
 	}
@@ -45,7 +45,8 @@ public class XMLElementType extends XMLDataObject implements IXMLElementType {
 	private XMLElementType(Builder builder) {
 		this.id = builder.id;
 		this.comment = builder.comment;
-		this.attributes = Set.copyOf(builder.attributes);
+		// sort the attributes by name - irrelevant for the actual function, but makes unit testing A LOT easier
+		this.attributes = builder.attributes.stream().sorted((a1, a2) -> a1.getName().compareTo(a2.getName())).toList();
 		this.contentType = builder.contentType;
 		this.datatype = builder.datatype;
 		this.maxLength = builder.maxLength;
@@ -70,7 +71,7 @@ public class XMLElementType extends XMLDataObject implements IXMLElementType {
 	}
 
 	@Override
-	public Set<IXMLAttribute> getAttributes() {
+	public Collection<IXMLAttribute> getAttributes() {
 		return this.attributes;
 	}
 
@@ -86,7 +87,7 @@ public class XMLElementType extends XMLDataObject implements IXMLElementType {
 
 	@Override
 	public boolean hasElementContent() {
-		return this.contentType == ContentType.ELEMENT;
+		return this.contentType == ContentType.ELEMENT || this.contentType == ContentType.MIXED;
 	}
 
 	@Override
@@ -182,10 +183,12 @@ public class XMLElementType extends XMLDataObject implements IXMLElementType {
 	 * Creates a builder to build {@link XMLElementType} and initialize it with the given object.
 	 *
 	 * @param xMLElementType to initialize the builder with
+	 * @param copyAttributes whether to copy all the attributes
+	 * @param copyElements   whether to copy all the element references
 	 * @return created builder
 	 */
-	public static Builder builderFrom(IXMLElementType xMLElementType) {
-		return new Builder(xMLElementType);
+	public static Builder builderFrom(IXMLElementType xMLElementType, boolean copyAttributes, boolean copyElements) {
+		return new Builder(xMLElementType, copyAttributes, copyElements);
 	}
 
 	/**
@@ -220,10 +223,10 @@ public class XMLElementType extends XMLDataObject implements IXMLElementType {
 		private Integer minValue;
 		private Integer maxValue;
 		private Set<IXMLDiscreteValue> discreteValues = new HashSet<>();
-		private Boolean fixedValueset = false;
+		private Boolean fixedValueset;
 		private Boolean userModifiable;
 		private List<IXMLElementReference> elements = new ArrayList<>();
-		private ElementArrangement elementArrangement = ElementArrangement.ALL;
+		private ElementArrangement elementArrangement;
 
 		/**
 		 * Create a new builder.
@@ -241,7 +244,7 @@ public class XMLElementType extends XMLDataObject implements IXMLElementType {
 			this.id = id;
 		}
 
-		private Builder(IXMLElementType xMLElementType) {
+		private Builder(IXMLElementType xMLElementType, boolean copyAttributes, boolean copyElements) {
 			this.id = xMLElementType.getID();
 			this.comment = xMLElementType.getComment().orElse(null);
 			this.contentType = xMLElementType.getContentType();
@@ -258,11 +261,9 @@ public class XMLElementType extends XMLDataObject implements IXMLElementType {
 			}
 			if ((this.contentType == ContentType.DATA) || (this.contentType == ContentType.MIXED)) {
 				this.userModifiable = xMLElementType.isUserModifiable().orElse(null);
-			} else {
+			} else if (this.contentType == ContentType.ELEMENT) {
 				this.elementArrangement = xMLElementType.getElementArrangement();
 			}
-			// create deep copy of attributes
-			xMLElementType.getAttributes().forEach(attr -> this.attributes.add(XMLAttribute.builderFrom(attr).build()));
 
 			// create deep copy of discrete values
 			if (this.contentType == ContentType.DATA) {
@@ -270,10 +271,18 @@ public class XMLElementType extends XMLDataObject implements IXMLElementType {
 					.forEach(val -> this.discreteValues.add(XMLDiscreteValue.builderFrom(val).build()));
 			}
 
-			// create deep copy of element references
-			if ((this.contentType == ContentType.ELEMENT) || (this.contentType == ContentType.MIXED)) {
+			if (copyAttributes) {
+				// create deep copy of attributes
+				xMLElementType.getAttributes()
+					.forEach(attr -> this.attributes.add(XMLAttribute.builderFrom(attr).build()));
+			}
+
+			if (copyElements
+					&& ((this.contentType == ContentType.ELEMENT) || (this.contentType == ContentType.MIXED))) {
+				// create deep copy of elements
 				xMLElementType.getElements()
 					.forEach(elem -> this.elements.add(XMLElementReference.builderFrom(elem).build()));
+
 			}
 		}
 

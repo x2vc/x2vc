@@ -194,6 +194,17 @@ public class XMLElementReference extends AbstractSchemaObject implements IXMLEle
 		}
 
 		/**
+		 * Builder method for comment parameter.
+		 *
+		 * @param comment field to set
+		 * @return builder
+		 */
+		public Builder withComment(Optional<String> comment) {
+			this.comment = comment.orElse(null);
+			return this;
+		}
+
+		/**
 		 * Builder method for minOccurrence parameter.
 		 *
 		 * @param minOccurrence field to set
@@ -212,6 +223,17 @@ public class XMLElementReference extends AbstractSchemaObject implements IXMLEle
 		 */
 		public Builder withMaxOccurrence(Integer maxOccurrence) {
 			this.maxOccurrence = maxOccurrence;
+			return this;
+		}
+
+		/**
+		 * Builder method for maxOccurrence parameter.
+		 *
+		 * @param maxOccurrence field to set
+		 * @return builder
+		 */
+		public Builder withMaxOccurrence(Optional<Integer> maxOccurrence) {
+			this.maxOccurrence = maxOccurrence.orElse(null);
 			return this;
 		}
 

@@ -11,8 +11,8 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * Base class for {@link IXMLSchemaObject}s that can contain typed data, like an
- * attribute or an element with content type DATA.
+ * Base class for {@link IXMLSchemaObject}s that can contain typed data, like an attribute or an element with content
+ * type DATA.
  */
 public abstract class XMLDataObject extends AbstractSchemaObject implements IXMLDataObject {
 
@@ -78,7 +78,7 @@ public abstract class XMLDataObject extends AbstractSchemaObject implements IXML
 		if (this.discreteValues.isEmpty()) {
 			return Optional.empty();
 		} else {
-			return Optional.of(this.fixedValueset);
+			return Optional.ofNullable(this.fixedValueset);
 		}
 	}
 

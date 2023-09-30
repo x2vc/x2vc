@@ -5,8 +5,8 @@ import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
 import java.net.URI;
+import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -111,7 +111,7 @@ class InitialSchemaGeneratorTest {
 		});
 		when(this.structure.getTemplates()).thenReturn(ImmutableList.copyOf(templates));
 		final IXMLSchema schema = this.generator.generateSchema(this.stylesheet, this.schemaURI);
-		final Set<IXMLElementReference> rootElements = schema.getRootElements();
+		final Collection<IXMLElementReference> rootElements = schema.getRootElements();
 
 		// only check the element names for now
 		assertEquals(Lists.newArrayList(Splitter.on(",").split(rootElementNames)),
@@ -135,7 +135,7 @@ class InitialSchemaGeneratorTest {
 		when(this.structure.getTemplates()).thenReturn(ImmutableList.copyOf(templates));
 		final IXMLSchema schema = this.generator.generateSchema(this.stylesheet, this.schemaURI);
 
-		final Set<IXMLElementReference> rootElements = schema.getRootElements();
+		final Collection<IXMLElementReference> rootElements = schema.getRootElements();
 		assertEquals(1, rootElements.size());
 
 		final IXMLElementReference rootElementReference = rootElements.iterator().next();

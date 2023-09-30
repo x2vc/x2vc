@@ -1,20 +1,19 @@
 package org.x2vc.schema.structure;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 /**
- * A XML schema element type, representing an element in the XML document. This
- * object specifies everything but the element name, which is specified by the
- * {@link IXMLElementReference}.
+ * A XML schema element type, representing an element in the XML document. This object specifies everything but the
+ * element name, which is specified by the {@link IXMLElementReference}.
  */
 public interface IXMLElementType extends IXMLDataObject {
 
 	/**
 	 * @return the attributes that can be set for the element. May be empty!
 	 */
-	Set<IXMLAttribute> getAttributes();
+	Collection<IXMLAttribute> getAttributes();
 
 	/**
 	 * This enum describes what kind of contents can be found inside this element.
@@ -54,15 +53,13 @@ public interface IXMLElementType extends IXMLDataObject {
 	boolean hasElementContent();
 
 	/**
-	 * @return <code>true</code> if the element contains a variety if text and
-	 *         element content
+	 * @return <code>true</code> if the element contains a variety if text and element content
 	 */
 	boolean hasMixedContent();
 
 	/**
-	 * @return the elements that can be encountered inside this element. Only set if
-	 *         the content type is {@link ContentType#ELEMENT} or
-	 *         {@link ContentType#MIXED}.
+	 * @return the elements that can be encountered inside this element. Only set if the content type is
+	 *         {@link ContentType#ELEMENT} or {@link ContentType#MIXED}.
 	 */
 	List<IXMLElementReference> getElements();
 
@@ -71,35 +68,32 @@ public interface IXMLElementType extends IXMLDataObject {
 	 */
 	enum ElementArrangement {
 		/**
-		 * All sub-elements may occur in any order according to the multiplicity
-		 * specified by the element references.
+		 * All sub-elements may occur in any order according to the multiplicity specified by the element references.
 		 */
 		ALL,
 		/**
-		 * The sub-elements must occur in the order specified according to the
-		 * multiplicity specified by the element references.
+		 * The sub-elements must occur in the order specified according to the multiplicity specified by the element
+		 * references.
 		 */
 		SEQUENCE,
 		/**
-		 * Only one of the sub-elements may occur. The multiplicity specifications of
-		 * the element references are disregarded.
+		 * Only one of the sub-elements may occur. The multiplicity specifications of the element references are
+		 * disregarded.
 		 */
 		CHOICE
 	}
 
 	/**
-	 * Determines the mode in which the sub-elements specified by
-	 * {@link #getElements()} can be arranged. See {@link ElementArrangement}. Only
-	 * set if the content type is {@link ContentType#ELEMENT}.
+	 * Determines the mode in which the sub-elements specified by {@link #getElements()} can be arranged. See
+	 * {@link ElementArrangement}. Only set if the content type is {@link ContentType#ELEMENT}.
 	 *
 	 * @return the mode in which the sub-elements can be arranged
 	 */
 	ElementArrangement getElementArrangement();
 
 	/**
-	 * @return <code>true</code> if the contents of the element can be influenced by
-	 *         user input. Only set if the content type is {@link ContentType#DATA}
-	 *         or {@link ContentType#MIXED}.
+	 * @return <code>true</code> if the contents of the element can be influenced by user input. Only set if the content
+	 *         type is {@link ContentType#DATA} or {@link ContentType#MIXED}.
 	 */
 	Optional<Boolean> isUserModifiable();
 

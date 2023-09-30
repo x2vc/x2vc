@@ -12,10 +12,7 @@ import org.x2vc.schema.structure.IXMLElementType.ContentType;
 
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.MultimapBuilder;
-import com.google.common.collect.Sets;
+import com.google.common.collect.*;
 
 /**
  * Standard implementation of {@link IXMLSchema}.
@@ -35,11 +32,11 @@ public class XMLSchema implements IXMLSchema {
 
 	@XmlElementWrapper(name = "elementTypes")
 	@XmlElement(type = XMLElementType.class, name = "elementType")
-	private Set<IXMLElementType> elementTypes;
+	private List<IXMLElementType> elementTypes;
 
 	@XmlElementWrapper(name = "rootElements")
 	@XmlElement(type = XMLElementReference.class, name = "rootElement")
-	private Set<IXMLElementReference> rootElements;
+	private List<IXMLElementReference> rootElements;
 
 	@XmlTransient
 	private Map<UUID, IXMLSchemaObject> objectMap;
@@ -48,16 +45,18 @@ public class XMLSchema implements IXMLSchema {
 	 * Parameterless constructor for deserialization only.
 	 */
 	XMLSchema() {
-		this.elementTypes = Sets.newHashSet();
-		this.rootElements = Sets.newHashSet();
+		this.elementTypes = Lists.newArrayList();
+		this.rootElements = Lists.newArrayList();
 	}
 
 	private XMLSchema(Builder builder) {
 		this.stylesheetURI = builder.stylesheetURI;
 		this.schemaURI = builder.schemaURI;
 		this.version = builder.version;
-		this.elementTypes = Set.copyOf(builder.elementTypes);
-		this.rootElements = Set.copyOf(builder.rootElements);
+		// sort the element types and root references by ID - irrelevant for the actual function, but makes unit testing
+		// A LOT easier
+		this.elementTypes = builder.elementTypes.stream().sorted((e1, e2) -> e1.getID().compareTo(e2.getID())).toList();
+		this.rootElements = builder.rootElements.stream().sorted((e1, e2) -> e1.getID().compareTo(e2.getID())).toList();
 	}
 
 	@XmlAttribute
@@ -95,12 +94,12 @@ public class XMLSchema implements IXMLSchema {
 	}
 
 	@Override
-	public Set<IXMLElementType> getElementTypes() {
+	public Collection<IXMLElementType> getElementTypes() {
 		return this.elementTypes;
 	}
 
 	@Override
-	public Set<IXMLElementReference> getRootElements() {
+	public Collection<IXMLElementReference> getRootElements() {
 		return this.rootElements;
 	}
 
@@ -292,8 +291,8 @@ public class XMLSchema implements IXMLSchema {
 		private URI stylesheetURI;
 		private URI schemaURI;
 		private int version;
-		private Set<IXMLElementType> elementTypes = new HashSet<>();
-		private Set<IXMLElementReference> rootElements = new HashSet<>();
+		private List<IXMLElementType> elementTypes = new ArrayList<>();
+		private List<IXMLElementReference> rootElements = new ArrayList<>();
 
 		/**
 		 * Creates a new builder.
