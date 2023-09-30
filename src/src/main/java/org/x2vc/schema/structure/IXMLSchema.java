@@ -61,4 +61,10 @@ public interface IXMLSchema {
 	 */
 	Set<String> getObjectPaths(UUID id) throws IllegalArgumentException;
 
+	/**
+	 * @param elementType
+	 * @return all element references contained in the schema that use to the element type
+	 */
+	Set<IXMLElementReference> getReferencesUsing(IXMLElementType elementType);
+
 }

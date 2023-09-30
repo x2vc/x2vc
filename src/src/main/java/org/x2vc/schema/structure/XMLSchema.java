@@ -269,6 +269,20 @@ public class XMLSchema implements IXMLSchema {
 		map.put(attrib.getID(), String.format("%s@%s", parentPath, attrib.getName()));
 	}
 
+	@Override
+	public Set<IXMLElementReference> getReferencesUsing(IXMLElementType elementType) {
+		logger.traceEntry();
+		final Set<IXMLElementReference> result = new HashSet<>();
+		result.addAll(this.rootElements.stream()
+			.filter(ref -> ref.getElementID().equals(elementType.getID()))
+			.toList());
+		result.addAll(this.elementTypes.stream()
+			.flatMap(elem -> elem.getElements().stream())
+			.filter(ref -> ref.getElementID().equals(elementType.getID()))
+			.toList());
+		return logger.traceExit(result);
+	}
+
 	/**
 	 * Creates a builder to build {@link XMLSchema} and initialize it with the given object.
 	 *

@@ -1,6 +1,5 @@
 package org.x2vc.schema.evolution;
 
-import java.net.URI;
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -67,8 +66,7 @@ public class ValueTraceAnalyzer implements IValueTraceAnalyzer {
 				htmlContainer.getSource(), schema);
 
 		// process events grouped by schema element
-		final ExpressionProcessor expressionProcessor = new ExpressionProcessor(request.getSchemaURI(),
-				request.getSchemaVersion());
+		final ExpressionProcessor expressionProcessor = new ExpressionProcessor(schema);
 		schemaTraceEvents.keys().forEach(
 				schemaObject -> expressionProcessor.processExpressions(
 						schemaObject,
@@ -166,16 +164,14 @@ public class ValueTraceAnalyzer implements IValueTraceAnalyzer {
 
 	private class ExpressionProcessor {
 
-		private URI schemaURI;
-		private int schemaVersion;
+		private IXMLSchema schema;
 
 		private Map<AttributeKey, IAddAttributeModifier> attributeModifiers = new HashMap<>();
 		private Map<ElementKey, IAddElementModifier> elementModifiers = new HashMap<>();
 
-		protected ExpressionProcessor(URI schemaURI, int schemaVersion) {
+		protected ExpressionProcessor(IXMLSchema schema) {
 			super();
-			this.schemaURI = schemaURI;
-			this.schemaVersion = schemaVersion;
+			this.schema = schema;
 		}
 
 		/**
@@ -229,7 +225,6 @@ public class ValueTraceAnalyzer implements IValueTraceAnalyzer {
 			} else if (expression instanceof final AxisExpression axisExpression) {
 				// Expression subclass ..net.sf.saxon.expr.AxisExpression
 				newSchemaElement = processAxisExpression(schemaElement, axisExpression);
-
 			}
 			// TODO support Expression subclass ..net.sf.saxon.expr.BinaryExpression (abstract)
 			// TODO support Expression subclass ....net.sf.saxon.expr.ArithmeticExpression
@@ -659,10 +654,38 @@ public class ValueTraceAnalyzer implements IValueTraceAnalyzer {
 		 */
 		protected IAddElementModifier createElementModifier(ISchemaElementProxy schemaElement,
 				final String elementName) {
+			// as usual, generating a helpful comment is usually the most difficult part...
+			String comment = String.format("element %s of parent element %s", elementName, schemaElement.getID());
+			final Optional<IXMLElementType> elementType = schemaElement.getElementType();
+			if (elementType.isPresent()) {
+				final Set<IXMLElementReference> references = this.schema.getReferencesUsing(elementType.get());
+				switch (references.size()) {
+				case 0:
+					comment = String.format("element %s (no references found)", elementName);
+					break;
+				case 1:
+					final IXMLElementReference reference = references.iterator().next();
+					comment = String.format("element %s of parent element %s (%s)", elementName, reference.getName(),
+							reference.getElementID());
+					break;
+				default:
+					final String referenceList = String.join(", ", references.stream()
+						.map(ref -> String.format("%s (%s)", ref.getName(), ref.getElementID())).toList());
+					comment = String.format("element %s of parent elements %s", elementName, referenceList);
+				}
+			} else {
+				final Optional<IAddElementModifier> elementModifier = schemaElement.getModifier();
+				if (elementModifier.isPresent()) {
+					comment = String.format("element %s of parent element %s (%s)", elementName,
+							elementModifier.get().getName(), schemaElement.getID());
+				}
+			}
+
 			return AddElementModifier
-				.builder(this.schemaURI, this.schemaVersion)
+				.builder(this.schema.getURI(), this.schema.getVersion())
 				.withElementID(schemaElement.getID())
 				.withName(elementName)
+				.withTypeComment(comment)
 				.build();
 		}
 
@@ -713,7 +736,7 @@ public class ValueTraceAnalyzer implements IValueTraceAnalyzer {
 		protected IAddAttributeModifier createAttributeModifier(ISchemaElementProxy schemaElement,
 				final String attributeName) {
 			return AddAttributeModifier
-				.builder(this.schemaURI, this.schemaVersion)
+				.builder(this.schema.getURI(), this.schema.getVersion())
 				.withElementID(schemaElement.getID())
 				.withName(attributeName)
 				.build();

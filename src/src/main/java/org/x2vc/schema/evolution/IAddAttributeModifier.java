@@ -1,5 +1,6 @@
 package org.x2vc.schema.evolution;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.x2vc.schema.structure.XMLDataType;
@@ -20,6 +21,11 @@ public interface IAddAttributeModifier extends ISchemaModifier {
 	 * @return the name of the attribute
 	 */
 	String getName();
+
+	/**
+	 * @return the comment of the attribute
+	 */
+	Optional<String> getComment();
 
 	/**
 	 * @return the data type of the data. Defaults to STRING if not set.

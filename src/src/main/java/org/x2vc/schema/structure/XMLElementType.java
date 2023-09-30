@@ -299,6 +299,17 @@ public class XMLElementType extends XMLDataObject implements IXMLElementType {
 		}
 
 		/**
+		 * Builder method for comment parameter.
+		 *
+		 * @param comment field to set
+		 * @return builder
+		 */
+		public Builder withComment(Optional<String> comment) {
+			this.comment = comment.orElse(null);
+			return this;
+		}
+
+		/**
 		 * Builder method for attributes parameter.
 		 *
 		 * @param attribute field to set

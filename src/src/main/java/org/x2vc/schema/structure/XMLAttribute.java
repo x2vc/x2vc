@@ -1,9 +1,6 @@
 package org.x2vc.schema.structure;
 
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import javax.xml.bind.annotation.XmlAttribute;
 
@@ -169,6 +166,17 @@ public class XMLAttribute extends XMLDataObject implements IXMLAttribute {
 		 */
 		public Builder withComment(String comment) {
 			this.comment = comment;
+			return this;
+		}
+
+		/**
+		 * Builder method for comment parameter.
+		 *
+		 * @param comment field to set
+		 * @return builder
+		 */
+		public Builder withComment(Optional<String> comment) {
+			this.comment = comment.orElse(null);
 			return this;
 		}
 

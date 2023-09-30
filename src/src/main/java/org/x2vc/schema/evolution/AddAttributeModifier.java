@@ -2,6 +2,7 @@ package org.x2vc.schema.evolution;
 
 import java.net.URI;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.x2vc.schema.structure.XMLDataType;
@@ -17,6 +18,7 @@ public class AddAttributeModifier implements IAddAttributeModifier {
 	private UUID attributeID;
 	private String name;
 	private XMLDataType dataType;
+	private String comment;
 
 	private AddAttributeModifier(Builder builder) {
 		this.schemaURI = builder.schemaURI;
@@ -25,6 +27,7 @@ public class AddAttributeModifier implements IAddAttributeModifier {
 		this.attributeID = builder.attributeID;
 		this.name = builder.name;
 		this.dataType = builder.dataType;
+		this.comment = builder.comment;
 	}
 
 	@Override
@@ -58,6 +61,11 @@ public class AddAttributeModifier implements IAddAttributeModifier {
 	}
 
 	@Override
+	public Optional<String> getComment() {
+		return Optional.ofNullable(this.comment);
+	}
+
+	@Override
 	public int hashCode() {
 		return Objects.hash(
 				this.dataType,
@@ -65,7 +73,8 @@ public class AddAttributeModifier implements IAddAttributeModifier {
 				this.name,
 				this.attributeID,
 				this.schemaURI,
-				this.schemaVersion);
+				this.schemaVersion,
+				this.comment);
 	}
 
 	@Override
@@ -75,7 +84,8 @@ public class AddAttributeModifier implements IAddAttributeModifier {
 				this.elementID,
 				this.name,
 				this.schemaURI,
-				this.schemaVersion);
+				this.schemaVersion,
+				this.comment);
 	}
 
 	@Override
@@ -95,7 +105,8 @@ public class AddAttributeModifier implements IAddAttributeModifier {
 				&& Objects.equals(this.name, other.name)
 				&& Objects.equals(this.attributeID, other.attributeID)
 				&& Objects.equals(this.schemaURI, other.schemaURI)
-				&& this.schemaVersion == other.schemaVersion;
+				&& this.schemaVersion == other.schemaVersion
+				&& Objects.equals(this.comment, other.comment);
 	}
 
 	@Override
@@ -114,7 +125,8 @@ public class AddAttributeModifier implements IAddAttributeModifier {
 				&& Objects.equals(this.elementID, other.elementID)
 				&& Objects.equals(this.name, other.name)
 				&& Objects.equals(this.schemaURI, other.schemaURI)
-				&& this.schemaVersion == other.schemaVersion;
+				&& this.schemaVersion == other.schemaVersion
+				&& Objects.equals(this.comment, other.comment);
 	}
 
 	/**
@@ -148,6 +160,7 @@ public class AddAttributeModifier implements IAddAttributeModifier {
 		private UUID attributeID = UUID.randomUUID();
 		private String name;
 		private XMLDataType dataType = XMLDataType.STRING;
+		private String comment;
 
 		private Builder(URI schemaURI, int schemaVersion) {
 			this.schemaURI = schemaURI;
@@ -161,6 +174,7 @@ public class AddAttributeModifier implements IAddAttributeModifier {
 			this.attributeID = addAttributeModifier.getAttributeID();
 			this.name = addAttributeModifier.getName();
 			this.dataType = addAttributeModifier.getDataType();
+			this.comment = addAttributeModifier.getComment().orElse(null);
 		}
 
 		/**
@@ -204,6 +218,28 @@ public class AddAttributeModifier implements IAddAttributeModifier {
 		 */
 		public Builder withXMLDataType(XMLDataType dataType) {
 			this.dataType = dataType;
+			return this;
+		}
+
+		/**
+		 * Builder method for comment parameter.
+		 *
+		 * @param comment field to set
+		 * @return builder
+		 */
+		public Builder withComment(String comment) {
+			this.comment = comment;
+			return this;
+		}
+
+		/**
+		 * Builder method for comment parameter.
+		 *
+		 * @param comment field to set
+		 * @return builder
+		 */
+		public Builder withComment(Optional<String> comment) {
+			this.comment = comment.orElse(null);
 			return this;
 		}
 

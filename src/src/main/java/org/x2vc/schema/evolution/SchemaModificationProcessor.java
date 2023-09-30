@@ -137,8 +137,9 @@ public class SchemaModificationProcessor implements ISchemaModificationProcessor
 				if (attributeNames.isEmpty()) {
 					logger.debug("original element does not contain any attributes");
 				} else {
+					final String attributeNameList = String.join(", ", attributeNames);
 					logger.debug("original element already contains the following {} attributes: {}",
-							attributeNames.size(), String.join(", ", attributeNames));
+							attributeNames.size(), attributeNameList);
 				}
 
 				for (final IAddAttributeModifier attributeModifier : entry.getValue()) {
@@ -152,6 +153,7 @@ public class SchemaModificationProcessor implements ISchemaModificationProcessor
 						XMLAttribute.builder(attributeModifier.getAttributeID(), attributeName)
 							.withType(attributeModifier.getDataType())
 							.withUserModifiable(true)
+							.withComment(attributeModifier.getComment())
 							.addTo(elementBuilder);
 					}
 				}
@@ -182,8 +184,9 @@ public class SchemaModificationProcessor implements ISchemaModificationProcessor
 				if (referenceNames.isEmpty()) {
 					logger.debug("original element does not contain any sub-elements");
 				} else {
+					final String referenceNameList = String.join(", ", referenceNames);
 					logger.debug("original element already contains the following {} sub-elements: {}",
-							referenceNames.size(), String.join(", ", referenceNames));
+							referenceNames.size(), referenceNameList);
 				}
 
 				for (final IAddElementModifier elementModifier : entry.getValue()) {
@@ -216,7 +219,8 @@ public class SchemaModificationProcessor implements ISchemaModificationProcessor
 
 			// prepare element type builder
 			final XMLElementType.Builder typeBuilder = XMLElementType.builder(elementModifier.getTypeID())
-				.withContentType(elementModifier.getContentType());
+				.withContentType(elementModifier.getContentType())
+				.withComment(elementModifier.getTypeComment());
 
 			// add attributes
 			for (final IAddAttributeModifier attributeModifier : elementModifier.getAttributes()) {
@@ -225,6 +229,7 @@ public class SchemaModificationProcessor implements ISchemaModificationProcessor
 				XMLAttribute.builder(attributeModifier.getAttributeID(), attributeModifier.getName())
 					.withType(attributeModifier.getDataType())
 					.withUserModifiable(true)
+					.withComment(attributeModifier.getComment())
 					.addTo(typeBuilder);
 			}
 
@@ -242,6 +247,7 @@ public class SchemaModificationProcessor implements ISchemaModificationProcessor
 				.builder(elementModifier.getReferenceID(), elementModifier.getName(), elementType)
 				.withMinOccurrence(elementModifier.getMinOccurrence())
 				.withMaxOccurrence(elementModifier.getMaxOccurrence())
+				.withComment(elementModifier.getReferenceComment())
 				.build();
 
 			return logger.traceExit(result);

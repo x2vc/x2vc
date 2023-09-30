@@ -21,6 +21,8 @@ public class AddElementModifier implements IAddElementModifier {
 	private Integer minOccurrence;
 	private Integer maxOccurrence;
 	private ContentType contentType;
+	private String typeComment;
+	private String referenceComment;
 
 	private Set<IAddElementModifier> elementModifiers = new HashSet<>();
 	private Set<IAddAttributeModifier> attributeModifiers = new HashSet<>();
@@ -35,6 +37,8 @@ public class AddElementModifier implements IAddElementModifier {
 		this.minOccurrence = builder.minOccurrence;
 		this.maxOccurrence = builder.maxOccurrence;
 		this.contentType = builder.contentType;
+		this.typeComment = builder.typeComment;
+		this.referenceComment = builder.referenceComment;
 	}
 
 	@Override
@@ -83,6 +87,16 @@ public class AddElementModifier implements IAddElementModifier {
 	}
 
 	@Override
+	public Optional<String> getTypeComment() {
+		return Optional.ofNullable(this.typeComment);
+	}
+
+	@Override
+	public Optional<String> getReferenceComment() {
+		return Optional.ofNullable(this.referenceComment);
+	}
+
+	@Override
 	public int hashCode() {
 		return Objects.hash(
 				this.contentType,
@@ -93,7 +107,9 @@ public class AddElementModifier implements IAddElementModifier {
 				this.referenceID,
 				this.schemaURI,
 				this.schemaVersion,
-				this.typeID);
+				this.typeID,
+				this.typeComment,
+				this.referenceComment);
 	}
 
 	@Override
@@ -105,7 +121,9 @@ public class AddElementModifier implements IAddElementModifier {
 				this.minOccurrence,
 				this.name,
 				this.schemaURI,
-				this.schemaVersion);
+				this.schemaVersion,
+				this.typeComment,
+				this.referenceComment);
 	}
 
 	@Override
@@ -128,7 +146,9 @@ public class AddElementModifier implements IAddElementModifier {
 				&& Objects.equals(this.referenceID, other.referenceID)
 				&& Objects.equals(this.schemaURI, other.schemaURI)
 				&& this.schemaVersion == other.schemaVersion
-				&& Objects.equals(this.typeID, other.typeID);
+				&& Objects.equals(this.typeID, other.typeID)
+				&& Objects.equals(this.typeComment, other.typeComment)
+				&& Objects.equals(this.referenceComment, other.referenceComment);
 	}
 
 	@Override
@@ -149,7 +169,9 @@ public class AddElementModifier implements IAddElementModifier {
 				&& Objects.equals(this.minOccurrence, other.minOccurrence)
 				&& Objects.equals(this.name, other.name)
 				&& Objects.equals(this.schemaURI, other.schemaURI)
-				&& this.schemaVersion == other.schemaVersion;
+				&& this.schemaVersion == other.schemaVersion
+				&& Objects.equals(this.typeComment, other.typeComment)
+				&& Objects.equals(this.referenceComment, other.referenceComment);
 	}
 
 	/**
@@ -187,6 +209,8 @@ public class AddElementModifier implements IAddElementModifier {
 		private Integer minOccurrence;
 		private Integer maxOccurrence;
 		private ContentType contentType = ContentType.MIXED;
+		private String typeComment;
+		private String referenceComment;
 
 		private Builder(URI schemaURI, int schemaVersion) {
 			this.schemaURI = schemaURI;
@@ -203,6 +227,8 @@ public class AddElementModifier implements IAddElementModifier {
 			this.minOccurrence = addElementModifier.getMinOccurrence();
 			this.maxOccurrence = addElementModifier.getMinOccurrence();
 			this.contentType = addElementModifier.getContentType();
+			this.typeComment = addElementModifier.getTypeComment().orElse(null);
+			this.referenceComment = addElementModifier.getReferenceComment().orElse(null);
 		}
 
 		/**
@@ -279,6 +305,50 @@ public class AddElementModifier implements IAddElementModifier {
 		 */
 		public Builder withContentType(ContentType contentType) {
 			this.contentType = contentType;
+			return this;
+		}
+
+		/**
+		 * Builder method for typeComment parameter.
+		 *
+		 * @param typeComment field to set
+		 * @return builder
+		 */
+		public Builder withTypeComment(String typeComment) {
+			this.typeComment = typeComment;
+			return this;
+		}
+
+		/**
+		 * Builder method for typeComment parameter.
+		 *
+		 * @param typeComment field to set
+		 * @return builder
+		 */
+		public Builder withTypeComment(Optional<String> typeComment) {
+			this.typeComment = typeComment.orElse(null);
+			return this;
+		}
+
+		/**
+		 * Builder method for referenceComment parameter.
+		 *
+		 * @param referenceComment field to set
+		 * @return builder
+		 */
+		public Builder withReferenceComment(String referenceComment) {
+			this.referenceComment = referenceComment;
+			return this;
+		}
+
+		/**
+		 * Builder method for referenceComment parameter.
+		 *
+		 * @param referenceComment field to set
+		 * @return builder
+		 */
+		public Builder withReferenceComment(Optional<String> referenceComment) {
+			this.referenceComment = referenceComment.orElse(null);
 			return this;
 		}
 

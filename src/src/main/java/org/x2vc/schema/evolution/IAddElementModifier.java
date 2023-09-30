@@ -26,11 +26,6 @@ public interface IAddElementModifier extends ISchemaModifier {
 	String getName();
 
 	/**
-	 * @return the ID of the referred element type
-	 */
-	UUID getTypeID();
-
-	/**
 	 * @return the minimum number of times the element should occur at the referred position. Defaults to 0 if not set.
 	 */
 	Integer getMinOccurrence();
@@ -40,6 +35,21 @@ public interface IAddElementModifier extends ISchemaModifier {
 	 *         upper limit set.
 	 */
 	Optional<Integer> getMaxOccurrence();
+
+	/**
+	 * @return the comment of the reference
+	 */
+	Optional<String> getReferenceComment();
+
+	/**
+	 * @return the ID of the referred element type
+	 */
+	UUID getTypeID();
+
+	/**
+	 * @return the comment of the element type
+	 */
+	Optional<String> getTypeComment();
 
 	/**
 	 * @return the content type of the element. Defaults to MIXED if not set.
