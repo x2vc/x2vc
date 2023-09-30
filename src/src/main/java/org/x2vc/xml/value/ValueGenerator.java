@@ -95,7 +95,7 @@ public class ValueGenerator implements IValueGenerator {
 	 */
 	private void loadSchema() throws IllegalStateException {
 		if (this.schema == null) {
-			this.schema = this.schemaManager.getSchema(this.request.getSchemaURI(), this.request.getSchemaVersion());
+			this.schema = this.schemaManager.getSchema(this.request.getStylesheeURI(), this.request.getSchemaVersion());
 		}
 	}
 
