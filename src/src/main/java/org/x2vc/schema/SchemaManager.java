@@ -122,11 +122,10 @@ public class SchemaManager implements ISchemaManager {
 	 * @param stylesheetURI
 	 */
 	private void checkStylesheetURI(URI stylesheetURI) {
-		if (URIUtilities.isMemoryURI(stylesheetURI)) {
-			if (URIUtilities.getObjectType(stylesheetURI) != ObjectType.STYLESHEET) {
-				throw logger.throwing(new IllegalArgumentException(
-						String.format("The given URI {} is not a stylesheet URI", stylesheetURI)));
-			}
+		if (URIUtilities.isMemoryURI(stylesheetURI)
+				&& (URIUtilities.getObjectType(stylesheetURI) != ObjectType.STYLESHEET)) {
+			throw logger.throwing(new IllegalArgumentException(
+					String.format("The given URI %s is not a stylesheet URI", stylesheetURI)));
 		}
 	}
 
