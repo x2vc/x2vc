@@ -1,7 +1,9 @@
 package org.x2vc.schema;
 
 import java.net.URI;
+import java.util.Collection;
 
+import org.x2vc.schema.evolution.ISchemaModifier;
 import org.x2vc.schema.structure.IXMLSchema;
 
 /**
@@ -45,6 +47,14 @@ public interface ISchemaManager {
 	 */
 	IXMLSchema getSchema(URI stylesheetURI, int schemaVersion) throws IllegalStateException;
 
-	// TODO XML Schema Manager: Add schema evolution methods
+	/**
+	 * Applies the modifiers to the input schema, generates a new schema, stores it in memory and updates the file
+	 * version.
+	 *
+	 * @param inputSchema
+	 * @param modifiers
+	 * @return the next version of the schema
+	 */
+	IXMLSchema modifySchema(IXMLSchema inputSchema, Collection<ISchemaModifier> modifiers);
 
 }

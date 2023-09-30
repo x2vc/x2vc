@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.x2vc.schema.evolution.ISchemaModificationProcessor;
 import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.stylesheet.IStylesheetInformation;
 import org.x2vc.stylesheet.IStylesheetManager;
@@ -28,10 +29,13 @@ class SchemaManagerTest {
 	private SchemaManager schemaManager;
 
 	@Mock
+	private IStylesheetManager stylesheetManager;
+
+	@Mock
 	private IInitialSchemaGenerator schemaGenerator;
 
 	@Mock
-	private IStylesheetManager stylesheetManager;
+	private ISchemaModificationProcessor schemaModificationProcessor;
 
 	@Mock
 	private IStylesheetInformation stylesheetInformation;
@@ -44,7 +48,8 @@ class SchemaManagerTest {
 	 */
 	@BeforeEach
 	void setUp() throws Exception {
-		this.schemaManager = new SchemaManager(this.stylesheetManager, this.schemaGenerator, 100);
+		this.schemaManager = new SchemaManager(this.stylesheetManager, this.schemaGenerator,
+				this.schemaModificationProcessor, 100);
 	}
 
 	@Test

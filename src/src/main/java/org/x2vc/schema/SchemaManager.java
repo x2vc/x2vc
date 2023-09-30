@@ -4,18 +4,15 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.*;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.x2vc.schema.evolution.ISchemaModificationProcessor;
+import org.x2vc.schema.evolution.ISchemaModifier;
 import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.schema.structure.XMLSchema;
 import org.x2vc.stylesheet.IStylesheetInformation;
@@ -50,6 +47,7 @@ public class SchemaManager implements ISchemaManager {
 
 	private IStylesheetManager stylesheetManager;
 	private IInitialSchemaGenerator schemaGenerator;
+	private ISchemaModificationProcessor schemaModificationProcessor;
 
 	private Integer cacheSize;
 
@@ -59,10 +57,12 @@ public class SchemaManager implements ISchemaManager {
 	 */
 	@Inject
 	SchemaManager(IStylesheetManager stylesheetManager, IInitialSchemaGenerator schemaGenerator,
+			ISchemaModificationProcessor schemaModificationProcessor,
 			@TypesafeConfig("x2vc.schema.cachesize") Integer cacheSize) {
 		super();
 		this.stylesheetManager = stylesheetManager;
 		this.schemaGenerator = schemaGenerator;
+		this.schemaModificationProcessor = schemaModificationProcessor;
 		this.cacheSize = cacheSize;
 	}
 
@@ -84,6 +84,7 @@ public class SchemaManager implements ISchemaManager {
 	@Override
 	public IXMLSchema getSchema(URI stylesheetURI) {
 		logger.traceEntry();
+		checkStylesheetURI(stylesheetURI);
 		// determine the schema URI without version number
 		final URI schemaURI = URIUtilities.makeMemoryURI(ObjectType.SCHEMA, determineSchemaIdentifier(stylesheetURI));
 		// add the schema URI to the stylesheet register
@@ -96,6 +97,7 @@ public class SchemaManager implements ISchemaManager {
 	@Override
 	public IXMLSchema getSchema(URI stylesheetURI, int schemaVersion) {
 		logger.traceEntry();
+		checkStylesheetURI(stylesheetURI);
 		// determine the schema URI with version number
 		final URI schemaURI = URIUtilities.makeMemoryURI(ObjectType.SCHEMA, determineSchemaIdentifier(stylesheetURI),
 				schemaVersion);
@@ -112,6 +114,18 @@ public class SchemaManager implements ISchemaManager {
 			} else {
 				throw logger.throwing(new IllegalStateException(String
 					.format("Unable to obtain schema version %d for stylesheet %s", schemaVersion, stylesheetURI)));
+			}
+		}
+	}
+
+	/**
+	 * @param stylesheetURI
+	 */
+	private void checkStylesheetURI(URI stylesheetURI) {
+		if (URIUtilities.isMemoryURI(stylesheetURI)) {
+			if (URIUtilities.getObjectType(stylesheetURI) != ObjectType.STYLESHEET) {
+				throw logger.throwing(new IllegalArgumentException(
+						String.format("The given URI {} is not a stylesheet URI", stylesheetURI)));
 			}
 		}
 	}
@@ -164,21 +178,81 @@ public class SchemaManager implements ISchemaManager {
 		final File stylesheetFile = new File(stylesheetURI);
 		final String schemaFilename = stylesheetFile.getParent() + File.separator
 				+ Files.getNameWithoutExtension(stylesheetFile.getName()) + ".x2vc_schema";
-		final File schemaFile = new File(schemaFilename);
-		return schemaFile;
+		return new File(schemaFilename);
 	}
 
-	class SchemaCacheLoader extends CacheLoader<URI, IXMLSchema> {
+	@Override
+	public IXMLSchema modifySchema(IXMLSchema inputSchema, Collection<ISchemaModifier> modifiers) {
+		logger.traceEntry();
 
-		@SuppressWarnings("java:S4738") // Java supplier does not support memoization
-		Supplier<JAXBContext> contextSupplier = Suppliers.memoize(() -> {
-			logger.traceEntry();
-			try {
-				return logger.traceExit(JAXBContext.newInstance(XMLSchema.class));
-			} catch (final JAXBException e) {
-				throw logger.throwing(new RuntimeException("Unable to initialize JAXB for schema handling", e));
-			}
-		});
+		final int totalModifierCount = modifiers.stream().mapToInt(ISchemaModifier::count).sum();
+		logger.debug("applying a set of {} modifiers to generate new schema version for stylesheet {}",
+				totalModifierCount, inputSchema.getStylesheetURI());
+		final IXMLSchema newSchema = this.schemaModificationProcessor.modifySchema(inputSchema, modifiers);
+		logger.debug("new schema version {} for stylesheet {} generated",
+				newSchema.getVersion(), inputSchema.getStylesheetURI());
+
+		// replace the cached version and of possible the file
+		updateSchemaCache(newSchema);
+		if (!URIUtilities.isMemoryURI(newSchema.getStylesheetURI())) {
+			updateSchemaFile(newSchema);
+		}
+		return logger.traceExit(newSchema);
+	}
+
+	/**
+	 * @param newSchema
+	 */
+	private void updateSchemaCache(IXMLSchema newSchema) {
+		logger.traceEntry();
+		final URI stylesheetURI = newSchema.getStylesheetURI();
+
+		// determine the schema URI without version number
+		final URI unversionedSchemaURI = URIUtilities.makeMemoryURI(ObjectType.SCHEMA,
+				determineSchemaIdentifier(stylesheetURI));
+		logger.debug("updating cached schema {} for stylesheet {}", unversionedSchemaURI, stylesheetURI);
+		this.schemaCacheSupplier.get().put(unversionedSchemaURI, newSchema);
+
+		// determine the schema URI with version number
+		final URI versionedSchemaURI = URIUtilities.makeMemoryURI(ObjectType.SCHEMA,
+				determineSchemaIdentifier(stylesheetURI),
+				newSchema.getVersion());
+		logger.debug("updating cached schema {} for stylesheet {}", versionedSchemaURI, stylesheetURI);
+		this.schemaCacheSupplier.get().put(versionedSchemaURI, newSchema);
+
+		logger.traceExit();
+	}
+
+	/**
+	 * @param newSchema
+	 * @throws JAXBException
+	 * @throws PropertyException
+	 */
+	protected void updateSchemaFile(final IXMLSchema newSchema) {
+		logger.traceEntry();
+		final File schemaFile = getSchemaForStylesheet(newSchema.getStylesheetURI());
+		logger.debug("updating schema file {} to version {}", schemaFile, newSchema.getVersion());
+		try {
+			final Marshaller marshaller = this.contextSupplier.get().createMarshaller();
+			marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+			marshaller.marshal(newSchema, schemaFile);
+		} catch (final JAXBException e) {
+			logger.error("Unable to update schema file {}", schemaFile, e);
+		}
+		logger.traceExit();
+	}
+
+	@SuppressWarnings("java:S4738") // Java supplier does not support memoization
+	Supplier<JAXBContext> contextSupplier = Suppliers.memoize(() -> {
+		logger.traceEntry();
+		try {
+			return logger.traceExit(JAXBContext.newInstance(XMLSchema.class));
+		} catch (final JAXBException e) {
+			throw logger.throwing(new RuntimeException("Unable to initialize JAXB for schema handling", e));
+		}
+	});
+
+	class SchemaCacheLoader extends CacheLoader<URI, IXMLSchema> {
 
 		@Override
 		public IXMLSchema load(URI schemaURI) throws Exception {
@@ -257,10 +331,12 @@ public class SchemaManager implements ISchemaManager {
 				XMLSchema schema = null;
 				logger.debug("schema file {} found, will attempt to load", schemaFile);
 				try {
-					final Unmarshaller unmarshaller = this.contextSupplier.get().createUnmarshaller();
+					final Unmarshaller unmarshaller = SchemaManager.this.contextSupplier.get().createUnmarshaller();
 					schema = (XMLSchema) unmarshaller.unmarshal(Files.newReader(schemaFile, StandardCharsets.UTF_8));
 					schema.setURI(schemaURI);
 					schema.setStylesheetURI(stylesheetURI);
+					// versions start new after loading
+					schema.setVersion(1);
 				} catch (FileNotFoundException | JAXBException e) {
 					logger.throwing(new IllegalStateException(
 							String.format("Unable to read existing schema file %s", schemaFile), e));
@@ -270,7 +346,6 @@ public class SchemaManager implements ISchemaManager {
 				return logger.traceExit(Optional.empty());
 			}
 		}
-
 	}
 
 }
