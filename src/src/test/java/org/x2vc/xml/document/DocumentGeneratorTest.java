@@ -1,7 +1,7 @@
 package org.x2vc.xml.document;
 
+import static org.junit.jupiter.api.AssertionFailureBuilder.assertionFailure;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.lenient;
@@ -338,7 +338,13 @@ class DocumentGeneratorTest {
 			.withTest(actual)
 			.withNodeFilter(node -> node.getPrefix() != null && !node.getPrefix().equals(this.traceNamespacePrefix))
 			.build();
-		assertFalse(d.hasDifferences(), d.fullDescription());
+		if (d.hasDifferences()) {
+			assertionFailure()
+				.message(d.fullDescription())
+				.expected(expected)
+				.actual(actual)
+				.buildAndThrow();
+		}
 	}
 
 }
