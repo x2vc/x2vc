@@ -5,6 +5,10 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlTransient;
+
 import org.x2vc.schema.structure.XMLDataType;
 
 /**
@@ -12,12 +16,25 @@ import org.x2vc.schema.structure.XMLDataType;
  */
 public class AddAttributeModifier implements IAddAttributeModifier {
 
+	@XmlTransient
 	private URI schemaURI;
+
+	@XmlTransient
 	private int schemaVersion;
+
+	@XmlAttribute
 	private UUID elementID;
+
+	@XmlAttribute
 	private UUID attributeID;
+
+	@XmlAttribute
 	private String name;
+
+	@XmlAttribute
 	private XMLDataType dataType;
+
+	@XmlElement
 	private String comment;
 
 	private AddAttributeModifier(Builder builder) {

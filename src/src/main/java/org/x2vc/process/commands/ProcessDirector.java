@@ -45,6 +45,7 @@ public class ProcessDirector implements IProcessDirector {
 	private int failedExplorationTasks = 0;
 	private Set<UUID> vulnerabilityCheckTasks = new HashSet<>();
 
+	@SuppressWarnings("java:S107") // large number of parameters due to dependency injection
 	@Inject
 	ProcessDirector(IInitializationTaskFactory initializationTaskFactory,
 			ISchemaExplorationTaskFactory schemaExplorationTaskFactory,
@@ -54,8 +55,8 @@ public class ProcessDirector implements IProcessDirector {
 			IReportGeneratorTaskFactory reportGeneratorTaskFactory,
 			IWorkerProcessManager workerProcessManager,
 			ISchemaModifierCollector schemaModifierCollector,
-			@TypesafeConfig("x2vc.schema.document_count") Integer schemaExplorationDocumentCount,
-			@TypesafeConfig("x2vc.schema.evolution_pass_limit") Integer schemaEvolutionPassLimit,
+			@TypesafeConfig("x2vc.schema.evolve.document_count") Integer schemaExplorationDocumentCount,
+			@TypesafeConfig("x2vc.schema.evolve.pass_limit") Integer schemaEvolutionPassLimit,
 			@TypesafeConfig("x2vc.xml.initial_documents") Integer xssInitialDocumentCount,
 			@Assisted File xsltFile,
 			@Assisted ProcessingMode mode) {
@@ -186,8 +187,7 @@ public class ProcessDirector implements IProcessDirector {
 		logger.debug("processing results of schema exploration of stylesheet {}", this.xsltFile);
 		this.processState = ProcessState.EVOLVE_SCHEMA;
 		final ISchemaEvolutionTask evolutionTask = this.schemaEvolutionTaskFactory
-			.create(this.xsltFile, this.schemaModifierCollector.getConsolidatedModifiers(),
-					this::handleEvolutionComplete);
+			.create(this.xsltFile, this.schemaModifierCollector, this::handleEvolutionComplete);
 		this.workerProcessManager.submit(evolutionTask);
 		logger.traceExit();
 	}

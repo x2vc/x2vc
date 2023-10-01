@@ -4,6 +4,8 @@ import java.util.UUID;
 
 import org.x2vc.processor.IHTMLDocumentContainer;
 import org.x2vc.report.IVulnerabilityCandidate;
+import org.x2vc.schema.evolution.ISchemaModifier;
+import org.x2vc.schema.evolution.ISchemaModifierCollector;
 import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.xml.document.IXMLDocumentContainer;
 import org.x2vc.xml.request.IDocumentRequest;
@@ -53,5 +55,13 @@ public interface IDebugObjectWriter {
 	 * @param schema
 	 */
 	void writeSchema(UUID taskID, IXMLSchema schema);
+
+	/**
+	 * Writes a set of {@link ISchemaModifier}s to a file
+	 *
+	 * @param taskID            a common task ID to keep all the output files belonging to a single task together
+	 * @param modifierCollector
+	 */
+	void writeSchemaModifiers(UUID taskID, ISchemaModifierCollector modifierCollector);
 
 }

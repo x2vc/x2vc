@@ -17,6 +17,8 @@ import org.apache.logging.log4j.Logger;
 import org.x2vc.processor.IHTMLDocumentContainer;
 import org.x2vc.report.IVulnerabilityCandidate;
 import org.x2vc.report.VulnerabilityCandidate;
+import org.x2vc.schema.evolution.ISchemaModifierCollector;
+import org.x2vc.schema.evolution.SchemaModifierCollector;
 import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.schema.structure.XMLSchema;
 import org.x2vc.xml.document.IXMLDocumentContainer;
@@ -42,6 +44,7 @@ public class DebugObjectWriter implements IDebugObjectWriter {
 	private boolean htmlOutputEnabled;
 	private boolean vulnerabilityCandidateOutputEnabled;
 	private boolean schemaOutputEnabled;
+	private boolean schemaModifierOutputEnabled;
 	private File outputPath;
 
 	@Inject
@@ -49,12 +52,14 @@ public class DebugObjectWriter implements IDebugObjectWriter {
 			@TypesafeConfig("x2vc.xml.document.write_to_file") boolean xmlOutputEnabled,
 			@TypesafeConfig("x2vc.html.document.write_to_file") boolean htmlOutputEnabled,
 			@TypesafeConfig("x2vc.analysis.candidates.write_to_file") boolean vulnerabilityCandidateOutputEnabled,
-			@TypesafeConfig("x2vc.schema.write_to_file") boolean schemaOutputEnabled) {
+			@TypesafeConfig("x2vc.schema.write_to_file") boolean schemaOutputEnabled,
+			@TypesafeConfig("x2vc.schema.evolve.write_modifiers_to_file") boolean schemaModifierOutputEnabled) {
 		this.requestOutputEnabled = requestOutputEnabled;
 		this.xmlOutputEnabled = xmlOutputEnabled;
 		this.htmlOutputEnabled = htmlOutputEnabled;
 		this.vulnerabilityCandidateOutputEnabled = vulnerabilityCandidateOutputEnabled;
 		this.schemaOutputEnabled = schemaOutputEnabled;
+		this.schemaModifierOutputEnabled = schemaModifierOutputEnabled;
 		this.outputPath = new File("debugOutput");
 	}
 
@@ -162,6 +167,32 @@ public class DebugObjectWriter implements IDebugObjectWriter {
 				final Marshaller marshaller = this.schemaContextSupplier.get().createMarshaller();
 				marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
 				marshaller.marshal(schema, outputFile);
+			} catch (final Exception e) {
+				logger.error("Unable to write schema to file", e);
+			}
+		}
+		logger.traceExit();
+	}
+
+	@SuppressWarnings("java:S4738") // Java supplier does not support memoization
+	Supplier<JAXBContext> schemaModifierContextSupplier = Suppliers.memoize(() -> {
+		try {
+			return JAXBContext.newInstance(SchemaModifierCollector.class);
+		} catch (final JAXBException e) {
+			logger.error("Unable to provide JAXB context for schema modifications", e);
+			throw new DebugOutputError(e);
+		}
+	});
+
+	@Override
+	public void writeSchemaModifiers(UUID taskID, ISchemaModifierCollector modifierCollector) {
+		logger.traceEntry("for task ID {}", taskID);
+		if (this.schemaModifierOutputEnabled) {
+			try {
+				final File outputFile = provideOutputFile(taskID, "schemaModifiers", "xml");
+				final Marshaller marshaller = this.schemaModifierContextSupplier.get().createMarshaller();
+				marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+				marshaller.marshal(modifierCollector, outputFile);
 			} catch (final Exception e) {
 				logger.error("Unable to write schema to file", e);
 			}

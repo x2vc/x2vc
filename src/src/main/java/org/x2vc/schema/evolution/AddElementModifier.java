@@ -3,6 +3,11 @@ package org.x2vc.schema.evolution;
 import java.net.URI;
 import java.util.*;
 
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlTransient;
+
 import org.x2vc.schema.structure.IXMLElementType.ContentType;
 
 import com.google.common.collect.ImmutableSet;
@@ -12,20 +17,46 @@ import com.google.common.collect.ImmutableSet;
  */
 public class AddElementModifier implements IAddElementModifier {
 
+	@XmlTransient
 	private URI schemaURI;
+
+	@XmlTransient
 	private int schemaVersion;
+
+	@XmlAttribute
 	private UUID elementID;
+
+	@XmlAttribute
 	private UUID referenceID;
+
+	@XmlAttribute
 	private String name;
+
+	@XmlAttribute
 	private UUID typeID;
+
+	@XmlAttribute
 	private Integer minOccurrence;
+
+	@XmlAttribute
 	private Integer maxOccurrence;
+
+	@XmlAttribute
 	private ContentType contentType;
+
+	@XmlElement
 	private String typeComment;
+
+	@XmlElement
 	private String referenceComment;
 
-	private Set<IAddElementModifier> elementModifiers = new HashSet<>();
+	@XmlElementWrapper(name = "attributes")
+	@XmlElement(name = "attribute", type = AddAttributeModifier.class)
 	private Set<IAddAttributeModifier> attributeModifiers = new HashSet<>();
+
+	@XmlElementWrapper(name = "subElements")
+	@XmlElement(name = "element", type = AddElementModifier.class)
+	private Set<IAddElementModifier> elementModifiers = new HashSet<>();
 
 	private AddElementModifier(Builder builder) {
 		this.schemaURI = builder.schemaURI;

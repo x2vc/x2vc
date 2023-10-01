@@ -7,13 +7,12 @@ import java.util.function.Consumer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.x2vc.schema.ISchemaManager;
-import org.x2vc.schema.evolution.ISchemaModifier;
+import org.x2vc.schema.evolution.ISchemaModifierCollector;
 import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.stylesheet.IStylesheetInformation;
 import org.x2vc.stylesheet.IStylesheetManager;
 import org.x2vc.utilities.IDebugObjectWriter;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
@@ -29,7 +28,7 @@ public class SchemaEvolutionTask implements ISchemaEvolutionTask {
 	private ISchemaManager schemaManager;
 	private IDebugObjectWriter debugObjectWriter;
 	private File xsltFile;
-	private ImmutableSet<ISchemaModifier> modifiers;
+	private ISchemaModifierCollector modifierCollector;
 	private Consumer<Boolean> callback;
 
 	private UUID taskID = UUID.randomUUID();
@@ -39,14 +38,14 @@ public class SchemaEvolutionTask implements ISchemaEvolutionTask {
 	SchemaEvolutionTask(IStylesheetManager stylesheetManager, ISchemaManager schemaManager,
 			IDebugObjectWriter debugObjectWriter,
 			@Assisted File xsltFile,
-			@Assisted ImmutableSet<ISchemaModifier> modifiers,
+			@Assisted ISchemaModifierCollector modifierCollector,
 			@Assisted Consumer<Boolean> callback) {
 		super();
 		this.stylesheetManager = stylesheetManager;
 		this.schemaManager = schemaManager;
 		this.debugObjectWriter = debugObjectWriter;
 		this.xsltFile = xsltFile;
-		this.modifiers = modifiers;
+		this.modifierCollector = modifierCollector;
 		this.callback = callback;
 	}
 
@@ -56,7 +55,9 @@ public class SchemaEvolutionTask implements ISchemaEvolutionTask {
 		try {
 			final IStylesheetInformation stylesheetInfo = this.stylesheetManager.get(this.xsltFile.toURI());
 			final IXMLSchema oldSchema = this.schemaManager.getSchema(stylesheetInfo.getURI());
-			final IXMLSchema newSchema = this.schemaManager.modifySchema(oldSchema, this.modifiers);
+			this.debugObjectWriter.writeSchemaModifiers(this.taskID, this.modifierCollector);
+			final IXMLSchema newSchema = this.schemaManager.modifySchema(oldSchema,
+					this.modifierCollector.getConsolidatedModifiers());
 			this.debugObjectWriter.writeSchema(this.taskID, newSchema);
 			this.callback.accept(true);
 		} catch (final Exception ex) {

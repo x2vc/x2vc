@@ -3,6 +3,8 @@ package org.x2vc.schema.evolution;
 import java.net.URI;
 import java.util.*;
 
+import javax.xml.bind.annotation.*;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -13,6 +15,7 @@ import com.google.common.collect.MultimapBuilder;
 /**
  * Standard implementation of {@link ISchemaModifierCollector}.
  */
+@XmlRootElement(name = "schemaModifiers")
 public class SchemaModifierCollector implements ISchemaModifierCollector {
 
 	private static final Logger logger = LogManager.getLogger();
@@ -20,11 +23,16 @@ public class SchemaModifierCollector implements ISchemaModifierCollector {
 	private record ModifierKey(UUID elementID, String objectName) {
 	}
 
+	@XmlAttribute
 	private URI schemaURI;
+
+	@XmlAttribute
 	private int schemaVersion;
 
 	private Multimap<ModifierKey, IAddAttributeModifier> attributeModifiers;
 	private Multimap<ModifierKey, IAddElementModifier> elementModifiers;
+
+	@XmlTransient
 	int collectedModifierCount;
 
 	SchemaModifierCollector() {
@@ -236,6 +244,11 @@ public class SchemaModifierCollector implements ISchemaModifierCollector {
 	}
 
 	@Override
+	@XmlElementWrapper(name = "modifiers")
+	@XmlElements({
+			@XmlElement(name = "addAttribute", type = AddAttributeModifier.class),
+			@XmlElement(name = "addElement", type = AddElementModifier.class)
+	})
 	public ImmutableSet<ISchemaModifier> getConsolidatedModifiers() {
 		logger.traceEntry();
 		final Set<ISchemaModifier> result = new HashSet<>();
