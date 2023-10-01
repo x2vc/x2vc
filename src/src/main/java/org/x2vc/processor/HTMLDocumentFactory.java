@@ -1,6 +1,7 @@
 package org.x2vc.processor;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.x2vc.stylesheet.IStylesheetManager;
 import org.x2vc.xml.document.IXMLDocumentContainer;
@@ -40,6 +41,7 @@ public class HTMLDocumentFactory implements IHTMLDocumentFactory {
 		private SaxonApiException compilationError;
 		private SaxonApiException processingError;
 		private ImmutableList<ITraceEvent> traceEvents;
+		private UUID documentTraceID;
 
 		/**
 		 * @param stylesheetManager
@@ -76,9 +78,15 @@ public class HTMLDocumentFactory implements IHTMLDocumentFactory {
 		}
 
 		@Override
+		public Builder withDocumentTraceID(UUID documentTraceID) {
+			this.documentTraceID = documentTraceID;
+			return this;
+		}
+
+		@Override
 		public IHTMLDocumentContainer build() {
 			return new HTMLDocumentContainer(this.stylesheetManager, this.source, this.htmlDocument,
-					this.compilationError, this.processingError, this.traceEvents);
+					this.compilationError, this.processingError, this.traceEvents, this.documentTraceID);
 		}
 
 	}

@@ -1,6 +1,7 @@
 package org.x2vc.processor;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import org.x2vc.stylesheet.coverage.IStylesheetCoverage;
 import org.x2vc.xml.document.IXMLDocumentContainer;
@@ -10,20 +11,16 @@ import com.google.common.collect.ImmutableList;
 import net.sf.saxon.s9api.SaxonApiException;
 
 /**
- * A container object that is used to transport the transformed HTML document
- * and the trace results.
+ * A container object that is used to transport the transformed HTML document and the trace results.
  *
- * If the transformation failed, the container holds the structured error
- * information instead of the HTML document.
+ * If the transformation failed, the container holds the structured error information instead of the HTML document.
  *
- * An HTML document container contains a reference to the XML document container
- * used to generate the HTML document.
+ * An HTML document container contains a reference to the XML document container used to generate the HTML document.
  */
 public interface IHTMLDocumentContainer {
 
 	/**
-	 * Checks whether the transformation failed. Shortcut to
-	 * <code>getDocument().isAbsent()</code>s
+	 * Checks whether the transformation failed. Shortcut to <code>getDocument().isAbsent()</code>s
 	 *
 	 * @return <code>true</code> if the transformation failed for some reason.
 	 */
@@ -53,6 +50,11 @@ public interface IHTMLDocumentContainer {
 	 * @return the {@link ITraceEvent}s collected during the execution
 	 */
 	Optional<ImmutableList<ITraceEvent>> getTraceEvents();
+
+	/**
+	 * @return the trace ID used for the document root node
+	 */
+	UUID getDocumentTraceID();
 
 	/**
 	 * @return the coverage information collected during the execution.

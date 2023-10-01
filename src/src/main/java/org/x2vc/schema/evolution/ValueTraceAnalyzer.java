@@ -30,10 +30,7 @@ import net.sf.saxon.expr.instruct.ValueOf;
 import net.sf.saxon.om.AxisInfo;
 import net.sf.saxon.om.NamespaceUri;
 import net.sf.saxon.om.StructuredQName;
-import net.sf.saxon.pattern.CombinedNodeTest;
-import net.sf.saxon.pattern.NameTest;
-import net.sf.saxon.pattern.NodeKindTest;
-import net.sf.saxon.pattern.NodeTest;
+import net.sf.saxon.pattern.*;
 
 /**
  * Standard implementation of {@link IValueTraceAnalyzer}.
@@ -62,8 +59,12 @@ public class ValueTraceAnalyzer implements IValueTraceAnalyzer {
 		// schema element references the elements are based on.
 		final IDocumentRequest request = htmlContainer.getSource().getRequest();
 		final IXMLSchema schema = this.schemaManager.getSchema(request.getStylesheeURI(), request.getSchemaVersion());
-		final Multimap<IXMLSchemaObject, Expression> schemaTraceEvents = mapEventsToSchema(valueTraceEvents,
-				htmlContainer.getSource(), schema);
+		final Multimap<ISchemaElementProxy, Expression> schemaTraceEvents = mapEventsToSchema(valueTraceEvents,
+				htmlContainer.getSource(), htmlContainer.getDocumentTraceID(), schema);
+
+		if (schemaTraceEvents.isEmpty()) {
+			logger.warn("No usable tracing information was found for this document");
+		}
 
 		// process events grouped by schema element
 		final ExpressionProcessor expressionProcessor = new ExpressionProcessor(schema);
@@ -106,15 +107,17 @@ public class ValueTraceAnalyzer implements IValueTraceAnalyzer {
 	 *
 	 * @param events
 	 * @param source
+	 * @param documentTraceID
 	 * @return
 	 */
-	private Multimap<IXMLSchemaObject, Expression> mapEventsToSchema(List<IValueAccessTraceEvent> events,
-			IXMLDocumentContainer source, IXMLSchema schema) {
+	private Multimap<ISchemaElementProxy, Expression> mapEventsToSchema(List<IValueAccessTraceEvent> events,
+			IXMLDocumentContainer source, UUID documentTraceID, IXMLSchema schema) {
 		logger.traceEntry();
-		final Multimap<IXMLSchemaObject, Expression> result = MultimapBuilder.hashKeys().hashSetValues().build();
+		final Multimap<ISchemaElementProxy, Expression> result = MultimapBuilder.hashKeys().hashSetValues().build();
 
 		final Map<UUID, UUID> traceIDToRuleIDMap = source.getDocumentDescriptor().getTraceIDToRuleIDMap();
 		final IDocumentRequest request = source.getRequest();
+		final SchemaElementProxy documentProxy = new SchemaElementProxy();
 		int discardedElements = 0;
 		int eventIndex = -1;
 		for (final IValueAccessTraceEvent event : events) {
@@ -122,7 +125,9 @@ public class ValueTraceAnalyzer implements IValueTraceAnalyzer {
 			final Optional<UUID> oElementID = event.getContextElementID();
 			if (oElementID.isPresent()) {
 				final UUID elementID = oElementID.get();
-				if (traceIDToRuleIDMap.containsKey(elementID)) {
+				if (elementID.equals(documentTraceID)) {
+					result.put(documentProxy, event.getExpression());
+				} else if (traceIDToRuleIDMap.containsKey(elementID)) {
 					final UUID ruleID = traceIDToRuleIDMap.get(elementID);
 					try {
 						final IGenerationRule rule = request.getRuleByID(ruleID);
@@ -130,7 +135,18 @@ public class ValueTraceAnalyzer implements IValueTraceAnalyzer {
 						if (oSchemaObjectID.isPresent()) {
 							final UUID schemaObjectID = oSchemaObjectID.get();
 							final IXMLSchemaObject schemaObject = schema.getObjectByID(schemaObjectID);
-							result.put(schemaObject, event.getExpression());
+							// The schema object has to resolve to an element type because that's the only thing we can
+							// extend
+							// by adding new sub-elements or adding attributes.
+							if (schemaObject.isElement()) {
+								result.put(new SchemaElementProxy(schemaObject.asElement()), event.getExpression());
+							} else if (schemaObject.isReference()) {
+								result.put(new SchemaElementProxy(schemaObject.asReference().getElement()),
+										event.getExpression());
+							} else {
+								logger.warn("Unable to process trace events relating to schema object {}",
+										schemaObject);
+							}
 						} else {
 							logger.debug("rule {} identified by event {} does not relate to a schema object", ruleID,
 									eventIndex);
@@ -180,25 +196,11 @@ public class ValueTraceAnalyzer implements IValueTraceAnalyzer {
 		 * @param schemaObject
 		 * @param expressions
 		 */
-		public void processExpressions(IXMLSchemaObject schemaObject, Collection<Expression> expressions) {
+		public void processExpressions(ISchemaElementProxy schemaObject, Collection<Expression> expressions) {
 			logger.traceEntry();
-
-			// The schema object has to resolve to an element type because that's the only thing we can extend
-			// by adding new sub-elements or adding attributes.
-			IXMLElementType elementType = null;
-			if (schemaObject instanceof final IXMLElementType et) {
-				elementType = et;
-			} else if (schemaObject instanceof final IXMLElementReference elementReference) {
-				elementType = elementReference.getElement();
-			} else {
-				logger.warn("Unable to process trace events relating to schema object {}", schemaObject);
-				return;
-			}
-
 			for (final Expression expression : expressions) {
-				processExpression(new SchemaElementProxy(elementType), expression);
+				processExpression(schemaObject, expression);
 			}
-
 			logger.traceExit();
 		}
 
@@ -571,8 +573,10 @@ public class ValueTraceAnalyzer implements IValueTraceAnalyzer {
 				boolean isAttribute) {
 			logger.traceEntry("with node test {}", nodeTest);
 			ISchemaElementProxy newSchemaElement = schemaElement;
-			// TODO support NodeTest subclass AnyNodeTest
-			if (nodeTest instanceof final CombinedNodeTest combinedNodeTest) {
+			if ((nodeTest == null) || (nodeTest instanceof AnyNodeTest)) {
+				// NodeTest subclass AnyNodeTest (or null, which means the same thing
+				// ignore this test for now
+			} else if (nodeTest instanceof final CombinedNodeTest combinedNodeTest) {
 				// NodeTest subclass CombinedNodeTest
 				Arrays.stream(combinedNodeTest.getComponentNodeTests())
 					.forEach(subTest -> processNodeTest(schemaElement, subTest, isAttribute));
@@ -609,6 +613,68 @@ public class ValueTraceAnalyzer implements IValueTraceAnalyzer {
 				StructuredQName subElementName) {
 			logger.traceEntry();
 			ISchemaElementProxy newSchemaElement = schemaElement;
+			switch (schemaElement.getType()) {
+			case DOCUMENT:
+				newSchemaElement = processDocumentRootElementAccess(schemaElement, subElementName);
+				break;
+			case ELEMENT:
+				newSchemaElement = processExistingElementAccess(schemaElement, subElementName);
+				break;
+			case MODIFIER:
+				newSchemaElement = processModifierElementAccess(schemaElement, subElementName);
+				break;
+			}
+			return logger.traceExit(newSchemaElement);
+		}
+
+		/**
+		 * @param schemaElement
+		 * @param subElementName
+		 * @return
+		 */
+		private ISchemaElementProxy processDocumentRootElementAccess(ISchemaElementProxy schemaElement,
+				StructuredQName subElementName) {
+			logger.traceEntry();
+			ISchemaElementProxy newSchemaElement = schemaElement;
+			final NamespaceUri namespaceURI = subElementName.getNamespaceUri();
+			final String localName = subElementName.getLocalPart();
+			if (namespaceURI.equals(NamespaceUri.NULL)) {
+				// check whether a root element with the name already exists
+				final List<IXMLElementReference> matchingRootReferences = this.schema.getRootElements()
+					.stream()
+					.filter(ref -> ref.getName().equals(localName))
+					.toList();
+				switch (matchingRootReferences.size()) {
+				case 0:
+					// FIXME create new root element
+					logger.warn("root element creation not supported yet (name {})", localName);
+					break;
+				case 1:
+					newSchemaElement = new SchemaElementProxy(matchingRootReferences.get(0).asElement());
+					break;
+				default:
+					logger.warn("Multiple root references matching \"{}\", randomly choosing the first one.",
+							localName);
+					newSchemaElement = new SchemaElementProxy(matchingRootReferences.get(0).asElement());
+					break;
+				}
+			} else {
+				logger.warn("Unable to process references with namespace: {}", subElementName);
+			}
+			return logger.traceExit(newSchemaElement);
+		}
+
+		/**
+		 * @param schemaElement
+		 * @param subElementName
+		 * @return
+		 */
+		private ISchemaElementProxy processExistingElementAccess(ISchemaElementProxy schemaElement,
+				StructuredQName subElementName) {
+			logger.traceEntry();
+			ISchemaElementProxy newSchemaElement = schemaElement;
+			final UUID parentElementID = schemaElement.getElementTypeID()
+				.orElseThrow(() -> new IllegalArgumentException("Parent element ID must be present at this point"));
 
 			final NamespaceUri namespaceURI = subElementName.getNamespaceUri();
 			final String localName = subElementName.getLocalPart();
@@ -619,27 +685,49 @@ public class ValueTraceAnalyzer implements IValueTraceAnalyzer {
 					// element already exists, nothing else to do
 					newSchemaElement = oSubElement.get();
 				} else {
-					final Optional<IAddElementModifier> oParentElementModifier = schemaElement.getModifier();
-					if (oParentElementModifier.isPresent()) {
-						// parent schema element is newly created - add the sub-element below it
+					// since the parent element already exists, we need to check the global map
+					final ElementKey elementKey = new ElementKey(parentElementID, localName);
+					if (!this.elementModifiers.containsKey(elementKey)) {
 						logger.debug("First attempt to access non-existing sub-element {} of element type {}",
-								localName,
-								schemaElement.getID());
-						final IAddElementModifier newModifier = createElementModifier(schemaElement, localName);
-						oParentElementModifier.get().addSubElement(newModifier);
+								localName, parentElementID);
+						final IAddElementModifier newModifier = createNonRootElementModifier(schemaElement, localName);
+						this.elementModifiers.put(elementKey, newModifier);
 						newSchemaElement = new SchemaElementProxy(newModifier);
-					} else {
-						// parent element already exists - we need to check the global map in this case
-						final ElementKey elementKey = new ElementKey(schemaElement.getID(), localName);
-						if (!this.elementModifiers.containsKey(elementKey)) {
-							logger.debug("First attempt to access non-existing sub-element {} of element type {}",
-									localName,
-									schemaElement.getID());
-							final IAddElementModifier newModifier = createElementModifier(schemaElement, localName);
-							this.elementModifiers.put(elementKey, newModifier);
-							newSchemaElement = new SchemaElementProxy(newModifier);
-						}
 					}
+				}
+			} else {
+				logger.warn("Unable to process references with namespace: {}", subElementName);
+			}
+			return logger.traceExit(newSchemaElement);
+		}
+
+		/**
+		 * @param schemaElement
+		 * @param subElementName
+		 * @return
+		 */
+		private ISchemaElementProxy processModifierElementAccess(ISchemaElementProxy schemaElement,
+				StructuredQName subElementName) {
+			logger.traceEntry();
+			ISchemaElementProxy newSchemaElement = schemaElement;
+			final IAddElementModifier parentElementModifier = schemaElement.getModifier()
+				.orElseThrow(() -> new IllegalArgumentException("Modifier must be present at this point"));
+
+			final NamespaceUri namespaceURI = subElementName.getNamespaceUri();
+			final String localName = subElementName.getLocalPart();
+			if (namespaceURI.equals(NamespaceUri.NULL)) {
+				// check whether a sub-element with that name already exists
+				final Optional<ISchemaElementProxy> oSubElement = schemaElement.getSubElement(localName);
+				if (oSubElement.isPresent()) {
+					// element already exists, nothing else to do
+					newSchemaElement = oSubElement.get();
+				} else {
+					// parent schema element is newly created - add the sub-element below it
+					logger.debug("First attempt to access non-existing sub-element {} of element type {}",
+							localName, parentElementModifier.getTypeID());
+					final IAddElementModifier newModifier = createNonRootElementModifier(schemaElement, localName);
+					parentElementModifier.addSubElement(newModifier);
+					newSchemaElement = new SchemaElementProxy(newModifier);
 				}
 			} else {
 				logger.warn("Unable to process references with namespace: {}", subElementName);
@@ -652,10 +740,29 @@ public class ValueTraceAnalyzer implements IValueTraceAnalyzer {
 		 * @param elementName
 		 * @return
 		 */
-		protected IAddElementModifier createElementModifier(ISchemaElementProxy schemaElement,
+		protected IAddElementModifier createNonRootElementModifier(ISchemaElementProxy schemaElement,
 				final String elementName) {
+			final UUID parentElementID = schemaElement.getElementTypeID()
+				.orElseThrow(() -> new IllegalArgumentException("Parent element ID must be present at this point"));
 			// as usual, generating a helpful comment is usually the most difficult part...
-			String comment = String.format("element %s of parent element %s", elementName, schemaElement.getID());
+			final String comment = generateElementModifierComment(schemaElement, parentElementID, elementName);
+			return AddElementModifier
+				.builder(this.schema.getURI(), this.schema.getVersion())
+				.withElementID(parentElementID)
+				.withName(elementName)
+				.withTypeComment(comment)
+				.build();
+		}
+
+		/**
+		 * @param schemaElement
+		 * @param parentElementID
+		 * @param elementName
+		 * @return
+		 */
+		protected String generateElementModifierComment(ISchemaElementProxy schemaElement, final UUID parentElementID,
+				final String elementName) {
+			String comment = String.format("element %s of parent element %s", elementName, parentElementID);
 			final Optional<IXMLElementType> elementType = schemaElement.getElementType();
 			if (elementType.isPresent()) {
 				final Set<IXMLElementReference> references = this.schema.getReferencesUsing(elementType.get());
@@ -665,7 +772,8 @@ public class ValueTraceAnalyzer implements IValueTraceAnalyzer {
 					break;
 				case 1:
 					final IXMLElementReference reference = references.iterator().next();
-					comment = String.format("element %s of parent element %s (%s)", elementName, reference.getName(),
+					comment = String.format("element %s of parent element %s (%s)", elementName,
+							reference.getName(),
 							reference.getElementID());
 					break;
 				default:
@@ -677,16 +785,10 @@ public class ValueTraceAnalyzer implements IValueTraceAnalyzer {
 				final Optional<IAddElementModifier> elementModifier = schemaElement.getModifier();
 				if (elementModifier.isPresent()) {
 					comment = String.format("element %s of parent element %s (%s)", elementName,
-							elementModifier.get().getName(), schemaElement.getID());
+							elementModifier.get().getName(), parentElementID);
 				}
 			}
-
-			return AddElementModifier
-				.builder(this.schema.getURI(), this.schema.getVersion())
-				.withElementID(schemaElement.getID())
-				.withName(elementName)
-				.withTypeComment(comment)
-				.build();
+			return comment;
 		}
 
 		/**
@@ -698,6 +800,12 @@ public class ValueTraceAnalyzer implements IValueTraceAnalyzer {
 			logger.traceEntry();
 			final ISchemaElementProxy newSchemaElement = schemaElement;
 
+			final Optional<UUID> oParentElementID = schemaElement.getElementTypeID();
+			if (oParentElementID.isEmpty()) {
+				throw logger
+					.throwing(new IllegalArgumentException("Can't add attributes to the document root node."));
+			}
+
 			final NamespaceUri namespaceURI = attributeName.getNamespaceUri();
 			final String localName = attributeName.getLocalPart();
 			if (namespaceURI.equals(NamespaceUri.NULL)) {
@@ -707,16 +815,16 @@ public class ValueTraceAnalyzer implements IValueTraceAnalyzer {
 					if (oElementModifier.isPresent()) {
 						// parent element is newly created - add the attribute modifier below it
 						logger.debug("First attempt to access non-existing attribute {} of element type {}", localName,
-								schemaElement.getID());
+								oParentElementID.get());
 						final IAddAttributeModifier modifier = createAttributeModifier(schemaElement, localName);
 						oElementModifier.get().addAttribute(modifier);
 					} else {
 						// parent element already exists - we need to check the global map in this case
-						final AttributeKey attributeKey = new AttributeKey(schemaElement.getID(), localName);
+						final AttributeKey attributeKey = new AttributeKey(oParentElementID.get(), localName);
 						if (!this.attributeModifiers.containsKey(attributeKey)) {
 							logger.debug("First attempt to access non-existing attribute {} of element type {}",
 									localName,
-									schemaElement.getID());
+									oParentElementID.get());
 							final IAddAttributeModifier modifier = createAttributeModifier(schemaElement, localName);
 							this.attributeModifiers.put(attributeKey, modifier);
 						}
@@ -735,9 +843,14 @@ public class ValueTraceAnalyzer implements IValueTraceAnalyzer {
 		 */
 		protected IAddAttributeModifier createAttributeModifier(ISchemaElementProxy schemaElement,
 				final String attributeName) {
+			final Optional<UUID> oParentElementID = schemaElement.getElementTypeID();
+			if (oParentElementID.isEmpty()) {
+				throw logger
+					.throwing(new IllegalArgumentException("Can't add attributes to the document root node."));
+			}
 			return AddAttributeModifier
 				.builder(this.schema.getURI(), this.schema.getVersion())
-				.withElementID(schemaElement.getID())
+				.withElementID(oParentElementID.get())
 				.withName(attributeName)
 				.build();
 		}

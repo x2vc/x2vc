@@ -33,6 +33,7 @@ import net.sf.saxon.s9api.Message;
 import net.sf.saxon.trace.Traceable;
 import net.sf.saxon.trace.TraceableComponent;
 import net.sf.saxon.trans.Mode;
+import net.sf.saxon.type.Type;
 
 /**
  * Collects the message events emitted by the XSLT processor and produces the trace message objects.
@@ -43,12 +44,20 @@ class ProcessorObserver implements Consumer<Message>, ErrorListener, TraceListen
 	private List<ITraceEvent> traceEvents = Lists.newLinkedList();
 	private boolean tracingEnabled = true;
 	private RebindingMap noRebindingMap = new RebindingMap();
+	private UUID documentTraceID = UUID.randomUUID();
 
 	/**
 	 * @return a list of all the {@link ITraceEvent} that have been collected so far
 	 */
 	public ImmutableList<ITraceEvent> getTraceEvents() {
 		return ImmutableList.copyOf(this.traceEvents);
+	}
+
+	/**
+	 * @return the trace ID used for the document root node
+	 */
+	public UUID getDocumentTraceID() {
+		return this.documentTraceID;
 	}
 
 	// ===== callback methods used by the transformer =======================================================
@@ -209,22 +218,30 @@ class ProcessorObserver implements Consumer<Message>, ErrorListener, TraceListen
 	private Optional<UUID> getContextElementID(Optional<NodeInfo> contextNode) {
 		logger.traceEntry();
 		Optional<UUID> result = Optional.empty();
-		String elementIDAsString = null;
 		if (contextNode.isPresent()) {
-			elementIDAsString = contextNode.get().getAttributeValue(
-					IDocumentGenerator.TRACE_ELEMENT_NAMESPACE,
-					IDocumentGenerator.TRACE_ATTRIBUTE_ELEMENT_ID);
-		}
-		if (Strings.isNullOrEmpty(elementIDAsString)) {
-			logger.debug("Context node is either missing or has no trace ID assigned");
-		} else {
-			try {
-				final UUID elementID = UUID.fromString(elementIDAsString);
-				logger.trace("Identified context element ID {}", elementID);
-				result = Optional.of(elementID);
-			} catch (final IllegalArgumentException e) {
-				logger.warn("Malformed element ID \"{}\" will be ignored", elementIDAsString);
+			final NodeInfo node = contextNode.get();
+			if (node.getNodeKind() == Type.DOCUMENT) {
+				// this is the document node that we can't assign a trace ID to in the regular fashion
+				logger.debug("Context node is the document root, using ID {}", this.documentTraceID);
+				result = Optional.of(this.documentTraceID);
+			} else {
+				final String elementIDAsString = contextNode.get().getAttributeValue(
+						IDocumentGenerator.TRACE_ELEMENT_NAMESPACE,
+						IDocumentGenerator.TRACE_ATTRIBUTE_ELEMENT_ID);
+				if (Strings.isNullOrEmpty(elementIDAsString)) {
+					logger.debug("Context node is either missing or has no trace ID assigned");
+				} else {
+					try {
+						final UUID elementID = UUID.fromString(elementIDAsString);
+						logger.trace("Identified context element ID {}", elementID);
+						result = Optional.of(elementID);
+					} catch (final IllegalArgumentException e) {
+						logger.warn("Malformed element ID \"{}\" will be ignored", elementIDAsString);
+					}
+				}
 			}
+		} else {
+			logger.debug("Context node is missing");
 		}
 		return logger.traceExit(result);
 	}

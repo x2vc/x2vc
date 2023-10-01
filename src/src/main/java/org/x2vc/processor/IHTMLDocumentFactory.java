@@ -1,14 +1,14 @@
 package org.x2vc.processor;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.x2vc.xml.document.IXMLDocumentContainer;
 
 import net.sf.saxon.s9api.SaxonApiException;
 
 /**
- * Provides an interface to construct an instance of
- * {@link IHTMLDocumentContainer}
+ * Provides an interface to construct an instance of {@link IHTMLDocumentContainer}
  */
 public interface IHTMLDocumentFactory {
 
@@ -56,6 +56,14 @@ public interface IHTMLDocumentFactory {
 		 * @return builder
 		 */
 		public Builder withTraceEvents(List<ITraceEvent> traceEvents);
+
+		/**
+		 * Adds the document trace ID to the builder
+		 *
+		 * @param documentTraceID
+		 * @return builder
+		 */
+		public Builder withDocumentTraceID(UUID documentTraceID);
 
 		/**
 		 * Builder method of the builder.

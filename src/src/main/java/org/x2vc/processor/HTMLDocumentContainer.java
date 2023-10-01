@@ -3,6 +3,7 @@ package org.x2vc.processor;
 import static com.google.common.base.Preconditions.checkArgument;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -28,10 +29,10 @@ public class HTMLDocumentContainer implements IHTMLDocumentContainer {
 	private SaxonApiException processingError;
 	private ImmutableList<ITraceEvent> traceEvents;
 	private IStylesheetCoverage coverage;
+	private UUID documentTraceID;
 
 	/**
-	 * Internal constructor - use an injected {@link IHTMLDocumentFactory} to create
-	 * a new document container.
+	 * Internal constructor - use an injected {@link IHTMLDocumentFactory} to create a new document container.
 	 *
 	 * @param stylesheetManager
 	 * @param source
@@ -39,10 +40,11 @@ public class HTMLDocumentContainer implements IHTMLDocumentContainer {
 	 * @param compilationError
 	 * @param processingError
 	 * @param traceEvents
+	 * @param documentTraceID
 	 */
 	HTMLDocumentContainer(IStylesheetManager stylesheetManager, IXMLDocumentContainer source, String htmlDocument,
 			SaxonApiException compilationError, SaxonApiException processingError,
-			ImmutableList<ITraceEvent> traceEvents) {
+			ImmutableList<ITraceEvent> traceEvents, UUID documentTraceID) {
 		this.stylesheetManager = stylesheetManager;
 		// we can either have a result document or error conditions, but not both
 		if (htmlDocument == null) {
@@ -55,6 +57,7 @@ public class HTMLDocumentContainer implements IHTMLDocumentContainer {
 		this.compilationError = compilationError;
 		this.processingError = processingError;
 		this.traceEvents = traceEvents;
+		this.documentTraceID = documentTraceID;
 	}
 
 	@Override
@@ -88,6 +91,11 @@ public class HTMLDocumentContainer implements IHTMLDocumentContainer {
 	}
 
 	@Override
+	public UUID getDocumentTraceID() {
+		return this.documentTraceID;
+	}
+
+	@Override
 	public Optional<IStylesheetCoverage> getCoverage() {
 		if ((this.traceEvents != null) && (this.coverage == null)) {
 			buildCoverage();
@@ -96,8 +104,7 @@ public class HTMLDocumentContainer implements IHTMLDocumentContainer {
 	}
 
 	/**
-	 * Fills a {@link IStylesheetCoverage} object with the information supplied by
-	 * the trace events.
+	 * Fills a {@link IStylesheetCoverage} object with the information supplied by the trace events.
 	 */
 	private void buildCoverage() {
 		logger.traceEntry();

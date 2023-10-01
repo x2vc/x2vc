@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 import java.io.File;
 import java.io.StringWriter;
+import java.util.UUID;
 
 import javax.xml.transform.stream.StreamSource;
 
@@ -23,7 +24,10 @@ public abstract class ProcessorObserverTestBase {
 	private static final Logger logger = LogManager.getLogger();
 	protected final Processor processor = new Processor();
 
-	protected ImmutableList<ITraceEvent> transformAndObserve(String fileName) throws SaxonApiException {
+	protected record TransformResult(UUID documentTraceID, ImmutableList<ITraceEvent> events) {
+	}
+
+	protected TransformResult transformAndObserve(String fileName) throws SaxonApiException {
 		logger.debug("===== file {}: trace output below =====", fileName);
 		final String fileBase = "src/test/resources/data/org.x2vc.processor.ProcessorObserver/" + fileName;
 		final File xslt = new File(fileBase + ".xslt");
@@ -53,23 +57,23 @@ public abstract class ProcessorObserverTestBase {
 				.filter(IExecutionTraceEvent.class::isInstance)
 				.map(IExecutionTraceEvent.class::cast)
 				.forEach(event -> logger
-					.trace(String.format("assertEventRecorded(events, ExecutionEventType.%s, \"%s\", %d);",
+					.trace(String.format("assertEventRecorded(result.events(), ExecutionEventType.%s, \"%s\", %d);",
 							event.getEventType(), event.getExecutedElement().orElse(""),
 							event.getElementLocation().getLineNumber())));
 		}
 
-		final boolean generateValueTraceAssertions = false;
+		final boolean generateValueTraceAssertions = true;
 		if (generateValueTraceAssertions) {
 			traceEvents.stream()
 				.filter(IValueAccessTraceEvent.class::isInstance)
 				.map(IValueAccessTraceEvent.class::cast)
 				.forEach(event -> logger
-					.trace(String.format("assertEventRecorded(events, \"%s\", \"%s\", %d);",
+					.trace(String.format("assertEventRecorded(result.events(), \"%s\", \"%s\", %d);",
 							event.getExpression().toString(), event.getContextElementID().get(),
 							event.getLocation().getLineNumber())));
 		}
 
-		return traceEvents;
+		return new TransformResult(observer.getDocumentTraceID(), traceEvents);
 	}
 
 }

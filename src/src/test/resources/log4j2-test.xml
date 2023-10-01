@@ -2,7 +2,7 @@
 <Configuration status="warn" monitorInterval="30">
 
     <Properties>
-        <Property name="LOG_PATTERN">%date{HH:mm:ss.SSS} %level{WARN=WRN, DEBUG=DBG, ERROR=ERR, TRACE=TRC, INFO=INF} [%tn] %30.30logger{1.1.*}#%M: %msg%n%throwable</Property>
+        <Property name="LOG_PATTERN">%date{HH:mm:ss.SSS} %level{WARN=WRN, DEBUG=DBG, ERROR=ERR, TRACE=TRC, INFO=INF} [%tn] %30.30logger{1.1.*}#%-25.25M: %msg%n%throwable</Property>
     </Properties>
 
     <Appenders>

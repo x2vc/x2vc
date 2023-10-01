@@ -79,6 +79,7 @@ public class XSLTProcessor implements IXSLTProcessor {
 				transformer.transform(new StreamSource(new StringReader(xmlDocument.getDocument())), out);
 				builder.withHtmlDocument(stringWriter.toString());
 				builder.withTraceEvents(observer.getTraceEvents());
+				builder.withDocumentTraceID(observer.getDocumentTraceID());
 			} catch (final SaxonApiException e) {
 				// we expect some errors due to the explorative nature of the tests (monkey
 				// testing), so don't log them, just add them to the result object
