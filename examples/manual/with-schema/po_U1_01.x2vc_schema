@@ -299,7 +299,7 @@
 				<discreteValue dataType="STRING" stringValue="alt" id="216ab45b-b7d9-4d0d-ada7-00296df21df0" />
 				<discreteValue dataType="STRING" stringValue="title" id="e2091526-2cd6-43b7-84f9-7ca77ef706aa" />
 			</attribute>
-			<subElement name="url" elementID="6a62dcb4-bab8-4baf-8efe-14a329044140" minOccurrence="1" maxOccurrence="1"
+			<subElement name="url" elementID="6a62dcb4-bab8-4baf-8efe-14a329044140" userModifiable="true" minOccurrence="1" maxOccurrence="1"
 				id="fcd59932-6747-400b-9756-c8ecfb14264d" />
 			<subElement name="text" elementID="5eac321f-40b0-4aed-9040-9c7aadc837cd" minOccurrence="1" maxOccurrence="1"
 				id="edce34a2-ef41-4794-bf8d-256fb438fa49" />
@@ -349,5 +349,4 @@
 			<comment>root element purchaseOrder</comment>
 		</rootElement>
 	</rootElements>
-	<URI>memory:schema/bar</URI>
 </schema>

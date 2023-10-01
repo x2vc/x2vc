@@ -101,7 +101,6 @@ class SchemaModificationProcessorTest {
 				            <comment>reference to root element</comment>
 				        </rootElement>
 				    </rootElements>
-				    <URI>memory:schema/someSchema</URI>
 				</schema>
 				""";
 		//@formatter:on
@@ -134,7 +133,6 @@ class SchemaModificationProcessorTest {
 				            <comment>reference to root element</comment>
 				        </rootElement>
 				    </rootElements>
-				    <URI>memory:schema/someSchema</URI>
 				</schema>
 			""";
 		// @formatter:on
@@ -163,7 +161,6 @@ class SchemaModificationProcessorTest {
 				            <comment>reference to root element</comment>
 				        </rootElement>
 				    </rootElements>
-				    <URI>memory:schema/someSchema</URI>
 				</schema>
 				""";
 		//@formatter:on
@@ -197,7 +194,6 @@ class SchemaModificationProcessorTest {
 				            <comment>reference to root element</comment>
 				        </rootElement>
 				    </rootElements>
-				    <URI>memory:schema/someSchema</URI>
 				</schema>
 			""";
 		// @formatter:on
@@ -226,7 +222,6 @@ class SchemaModificationProcessorTest {
 				            <comment>reference to root element</comment>
 				        </rootElement>
 				    </rootElements>
-				    <URI>memory:schema/someSchema</URI>
 				</schema>
 				""";
 		//@formatter:on
@@ -259,7 +254,6 @@ class SchemaModificationProcessorTest {
 				            <comment>reference to root element</comment>
 				        </rootElement>
 				    </rootElements>
-				    <URI>memory:schema/someSchema</URI>
 				</schema>
 			""";
 		// @formatter:on
@@ -287,7 +281,6 @@ class SchemaModificationProcessorTest {
 				            <comment>reference to root element</comment>
 				        </rootElement>
 				    </rootElements>
-				    <URI>memory:schema/someSchema</URI>
 				</schema>
 				""";
 		//@formatter:on
@@ -324,7 +317,6 @@ class SchemaModificationProcessorTest {
 				            <comment>reference to root element</comment>
 				        </rootElement>
 				    </rootElements>
-				    <URI>memory:schema/someSchema</URI>
 				</schema>
 			""";
 		// @formatter:on
@@ -356,7 +348,6 @@ class SchemaModificationProcessorTest {
 				            <comment>reference to root element</comment>
 				        </rootElement>
 				    </rootElements>
-				    <URI>memory:schema/someSchema</URI>
 				</schema>
 				""";
 		//@formatter:on
@@ -397,7 +388,6 @@ class SchemaModificationProcessorTest {
 				            <comment>reference to root element</comment>
 				        </rootElement>
 				    </rootElements>
-				    <URI>memory:schema/someSchema</URI>
 				</schema>
 			""";
 		// @formatter:on
@@ -429,7 +419,6 @@ class SchemaModificationProcessorTest {
 				            <comment>reference to root element</comment>
 				        </rootElement>
 				    </rootElements>
-				    <URI>memory:schema/someSchema</URI>
 				</schema>
 				""";
 		//@formatter:on
@@ -468,7 +457,6 @@ class SchemaModificationProcessorTest {
 				            <comment>reference to root element</comment>
 				        </rootElement>
 				    </rootElements>
-				    <URI>memory:schema/someSchema</URI>
 				</schema>
 			""";
 		// @formatter:on
@@ -496,7 +484,6 @@ class SchemaModificationProcessorTest {
 				            <comment>reference to root element</comment>
 				        </rootElement>
 				    </rootElements>
-				    <URI>memory:schema/someSchema</URI>
 				</schema>
 				""";
 		//@formatter:on
@@ -543,7 +530,6 @@ class SchemaModificationProcessorTest {
 				            <comment>reference to root element</comment>
 				        </rootElement>
 				    </rootElements>
-				    <URI>memory:schema/someSchema</URI>
 				</schema>
 			""";
 		// @formatter:on

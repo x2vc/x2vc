@@ -27,8 +27,7 @@ class CompletedRequestRegistryTest {
 
 	/**
 	 * Test method for
-	 * {@link org.x2vc.xml.request.CompletedRequestRegistry#register(org.x2vc.xml.request.IDocumentRequest)}
-	 * and
+	 * {@link org.x2vc.xml.request.CompletedRequestRegistry#register(org.x2vc.xml.request.IDocumentRequest)} and
 	 * {@link org.x2vc.xml.request.CompletedRequestRegistry#contains(org.x2vc.xml.request.IDocumentRequest)}.
 	 */
 	@Test
@@ -44,20 +43,23 @@ class CompletedRequestRegistryTest {
 		final int schemaVersion = 1;
 		final URI stylesheetURI = URI.create("bar:foo");
 
-		final IDocumentRequest originalRequest = new DocumentRequest(schemaURI, schemaVersion, stylesheetURI,
-				originalRootRule);
+		final IDocumentRequest originalRequest = DocumentRequest
+			.builder(schemaURI, schemaVersion, stylesheetURI, originalRootRule)
+			.build();
 
 		this.registry.register(originalRequest);
 
 		assertTrue(this.registry.contains(originalRequest));
 
-		final IDocumentRequest alternateRequest = new DocumentRequest(schemaURI, schemaVersion, stylesheetURI,
-				alternateRootRule);
+		final IDocumentRequest alternateRequest = DocumentRequest
+			.builder(schemaURI, schemaVersion, stylesheetURI, alternateRootRule)
+			.build();
 
 		assertTrue(this.registry.contains(alternateRequest));
 
-		final IDocumentRequest differingRequest = new DocumentRequest(schemaURI, schemaVersion + 1, stylesheetURI,
-				alternateRootRule);
+		final IDocumentRequest differingRequest = DocumentRequest
+			.builder(schemaURI, schemaVersion + 1, stylesheetURI, alternateRootRule)
+			.build();
 
 		assertFalse(this.registry.contains(differingRequest));
 	}

@@ -54,7 +54,7 @@ class DocumentRequestTest {
 
 		final URI stylesheetURI = URI.create("bar:foo");
 		final URI schemaURI = URI.create("foo:bar");
-		final IDocumentRequest request = new DocumentRequest(schemaURI, 1, stylesheetURI, rootRule);
+		final IDocumentRequest request = DocumentRequest.builder(schemaURI, 1, stylesheetURI, rootRule).build();
 		assertEquals(schemaURI, request.getSchemaURI());
 		assertEquals(1, request.getSchemaVersion());
 		assertEquals(stylesheetURI, request.getStylesheeURI());
@@ -92,8 +92,9 @@ class DocumentRequestTest {
 		final int schemaVersion = 1;
 		final URI stylesheetURI = URI.create("bar:foo");
 
-		final IDocumentRequest originalRequest = new DocumentRequest(schemaURI, schemaVersion, stylesheetURI,
-				originalRootRule);
+		final IDocumentRequest originalRequest = DocumentRequest.builder(schemaURI, schemaVersion, stylesheetURI,
+				originalRootRule)
+			.build();
 		final IDocumentRequest normalizedRequest = originalRequest.normalize();
 
 		assertNotSame(originalRequest, normalizedRequest);
@@ -122,8 +123,10 @@ class DocumentRequestTest {
 		final int schemaVersion = 1;
 		final URI stylesheetURI = URI.create("bar:foo");
 
-		final IDocumentRequest originalRequest = new DocumentRequest(schemaURI, schemaVersion, stylesheetURI,
-				originalRootRule, originalModifier);
+		final IDocumentRequest originalRequest = DocumentRequest.builder(schemaURI, schemaVersion, stylesheetURI,
+				originalRootRule)
+			.withModifier(originalModifier)
+			.build();
 		final IDocumentRequest normalizedRequest = originalRequest.normalize();
 
 		assertNotSame(originalRequest, normalizedRequest);
@@ -179,7 +182,7 @@ class DocumentRequestTest {
 
 		final URI stylesheetURI = URI.create("bar:foo");
 		final URI schemaURI = URI.create("foo:bar");
-		final IDocumentRequest request = new DocumentRequest(schemaURI, 1, stylesheetURI, rootRule);
+		final IDocumentRequest request = DocumentRequest.builder(schemaURI, 1, stylesheetURI, rootRule).build();
 
 		assertSame(rootAttribRule, request.getRuleByID(rootAttribRule.getID()));
 		assertSame(rootDataContentRule, request.getRuleByID(rootDataContentRule.getID()));

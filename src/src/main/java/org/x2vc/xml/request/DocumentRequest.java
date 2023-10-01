@@ -44,59 +44,20 @@ public class DocumentRequest implements IDocumentRequest {
 	@XmlElement(type = DocumentValueModifier.class)
 	private IDocumentModifier modifier;
 
-	/**
-	 * @param schemaURI
-	 * @param schemaVersion
-	 * @param rootElementRule
-	 */
-	DocumentRequest(URI schemaURI, int schemaVersion, URI stylesheetURI, IAddElementRule rootElementRule) {
-		super();
-		this.schemaURI = schemaURI;
-		this.schemaVersion = schemaVersion;
-		this.stylesheetURI = stylesheetURI;
-		this.rootElementRule = rootElementRule;
-	}
-
-	/**
-	 * @param schemaURI
-	 * @param schemaVersion
-	 * @param rootElementRule
-	 */
-	DocumentRequest(URI schemaURI, int schemaVersion, URI stylesheetURI, IAddElementRule rootElementRule,
-			IDocumentModifier modifier) {
-		super();
-		this.schemaURI = schemaURI;
-		this.schemaVersion = schemaVersion;
-		this.stylesheetURI = stylesheetURI;
-		this.rootElementRule = rootElementRule;
-		this.modifier = modifier;
-	}
-
-	/**
-	 * @param rootElementRule
-	 */
-	DocumentRequest(IXMLSchema schema, IAddElementRule rootElementRule) {
-		super();
-		this.schemaURI = schema.getURI();
-		this.schemaVersion = schema.getVersion();
-		this.stylesheetURI = schema.getStylesheetURI();
-		this.rootElementRule = rootElementRule;
-	}
-
-	/**
-	 * @param rootElementRule
-	 */
-	DocumentRequest(IXMLSchema schema, IAddElementRule rootElementRule, IDocumentModifier modifier) {
-		super();
-		this.schemaURI = schema.getURI();
-		this.schemaVersion = schema.getVersion();
-		this.stylesheetURI = schema.getStylesheetURI();
-		this.rootElementRule = rootElementRule;
-		this.modifier = modifier;
-	}
+	@XmlAttribute
+	private MixedContentGenerationMode mixedContentGenerationMode;
 
 	DocumentRequest() {
 		// used for de-/serialization only
+	}
+
+	private DocumentRequest(Builder builder) {
+		this.schemaURI = builder.schemaURI;
+		this.schemaVersion = builder.schemaVersion;
+		this.stylesheetURI = builder.stylesheetURI;
+		this.rootElementRule = builder.rootElementRule;
+		this.modifier = builder.modifier;
+		this.mixedContentGenerationMode = builder.mixedContentGenerationMode;
 	}
 
 	@Override
@@ -117,6 +78,11 @@ public class DocumentRequest implements IDocumentRequest {
 	@Override
 	public IAddElementRule getRootElementRule() {
 		return this.rootElementRule;
+	}
+
+	@Override
+	public MixedContentGenerationMode getMixedContentGenerationMode() {
+		return this.mixedContentGenerationMode;
 	}
 
 	@Override
@@ -201,18 +167,103 @@ public class DocumentRequest implements IDocumentRequest {
 
 	@Override
 	public IDocumentRequest normalize() {
-		if (this.modifier == null) {
-			return new DocumentRequest(this.schemaURI, this.schemaVersion, this.stylesheetURI,
-					(IAddElementRule) this.rootElementRule.normalize());
-		} else {
-			return new DocumentRequest(this.schemaURI, this.schemaVersion, this.stylesheetURI,
-					(IAddElementRule) this.rootElementRule.normalize(), this.modifier.normalize());
+		logger.traceEntry();
+		final Builder builder = new Builder(this.schemaURI, this.schemaVersion, this.stylesheetURI,
+				(IAddElementRule) this.rootElementRule.normalize());
+		if (this.modifier != null) {
+			builder.withModifier(this.modifier.normalize());
+		}
+		return logger.traceExit(builder.build());
+	}
+
+	/**
+	 * Creates a new builder
+	 *
+	 * @param schemaURI
+	 * @param schemaVersion
+	 * @param stylesheetURI
+	 * @param rootElementRule
+	 *
+	 * @return the builder
+	 */
+	public static Builder builder(URI schemaURI, int schemaVersion, URI stylesheetURI,
+			IAddElementRule rootElementRule) {
+		return new Builder(schemaURI, schemaVersion, stylesheetURI, rootElementRule);
+	}
+
+	/**
+	 * Creates a new builder
+	 *
+	 * @param schema
+	 * @param rootElementRule
+	 *
+	 * @return the builder
+	 */
+	public static Builder builder(IXMLSchema schema, IAddElementRule rootElementRule) {
+		return new Builder(schema, rootElementRule);
+	}
+
+	/**
+	 * Builder to build {@link DocumentRequest}.
+	 */
+	public static final class Builder {
+		private URI schemaURI;
+		private int schemaVersion;
+		private URI stylesheetURI;
+		private IAddElementRule rootElementRule;
+		private IDocumentModifier modifier;
+		private MixedContentGenerationMode mixedContentGenerationMode = MixedContentGenerationMode.FULL;
+
+		private Builder(URI schemaURI, int schemaVersion, URI stylesheetURI, IAddElementRule rootElementRule) {
+			this.schemaURI = schemaURI;
+			this.schemaVersion = schemaVersion;
+			this.stylesheetURI = stylesheetURI;
+			this.rootElementRule = rootElementRule;
+		}
+
+		private Builder(IXMLSchema schema, IAddElementRule rootElementRule) {
+			this.schemaURI = schema.getURI();
+			this.schemaVersion = schema.getVersion();
+			this.stylesheetURI = schema.getStylesheetURI();
+			this.rootElementRule = rootElementRule;
+		}
+
+		/**
+		 * Builder method for modifier parameter.
+		 *
+		 * @param modifier field to set
+		 * @return builder
+		 */
+		public Builder withModifier(IDocumentModifier modifier) {
+			this.modifier = modifier;
+			return this;
+		}
+
+		/**
+		 * Builder method for mixedContentGenerationMode parameter.
+		 *
+		 * @param mixedContentGenerationMode field to set
+		 * @return builder
+		 */
+		public Builder withMixedContentGenerationMode(MixedContentGenerationMode mixedContentGenerationMode) {
+			this.mixedContentGenerationMode = mixedContentGenerationMode;
+			return this;
+		}
+
+		/**
+		 * Builder method of the builder.
+		 *
+		 * @return built class
+		 */
+		public DocumentRequest build() {
+			return new DocumentRequest(this);
 		}
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(this.modifier, this.rootElementRule, this.schemaURI, this.schemaVersion,
+		return Objects.hash(this.mixedContentGenerationMode, this.modifier, this.rootElementRule, this.schemaURI,
+				this.schemaVersion,
 				this.stylesheetURI);
 	}
 
@@ -228,7 +279,8 @@ public class DocumentRequest implements IDocumentRequest {
 			return false;
 		}
 		final DocumentRequest other = (DocumentRequest) obj;
-		return Objects.equals(this.modifier, other.modifier)
+		return this.mixedContentGenerationMode == other.mixedContentGenerationMode
+				&& Objects.equals(this.modifier, other.modifier)
 				&& Objects.equals(this.rootElementRule, other.rootElementRule)
 				&& Objects.equals(this.schemaURI, other.schemaURI) && this.schemaVersion == other.schemaVersion
 				&& Objects.equals(this.stylesheetURI, other.stylesheetURI);

@@ -51,7 +51,7 @@ public class RequestGenerator implements IRequestGenerator {
 	public IDocumentRequest generateNewRequest(IXMLSchema schema) {
 		logger.traceEntry();
 		final IAddElementRule rootElementRule = generateRootElementRule(schema);
-		final DocumentRequest request = new DocumentRequest(schema, rootElementRule);
+		final DocumentRequest request = DocumentRequest.builder(schema, rootElementRule).build();
 		return logger.traceExit(request);
 	}
 
@@ -242,7 +242,7 @@ public class RequestGenerator implements IRequestGenerator {
 					String.format("Unknown modifier type %s", modifier.getClass().toString())));
 		}
 
-		final DocumentRequest request = new DocumentRequest(schema, rootElementRule, modifier);
+		final DocumentRequest request = DocumentRequest.builder(schema, rootElementRule).withModifier(modifier).build();
 		return logger.traceExit(request);
 	}
 

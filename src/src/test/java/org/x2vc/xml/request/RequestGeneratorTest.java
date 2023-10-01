@@ -371,7 +371,8 @@ class RequestGeneratorTest {
 
 		final IXMLSchema schema = loadSchema("SingleEmptyElement_WithRequiredAttribute.x2vc_schema");
 		// shortcut to provide schema for request construction
-		lenient().when(this.schemaManager.getSchema(URI.create("memory:schema/bar"), 1)).thenReturn(schema);
+		lenient().when(this.schemaManager.getSchema(URI.create("file://somewhere/SampleStylesheet.xslt"), 1))
+			.thenReturn(schema);
 
 		final IDocumentRequest originalRequest = this.requestGenerator.generateNewRequest(schema);
 		final IAddElementRule originalRootElementRule = originalRequest.getRootElementRule();
@@ -415,7 +416,8 @@ class RequestGeneratorTest {
 
 		final IXMLSchema schema = loadSchema("SingleDataElement.x2vc_schema");
 		// shortcut to provide schema for request construction
-		lenient().when(this.schemaManager.getSchema(URI.create("memory:schema/bar"), 1)).thenReturn(schema);
+		lenient().when(this.schemaManager.getSchema(URI.create("file://somewhere/SampleStylesheet.xslt"), 1))
+			.thenReturn(schema);
 
 		final IDocumentRequest originalRequest = this.requestGenerator.generateNewRequest(schema);
 		final IAddElementRule originalRootElementRule = originalRequest.getRootElementRule();

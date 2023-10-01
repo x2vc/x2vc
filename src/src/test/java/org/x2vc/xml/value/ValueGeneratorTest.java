@@ -94,9 +94,10 @@ class ValueGeneratorTest {
 		// schema
 		this.schemaURI = URIUtilities.makeMemoryURI(ObjectType.SCHEMA, "bar");
 		this.schemaVersion = 1;
-		lenient().when(this.schemaManager.getSchema(this.schemaURI, this.schemaVersion)).thenReturn(this.schema);
+		lenient().when(this.schemaManager.getSchema(this.stylesheetURI, this.schemaVersion)).thenReturn(this.schema);
 		lenient().when(this.schema.getURI()).thenReturn(this.schemaURI);
 		lenient().when(this.schema.getVersion()).thenReturn(this.schemaVersion);
+		lenient().when(this.schema.getStylesheetURI()).thenReturn(this.stylesheetURI);
 
 		// attribute in schema
 		this.attributeID = UUID.randomUUID();
@@ -128,8 +129,8 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Test method for {@link org.x2vc.xml.value.ValueGenerator#getValuePrefix()}
-	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueLength()}.
+	 * Test method for {@link org.x2vc.xml.value.ValueGenerator#getValuePrefix()} and
+	 * {@link org.x2vc.xml.value.ValueGenerator#getValueLength()}.
 	 */
 	@Test
 	void testGenerateValue_PrefixSelectorAccess() {
@@ -153,8 +154,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Prepares the {@link IXMLAttribute} mockup as string for use without discrete
-	 * values
+	 * Prepares the {@link IXMLAttribute} mockup as string for use without discrete values
 	 *
 	 * @param maxLength
 	 */
@@ -168,8 +168,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Prepares the {@link IXMLAttribute} mockup as string for use with discrete
-	 * values
+	 * Prepares the {@link IXMLAttribute} mockup as string for use with discrete values
 	 */
 	void prepareAttributeForString(@Nullable Integer maxLength, boolean fixedValueset, String... discreteValues) {
 		final List<XMLDiscreteValue> valueList = Arrays.stream(discreteValues)
@@ -195,8 +194,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Prepares the {@link IXMLAttribute} mockup as integer for use without discrete
-	 * values
+	 * Prepares the {@link IXMLAttribute} mockup as integer for use without discrete values
 	 */
 	void prepareAttributeForInteger(@Nullable Integer minValue, @Nullable Integer maxValue) {
 		lenient().when(this.attribute.getDataType()).thenReturn(XMLDataType.INTEGER);
@@ -208,8 +206,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Prepares the {@link IXMLAttribute} mockup as integer for use with discrete
-	 * values
+	 * Prepares the {@link IXMLAttribute} mockup as integer for use with discrete values
 	 */
 	void prepareAttributeForInteger(boolean fixedValueset, Integer... discreteValues) {
 		final List<XMLDiscreteValue> valueList = Arrays.stream(discreteValues)
@@ -223,8 +220,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ISetAttributeRule)}
+	 * Test method for {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ISetAttributeRule)}
 	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
 	@Test
@@ -238,8 +234,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ISetAttributeRule)}
+	 * Test method for {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ISetAttributeRule)}
 	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
 	@Test
@@ -255,8 +250,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ISetAttributeRule)}
+	 * Test method for {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ISetAttributeRule)}
 	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
 	@Test
@@ -273,8 +267,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ISetAttributeRule)}
+	 * Test method for {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ISetAttributeRule)}
 	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
 	@Test
@@ -290,8 +283,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ISetAttributeRule)}
+	 * Test method for {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ISetAttributeRule)}
 	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
 	@Test
@@ -313,8 +305,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ISetAttributeRule)}
+	 * Test method for {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ISetAttributeRule)}
 	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
 	@Test
@@ -337,8 +328,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ISetAttributeRule)}
+	 * Test method for {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ISetAttributeRule)}
 	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
 	@Test
@@ -354,8 +344,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ISetAttributeRule)}
+	 * Test method for {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ISetAttributeRule)}
 	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
 	@Test
@@ -374,8 +363,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ISetAttributeRule)}
+	 * Test method for {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ISetAttributeRule)}
 	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
 	@Test
@@ -391,8 +379,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ISetAttributeRule)}
+	 * Test method for {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ISetAttributeRule)}
 	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
 	@Test
@@ -406,8 +393,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ISetAttributeRule)}
+	 * Test method for {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ISetAttributeRule)}
 	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
 	@Test
@@ -433,8 +419,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ISetAttributeRule)}
+	 * Test method for {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ISetAttributeRule)}
 	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
 	@Test
@@ -450,8 +435,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ISetAttributeRule)}
+	 * Test method for {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ISetAttributeRule)}
 	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
 	@Test
@@ -466,8 +450,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ISetAttributeRule)}
+	 * Test method for {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ISetAttributeRule)}
 	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
 	@Test
@@ -487,8 +470,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ISetAttributeRule)}
+	 * Test method for {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ISetAttributeRule)}
 	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
 	@Test
@@ -508,8 +490,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ISetAttributeRule)}
+	 * Test method for {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ISetAttributeRule)}
 	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
 	@Test
@@ -531,8 +512,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ISetAttributeRule)}
+	 * Test method for {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ISetAttributeRule)}
 	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
 	@Test
@@ -554,8 +534,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ISetAttributeRule)}
+	 * Test method for {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ISetAttributeRule)}
 	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
 	@Test
@@ -577,8 +556,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ISetAttributeRule)}
+	 * Test method for {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ISetAttributeRule)}
 	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
 	@Test
@@ -598,8 +576,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ISetAttributeRule)}
+	 * Test method for {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ISetAttributeRule)}
 	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
 	@Test
@@ -618,8 +595,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ISetAttributeRule)}
+	 * Test method for {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ISetAttributeRule)}
 	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
 	@Test
@@ -642,8 +618,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ISetAttributeRule)}
+	 * Test method for {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ISetAttributeRule)}
 	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
 	@Test
@@ -704,8 +679,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Prepares the {@link IXMLElementType} mockup as string for use without
-	 * discrete values
+	 * Prepares the {@link IXMLElementType} mockup as string for use without discrete values
 	 *
 	 * @param maxLength
 	 */
@@ -719,8 +693,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Prepares the {@link IXMLElementType} mockup as string for use with discrete
-	 * values
+	 * Prepares the {@link IXMLElementType} mockup as string for use with discrete values
 	 */
 	void prepareElementForString(@Nullable Integer maxLength, boolean fixedValueset, String... discreteValues) {
 		final List<XMLDiscreteValue> valueList = Arrays.stream(discreteValues)
@@ -746,8 +719,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Prepares the {@link IXMLElementType} mockup as integer for use without
-	 * discrete values
+	 * Prepares the {@link IXMLElementType} mockup as integer for use without discrete values
 	 */
 	void prepareElementForInteger(@Nullable Integer minValue, @Nullable Integer maxValue) {
 		lenient().when(this.element.getDataType()).thenReturn(XMLDataType.INTEGER);
@@ -759,8 +731,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Prepares the {@link IXMLElementType} mockup as integer for use with discrete
-	 * values
+	 * Prepares the {@link IXMLElementType} mockup as integer for use with discrete values
 	 */
 	void prepareElementForInteger(boolean fixedValueset, Integer... discreteValues) {
 		final List<XMLDiscreteValue> valueList = Arrays.stream(discreteValues)
@@ -774,8 +745,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IAddDataContentRule)}
+	 * Test method for {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IAddDataContentRule)}
 	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
 	@Test
@@ -789,8 +759,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IAddDataContentRule)}
+	 * Test method for {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IAddDataContentRule)}
 	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
 	@Test
@@ -806,8 +775,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IAddDataContentRule)}
+	 * Test method for {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IAddDataContentRule)}
 	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
 	@Test
@@ -824,8 +792,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IAddDataContentRule)}
+	 * Test method for {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IAddDataContentRule)}
 	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
 	@Test
@@ -841,8 +808,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IAddDataContentRule)}
+	 * Test method for {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IAddDataContentRule)}
 	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
 	@Test
@@ -864,8 +830,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IAddDataContentRule)}
+	 * Test method for {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IAddDataContentRule)}
 	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
 	@Test
@@ -888,8 +853,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IAddDataContentRule)}
+	 * Test method for {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IAddDataContentRule)}
 	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
 	@Test
@@ -905,8 +869,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IAddDataContentRule)}
+	 * Test method for {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IAddDataContentRule)}
 	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
 	@Test
@@ -925,8 +888,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IAddDataContentRule)}
+	 * Test method for {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IAddDataContentRule)}
 	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
 	@Test
@@ -942,8 +904,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IAddDataContentRule)}
+	 * Test method for {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IAddDataContentRule)}
 	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
 	@Test
@@ -957,8 +918,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IAddDataContentRule)}
+	 * Test method for {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IAddDataContentRule)}
 	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
 	@Test
@@ -984,8 +944,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IAddDataContentRule)}
+	 * Test method for {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IAddDataContentRule)}
 	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
 	@Test
@@ -1001,8 +960,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IAddDataContentRule)}
+	 * Test method for {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IAddDataContentRule)}
 	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
 	@Test
@@ -1017,8 +975,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IAddDataContentRule)}
+	 * Test method for {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IAddDataContentRule)}
 	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
 	@Test
@@ -1038,8 +995,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IAddDataContentRule)}
+	 * Test method for {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IAddDataContentRule)}
 	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
 	@Test
@@ -1059,8 +1015,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IAddDataContentRule)}
+	 * Test method for {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IAddDataContentRule)}
 	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
 	@Test
@@ -1082,8 +1037,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IAddDataContentRule)}
+	 * Test method for {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IAddDataContentRule)}
 	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
 	@Test
@@ -1105,8 +1059,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IAddDataContentRule)}
+	 * Test method for {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IAddDataContentRule)}
 	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
 	@Test
@@ -1128,8 +1081,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IAddDataContentRule)}
+	 * Test method for {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IAddDataContentRule)}
 	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
 	@Test
@@ -1149,8 +1101,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IAddDataContentRule)}
+	 * Test method for {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IAddDataContentRule)}
 	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
 	@Test
@@ -1169,8 +1120,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IAddDataContentRule)}
+	 * Test method for {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IAddDataContentRule)}
 	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
 	@Test
@@ -1193,8 +1143,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IAddDataContentRule)}
+	 * Test method for {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IAddDataContentRule)}
 	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
 	@Test
@@ -1254,8 +1203,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IAddRawContentRule)}
+	 * Test method for {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IAddRawContentRule)}
 	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
 	@Test
@@ -1269,8 +1217,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IAddRawContentRule)}
+	 * Test method for {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IAddRawContentRule)}
 	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
 	@Test

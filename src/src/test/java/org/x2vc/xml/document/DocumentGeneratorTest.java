@@ -93,15 +93,16 @@ class DocumentGeneratorTest {
 		this.context = JAXBContext.newInstance(XMLSchema.class);
 		this.unmarshaller = this.context.createUnmarshaller();
 
-		// schema
-		this.schemaURI = URIUtilities.makeMemoryURI(ObjectType.SCHEMA, "bar");
-		this.schemaVersion = 1;
-		lenient().when(this.schemaManager.getSchema(this.schemaURI, this.schemaVersion)).thenAnswer(a -> this.schema);
-
 		// stylesheet
 		this.stylesheetURI = URIUtilities.makeMemoryURI(ObjectType.STYLESHEET, "baz");
 		lenient().when(this.stylesheetManager.get(this.stylesheetURI)).thenReturn(this.stylesheetInformation);
 		when(this.stylesheetInformation.getTraceNamespacePrefix()).thenReturn(this.traceNamespacePrefix);
+
+		// schema
+		this.schemaURI = URIUtilities.makeMemoryURI(ObjectType.SCHEMA, "bar");
+		this.schemaVersion = 1;
+		lenient().when(this.schemaManager.getSchema(this.stylesheetURI, this.schemaVersion))
+			.thenAnswer(a -> this.schema);
 
 		// value generator
 		lenient().when(this.valueGeneratorFactory.createValueGenerator(this.request)).thenReturn(this.valueGenerator);

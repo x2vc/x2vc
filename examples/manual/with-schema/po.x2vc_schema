@@ -349,5 +349,4 @@
 			<comment>root element purchaseOrder</comment>
 		</rootElement>
 	</rootElements>
-	<URI>memory:schema/bar</URI>
 </schema>

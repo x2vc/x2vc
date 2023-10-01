@@ -10,5 +10,4 @@
             <comment>reference to root element</comment>
         </rootElement>
     </rootElements>
-    <URI>memory:schema/bar</URI>
 </schema>

@@ -79,5 +79,4 @@
             <comment>reference to root element C</comment>
         </rootElement>
     </rootElements>
-    <URI>memory:schema/bar</URI>
 </schema>

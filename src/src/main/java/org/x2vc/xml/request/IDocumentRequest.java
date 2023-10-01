@@ -81,4 +81,9 @@ public interface IDocumentRequest {
 	 */
 	IDocumentRequest normalize();
 
+	/**
+	 * @return the {@link MixedContentGenerationMode}
+	 */
+	MixedContentGenerationMode getMixedContentGenerationMode();
+
 }
