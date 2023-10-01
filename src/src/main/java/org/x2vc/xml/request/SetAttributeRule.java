@@ -4,6 +4,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
 import org.x2vc.schema.structure.IXMLAttribute;
@@ -110,6 +111,7 @@ public class SetAttributeRule extends AbstractGenerationRule implements ISetAttr
 		this.attributeID = attribute.getID();
 	}
 
+	@XmlAttribute
 	@Override
 	public UUID getAttributeID() {
 		return this.attributeID;
