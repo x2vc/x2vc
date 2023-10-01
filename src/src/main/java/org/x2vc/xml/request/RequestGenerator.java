@@ -48,10 +48,14 @@ public class RequestGenerator implements IRequestGenerator {
 	// ===== initial request generation ==========
 
 	@Override
-	public IDocumentRequest generateNewRequest(IXMLSchema schema) {
+	public IDocumentRequest generateNewRequest(IXMLSchema schema,
+			MixedContentGenerationMode mixedContentGenerationMode) {
 		logger.traceEntry();
 		final IAddElementRule rootElementRule = generateRootElementRule(schema);
-		final DocumentRequest request = DocumentRequest.builder(schema, rootElementRule).build();
+		final DocumentRequest request = DocumentRequest
+			.builder(schema, rootElementRule)
+			.withMixedContentGenerationMode(mixedContentGenerationMode)
+			.build();
 		return logger.traceExit(request);
 	}
 
@@ -228,7 +232,8 @@ public class RequestGenerator implements IRequestGenerator {
 	// ===== request modification ==========
 
 	@Override
-	public IDocumentRequest modifyRequest(IDocumentRequest originalRequest, IDocumentModifier modifier) {
+	public IDocumentRequest modifyRequest(IDocumentRequest originalRequest, IDocumentModifier modifier,
+			MixedContentGenerationMode mixedContentGenerationMode) {
 		logger.traceEntry();
 		final IXMLSchema schema = this.schemaManager.getSchema(originalRequest.getStylesheeURI(),
 				originalRequest.getSchemaVersion());
@@ -242,7 +247,11 @@ public class RequestGenerator implements IRequestGenerator {
 					String.format("Unknown modifier type %s", modifier.getClass().toString())));
 		}
 
-		final DocumentRequest request = DocumentRequest.builder(schema, rootElementRule).withModifier(modifier).build();
+		final DocumentRequest request = DocumentRequest
+			.builder(schema, rootElementRule)
+			.withModifier(modifier)
+			.withMixedContentGenerationMode(mixedContentGenerationMode)
+			.build();
 		return logger.traceExit(request);
 	}
 

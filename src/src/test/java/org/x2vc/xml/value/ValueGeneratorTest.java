@@ -1,9 +1,6 @@
 package org.x2vc.xml.value;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
@@ -1207,11 +1204,12 @@ class ValueGeneratorTest {
 	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
 	@Test
-	void testGenerateValue_AddRawContentRule() {
+	void testGenerateValue_AddRawContentRule_MixedContentGenerationModeFull() {
+		lenient().when(this.request.getMixedContentGenerationMode()).thenReturn(MixedContentGenerationMode.FULL);
 		prepareAddRawContentRule(false);
 		final String generatedValue = this.valueGenerator.generateValue(this.addRawContentRule);
 		assertTrue(Pattern.compile("<[^<>]+>").matcher(generatedValue).find(),
-				String.format("generated value \"%s\"should contain a bit of HTML markup", generatedValue));
+				String.format("generated value \"%s\" should contain a bit of HTML markup", generatedValue));
 		assertTrue(generatedValue.contains(TEST_PREFIX), "generated value does not contain the prefix");
 		assertValueDescriptorPresent(this.elementID, generatedValue, false);
 	}
@@ -1221,7 +1219,38 @@ class ValueGeneratorTest {
 	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
 	@Test
-	void testGenerateValue_AddRawContentRule_RequestedValue() {
+	void testGenerateValue_AddRawContentRule_MixedContentGenerationModeFull_RequestedValue() {
+		lenient().when(this.request.getMixedContentGenerationMode()).thenReturn(MixedContentGenerationMode.FULL);
+		final String value = "<script>alert(\"haX0red!\")</script>";
+		when(this.requestedValue.getValue()).thenReturn(value);
+		prepareAddRawContentRule(true);
+		final String generatedValue = this.valueGenerator.generateValue(this.addRawContentRule);
+		assertEquals(value, generatedValue);
+		assertValueDescriptorPresent(this.elementID, generatedValue, true);
+	}
+
+	/**
+	 * Test method for {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IAddRawContentRule)}
+	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
+	 */
+	@Test
+	void testGenerateValue_AddRawContentRule_MixedContentGenerationModeRestricted() {
+		lenient().when(this.request.getMixedContentGenerationMode()).thenReturn(MixedContentGenerationMode.RESTRICTED);
+		prepareAddRawContentRule(false);
+		final String generatedValue = this.valueGenerator.generateValue(this.addRawContentRule);
+		assertFalse(Pattern.compile("<[^<>]+>").matcher(generatedValue).find(),
+				String.format("generated value \"%s\" should NOT contain HTML markup", generatedValue));
+		assertTrue(generatedValue.contains(TEST_PREFIX), "generated value does not contain the prefix");
+		assertValueDescriptorPresent(this.elementID, generatedValue, false);
+	}
+
+	/**
+	 * Test method for {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IAddRawContentRule)}
+	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
+	 */
+	@Test
+	void testGenerateValue_AddRawContentRule_MixedContentGenerationModeRestricted_RequestedValue() {
+		lenient().when(this.request.getMixedContentGenerationMode()).thenReturn(MixedContentGenerationMode.RESTRICTED);
 		final String value = "<script>alert(\"haX0red!\")</script>";
 		when(this.requestedValue.getValue()).thenReturn(value);
 		prepareAddRawContentRule(true);

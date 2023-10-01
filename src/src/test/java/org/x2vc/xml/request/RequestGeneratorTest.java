@@ -57,7 +57,8 @@ class RequestGeneratorTest {
 	void testGenerateNewRequest_SingleEmptyElement() throws URISyntaxException, FileNotFoundException, JAXBException {
 		final IXMLSchema schema = loadSchema("SingleEmptyElement.x2vc_schema");
 
-		final IDocumentRequest request = this.requestGenerator.generateNewRequest(schema);
+		final IDocumentRequest request = this.requestGenerator.generateNewRequest(schema,
+				MixedContentGenerationMode.FULL);
 		assertEquals(new URI("memory:schema/bar"), request.getSchemaURI());
 		assertEquals(1, request.getSchemaVersion());
 		assertEquals(0, request.getRequestedValues().size()); // no requested values for new requests
@@ -74,7 +75,8 @@ class RequestGeneratorTest {
 	void testGenerateNewRequest_MultipleRootElements() throws URISyntaxException, FileNotFoundException, JAXBException {
 		final IXMLSchema schema = loadSchema("MultipleRootElements.x2vc_schema");
 
-		final IDocumentRequest request = this.requestGenerator.generateNewRequest(schema);
+		final IDocumentRequest request = this.requestGenerator.generateNewRequest(schema,
+				MixedContentGenerationMode.FULL);
 		assertEquals(new URI("memory:schema/bar"), request.getSchemaURI());
 		assertEquals(1, request.getSchemaVersion());
 		assertEquals(0, request.getRequestedValues().size()); // no requested values for new requests
@@ -93,7 +95,8 @@ class RequestGeneratorTest {
 			throws URISyntaxException, FileNotFoundException, JAXBException {
 		final IXMLSchema schema = loadSchema("SingleEmptyElement_WithRequiredAttribute.x2vc_schema");
 
-		final IDocumentRequest request = this.requestGenerator.generateNewRequest(schema);
+		final IDocumentRequest request = this.requestGenerator.generateNewRequest(schema,
+				MixedContentGenerationMode.FULL);
 		assertEquals(new URI("memory:schema/bar"), request.getSchemaURI());
 		assertEquals(1, request.getSchemaVersion());
 		assertEquals(0, request.getRequestedValues().size()); // no requested values for new requests
@@ -123,7 +126,8 @@ class RequestGeneratorTest {
 		int attributesFound = 0;
 
 		for (int i = 0; i < NUM_REQUESTS; i++) {
-			final IDocumentRequest request = this.requestGenerator.generateNewRequest(schema);
+			final IDocumentRequest request = this.requestGenerator.generateNewRequest(schema,
+					MixedContentGenerationMode.FULL);
 			final IAddElementRule rootElementRule = request.getRootElementRule();
 			if (rootElementRule.getAttributeRules().size() == 1) {
 				final ISetAttributeRule rootAttributeRule = rootElementRule.getAttributeRules()
@@ -155,7 +159,8 @@ class RequestGeneratorTest {
 		int attributesFound = 0;
 
 		for (int i = 0; i < NUM_REQUESTS; i++) {
-			final IDocumentRequest request = this.requestGenerator.generateNewRequest(schema);
+			final IDocumentRequest request = this.requestGenerator.generateNewRequest(schema,
+					MixedContentGenerationMode.FULL);
 			final IAddElementRule rootElementRule = request.getRootElementRule();
 			attributesFound += rootElementRule.getAttributeRules().size();
 			assertFalse(request.getModifier().isPresent());
@@ -172,7 +177,8 @@ class RequestGeneratorTest {
 	void testGenerateNewRequest_SingleDataElement() throws URISyntaxException, FileNotFoundException, JAXBException {
 		final IXMLSchema schema = loadSchema("SingleDataElement.x2vc_schema");
 
-		final IDocumentRequest request = this.requestGenerator.generateNewRequest(schema);
+		final IDocumentRequest request = this.requestGenerator.generateNewRequest(schema,
+				MixedContentGenerationMode.FULL);
 		assertEquals(new URI("memory:schema/bar"), request.getSchemaURI());
 		assertEquals(1, request.getSchemaVersion());
 		assertEquals(0, request.getRequestedValues().size()); // no requested values for new requests
@@ -199,7 +205,8 @@ class RequestGeneratorTest {
 		final UUID textElementID = UUID.fromString("c90f6614-362f-4c50-a040-ebeb8f9eb113");
 		final UUID emptyElementID = UUID.fromString("dd7fa303-9fe6-49fb-8257-66608a7e434f");
 
-		final IDocumentRequest request = this.requestGenerator.generateNewRequest(schema);
+		final IDocumentRequest request = this.requestGenerator.generateNewRequest(schema,
+				MixedContentGenerationMode.FULL);
 		assertEquals(new URI("memory:schema/bar"), request.getSchemaURI());
 		assertEquals(1, request.getSchemaVersion());
 		assertEquals(0, request.getRequestedValues().size()); // no requested values for new requests
@@ -242,7 +249,8 @@ class RequestGeneratorTest {
 		final UUID textElementReferenceID = UUID.fromString("c90f6614-362f-4c50-a040-ebeb8f9eb113");
 		final UUID emptyElementReferenceID = UUID.fromString("dd7fa303-9fe6-49fb-8257-66608a7e434f");
 
-		final IDocumentRequest request = this.requestGenerator.generateNewRequest(schema);
+		final IDocumentRequest request = this.requestGenerator.generateNewRequest(schema,
+				MixedContentGenerationMode.FULL);
 		final IAddElementRule rootElementRule = request.getRootElementRule();
 		assertEquals(UUID.fromString("fe3fa767-685a-4c5a-8531-ca717a7cb72b"), rootElementRule.getElementReferenceID());
 		assertEquals(0, rootElementRule.getAttributeRules().size());
@@ -264,7 +272,8 @@ class RequestGeneratorTest {
 		final UUID textElementReferenceID = UUID.fromString("c90f6614-362f-4c50-a040-ebeb8f9eb113");
 		final UUID emptyElementReferenceID = UUID.fromString("dd7fa303-9fe6-49fb-8257-66608a7e434f");
 
-		final IDocumentRequest request = this.requestGenerator.generateNewRequest(schema);
+		final IDocumentRequest request = this.requestGenerator.generateNewRequest(schema,
+				MixedContentGenerationMode.FULL);
 		final IAddElementRule rootElementRule = request.getRootElementRule();
 		assertEquals(UUID.fromString("fe3fa767-685a-4c5a-8531-ca717a7cb72b"), rootElementRule.getElementReferenceID());
 		assertEquals(0, rootElementRule.getAttributeRules().size());
@@ -310,7 +319,8 @@ class RequestGeneratorTest {
 		final UUID textElementReferenceID = UUID.fromString("c90f6614-362f-4c50-a040-ebeb8f9eb113");
 		final UUID emptyElementReferenceID = UUID.fromString("dd7fa303-9fe6-49fb-8257-66608a7e434f");
 
-		final IDocumentRequest request = this.requestGenerator.generateNewRequest(schema);
+		final IDocumentRequest request = this.requestGenerator.generateNewRequest(schema,
+				MixedContentGenerationMode.FULL);
 		final IAddElementRule rootElementRule = request.getRootElementRule();
 		assertEquals(UUID.fromString("fe3fa767-685a-4c5a-8531-ca717a7cb72b"), rootElementRule.getElementReferenceID());
 		assertEquals(0, rootElementRule.getAttributeRules().size());
@@ -353,7 +363,8 @@ class RequestGeneratorTest {
 			throws URISyntaxException, FileNotFoundException, JAXBException {
 		final IXMLSchema schema = loadSchema("MixedContent_WithoutSubElements.x2vc_schema");
 
-		final IDocumentRequest request = this.requestGenerator.generateNewRequest(schema);
+		final IDocumentRequest request = this.requestGenerator.generateNewRequest(schema,
+				MixedContentGenerationMode.FULL);
 		final IAddElementRule rootElementRule = request.getRootElementRule();
 		assertEquals(UUID.fromString("fe3fa767-685a-4c5a-8531-ca717a7cb72b"), rootElementRule.getElementReferenceID());
 		assertEquals(0, rootElementRule.getAttributeRules().size());
@@ -374,7 +385,8 @@ class RequestGeneratorTest {
 		lenient().when(this.schemaManager.getSchema(URI.create("file://somewhere/SampleStylesheet.xslt"), 1))
 			.thenReturn(schema);
 
-		final IDocumentRequest originalRequest = this.requestGenerator.generateNewRequest(schema);
+		final IDocumentRequest originalRequest = this.requestGenerator.generateNewRequest(schema,
+				MixedContentGenerationMode.FULL);
 		final IAddElementRule originalRootElementRule = originalRequest.getRootElementRule();
 		final ISetAttributeRule originalRootAttributeRule = originalRootElementRule.getAttributeRules()
 			.toArray(new ISetAttributeRule[0])[0];
@@ -386,7 +398,7 @@ class RequestGeneratorTest {
 		lenient().when(this.valueModifier.getReplacementValue()).thenReturn("foobar");
 
 		final IDocumentRequest modifiedRequest = this.requestGenerator.modifyRequest(originalRequest,
-				this.valueModifier);
+				this.valueModifier, MixedContentGenerationMode.FULL);
 
 		final IAddElementRule modifiedRootElementRule = modifiedRequest.getRootElementRule();
 		final ISetAttributeRule modifiedRootAttributeRule = modifiedRootElementRule.getAttributeRules()
@@ -419,7 +431,8 @@ class RequestGeneratorTest {
 		lenient().when(this.schemaManager.getSchema(URI.create("file://somewhere/SampleStylesheet.xslt"), 1))
 			.thenReturn(schema);
 
-		final IDocumentRequest originalRequest = this.requestGenerator.generateNewRequest(schema);
+		final IDocumentRequest originalRequest = this.requestGenerator.generateNewRequest(schema,
+				MixedContentGenerationMode.FULL);
 		final IAddElementRule originalRootElementRule = originalRequest.getRootElementRule();
 		final IAddDataContentRule originalRootContentRule = (IAddDataContentRule) originalRootElementRule
 			.getContentRules().get(0);
@@ -431,7 +444,7 @@ class RequestGeneratorTest {
 		lenient().when(this.valueModifier.getReplacementValue()).thenReturn("foobar");
 
 		final IDocumentRequest modifiedRequest = this.requestGenerator.modifyRequest(originalRequest,
-				this.valueModifier);
+				this.valueModifier, MixedContentGenerationMode.FULL);
 
 		final IAddElementRule modifiedRootElementRule = modifiedRequest.getRootElementRule();
 		final IAddDataContentRule modifiedRootContentRule = (IAddDataContentRule) modifiedRootElementRule

@@ -348,15 +348,20 @@ public class ValueGenerator implements IValueGenerator {
 			value = requestedValue.get().getValue();
 			this.valueDescriptors.add(new ValueDescriptor(rule.getElementID(), rule.getID(), value, true));
 		} else {
-			// generate some raw content: some text with a few tags inside
-			value = switch (ThreadLocalRandom.current().nextInt(6)) {
-			case 1 -> "#PREFIX# <b>#TEXT#</b> #TEXT#";
-			case 2 -> "#PREFIX# <i>#TEXT#</i> #TEXT#";
-			case 3 -> "#PREFIX# <a href=\"foobar\">#TEXT#</a> #TEXT#";
-			case 4 -> "#PREFIX# <p>#TEXT#</p> #TEXT#";
-			case 5 -> "#PREFIX# <div id=\"foobar\">#TEXT#</div> #TEXT#";
-			default -> "#PREFIX# <br/> #TEXT#";
-			};
+			if (this.request.getMixedContentGenerationMode() == MixedContentGenerationMode.FULL) {
+				// generate some raw content: some text with a few tags inside
+				value = switch (ThreadLocalRandom.current().nextInt(6)) {
+				case 1 -> "#PREFIX# <b>#TEXT#</b> #TEXT#";
+				case 2 -> "#PREFIX# <i>#TEXT#</i> #TEXT#";
+				case 3 -> "#PREFIX# <a href=\"foobar\">#TEXT#</a> #TEXT#";
+				case 4 -> "#PREFIX# <p>#TEXT#</p> #TEXT#";
+				case 5 -> "#PREFIX# <div id=\"foobar\">#TEXT#</div> #TEXT#";
+				default -> "#PREFIX# <br/> #TEXT#";
+				};
+			} else {
+				// The raw content should NOT contain tags (used for schema evolution).
+				value = "#PREFIX# #TEXT#";
+			}
 			while (value.contains("#PREFIX#")) {
 				final int counterLength = this.getValueLength() - this.getValuePrefix().length();
 				final String format = "%s%0" + counterLength + "d";

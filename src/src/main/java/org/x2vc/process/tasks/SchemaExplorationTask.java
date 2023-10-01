@@ -20,6 +20,7 @@ import org.x2vc.xml.document.IDocumentGenerator;
 import org.x2vc.xml.document.IXMLDocumentContainer;
 import org.x2vc.xml.request.IDocumentRequest;
 import org.x2vc.xml.request.IRequestGenerator;
+import org.x2vc.xml.request.MixedContentGenerationMode;
 
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
@@ -73,7 +74,8 @@ public class SchemaExplorationTask implements ISchemaExplorationTask {
 			final IXMLSchema schema = this.schemaManager.getSchema(stylesheetInfo.getURI());
 
 			logger.debug("generating new request to explore schema usage of stylesheet {}", stylesheetInfo.getURI());
-			final IDocumentRequest request = this.requestGenerator.generateNewRequest(schema);
+			final IDocumentRequest request = this.requestGenerator.generateNewRequest(schema,
+					MixedContentGenerationMode.RESTRICTED);
 			this.debugObjectWriter.writeRequest(this.taskID, request);
 
 			logger.debug("generating XML document");

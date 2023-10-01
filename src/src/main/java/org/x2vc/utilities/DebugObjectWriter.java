@@ -108,7 +108,7 @@ public class DebugObjectWriter implements IDebugObjectWriter {
 					final File outputFile = provideOutputFile(taskID, "output", "html");
 					Files.asCharSink(outputFile, Charset.defaultCharset()).write(doc.get());
 				} catch (final IOException e) {
-					logger.error("Unable to write XML document to file", e);
+					logger.error("Unable to write HTML document to file", e);
 				}
 			}
 		}
