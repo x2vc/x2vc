@@ -4,8 +4,6 @@
 		<elementType contentType="ELEMENT" elementArrangement="SEQUENCE" id="a95c10f3-2a83-421e-b0f4-5f5d50152210">
 			<attribute name="orderNumber" dataType="STRING" optional="false" fixedValueset="false" userModifiable="false"
 				id="be9032d5-da44-47b7-b8d8-8a2da23f3fda" />
-			<attribute name="orderNumber" dataType="STRING" optional="false" fixedValueset="false" userModifiable="false"
-				id="be9032d5-da44-47b7-b8d8-8a2da23f3fda" />
 			<attribute name="system" dataType="STRING" optional="false" fixedValueset="false" userModifiable="true"
 				id="b59d6e81-03ec-441d-9b21-410adeea0754" >
 				<comment>system environment</comment>
