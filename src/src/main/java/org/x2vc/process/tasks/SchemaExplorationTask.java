@@ -1,6 +1,7 @@
 package org.x2vc.process.tasks;
 
 import java.io.File;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -25,6 +26,8 @@ import org.x2vc.xml.request.MixedContentGenerationMode;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
+import net.sf.saxon.s9api.SaxonApiException;
+
 /**
  * This task is used to process a single {@link IDocumentRequest} and collect the relevant results for schema evolution.
  */
@@ -36,7 +39,7 @@ public class SchemaExplorationTask implements ISchemaExplorationTask {
 	private ISchemaManager schemaManager;
 	private IDocumentGenerator documentGenerator;
 	private IXSLTProcessor processor;
-	private IValueTraceAnalyzer valueTraceAnalyuer;
+	private IValueTraceAnalyzer valueTraceAnalyzer;
 	private IRequestGenerator requestGenerator;
 	private IDebugObjectWriter debugObjectWriter;
 	private File xsltFile;
@@ -48,7 +51,7 @@ public class SchemaExplorationTask implements ISchemaExplorationTask {
 	@SuppressWarnings("java:S107") // large number of parameters due to dependency injection
 	@Inject
 	SchemaExplorationTask(IStylesheetManager stylesheetManager, ISchemaManager schemaManager,
-			IDocumentGenerator documentGenerator, IXSLTProcessor processor, IValueTraceAnalyzer valueTraceAnalyuer,
+			IDocumentGenerator documentGenerator, IXSLTProcessor processor, IValueTraceAnalyzer valueTraceAnalyzer,
 			IRequestGenerator requestGenerator, IDebugObjectWriter debugObjectWriter,
 			@Assisted File xsltFile,
 			@Assisted Consumer<ISchemaModifier> modifierCollector,
@@ -58,7 +61,7 @@ public class SchemaExplorationTask implements ISchemaExplorationTask {
 		this.schemaManager = schemaManager;
 		this.documentGenerator = documentGenerator;
 		this.processor = processor;
-		this.valueTraceAnalyuer = valueTraceAnalyuer;
+		this.valueTraceAnalyzer = valueTraceAnalyzer;
 		this.requestGenerator = requestGenerator;
 		this.debugObjectWriter = debugObjectWriter;
 		this.xsltFile = xsltFile;
@@ -87,9 +90,24 @@ public class SchemaExplorationTask implements ISchemaExplorationTask {
 			this.debugObjectWriter.writeHTMLDocument(this.taskID, htmlDocument);
 
 			if (!htmlDocument.isFailed()) {
-				this.valueTraceAnalyuer.analyzeDocument(this.taskID, htmlDocument, this.modifierCollector);
+				logger.debug("analyzing {} trace events produced by XSLT processor",
+						htmlDocument.getTraceEvents().map(ev -> ev.size()).orElse(0));
+				this.valueTraceAnalyzer.analyzeDocument(this.taskID, htmlDocument, this.modifierCollector);
+				this.callback.accept(this.taskID, true);
+			} else {
+				final Optional<SaxonApiException> compilationError = htmlDocument.getCompilationError();
+				final Optional<SaxonApiException> processingError = htmlDocument.getProcessingError();
+				if (compilationError.isPresent()) {
+					logger.debug("processing of XML to HMTL failed with compilation error: {}",
+							compilationError.get().getMessage());
+				} else if (processingError.isPresent()) {
+					logger.debug("processing of XML to HMTL failed with processing error: {}",
+							processingError.get().getMessage());
+				} else {
+					logger.debug("processing of XML to HMTL failed other unspecified error");
+				}
+				this.callback.accept(this.taskID, false);
 			}
-			this.callback.accept(this.taskID, true);
 		} catch (final Exception ex) {
 			logger.error("unhandled exception in schema exploration task", ex);
 			this.callback.accept(this.taskID, false);
