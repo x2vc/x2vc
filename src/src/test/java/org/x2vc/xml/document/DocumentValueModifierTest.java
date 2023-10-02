@@ -7,16 +7,18 @@ import static org.mockito.Mockito.mock;
 
 import java.util.UUID;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import nl.jqno.equalsverifier.EqualsVerifier;
 
 @ExtendWith(MockitoExtension.class)
 class DocumentValueModifierTest {
 
 	/**
-	 * Test method for
-	 * {@link org.x2vc.xml.document.DocumentValueModifier#normalize()}.
+	 * Test method for {@link org.x2vc.xml.document.DocumentValueModifier#normalize()}.
 	 */
 	@Test
 	void testNormalize() {
@@ -40,6 +42,15 @@ class DocumentValueModifierTest {
 		assertEquals(replacementValue, normalizedModifier.getReplacementValue());
 		assertTrue(normalizedModifier.getAnalyzerRuleID().isEmpty());
 		assertTrue(normalizedModifier.getPayload().isEmpty());
+	}
+
+	/**
+	 * Test method for {@link org.x2vc.xml.document.DocumentValueModifier#equals(java.lang.Object)}.
+	 */
+	@Test
+	@Disabled("implementation needs to be adjusted") // TODO check equals() and hashCode()
+	void testEqualsObject() {
+		EqualsVerifier.forClass(DocumentValueModifier.class).verify();
 	}
 
 }

@@ -13,11 +13,11 @@ import net.sf.saxon.expr.Expression;
 /**
  * Standard implementation of {@link IValueAccessTraceEvent}.
  */
-public class ValueAccessTraceEvent implements IValueAccessTraceEvent {
+public final class ValueAccessTraceEvent implements IValueAccessTraceEvent {
 
-	private PolymorphLocation location;
-	private Expression expression;
-	private UUID contextElementID;
+	private final PolymorphLocation location;
+	private final Expression expression;
+	private final UUID contextElementID;
 
 	private ValueAccessTraceEvent(Builder builder) {
 		this.location = builder.location;

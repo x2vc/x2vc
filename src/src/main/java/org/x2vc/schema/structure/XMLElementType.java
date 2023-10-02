@@ -13,48 +13,44 @@ import com.google.common.collect.Lists;
 /**
  * Standard implementation of {@link IXMLElementType}.
  */
-public class XMLElementType extends XMLDataObject implements IXMLElementType {
+public final class XMLElementType extends XMLDataObject implements IXMLElementType {
 
 	private static final Logger logger = LogManager.getLogger();
 
 	@XmlElement(type = XMLAttribute.class, name = "attribute")
-	private List<IXMLAttribute> attributes;
+	private final List<IXMLAttribute> attributes;
 
 	@XmlAttribute
-	private ContentType contentType;
+	private final ContentType contentType;
 
 	@XmlAttribute
-	private Boolean userModifiable;
+	private final Boolean userModifiable;
 
 	@XmlElement(type = XMLElementReference.class, name = "subElement")
-	private List<IXMLElementReference> elements;
+	private final List<IXMLElementReference> elements;
 
 	@XmlAttribute
-	private ElementArrangement elementArrangement;
+	private final ElementArrangement elementArrangement;
 
-	/**
-	 * Parameterless constructor for deserialization only.
-	 */
-	XMLElementType() {
+	private XMLElementType() {
+		// Parameterless constructor for deserialization only.
+		super(UUID.randomUUID(), null, null, null, null, null, Lists.newArrayList(), null);
 		this.attributes = Lists.newArrayList();
-		this.discreteValues = Lists.newArrayList();
+		this.contentType = null;
+		this.userModifiable = null;
 		this.elements = Lists.newArrayList();
+		this.elementArrangement = null;
 	}
 
 	private XMLElementType(Builder builder) {
-		this.id = builder.id;
-		this.comment = builder.comment;
+		super(builder.id, builder.comment, builder.dataType, builder.maxLength, builder.minValue, builder.maxValue,
+				builder.discreteValues.stream()
+					.sorted((v1, v2) -> v1.getID().compareTo(v2.getID()))
+					.toList(),
+				builder.fixedValueset);
 		// sort the attributes by name - irrelevant for the actual function, but makes unit testing A LOT easier
 		this.attributes = builder.attributes.stream().sorted((a1, a2) -> a1.getName().compareTo(a2.getName())).toList();
 		this.contentType = builder.contentType;
-		this.dataType = builder.dataType;
-		this.maxLength = builder.maxLength;
-		this.minValue = builder.minValue;
-		this.maxValue = builder.maxValue;
-		this.discreteValues = builder.discreteValues.stream()
-			.sorted((v1, v2) -> v1.getID().compareTo(v2.getID()))
-			.toList();
-		this.fixedValueset = builder.fixedValueset;
 		this.userModifiable = builder.userModifiable;
 		this.elements = List.copyOf(builder.elements);
 		this.elementArrangement = builder.elementArrangement;
@@ -135,7 +131,7 @@ public class XMLElementType extends XMLDataObject implements IXMLElementType {
 	@Override
 	public Collection<IXMLDiscreteValue> getDiscreteValues() {
 		if (this.contentType == ContentType.DATA) {
-			return this.discreteValues;
+			return super.getDiscreteValues();
 		} else {
 			throw logger.throwing(new IllegalStateException("Discrete values are only supported for data elements"));
 		}
@@ -457,9 +453,8 @@ public class XMLElementType extends XMLDataObject implements IXMLElementType {
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + Objects.hash(this.attributes, this.contentType, this.dataType, this.discreteValues,
-				this.elementArrangement, this.elements, this.fixedValueset, this.maxLength, this.maxValue,
-				this.minValue, this.userModifiable);
+		result = prime * result + Objects.hash(this.attributes, this.contentType, this.elementArrangement,
+				this.elements, this.userModifiable);
 		return result;
 	}
 
@@ -471,16 +466,12 @@ public class XMLElementType extends XMLDataObject implements IXMLElementType {
 		if (!super.equals(obj)) {
 			return false;
 		}
-		if (getClass() != obj.getClass()) {
+		if (!(obj instanceof XMLElementType)) {
 			return false;
 		}
 		final XMLElementType other = (XMLElementType) obj;
 		return Objects.equals(this.attributes, other.attributes) && this.contentType == other.contentType
-				&& this.dataType == other.dataType && Objects.equals(this.discreteValues, other.discreteValues)
 				&& this.elementArrangement == other.elementArrangement && Objects.equals(this.elements, other.elements)
-				&& Objects.equals(this.fixedValueset, other.fixedValueset)
-				&& Objects.equals(this.maxLength, other.maxLength) && Objects.equals(this.maxValue, other.maxValue)
-				&& Objects.equals(this.minValue, other.minValue)
 				&& Objects.equals(this.userModifiable, other.userModifiable);
 	}
 

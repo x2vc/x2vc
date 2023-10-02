@@ -12,6 +12,7 @@ import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -22,6 +23,8 @@ import org.x2vc.schema.structure.XMLSchema.Builder;
 import org.x2vc.stylesheet.IStylesheetInformation;
 import org.x2vc.utilities.URIUtilities;
 import org.x2vc.utilities.URIUtilities.ObjectType;
+
+import nl.jqno.equalsverifier.EqualsVerifier;
 
 @ExtendWith(MockitoExtension.class)
 class XMLSchemaTest {
@@ -129,8 +132,8 @@ class XMLSchemaTest {
 	}
 
 	/**
-	 * This test checks whether the @Xml... annotations are correct and sufficient
-	 * to serialize and deserialize the schema.
+	 * This test checks whether the @Xml... annotations are correct and sufficient to serialize and deserialize the
+	 * schema.
 	 *
 	 * @throws JAXBException
 	 */
@@ -333,6 +336,15 @@ class XMLSchemaTest {
 		assertEquals(Set.of("/c/bool"), schema.getObjectPaths(elemChildBoolChoice.getID()));
 		assertEquals(Set.of("/c/bool/@boolAttribute"), schema.getObjectPaths(attrBoolChoice.getID()));
 
+	}
+
+	/**
+	 * Test method for {@link org.x2vc.schema.structure.XMLSchema#equals(java.lang.Object)}.
+	 */
+	@Test
+	@Disabled("implementation needs to be adjusted") // TODO check equals() and hashCode()
+	void testEqualsObject() {
+		EqualsVerifier.forClass(XMLSchema.class).verify();
 	}
 
 }

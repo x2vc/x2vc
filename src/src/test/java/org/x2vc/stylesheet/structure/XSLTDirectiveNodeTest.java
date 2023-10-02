@@ -6,12 +6,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.google.common.collect.ImmutableList;
+
+import nl.jqno.equalsverifier.EqualsVerifier;
 
 @ExtendWith(MockitoExtension.class)
 class XSLTDirectiveNodeTest {
@@ -54,6 +57,15 @@ class XSLTDirectiveNodeTest {
 		assertFalse(directives.isEmpty());
 		assertEquals(1, directives.size());
 		assertEquals(directive1, directives.get(0));
+	}
+
+	/**
+	 * Test method for {@link org.x2vc.stylesheet.structure.XSLTDirectiveNode#equals(java.lang.Object)}.
+	 */
+	@Test
+	@Disabled("implementation needs to be adjusted") // TODO check equals() and hashCode()
+	void testEqualsObject() {
+		EqualsVerifier.forClass(XSLTDirectiveNode.class).verify();
 	}
 
 }

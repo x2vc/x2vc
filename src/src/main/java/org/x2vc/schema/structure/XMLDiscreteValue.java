@@ -11,31 +11,24 @@ import org.apache.logging.log4j.Logger;
 /**
  * Standard implementation of {@link IXMLDiscreteValue}
  */
-public class XMLDiscreteValue extends AbstractSchemaObject implements IXMLDiscreteValue {
+public final class XMLDiscreteValue extends AbstractSchemaObject implements IXMLDiscreteValue {
 
 	private static final Logger logger = LogManager.getLogger();
 
 	@XmlAttribute
-	private XMLDataType dataType;
+	private final XMLDataType dataType;
 
 	@XmlAttribute
-	private String stringValue;
+	private final String stringValue;
 
 	@XmlAttribute
-	private Boolean booleanValue;
+	private final Boolean booleanValue;
 
 	@XmlAttribute
-	private Integer integerValue;
-
-	/**
-	 * Parameterless constructor for deserialization only.
-	 */
-	XMLDiscreteValue() {
-	}
+	private final Integer integerValue;
 
 	private XMLDiscreteValue(Builder builder) {
-		this.id = builder.id;
-		this.comment = builder.comment;
+		super(builder.id, builder.comment);
 		this.stringValue = builder.stringValue;
 		this.booleanValue = builder.booleanValue;
 		this.integerValue = builder.integerValue;
@@ -48,6 +41,14 @@ public class XMLDiscreteValue extends AbstractSchemaObject implements IXMLDiscre
 		} else {
 			this.dataType = XMLDataType.OTHER;
 		}
+	}
+
+	private XMLDiscreteValue() {
+		super(UUID.randomUUID(), null);
+		this.stringValue = null;
+		this.booleanValue = null;
+		this.integerValue = null;
+		this.dataType = null;
 	}
 
 	@Override

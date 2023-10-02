@@ -18,10 +18,15 @@ public abstract class AbstractSchemaObject implements IXMLSchemaObject {
 	private static final Logger logger = LogManager.getLogger();
 
 	@XmlAttribute
-	protected UUID id;
+	private final UUID id;
 
 	@XmlElement
-	protected String comment;
+	private final String comment;
+
+	protected AbstractSchemaObject(UUID id, String comment) {
+		this.id = id;
+		this.comment = comment;
+	}
 
 	@Override
 	public UUID getID() {
@@ -83,14 +88,12 @@ public abstract class AbstractSchemaObject implements IXMLSchemaObject {
 		if (this == obj) {
 			return true;
 		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
+		if (!(obj instanceof AbstractSchemaObject)) {
 			return false;
 		}
 		final AbstractSchemaObject other = (AbstractSchemaObject) obj;
-		return Objects.equals(this.comment, other.comment) && Objects.equals(this.id, other.id);
+		return Objects.equals(this.comment, other.comment) && Objects.equals(this.id, other.id)
+				&& this.getClass().equals(other.getClass()); // added manually!
 	}
 
 }

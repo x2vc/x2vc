@@ -7,13 +7,13 @@ import java.util.UUID;
 /**
  * Standard implementation of {@link IAnalyzerRulePayload}.
  */
-public class AnalyzerRulePayload implements IAnalyzerRulePayload {
+public final class AnalyzerRulePayload implements IAnalyzerRulePayload {
 
-	private String injectedValue;
-	private UUID schemaElementID;
-	private String elementSelector;
-	private String elementName;
-	private String attributeName;
+	private final String injectedValue;
+	private final UUID schemaElementID;
+	private final String elementSelector;
+	private final String elementName;
+	private final String attributeName;
 
 	private AnalyzerRulePayload(Builder builder) {
 		this.injectedValue = builder.injectedValue;
@@ -134,35 +134,12 @@ public class AnalyzerRulePayload implements IAnalyzerRulePayload {
 			return new AnalyzerRulePayload(this);
 		}
 
-		@Override
-		public int hashCode() {
-			return Objects.hash(this.attributeName, this.elementName, this.elementSelector, this.injectedValue,
-					this.schemaElementID);
-		}
-
-		@Override
-		public boolean equals(Object obj) {
-			if (this == obj) {
-				return true;
-			}
-			if (obj == null) {
-				return false;
-			}
-			if (getClass() != obj.getClass()) {
-				return false;
-			}
-			final Builder other = (Builder) obj;
-			return Objects.equals(this.attributeName, other.attributeName)
-					&& Objects.equals(this.elementName, other.elementName)
-					&& Objects.equals(this.elementSelector, other.elementSelector)
-					&& Objects.equals(this.injectedValue, other.injectedValue)
-					&& Objects.equals(this.schemaElementID, other.schemaElementID);
-		}
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(this.attributeName, this.elementSelector, this.injectedValue, this.schemaElementID);
+		return Objects.hash(this.attributeName, this.elementName, this.elementSelector, this.injectedValue,
+				this.schemaElementID);
 	}
 
 	@Override
@@ -178,6 +155,7 @@ public class AnalyzerRulePayload implements IAnalyzerRulePayload {
 		}
 		final AnalyzerRulePayload other = (AnalyzerRulePayload) obj;
 		return Objects.equals(this.attributeName, other.attributeName)
+				&& Objects.equals(this.elementName, other.elementName)
 				&& Objects.equals(this.elementSelector, other.elementSelector)
 				&& Objects.equals(this.injectedValue, other.injectedValue)
 				&& Objects.equals(this.schemaElementID, other.schemaElementID);

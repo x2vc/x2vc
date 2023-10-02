@@ -12,38 +12,40 @@ import org.apache.logging.log4j.Logger;
 /**
  * Standard 1mplementation of {@link IXMLElementReference}.
  */
-public class XMLElementReference extends AbstractSchemaObject implements IXMLElementReference {
+public final class XMLElementReference extends AbstractSchemaObject implements IXMLElementReference {
 
 	private static final Logger logger = LogManager.getLogger();
 
 	@XmlAttribute
-	private String name;
+	private final String name;
 
-	private IXMLElementType element;
-
-	@XmlAttribute
-	private UUID elementID;
+	private transient IXMLElementType element;
 
 	@XmlAttribute
-	private Integer minOccurrence;
+	private final UUID elementID;
 
 	@XmlAttribute
-	private Integer maxOccurrence;
+	private final Integer minOccurrence;
 
-	/**
-	 * Parameterless constructor for deserialization only.
-	 */
-	XMLElementReference() {
-	}
+	@XmlAttribute
+	private final Integer maxOccurrence;
 
 	private XMLElementReference(Builder builder) {
-		this.id = builder.id;
-		this.comment = builder.comment;
+		super(builder.id, builder.comment);
 		this.name = builder.name;
 		this.element = builder.element;
 		this.elementID = builder.elementID;
 		this.minOccurrence = builder.minOccurrence;
 		this.maxOccurrence = builder.maxOccurrence;
+	}
+
+	private XMLElementReference() {
+		super(UUID.randomUUID(), null);
+		this.name = null;
+		this.element = null;
+		this.elementID = null;
+		this.minOccurrence = null;
+		this.maxOccurrence = null;
 	}
 
 	@Override
@@ -277,8 +279,7 @@ public class XMLElementReference extends AbstractSchemaObject implements IXMLEle
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result
-				+ Objects.hash(this.element, this.elementID, this.maxOccurrence, this.minOccurrence, this.name);
+		result = prime * result + Objects.hash(this.elementID, this.maxOccurrence, this.minOccurrence, this.name);
 		return result;
 	}
 
@@ -290,11 +291,11 @@ public class XMLElementReference extends AbstractSchemaObject implements IXMLEle
 		if (!super.equals(obj)) {
 			return false;
 		}
-		if (getClass() != obj.getClass()) {
+		if (!(obj instanceof XMLElementReference)) {
 			return false;
 		}
 		final XMLElementReference other = (XMLElementReference) obj;
-		return Objects.equals(this.element, other.element) && Objects.equals(this.elementID, other.elementID)
+		return Objects.equals(this.elementID, other.elementID)
 				&& Objects.equals(this.maxOccurrence, other.maxOccurrence)
 				&& Objects.equals(this.minOccurrence, other.minOccurrence) && Objects.equals(this.name, other.name);
 	}

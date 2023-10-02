@@ -8,6 +8,7 @@ import static org.mockito.Mockito.when;
 
 import java.util.Optional;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -17,6 +18,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.x2vc.xml.value.IValueDescriptor;
 
 import com.google.common.collect.ImmutableSet;
+
+import nl.jqno.equalsverifier.EqualsVerifier;
 
 @ExtendWith(MockitoExtension.class)
 class XMLDocumentDescriptorTest {
@@ -87,6 +90,15 @@ class XMLDocumentDescriptorTest {
 				.addValueDescriptor(this.valueDescriptor).build();
 		final Optional<ImmutableSet<IValueDescriptor>> vd = descriptor.getValueDescriptors(testQuery);
 		assertFalse(vd.isPresent());
+	}
+
+	/**
+	 * Test method for {@link org.x2vc.xml.document.XMLDocumentDescriptor#equals(java.lang.Object)}.
+	 */
+	@Test
+	@Disabled("implementation needs to be adjusted") // TODO check equals() and hashCode()
+	void testEqualsObject() {
+		EqualsVerifier.forClass(XMLDocumentDescriptor.class).verify();
 	}
 
 }

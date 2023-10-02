@@ -8,11 +8,11 @@ import org.x2vc.utilities.PolymorphLocation;
 /**
  * Standard implementation of {@link IExecutionTraceEvent}.
  */
-public class ExecutionTraceEvent implements IExecutionTraceEvent {
+public final class ExecutionTraceEvent implements IExecutionTraceEvent {
 
-	private ExecutionEventType eventType;
-	private String executedElement;
-	private PolymorphLocation elementLocation;
+	private final ExecutionEventType eventType;
+	private final String executedElement;
+	private final PolymorphLocation elementLocation;
 
 	private ExecutionTraceEvent(Builder builder) {
 		this.eventType = builder.eventType;

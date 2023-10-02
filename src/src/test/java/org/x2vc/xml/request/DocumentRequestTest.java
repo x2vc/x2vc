@@ -7,12 +7,15 @@ import static org.mockito.Mockito.when;
 import java.net.URI;
 import java.util.UUID;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.x2vc.xml.document.IDocumentModifier;
 import org.x2vc.xml.request.AddElementRule.Builder;
 
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableMultimap;
+
+import nl.jqno.equalsverifier.EqualsVerifier;
 
 class DocumentRequestTest {
 
@@ -194,4 +197,12 @@ class DocumentRequestTest {
 		assertSame(rootRule, request.getRuleByID(rootRule.getID()));
 	}
 
+	/**
+	 * Test method for {@link org.x2vc.xml.request.DocumentRequest#equals(java.lang.Object)}.
+	 */
+	@Test
+	@Disabled("implementation needs to be adjusted") // TODO check equals() and hashCode()
+	void testEqualsObject() {
+		EqualsVerifier.forClass(DocumentRequest.class).verify();
+	}
 }

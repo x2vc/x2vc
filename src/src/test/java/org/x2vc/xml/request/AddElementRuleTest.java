@@ -9,9 +9,12 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import nl.jqno.equalsverifier.EqualsVerifier;
 
 @ExtendWith(MockitoExtension.class)
 class AddElementRuleTest {
@@ -48,6 +51,15 @@ class AddElementRuleTest {
 		assertEquals(elementReferenceID, normalizedRule.getElementReferenceID());
 		assertEquals(Set.of(normalizedAttributeRule), normalizedRule.getAttributeRules());
 		assertEquals(List.of(normalizedContentRule1, normalizedContentRule2), normalizedRule.getContentRules());
+	}
+
+	/**
+	 * Test method for {@link org.x2vc.xml.request.AddElementRule#equals(java.lang.Object)}.
+	 */
+	@Test
+	@Disabled("implementation needs to be adjusted") // TODO check equals() and hashCode()
+	void testEqualsObject() {
+		EqualsVerifier.forClass(AddElementRule.class).verify();
 	}
 
 }

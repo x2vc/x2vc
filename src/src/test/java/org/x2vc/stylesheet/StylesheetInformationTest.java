@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.net.URI;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -12,6 +13,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.x2vc.stylesheet.structure.IStylesheetStructure;
 
 import com.google.common.collect.Multimap;
+
+import nl.jqno.equalsverifier.EqualsVerifier;
 
 @ExtendWith(MockitoExtension.class)
 class StylesheetInformationTest {
@@ -62,6 +65,15 @@ class StylesheetInformationTest {
 		final IStylesheetInformation si = new StylesheetInformation(this.testURI, "a", "b", this.namespacePrefixes,
 				this.traceNamespacePrefix, this.mockStructure);
 		assertEquals(this.testURI, si.getURI());
+	}
+
+	/**
+	 * Test method for {@link org.x2vc.stylesheet.StylesheetInformation#equals(java.lang.Object)}.
+	 */
+	@Test
+	@Disabled("implementation needs to be adjusted") // TODO check equals() and hashCode()
+	void testEqualsObject() {
+		EqualsVerifier.forClass(StylesheetInformation.class).verify();
 	}
 
 }

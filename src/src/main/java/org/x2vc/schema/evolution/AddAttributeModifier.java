@@ -14,28 +14,28 @@ import org.x2vc.schema.structure.XMLDataType;
 /**
  * Standard implementation of {@link IAddAttributeModifier}.
  */
-public class AddAttributeModifier implements IAddAttributeModifier {
+public final class AddAttributeModifier implements IAddAttributeModifier {
 
 	@XmlTransient
-	private URI schemaURI;
+	private final URI schemaURI;
 
 	@XmlTransient
-	private int schemaVersion;
+	private final int schemaVersion;
 
 	@XmlAttribute
-	private UUID elementID;
+	private final UUID elementID;
 
 	@XmlAttribute
-	private UUID attributeID;
+	private final UUID attributeID;
 
 	@XmlAttribute
-	private String name;
+	private final String name;
 
 	@XmlAttribute
-	private XMLDataType dataType;
+	private final XMLDataType dataType;
 
 	@XmlElement
-	private String comment;
+	private final String comment;
 
 	private AddAttributeModifier(Builder builder) {
 		this.schemaURI = builder.schemaURI;

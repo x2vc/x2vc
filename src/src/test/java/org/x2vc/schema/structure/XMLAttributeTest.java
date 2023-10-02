@@ -7,6 +7,8 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.x2vc.schema.structure.XMLAttribute.Builder;
 
+import nl.jqno.equalsverifier.EqualsVerifier;
+
 class XMLAttributeTest {
 
 	@Test
@@ -107,4 +109,15 @@ class XMLAttributeTest {
 		final XMLAttribute attrib = XMLAttribute.builder(id, "aName").withType(XMLDataType.OTHER).build();
 		assertEquals(id, attrib.getID());
 	}
+
+	/**
+	 * Test method for {@link org.x2vc.schema.structure.XMLAttribute#equals(java.lang.Object)}.
+	 */
+	@Test
+	void testEqualsObject() {
+		EqualsVerifier.forClass(XMLAttribute.class)
+			.withRedefinedSuperclass()
+			.verify();
+	}
+
 }

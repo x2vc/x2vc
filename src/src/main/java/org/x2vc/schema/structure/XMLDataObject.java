@@ -1,9 +1,6 @@
 package org.x2vc.schema.structure;
 
-import java.util.Collection;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
@@ -20,22 +17,33 @@ public abstract class XMLDataObject extends AbstractSchemaObject implements IXML
 	private static final Logger logger = LogManager.getLogger();
 
 	@XmlAttribute
-	protected XMLDataType dataType;
+	private final XMLDataType dataType;
 
 	@XmlAttribute
-	protected Integer maxLength;
+	private final Integer maxLength;
 
 	@XmlAttribute
-	protected Integer minValue;
+	private final Integer minValue;
 
 	@XmlAttribute
-	protected Integer maxValue;
+	private final Integer maxValue;
 
 	@XmlElement(type = XMLDiscreteValue.class, name = "discreteValue")
-	protected List<IXMLDiscreteValue> discreteValues;
+	private final List<IXMLDiscreteValue> discreteValues;
 
 	@XmlAttribute
-	protected Boolean fixedValueset;
+	private final Boolean fixedValueset;
+
+	protected XMLDataObject(UUID id, String comment, XMLDataType dataType, Integer maxLength, Integer minValue,
+			Integer maxValue, List<IXMLDiscreteValue> discreteValues, Boolean fixedValueset) {
+		super(id, comment);
+		this.dataType = dataType;
+		this.maxLength = maxLength;
+		this.minValue = minValue;
+		this.maxValue = maxValue;
+		this.discreteValues = discreteValues;
+		this.fixedValueset = fixedValueset;
+	}
 
 	@Override
 	public XMLDataType getDataType() {
@@ -87,8 +95,8 @@ public abstract class XMLDataObject extends AbstractSchemaObject implements IXML
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + Objects.hash(this.discreteValues, this.fixedValueset, this.maxLength, this.maxValue,
-				this.minValue, this.dataType);
+		result = prime * result + Objects.hash(this.dataType, this.discreteValues, this.fixedValueset, this.maxLength,
+				this.maxValue, this.minValue);
 		return result;
 	}
 
@@ -100,14 +108,15 @@ public abstract class XMLDataObject extends AbstractSchemaObject implements IXML
 		if (!super.equals(obj)) {
 			return false;
 		}
-		if (getClass() != obj.getClass()) {
+		if (!(obj instanceof XMLDataObject)) {
 			return false;
 		}
 		final XMLDataObject other = (XMLDataObject) obj;
-		return Objects.equals(this.discreteValues, other.discreteValues)
+		return this.dataType == other.dataType && Objects.equals(this.discreteValues, other.discreteValues)
 				&& Objects.equals(this.fixedValueset, other.fixedValueset)
-				&& Objects.equals(this.maxLength, other.maxLength) && Objects.equals(this.maxValue, other.maxValue)
-				&& Objects.equals(this.minValue, other.minValue) && this.dataType == other.dataType;
+				&& Objects.equals(this.maxLength, other.maxLength)
+				&& Objects.equals(this.maxValue, other.maxValue) && Objects.equals(this.minValue, other.minValue)
+				&& this.getClass().equals(other.getClass()); // added manually!
 	}
 
 }

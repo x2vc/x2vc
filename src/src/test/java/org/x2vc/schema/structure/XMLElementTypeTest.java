@@ -9,6 +9,8 @@ import org.x2vc.schema.structure.IXMLElementType.ContentType;
 import org.x2vc.schema.structure.IXMLElementType.ElementArrangement;
 import org.x2vc.schema.structure.XMLElementType.Builder;
 
+import nl.jqno.equalsverifier.EqualsVerifier;
+
 class XMLElementTypeTest {
 
 	@Test
@@ -150,6 +152,16 @@ class XMLElementTypeTest {
 		final UUID id = UUID.randomUUID();
 		final XMLElementType elem = XMLElementType.builder(id).withContentType(ContentType.MIXED).build();
 		assertEquals(id, elem.getID());
+	}
+
+	/**
+	 * Test method for {@link org.x2vc.schema.structure.XMLElementType#equals(java.lang.Object)}.
+	 */
+	@Test
+	void testEqualsObject() {
+		EqualsVerifier.forClass(XMLElementType.class)
+			.withRedefinedSuperclass()
+			.verify();
 	}
 
 }

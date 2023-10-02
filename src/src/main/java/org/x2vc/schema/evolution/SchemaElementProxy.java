@@ -10,11 +10,11 @@ import org.x2vc.schema.structure.IXMLElementType;
 /**
  * Standard implementation of {@link ISchemaElementProxy}.
  */
-public class SchemaElementProxy implements ISchemaElementProxy {
+public final class SchemaElementProxy implements ISchemaElementProxy {
 
-	private ProxyType proxyType;
-	private IXMLElementType existingElementType;
-	private IAddElementModifier modifier;
+	private final ProxyType proxyType;
+	private final IXMLElementType existingElementType;
+	private final IAddElementModifier modifier;
 
 	/**
 	 * Creates a new proxy referring to an actual type.
@@ -24,6 +24,7 @@ public class SchemaElementProxy implements ISchemaElementProxy {
 	public SchemaElementProxy(IXMLElementType existingElementType) {
 		this.proxyType = ProxyType.ELEMENT;
 		this.existingElementType = existingElementType;
+		this.modifier = null;
 	}
 
 	/**
@@ -33,6 +34,7 @@ public class SchemaElementProxy implements ISchemaElementProxy {
 	 */
 	public SchemaElementProxy(IAddElementModifier modifier) {
 		this.proxyType = ProxyType.MODIFIER;
+		this.existingElementType = null;
 		this.modifier = modifier;
 	}
 
@@ -41,6 +43,8 @@ public class SchemaElementProxy implements ISchemaElementProxy {
 	 */
 	public SchemaElementProxy() {
 		this.proxyType = ProxyType.DOCUMENT;
+		this.existingElementType = null;
+		this.modifier = null;
 	}
 
 	@Override

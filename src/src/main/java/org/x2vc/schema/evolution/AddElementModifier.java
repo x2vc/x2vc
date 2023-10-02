@@ -15,40 +15,40 @@ import com.google.common.collect.ImmutableSet;
 /**
  * Standard implementation of {@link IAddElementModifier}.
  */
-public class AddElementModifier implements IAddElementModifier {
+public final class AddElementModifier implements IAddElementModifier {
 
 	@XmlTransient
-	private URI schemaURI;
+	private final URI schemaURI;
 
 	@XmlTransient
-	private int schemaVersion;
+	private final int schemaVersion;
 
 	@XmlAttribute
-	private UUID elementID;
+	private final UUID elementID;
 
 	@XmlAttribute
-	private UUID referenceID;
+	private final UUID referenceID;
 
 	@XmlAttribute
-	private String name;
+	private final String name;
 
 	@XmlAttribute
-	private UUID typeID;
+	private final UUID typeID;
 
 	@XmlAttribute
-	private Integer minOccurrence;
+	private final Integer minOccurrence;
 
 	@XmlAttribute
-	private Integer maxOccurrence;
+	private final Integer maxOccurrence;
 
 	@XmlAttribute
-	private ContentType contentType;
+	private final ContentType contentType;
 
 	@XmlElement
-	private String typeComment;
+	private final String typeComment;
 
 	@XmlElement
-	private String referenceComment;
+	private final String referenceComment;
 
 	@XmlElementWrapper(name = "attributes")
 	@XmlElement(name = "attribute", type = AddAttributeModifier.class)
@@ -129,18 +129,10 @@ public class AddElementModifier implements IAddElementModifier {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(
-				this.contentType,
-				this.elementID,
-				this.maxOccurrence,
-				this.minOccurrence,
-				this.name,
-				this.referenceID,
-				this.schemaURI,
-				this.schemaVersion,
-				this.typeID,
-				this.typeComment,
-				this.referenceComment);
+		return Objects.hash(this.attributeModifiers, this.contentType, this.elementID, this.elementModifiers,
+				this.maxOccurrence, this.minOccurrence,
+				this.name, this.referenceComment, this.referenceID, this.schemaURI, this.schemaVersion,
+				this.typeComment, this.typeID);
 	}
 
 	@Override
@@ -162,24 +154,21 @@ public class AddElementModifier implements IAddElementModifier {
 		if (this == obj) {
 			return true;
 		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
+		if (!(obj instanceof AddElementModifier)) {
 			return false;
 		}
 		final AddElementModifier other = (AddElementModifier) obj;
-		return this.contentType == other.contentType
+		return Objects.equals(this.attributeModifiers, other.attributeModifiers)
+				&& this.contentType == other.contentType
 				&& Objects.equals(this.elementID, other.elementID)
+				&& Objects.equals(this.elementModifiers, other.elementModifiers)
 				&& Objects.equals(this.maxOccurrence, other.maxOccurrence)
-				&& Objects.equals(this.minOccurrence, other.minOccurrence)
-				&& Objects.equals(this.name, other.name)
+				&& Objects.equals(this.minOccurrence, other.minOccurrence) && Objects.equals(this.name, other.name)
+				&& Objects.equals(this.referenceComment, other.referenceComment)
 				&& Objects.equals(this.referenceID, other.referenceID)
 				&& Objects.equals(this.schemaURI, other.schemaURI)
-				&& this.schemaVersion == other.schemaVersion
-				&& Objects.equals(this.typeID, other.typeID)
-				&& Objects.equals(this.typeComment, other.typeComment)
-				&& Objects.equals(this.referenceComment, other.referenceComment);
+				&& this.schemaVersion == other.schemaVersion && Objects.equals(this.typeComment, other.typeComment)
+				&& Objects.equals(this.typeID, other.typeID);
 	}
 
 	@Override

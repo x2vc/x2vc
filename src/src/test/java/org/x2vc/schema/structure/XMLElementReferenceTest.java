@@ -7,6 +7,8 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 import org.x2vc.schema.structure.IXMLElementType.ContentType;
 
+import nl.jqno.equalsverifier.EqualsVerifier;
+
 class XMLElementReferenceTest {
 
 	@Test
@@ -75,6 +77,16 @@ class XMLElementReferenceTest {
 		final XMLElementReference ref = XMLElementReference.builder(id, "aName", innerElem).withMinOccurrence(1)
 			.withMaxOccurrence(42).build();
 		assertEquals(id, ref.getID());
+	}
+
+	/**
+	 * Test method for {@link org.x2vc.schema.structure.XMLElementReference#equals(java.lang.Object)}.
+	 */
+	@Test
+	void testEqualsObject() {
+		EqualsVerifier.forClass(XMLElementReference.class)
+			.withRedefinedSuperclass()
+			.verify();
 	}
 
 }

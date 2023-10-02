@@ -9,39 +9,35 @@ import com.google.common.collect.Lists;
 /**
  * Standard implementation of {@link IXMLAttribute}.
  */
-public class XMLAttribute extends XMLDataObject implements IXMLAttribute {
+public final class XMLAttribute extends XMLDataObject implements IXMLAttribute {
 
 	@XmlAttribute
-	private String name;
+	private final String name;
 
 	@XmlAttribute
-	private Boolean optional;
+	private final Boolean optional;
 
 	@XmlAttribute
-	private Boolean userModifiable;
-
-	/**
-	 * Parameterless constructor for deserialization only.
-	 */
-	XMLAttribute() {
-		this.discreteValues = Lists.newArrayList();
-	}
+	private final Boolean userModifiable;
 
 	private XMLAttribute(Builder builder) {
-		this.id = builder.id;
-		this.comment = builder.comment;
+		super(builder.id, builder.comment, builder.dataType, builder.maxLength, builder.minValue, builder.maxValue,
+				builder.discreteValues.stream()
+					.sorted((v1, v2) -> v1.getID().compareTo(v2.getID()))
+					.toList(),
+				builder.fixedValueset);
 		this.name = builder.name;
-		this.dataType = builder.dataType;
 		this.optional = builder.optional;
-		this.maxLength = builder.maxLength;
-		this.minValue = builder.minValue;
-		this.maxValue = builder.maxValue;
-		this.discreteValues = builder.discreteValues.stream()
-			.sorted((v1, v2) -> v1.getID().compareTo(v2.getID()))
-			.toList();
-		this.fixedValueset = builder.fixedValueset;
 		this.userModifiable = builder.userModifiable;
 		// TODO XML Schema: Validate XMLAttribute attribute combinations
+	}
+
+	private XMLAttribute() {
+		// Parameterless constructor for deserialization only.
+		super(UUID.randomUUID(), null, null, null, null, null, Lists.newArrayList(), null);
+		this.name = null;
+		this.optional = null;
+		this.userModifiable = null;
 	}
 
 	@Override
@@ -307,7 +303,7 @@ public class XMLAttribute extends XMLDataObject implements IXMLAttribute {
 		if (!super.equals(obj)) {
 			return false;
 		}
-		if (getClass() != obj.getClass()) {
+		if (!(obj instanceof XMLAttribute)) {
 			return false;
 		}
 		final XMLAttribute other = (XMLAttribute) obj;

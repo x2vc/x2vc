@@ -9,9 +9,12 @@ import static org.mockito.Mockito.when;
 
 import java.util.UUID;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import nl.jqno.equalsverifier.EqualsVerifier;
 
 @ExtendWith(MockitoExtension.class)
 class AddRawContentRuleTest {
@@ -51,6 +54,15 @@ class AddRawContentRuleTest {
 		assertEquals(UUID.fromString("0000-00-00-00-000000"), normalizedRule.getID());
 		assertEquals(elementID, normalizedRule.getElementID());
 		assertSame(normalizedValue, normalizedRule.getRequestedValue().get());
+	}
+
+	/**
+	 * Test method for {@link org.x2vc.xml.request.AddRawContentRule#equals(java.lang.Object)}.
+	 */
+	@Test
+	@Disabled("implementation needs to be adjusted") // TODO check equals() and hashCode()
+	void testEqualsObject() {
+		EqualsVerifier.forClass(AddRawContentRule.class).verify();
 	}
 
 }

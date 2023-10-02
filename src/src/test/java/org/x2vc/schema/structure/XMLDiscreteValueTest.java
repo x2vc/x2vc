@@ -9,6 +9,8 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
+import nl.jqno.equalsverifier.EqualsVerifier;
+
 class XMLDiscreteValueTest {
 
 	@Test
@@ -110,6 +112,16 @@ class XMLDiscreteValueTest {
 
 		assertThrows(IllegalStateException.class, () -> copy.asInteger());
 		assertThrows(IllegalStateException.class, () -> copy.asBoolean());
+	}
+
+	/**
+	 * Test method for {@link org.x2vc.schema.structure.XMLDiscreteValue#equals(java.lang.Object)}.
+	 */
+	@Test
+	void testEqualsObject() {
+		EqualsVerifier.forClass(XMLDiscreteValue.class)
+			.withRedefinedSuperclass()
+			.verify();
 	}
 
 }
