@@ -31,7 +31,7 @@ import net.sf.saxon.s9api.SaxonApiException;
 /**
  * This task is used to process a single {@link IDocumentRequest} and collect the relevant results for schema evolution.
  */
-public class SchemaExplorationTask implements ISchemaExplorationTask {
+public class SchemaExplorationTask extends AbstractTask implements ISchemaExplorationTask {
 
 	private static final Logger logger = LogManager.getLogger();
 
@@ -42,11 +42,8 @@ public class SchemaExplorationTask implements ISchemaExplorationTask {
 	private IValueTraceAnalyzer valueTraceAnalyzer;
 	private IRequestGenerator requestGenerator;
 	private IDebugObjectWriter debugObjectWriter;
-	private File xsltFile;
 	private Consumer<ISchemaModifier> modifierCollector;
 	private BiConsumer<UUID, Boolean> callback;
-
-	private UUID taskID = UUID.randomUUID();
 
 	@SuppressWarnings("java:S107") // large number of parameters due to dependency injection
 	@Inject
@@ -56,7 +53,7 @@ public class SchemaExplorationTask implements ISchemaExplorationTask {
 			@Assisted File xsltFile,
 			@Assisted Consumer<ISchemaModifier> modifierCollector,
 			@Assisted BiConsumer<UUID, Boolean> callback) {
-		super();
+		super(xsltFile);
 		this.stylesheetManager = stylesheetManager;
 		this.schemaManager = schemaManager;
 		this.documentGenerator = documentGenerator;
@@ -64,36 +61,35 @@ public class SchemaExplorationTask implements ISchemaExplorationTask {
 		this.valueTraceAnalyzer = valueTraceAnalyzer;
 		this.requestGenerator = requestGenerator;
 		this.debugObjectWriter = debugObjectWriter;
-		this.xsltFile = xsltFile;
 		this.modifierCollector = modifierCollector;
 		this.callback = callback;
 	}
 
 	@Override
-	public void run() {
-		logger.traceEntry("for task ID {}", this.taskID);
+	public void execute() {
+		logger.traceEntry("for task ID {}", this.getTaskID());
 		try {
-			final IStylesheetInformation stylesheetInfo = this.stylesheetManager.get(this.xsltFile.toURI());
+			final IStylesheetInformation stylesheetInfo = this.stylesheetManager.get(this.getXSLTFile().toURI());
 			final IXMLSchema schema = this.schemaManager.getSchema(stylesheetInfo.getURI());
 
 			logger.debug("generating new request to explore schema usage of stylesheet {}", stylesheetInfo.getURI());
 			final IDocumentRequest request = this.requestGenerator.generateNewRequest(schema,
 					MixedContentGenerationMode.RESTRICTED);
-			this.debugObjectWriter.writeRequest(this.taskID, request);
+			this.debugObjectWriter.writeRequest(this.getTaskID(), request);
 
 			logger.debug("generating XML document");
 			final IXMLDocumentContainer xmlDocument = this.documentGenerator.generateDocument(request);
-			this.debugObjectWriter.writeXMLDocument(this.taskID, xmlDocument);
+			this.debugObjectWriter.writeXMLDocument(this.getTaskID(), xmlDocument);
 
 			logger.debug("processing XML to HTML");
 			final IHTMLDocumentContainer htmlDocument = this.processor.processDocument(xmlDocument);
-			this.debugObjectWriter.writeHTMLDocument(this.taskID, htmlDocument);
+			this.debugObjectWriter.writeHTMLDocument(this.getTaskID(), htmlDocument);
 
 			if (!htmlDocument.isFailed()) {
 				logger.debug("analyzing {} trace events produced by XSLT processor",
 						htmlDocument.getTraceEvents().map(ev -> ev.size()).orElse(0));
-				this.valueTraceAnalyzer.analyzeDocument(this.taskID, htmlDocument, this.modifierCollector);
-				this.callback.accept(this.taskID, true);
+				this.valueTraceAnalyzer.analyzeDocument(this.getTaskID(), htmlDocument, this.modifierCollector);
+				this.callback.accept(this.getTaskID(), true);
 			} else {
 				final Optional<SaxonApiException> compilationError = htmlDocument.getCompilationError();
 				final Optional<SaxonApiException> processingError = htmlDocument.getProcessingError();
@@ -106,18 +102,13 @@ public class SchemaExplorationTask implements ISchemaExplorationTask {
 				} else {
 					logger.debug("processing of XML to HMTL failed other unspecified error");
 				}
-				this.callback.accept(this.taskID, false);
+				this.callback.accept(this.getTaskID(), false);
 			}
 		} catch (final Exception ex) {
 			logger.error("unhandled exception in schema exploration task", ex);
-			this.callback.accept(this.taskID, false);
+			this.callback.accept(this.getTaskID(), false);
 		}
 		logger.traceExit();
-	}
-
-	@Override
-	public UUID getTaskID() {
-		return this.taskID;
 	}
 
 }

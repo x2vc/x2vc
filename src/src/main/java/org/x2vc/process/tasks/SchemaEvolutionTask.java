@@ -1,7 +1,6 @@
 package org.x2vc.process.tasks;
 
 import java.io.File;
-import java.util.UUID;
 import java.util.function.Consumer;
 
 import org.apache.logging.log4j.LogManager;
@@ -20,18 +19,15 @@ import com.google.inject.assistedinject.Assisted;
  * This task is used to consolidate the schema modifiers generated during the exploration phase and produce a new schema
  * version to be tested.
  */
-public class SchemaEvolutionTask implements ISchemaEvolutionTask {
+public class SchemaEvolutionTask extends AbstractTask implements ISchemaEvolutionTask {
 
 	private static final Logger logger = LogManager.getLogger();
 
 	private IStylesheetManager stylesheetManager;
 	private ISchemaManager schemaManager;
 	private IDebugObjectWriter debugObjectWriter;
-	private File xsltFile;
 	private ISchemaModifierCollector modifierCollector;
 	private Consumer<Boolean> callback;
-
-	private UUID taskID = UUID.randomUUID();
 
 	@SuppressWarnings("java:S107") // large number of parameters due to dependency injection
 	@Inject
@@ -40,36 +36,30 @@ public class SchemaEvolutionTask implements ISchemaEvolutionTask {
 			@Assisted File xsltFile,
 			@Assisted ISchemaModifierCollector modifierCollector,
 			@Assisted Consumer<Boolean> callback) {
-		super();
+		super(xsltFile);
 		this.stylesheetManager = stylesheetManager;
 		this.schemaManager = schemaManager;
 		this.debugObjectWriter = debugObjectWriter;
-		this.xsltFile = xsltFile;
 		this.modifierCollector = modifierCollector;
 		this.callback = callback;
 	}
 
 	@Override
-	public void run() {
+	public void execute() {
 		logger.traceEntry();
 		try {
-			final IStylesheetInformation stylesheetInfo = this.stylesheetManager.get(this.xsltFile.toURI());
+			final IStylesheetInformation stylesheetInfo = this.stylesheetManager.get(this.getXSLTFile().toURI());
 			final IXMLSchema oldSchema = this.schemaManager.getSchema(stylesheetInfo.getURI());
-			this.debugObjectWriter.writeSchemaModifiers(this.taskID, this.modifierCollector);
+			this.debugObjectWriter.writeSchemaModifiers(this.getTaskID(), this.modifierCollector);
 			final IXMLSchema newSchema = this.schemaManager.modifySchema(oldSchema,
 					this.modifierCollector.getConsolidatedModifiers());
-			this.debugObjectWriter.writeSchema(this.taskID, newSchema);
+			this.debugObjectWriter.writeSchema(this.getTaskID(), newSchema);
 			this.callback.accept(true);
 		} catch (final Exception ex) {
 			logger.error("unhandled exception in schema evolution task", ex);
 			this.callback.accept(false);
 		}
 		logger.traceExit();
-	}
-
-	@Override
-	public UUID getTaskID() {
-		return this.taskID;
 	}
 
 }

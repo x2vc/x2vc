@@ -5,6 +5,7 @@ import java.util.concurrent.*;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.x2vc.process.tasks.ITask;
 
 import com.github.racc.tscg.TypesafeConfig;
 import com.google.common.util.concurrent.MoreExecutors;
@@ -45,7 +46,7 @@ public class WorkerProcessManager implements IWorkerProcessManager {
 	}
 
 	@Override
-	public void submit(Runnable task) {
+	public void submit(ITask task) {
 		logger.traceEntry();
 		if (!isInitialized()) {
 			initialize();
@@ -62,13 +63,13 @@ public class WorkerProcessManager implements IWorkerProcessManager {
 				&& this.reportExecutorService != null;
 	}
 
-	/**
-	 * Initializes the task handling components.
-	 */
-	private void initialize() {
+	@Override
+	public synchronized void initialize() {
 		logger.traceEntry();
-		initializeWorkerThreads();
-		initializeWatcherThreads();
+		if (!isInitialized()) {
+			initializeWorkerThreads();
+			initializeWatcherThreads();
+		}
 		logger.traceExit();
 	}
 
@@ -115,12 +116,13 @@ public class WorkerProcessManager implements IWorkerProcessManager {
 	}
 
 	private void reportWorkerStatus() {
-		logger.info("worker status: {} threads, tasks: {} scheduled total, {} queued, {} executing, {} completed total",
+		logger.info(
+				"Worker status: {} threads, tasks: {} queued --> {} executing --> {} completed of total {} scheduled ",
 				this.workerExecutor.getPoolSize(), // threads
-				this.workerExecutor.getTaskCount(), // scheduled
 				this.taskQueue.size(), // queued
 				this.workerExecutor.getActiveCount(), // executing
-				this.workerExecutor.getCompletedTaskCount() // completed
+				this.workerExecutor.getCompletedTaskCount(), // completed
+				this.workerExecutor.getTaskCount() // scheduled
 		);
 	}
 

@@ -1,25 +1,46 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="warn" monitorInterval="30">
 
-    <Properties>
-        <Property name="LOG_PATTERN">%date{HH:mm:ss.SSS} %level{WARN=WRN, DEBUG=DBG, ERROR=ERR, TRACE=TRC, INFO=INF} %msg%n</Property>
-    </Properties>
+	<Appenders>
+		<Routing name="Routing">
+			<Routes pattern="$${ctx:stylesheet}">
+				<!-- Events without a stylesheet annotation are written to the console. -->
+				<Route key="$${ctx:stylesheet}">
+					<Console name="Console" target="SYSTEM_OUT" follow="true">
+						<PatternLayout>
+							<Pattern>%date{HH:mm:ss.SSS} [%tn] %level{length=1}: %msg%n%throwable</Pattern>
+						</PatternLayout>
+					</Console>
+				</Route>
 
-    <Appenders>
-        <Console name="Console" target="SYSTEM_OUT" follow="true">
-            <PatternLayout pattern="${LOG_PATTERN}"/>
-        </Console>
-    </Appenders>
+				<!-- Other events are redirected to the individual log files. -->
+				<Route>
+					<RollingFile name="Rolling-${ctx:stylesheet}" fileName="${ctx:stylesheet}.log" filePattern="${ctx:stylesheet}.%i.log">
+						<PatternLayout>
+							<Pattern>%date{HH:mm:ss.SSS} %level{length=1} [%tn] %30.30logger{1.1.*}#%-30.30M: %msg%n%throwable</Pattern>
+						</PatternLayout>
+						<Policies>
+							<OnStartupTriggeringPolicy />
+						</Policies>
+						<DefaultRolloverStrategy fileIndex="min" max="9"/>
+					</RollingFile>
+				</Route>
+			</Routes>
+		</Routing>
+	</Appenders>
 
-    <Loggers>
-        <!-- process control should issue info messages  -->
-        <Logger name="org.x2vc.process" level="info" additivity="false">
-            <AppenderRef ref="Console"/>
+	<Loggers>
+		<!-- example for debug messages for selected components -->
+		<!--
+		<Logger name="org.x2vc.process.commands.ProcessDirector" level="debug" additivity="false">
+			<AppenderRef ref="Routing" />
 		</Logger>
-		<!-- warning messages from all other components only -->
-        <Root level="warn">
-            <AppenderRef ref="Console"/>
-        </Root>
-    </Loggers>
+		-->
+
+		<!-- info messages from all components by default -->
+		<Root level="info">
+			<AppenderRef ref="Routing" />
+		</Root>
+	</Loggers>
 
 </Configuration>

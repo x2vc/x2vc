@@ -277,6 +277,7 @@ public class XMLSchema implements IXMLSchema {
 			.filter(ref -> ref.getElementID().equals(elementType.getID()))
 			.toList());
 		result.addAll(this.elementTypes.stream()
+			.filter(IXMLElementType::hasElementContent)
 			.flatMap(elem -> elem.getElements().stream())
 			.filter(ref -> ref.getElementID().equals(elementType.getID()))
 			.toList());

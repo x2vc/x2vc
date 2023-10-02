@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
+import org.apache.logging.log4j.CloseableThreadContext;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.x2vc.process.IWorkerProcessManager;
@@ -81,17 +82,28 @@ public class ProcessDirector implements IProcessDirector {
 		return this.processState;
 	}
 
+	/**
+	 * Prepares a {@link CloseableThreadContext} to annotate the log entries with the stylesheet name.
+	 *
+	 * @return
+	 */
+	protected CloseableThreadContext.Instance getThreadContext() {
+		return CloseableThreadContext.put("stylesheet", this.xsltFile.toString());
+	}
+
 	@Override
 	public synchronized void initialize() {
-		logger.traceEntry();
-		logger.debug("initializing processing of stylesheet {}", this.xsltFile);
-		if (this.processState == ProcessState.NEW) {
-			this.processState = ProcessState.INITIALIZE;
-			final IInitializationTask initTask = this.initializationTaskFactory
-				.create(this.xsltFile, this.processingMode, this::handleInitializationComplete);
-			this.workerProcessManager.submit(initTask);
+		try (final CloseableThreadContext.Instance ctc = getThreadContext()) {
+			logger.traceEntry();
+			logger.debug("initializing processing of stylesheet {}", this.xsltFile);
+			if (this.processState == ProcessState.NEW) {
+				this.processState = ProcessState.INITIALIZE;
+				final IInitializationTask initTask = this.initializationTaskFactory
+					.create(this.xsltFile, this.processingMode, this::handleInitializationComplete);
+				this.workerProcessManager.submit(initTask);
+			}
+			logger.traceExit();
 		}
-		logger.traceExit();
 	}
 
 	/**
@@ -100,45 +112,49 @@ public class ProcessDirector implements IProcessDirector {
 	 * @param success whether the initialization was successful
 	 */
 	private synchronized void handleInitializationComplete(Boolean success) {
-		logger.traceEntry();
-		if (Boolean.TRUE.equals(success)) {
-			logger.debug("processing of stylesheet {} initialized successfully", this.xsltFile);
-			if ((this.processingMode == ProcessingMode.FULL)
-					|| (this.processingMode == ProcessingMode.SCHEMA_ONLY)) {
-				startSchemaExploration();
+		try (final CloseableThreadContext.Instance ctc = getThreadContext()) {
+			logger.traceEntry();
+			if (Boolean.TRUE.equals(success)) {
+				logger.debug("processing of stylesheet {} initialized successfully", this.xsltFile);
+				if ((this.processingMode == ProcessingMode.FULL)
+						|| (this.processingMode == ProcessingMode.SCHEMA_ONLY)) {
+					startSchemaExploration();
+				} else {
+					startVulnerabilityChecks();
+				}
 			} else {
-				startVulnerabilityChecks();
+				logger.error("processing of stylesheet {} aborted", this.xsltFile);
+				// abort further processing
+				this.processState = ProcessState.DONE;
 			}
-		} else {
-			logger.error("processing of stylesheet {} aborted", this.xsltFile);
-			// abort further processing
-			this.processState = ProcessState.DONE;
+			logger.traceExit();
 		}
-		logger.traceExit();
 	}
 
 	/**
 	 * Starts the exploration phase of the schema evolution.
 	 */
 	private synchronized void startSchemaExploration() {
-		logger.traceEntry();
-		this.processState = ProcessState.EXPLORE_SCHEMA;
-		this.schemaModifierCollector.clear();
-		this.failedExplorationTasks = 0;
-		this.schemaExplorationTasks.clear();
-		this.currentSchemaIteration++;
-		// generate a number of initial document requests
-		logger.debug("submitting {} document requests for schema exploration of stylesheet {}",
-				this.schemaExplorationDocumentCount,
-				this.xsltFile);
-		for (int i = 0; i < this.schemaExplorationDocumentCount; i++) {
-			final ISchemaExplorationTask explorationTask = this.schemaExplorationTaskFactory
-				.create(
-						this.xsltFile, this.schemaModifierCollector::addModifier, this::handleExplorationComplete);
-			this.schemaExplorationTasks.add(explorationTask.getTaskID());
-			this.workerProcessManager.submit(explorationTask);
+		try (final CloseableThreadContext.Instance ctc = getThreadContext()) {
+			logger.traceEntry();
+			this.processState = ProcessState.EXPLORE_SCHEMA;
+			this.schemaModifierCollector.clear();
+			this.failedExplorationTasks = 0;
+			this.schemaExplorationTasks.clear();
+			this.currentSchemaIteration++;
+			// generate a number of initial document requests
+			logger.debug("submitting {} document requests for schema exploration of stylesheet {}",
+					this.schemaExplorationDocumentCount,
+					this.xsltFile);
+			for (int i = 0; i < this.schemaExplorationDocumentCount; i++) {
+				final ISchemaExplorationTask explorationTask = this.schemaExplorationTaskFactory
+					.create(
+							this.xsltFile, this.schemaModifierCollector::addModifier, this::handleExplorationComplete);
+				this.schemaExplorationTasks.add(explorationTask.getTaskID());
+				this.workerProcessManager.submit(explorationTask);
+			}
+			logger.traceExit();
 		}
-		logger.traceExit();
 	}
 
 	/**
@@ -148,45 +164,49 @@ public class ProcessDirector implements IProcessDirector {
 	 * @param success
 	 */
 	private synchronized void handleExplorationComplete(UUID taskID, Boolean success) {
-		logger.traceEntry();
-		if (Boolean.FALSE.equals(success)) {
-			this.failedExplorationTasks++;
-		}
-		this.schemaExplorationTasks.remove(taskID);
-		if (this.schemaExplorationTasks.isEmpty()) {
-			// when the last task has completed, decide what to do
-			if (this.failedExplorationTasks == this.schemaExplorationDocumentCount) {
-				// something has gone VERY wrong, abort
-				logger.error("All {} attempts to explore the schema use of stylesheet {} have failed",
-						this.failedExplorationTasks, this.xsltFile);
-				this.processState = ProcessState.DONE;
-			} else {
-				if (this.schemaModifierCollector.isEmpty()) {
-					logger.debug("Exploration has not yielded any additional modification requests");
-					if (this.processingMode != ProcessingMode.SCHEMA_ONLY) {
-						startVulnerabilityChecks();
-					} else {
-						startReportCompilation();
-					}
+		try (final CloseableThreadContext.Instance ctc = getThreadContext()) {
+			logger.traceEntry();
+			if (Boolean.FALSE.equals(success)) {
+				this.failedExplorationTasks++;
+			}
+			this.schemaExplorationTasks.remove(taskID);
+			if (this.schemaExplorationTasks.isEmpty()) {
+				// when the last task has completed, decide what to do
+				if (this.failedExplorationTasks == this.schemaExplorationDocumentCount) {
+					// something has gone VERY wrong, abort
+					logger.error("All {} attempts to explore the schema use of stylesheet {} have failed",
+							this.failedExplorationTasks, this.xsltFile);
+					this.processState = ProcessState.DONE;
 				} else {
-					startSchemaEvolution();
+					if (this.schemaModifierCollector.isEmpty()) {
+						logger.debug("Exploration has not yielded any additional modification requests");
+						if (this.processingMode != ProcessingMode.SCHEMA_ONLY) {
+							startVulnerabilityChecks();
+						} else {
+							startReportCompilation();
+						}
+					} else {
+						startSchemaEvolution();
+					}
 				}
 			}
+			logger.traceExit();
 		}
-		logger.traceExit();
 	}
 
 	/**
 	 * Starts the evolution phase of the schema evolution.
 	 */
 	private synchronized void startSchemaEvolution() {
-		logger.traceEntry();
-		logger.debug("processing results of schema exploration of stylesheet {}", this.xsltFile);
-		this.processState = ProcessState.EVOLVE_SCHEMA;
-		final ISchemaEvolutionTask evolutionTask = this.schemaEvolutionTaskFactory
-			.create(this.xsltFile, this.schemaModifierCollector, this::handleEvolutionComplete);
-		this.workerProcessManager.submit(evolutionTask);
-		logger.traceExit();
+		try (final CloseableThreadContext.Instance ctc = getThreadContext()) {
+			logger.traceEntry();
+			logger.debug("processing results of schema exploration of stylesheet {}", this.xsltFile);
+			this.processState = ProcessState.EVOLVE_SCHEMA;
+			final ISchemaEvolutionTask evolutionTask = this.schemaEvolutionTaskFactory
+				.create(this.xsltFile, this.schemaModifierCollector, this::handleEvolutionComplete);
+			this.workerProcessManager.submit(evolutionTask);
+			logger.traceExit();
+		}
 	}
 
 	/**
@@ -195,40 +215,43 @@ public class ProcessDirector implements IProcessDirector {
 	 * @param result <code>true</code> if a new schema version was created, <code>false</code> otherwise
 	 */
 	private synchronized void handleEvolutionComplete(Boolean result) {
-		logger.traceEntry();
-		logger.debug("round {} of {} of schema evolution of stylesheet {} completed, schema changes: {}",
-				this.currentSchemaIteration, this.schemaEvolutionPassLimit, this.xsltFile, result);
-		if (Boolean.TRUE.equals(result) && (this.currentSchemaIteration < this.schemaEvolutionPassLimit)) {
-			// new schema version generated AND maximum count not yet reached - try again, sam
-			startSchemaExploration();
-		} else {
-			if (this.processingMode != ProcessingMode.SCHEMA_ONLY) {
-				startVulnerabilityChecks();
+		try (final CloseableThreadContext.Instance ctc = getThreadContext()) {
+			logger.traceEntry();
+			logger.debug("round {} of {} of schema evolution of stylesheet {} completed, schema changes: {}",
+					this.currentSchemaIteration, this.schemaEvolutionPassLimit, this.xsltFile, result);
+			if (Boolean.TRUE.equals(result) && (this.currentSchemaIteration < this.schemaEvolutionPassLimit)) {
+				// new schema version generated AND maximum count not yet reached - try again, sam
+				startSchemaExploration();
 			} else {
-				startReportCompilation();
+				if (this.processingMode != ProcessingMode.SCHEMA_ONLY) {
+					startVulnerabilityChecks();
+				} else {
+					startReportCompilation();
+				}
 			}
+			logger.traceExit();
 		}
-		logger.traceExit();
 	}
 
 	/**
 	 * Starts the vulnerability checks.
 	 */
 	private synchronized void startVulnerabilityChecks() {
-		logger.traceEntry();
-		this.processState = ProcessState.CHECK_XSS;
-		logger.debug("submitting {} document requests for vulnerability analysis of stylesheet {}",
-				this.xssInitialDocumentCount,
-				this.xsltFile);
-		for (int i = 0; i < this.xssInitialDocumentCount; i++) {
-			final IInitialVulnerabilityCheckTask checkTask = this.initialVulnerabilityCheckTaskFactory
-				.create(
-						this.xsltFile, this::collectFollowupRequest, this::handleVulnerabilityCheckComplete);
-			this.vulnerabilityCheckTasks.add(checkTask.getTaskID());
-			this.workerProcessManager.submit(checkTask);
+		try (final CloseableThreadContext.Instance ctc = getThreadContext()) {
+			logger.traceEntry();
+			this.processState = ProcessState.CHECK_XSS;
+			logger.debug("submitting {} document requests for vulnerability analysis of stylesheet {}",
+					this.xssInitialDocumentCount,
+					this.xsltFile);
+			for (int i = 0; i < this.xssInitialDocumentCount; i++) {
+				final IInitialVulnerabilityCheckTask checkTask = this.initialVulnerabilityCheckTaskFactory
+					.create(
+							this.xsltFile, this::collectFollowupRequest, this::handleVulnerabilityCheckComplete);
+				this.vulnerabilityCheckTasks.add(checkTask.getTaskID());
+				this.workerProcessManager.submit(checkTask);
+			}
+			logger.traceExit();
 		}
-
-		logger.traceExit();
 	}
 
 	/**
@@ -237,12 +260,14 @@ public class ProcessDirector implements IProcessDirector {
 	 * @param request
 	 */
 	private synchronized void collectFollowupRequest(IDocumentRequest request) {
-		logger.traceEntry();
-		final IFollowUpVulnerabilityCheckTask checkTask = this.followUpVulnerabilityCheckTaskFactory
-			.create(request, this::collectFollowupRequest, this::handleVulnerabilityCheckComplete);
-		this.vulnerabilityCheckTasks.add(checkTask.getTaskID());
-		this.workerProcessManager.submit(checkTask);
-		logger.traceExit();
+		try (final CloseableThreadContext.Instance ctc = getThreadContext()) {
+			logger.traceEntry();
+			final IFollowUpVulnerabilityCheckTask checkTask = this.followUpVulnerabilityCheckTaskFactory
+				.create(this.xsltFile, request, this::collectFollowupRequest, this::handleVulnerabilityCheckComplete);
+			this.vulnerabilityCheckTasks.add(checkTask.getTaskID());
+			this.workerProcessManager.submit(checkTask);
+			logger.traceExit();
+		}
 	}
 
 	/**
@@ -252,27 +277,31 @@ public class ProcessDirector implements IProcessDirector {
 	 * @param success
 	 */
 	private synchronized void handleVulnerabilityCheckComplete(UUID taskID, Boolean success) {
-		logger.traceEntry();
-		this.vulnerabilityCheckTasks.remove(taskID);
-		logger.trace("{} vulnerability check tasks remaining", this.vulnerabilityCheckTasks.size());
-		if (this.vulnerabilityCheckTasks.isEmpty()) {
-			// when the last task has completed, move to the report compilation phase
-			startReportCompilation();
+		try (final CloseableThreadContext.Instance ctc = getThreadContext()) {
+			logger.traceEntry();
+			this.vulnerabilityCheckTasks.remove(taskID);
+			logger.trace("{} vulnerability check tasks remaining", this.vulnerabilityCheckTasks.size());
+			if (this.vulnerabilityCheckTasks.isEmpty()) {
+				// when the last task has completed, move to the report compilation phase
+				startReportCompilation();
+			}
+			logger.traceExit();
 		}
-		logger.traceExit();
 	}
 
 	/**
 	 * Starts the report collection phase
 	 */
 	private synchronized void startReportCompilation() {
-		logger.traceEntry();
-		logger.debug("compiling report for stylesheet {}", this.xsltFile);
-		this.processState = ProcessState.COMPILE_REPORT;
-		final IReportGeneratorTask reportTask = this.reportGeneratorTaskFactory
-			.create(this.xsltFile, this::handleReportComplete);
-		this.workerProcessManager.submit(reportTask);
-		logger.traceExit();
+		try (final CloseableThreadContext.Instance ctc = getThreadContext()) {
+			logger.traceEntry();
+			logger.debug("compiling report for stylesheet {}", this.xsltFile);
+			this.processState = ProcessState.COMPILE_REPORT;
+			final IReportGeneratorTask reportTask = this.reportGeneratorTaskFactory
+				.create(this.xsltFile, this::handleReportComplete);
+			this.workerProcessManager.submit(reportTask);
+			logger.traceExit();
+		}
 	}
 
 	/**
@@ -281,9 +310,11 @@ public class ProcessDirector implements IProcessDirector {
 	 * @param success
 	 */
 	private synchronized void handleReportComplete(Boolean success) {
-		logger.traceEntry();
-		this.processState = ProcessState.DONE;
-		logger.traceExit();
+		try (final CloseableThreadContext.Instance ctc = getThreadContext()) {
+			logger.traceEntry();
+			this.processState = ProcessState.DONE;
+			logger.traceExit();
+		}
 	}
 
 }

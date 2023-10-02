@@ -46,6 +46,9 @@ public abstract class AbstractProcessCommand implements Callable<Integer> {
 			return logger.traceExit(1);
 		}
 
+		// pre-initialize thread pool and watcher (keeps logs organized)
+		this.workerProcessManager.initialize();
+
 		// hand off to the process director
 		for (final File file : this.xsltFiles) {
 			this.processDirector.startProcess(file, getProcessingMode());
@@ -55,7 +58,7 @@ public abstract class AbstractProcessCommand implements Callable<Integer> {
 
 		this.workerProcessManager.shutdown();
 
-		logger.info("processing completed");
+		logger.info("Processing completed");
 		// TODO Logging: produce statistics output here
 
 		return logger.traceExit(0);

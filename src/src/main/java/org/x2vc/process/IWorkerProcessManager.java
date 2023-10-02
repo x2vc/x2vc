@@ -1,18 +1,25 @@
 package org.x2vc.process;
 
+import org.x2vc.process.tasks.ITask;
+
 /**
- * This component controls the main worker thread pool, reports on its usage
- * periodically, ensures that it is properly terminated when the JVM is shut
- * down and provides a method to wait for the completion of all tasks.
+ * This component controls the main worker thread pool, reports on its usage periodically, ensures that it is properly
+ * terminated when the JVM is shut down and provides a method to wait for the completion of all tasks.
  */
 public interface IWorkerProcessManager {
+
+	/**
+	 * Prepares the worker thread pool. May be used to keep the log tidy, but will automatically be called upon
+	 * submission of the first task if forgotten.
+	 */
+	void initialize();
 
 	/**
 	 * Adds a task to the task queue.
 	 *
 	 * @param task
 	 */
-	void submit(Runnable task);
+	void submit(ITask task);
 
 	/**
 	 * Blocks until all tasks have completed execution.
@@ -22,8 +29,7 @@ public interface IWorkerProcessManager {
 	void awaitCompletion() throws InterruptedException;
 
 	/**
-	 * Blocks until all tasks have completed execution and shuts the queue down so
-	 * that no more tasks are accepted.
+	 * Blocks until all tasks have completed execution and shuts the queue down so that no more tasks are accepted.
 	 *
 	 * @throws InterruptedException
 	 */
