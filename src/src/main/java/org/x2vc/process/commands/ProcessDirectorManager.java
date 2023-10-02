@@ -32,8 +32,11 @@ public class ProcessDirectorManager implements IProcessDirectorManager {
 	public synchronized void startProcess(File xsltFile, ProcessingMode mode) {
 		logger.traceEntry();
 		logger.info("Starting processing of stylesheet {}", xsltFile);
-		this.directors.computeIfAbsent(xsltFile,
+		final IProcessDirector director = this.directors.computeIfAbsent(xsltFile,
 				f -> this.directorFactory.create(xsltFile, mode));
+		if (director.getProcessState() == ProcessState.NEW) {
+			director.initialize();
+		}
 		logger.traceExit();
 	}
 

@@ -74,7 +74,6 @@ public class ProcessDirector implements IProcessDirector {
 		this.xsltFile = xsltFile;
 		this.processingMode = mode;
 		this.processState = ProcessState.NEW;
-		initialize();
 	}
 
 	@Override
@@ -82,10 +81,8 @@ public class ProcessDirector implements IProcessDirector {
 		return this.processState;
 	}
 
-	/**
-	 * Starts the initialization phase of the processing.
-	 */
-	private synchronized void initialize() {
+	@Override
+	public synchronized void initialize() {
 		logger.traceEntry();
 		logger.debug("initializing processing of stylesheet {}", this.xsltFile);
 		if (this.processState == ProcessState.NEW) {
