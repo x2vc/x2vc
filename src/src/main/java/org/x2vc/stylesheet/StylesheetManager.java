@@ -1,14 +1,19 @@
 package org.x2vc.stylesheet;
 
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URI;
+import java.nio.charset.Charset;
+import java.nio.charset.UnsupportedCharsetException;
 import java.nio.file.Files;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.util.Strings;
 import org.x2vc.utilities.URIUtilities;
 import org.x2vc.utilities.URIUtilities.ObjectType;
 
@@ -21,6 +26,8 @@ import com.google.common.cache.LoadingCache;
 import com.google.common.util.concurrent.UncheckedExecutionException;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import com.ibm.icu.text.CharsetDetector;
+import com.ibm.icu.text.CharsetMatch;
 
 /**
  * Standard implementation of {@link IStylesheetManager}.
@@ -91,9 +98,29 @@ public class StylesheetManager implements IStylesheetManager {
 			} catch (final Exception e) {
 				throw logger.throwing(new IllegalArgumentException("stylesheet URI cannot be resolved locally", e));
 			}
+
+			// try to determine the charset of the file
+			String charset = null;
+			try (final FileInputStream fileInputStream = new FileInputStream(file)) {
+				try (BufferedInputStream bufferedInputStream = new BufferedInputStream(fileInputStream)) {
+					final CharsetDetector detector = new CharsetDetector();
+					detector.setText(bufferedInputStream);
+					final CharsetMatch charsetMatch = detector.detect();
+					if (charsetMatch != null) {
+						// reader = charsetMatch.getReader();
+						charset = charsetMatch.getName();
+						logger.info("identified stylesheet charset as {}", charset);
+					}
+				}
+			}
+
+			if (Strings.isBlank(charset)) {
+				throw new UnsupportedCharsetException("unable to determine encoding of stylesheet");
+			}
+
 			String source;
 			try {
-				source = Files.readString(file.toPath());
+				source = Files.readString(file.toPath(), Charset.forName(charset));
 			} catch (final IOException e) {
 				throw logger.throwing(new IllegalArgumentException("unable to read stylesheet source", e));
 			}
