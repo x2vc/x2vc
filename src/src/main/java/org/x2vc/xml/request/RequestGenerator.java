@@ -67,9 +67,13 @@ public class RequestGenerator implements IRequestGenerator {
 	 */
 	private IAddElementRule generateRootElementRule(IXMLSchema schema) {
 		logger.traceEntry();
+		final Collection<IXMLElementReference> rootElements = schema.getRootElements();
+		if (rootElements.isEmpty()) {
+			throw new IllegalStateException("Unable to generate document request for schema without root references");
+		}
 		// select ONE of the possible root element references and follow that
 		final IAddElementRule rule = generateSingleRuleForElementReference(
-				selectOneReferenceOf(schema.getRootElements()));
+				selectOneReferenceOf(rootElements));
 		return logger.traceExit(rule);
 	}
 
