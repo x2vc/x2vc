@@ -109,9 +109,11 @@ public class StylesheetManager implements IStylesheetManager {
 					if (charsetMatch != null) {
 						// reader = charsetMatch.getReader();
 						charset = charsetMatch.getName();
-						logger.info("identified stylesheet charset as {}", charset);
+						logger.info("identified stylesheet encoding as {}", charset);
 					}
 				}
+			} catch (final IOException e) {
+				throw logger.throwing(new IllegalArgumentException("unable to determine stylesheet encoding", e));
 			}
 
 			if (Strings.isBlank(charset)) {
