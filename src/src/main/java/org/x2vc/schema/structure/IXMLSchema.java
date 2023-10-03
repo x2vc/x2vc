@@ -49,6 +49,11 @@ public interface IXMLSchema {
 	ImmutableCollection<IElementReference> getRootElements();
 
 	/**
+	 * @return the extension functions defined for the schema (or rather the stylesheet)
+	 */
+	ImmutableCollection<IExtensionFunction> getExtensionFunctions();
+
+	/**
 	 * @param id the ID of a schema object
 	 * @return the object with the ID
 	 * @throws IllegalArgumentException if the object is not part of the schema

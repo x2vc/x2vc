@@ -22,4 +22,5 @@
             <comment>reference to root element</comment>
         </rootElement>
     </rootElements>
+    <extensionFunctions/>
 </schema>

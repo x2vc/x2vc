@@ -79,4 +79,5 @@
             <comment>reference to root element C</comment>
         </rootElement>
     </rootElements>
+    <extensionFunctions/>
 </schema>

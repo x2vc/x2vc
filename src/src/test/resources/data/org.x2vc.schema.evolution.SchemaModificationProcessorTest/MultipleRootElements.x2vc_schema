@@ -16,4 +16,5 @@
             <comment>reference to root element B</comment>
         </rootElement>
     </rootElements>
+    <extensionFunctions/>
 </schema>

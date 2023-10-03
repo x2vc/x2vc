@@ -100,7 +100,8 @@ class SchemaModificationProcessorTest {
 				        <rootElement name="root" elementID="285a04e8-41cb-475a-be6c-d556155ff0b2" minOccurrence="1" maxOccurrence="1" id="3f711fb0-249d-458e-9477-fbad012299b8">
 				            <comment>reference to root element</comment>
 				        </rootElement>
-				    </rootElements>
+					</rootElements>
+					<extensionFunctions/>
 				</schema>
 				""";
 		//@formatter:on
@@ -133,6 +134,7 @@ class SchemaModificationProcessorTest {
 				            <comment>reference to root element</comment>
 				        </rootElement>
 				    </rootElements>
+					<extensionFunctions/>
 				</schema>
 			""";
 		// @formatter:on
@@ -161,6 +163,7 @@ class SchemaModificationProcessorTest {
 				            <comment>reference to root element</comment>
 				        </rootElement>
 				    </rootElements>
+					<extensionFunctions/>
 				</schema>
 				""";
 		//@formatter:on
@@ -194,6 +197,7 @@ class SchemaModificationProcessorTest {
 				            <comment>reference to root element</comment>
 				        </rootElement>
 				    </rootElements>
+					<extensionFunctions/>
 				</schema>
 			""";
 		// @formatter:on
@@ -222,6 +226,7 @@ class SchemaModificationProcessorTest {
 				            <comment>reference to root element</comment>
 				        </rootElement>
 				    </rootElements>
+					<extensionFunctions/>
 				</schema>
 				""";
 		//@formatter:on
@@ -254,6 +259,7 @@ class SchemaModificationProcessorTest {
 				            <comment>reference to root element</comment>
 				        </rootElement>
 				    </rootElements>
+					<extensionFunctions/>
 				</schema>
 			""";
 		// @formatter:on
@@ -281,6 +287,7 @@ class SchemaModificationProcessorTest {
 				            <comment>reference to root element</comment>
 				        </rootElement>
 				    </rootElements>
+					<extensionFunctions/>
 				</schema>
 				""";
 		//@formatter:on
@@ -317,6 +324,7 @@ class SchemaModificationProcessorTest {
 				            <comment>reference to root element</comment>
 				        </rootElement>
 				    </rootElements>
+					<extensionFunctions/>
 				</schema>
 			""";
 		// @formatter:on
@@ -348,6 +356,7 @@ class SchemaModificationProcessorTest {
 				            <comment>reference to root element</comment>
 				        </rootElement>
 				    </rootElements>
+					<extensionFunctions/>
 				</schema>
 				""";
 		//@formatter:on
@@ -388,6 +397,7 @@ class SchemaModificationProcessorTest {
 				            <comment>reference to root element</comment>
 				        </rootElement>
 				    </rootElements>
+					<extensionFunctions/>
 				</schema>
 			""";
 		// @formatter:on
@@ -419,6 +429,7 @@ class SchemaModificationProcessorTest {
 				            <comment>reference to root element</comment>
 				        </rootElement>
 				    </rootElements>
+					<extensionFunctions/>
 				</schema>
 				""";
 		//@formatter:on
@@ -457,6 +468,7 @@ class SchemaModificationProcessorTest {
 				            <comment>reference to root element</comment>
 				        </rootElement>
 				    </rootElements>
+					<extensionFunctions/>
 				</schema>
 			""";
 		// @formatter:on
@@ -484,6 +496,7 @@ class SchemaModificationProcessorTest {
 				            <comment>reference to root element</comment>
 				        </rootElement>
 				    </rootElements>
+					<extensionFunctions/>
 				</schema>
 				""";
 		//@formatter:on
@@ -530,6 +543,7 @@ class SchemaModificationProcessorTest {
 				            <comment>reference to root element</comment>
 				        </rootElement>
 				    </rootElements>
+					<extensionFunctions/>
 				</schema>
 			""";
 		// @formatter:on

@@ -36,6 +36,10 @@ public class XMLSchema implements IXMLSchema {
 	@XmlElement(type = XMLElementReference.class, name = "rootElement")
 	private List<IElementReference> rootElements;
 
+	@XmlElementWrapper(name = "extensionFunctions")
+	@XmlElement(type = ExtensionFunction.class, name = "function")
+	private List<IExtensionFunction> extensionFunctions;
+
 	@XmlTransient
 	private Map<UUID, ISchemaObject> objectMap;
 
@@ -46,6 +50,7 @@ public class XMLSchema implements IXMLSchema {
 	private XMLSchema() {
 		this.elementTypes = Lists.newArrayList();
 		this.rootElements = Lists.newArrayList();
+		this.extensionFunctions = Lists.newArrayList();
 	}
 
 	private XMLSchema(Builder builder) {
@@ -58,6 +63,9 @@ public class XMLSchema implements IXMLSchema {
 			.sorted((e1, e2) -> e1.getID().compareTo(e2.getID()))
 			.toList();
 		this.rootElements = builder.rootElements.stream()
+			.sorted((e1, e2) -> e1.getID().compareTo(e2.getID()))
+			.toList();
+		this.extensionFunctions = builder.extensionFunctions.stream()
 			.sorted((e1, e2) -> e1.getID().compareTo(e2.getID()))
 			.toList();
 	}
@@ -113,6 +121,11 @@ public class XMLSchema implements IXMLSchema {
 	@Override
 	public ImmutableCollection<IElementReference> getRootElements() {
 		return ImmutableList.copyOf(this.rootElements);
+	}
+
+	@Override
+	public ImmutableCollection<IExtensionFunction> getExtensionFunctions() {
+		return ImmutableList.copyOf(this.extensionFunctions);
 	}
 
 	@Override
@@ -338,6 +351,7 @@ public class XMLSchema implements IXMLSchema {
 		private int version;
 		private List<IElementType> elementTypes = new ArrayList<>();
 		private List<IElementReference> rootElements = new ArrayList<>();
+		private List<IExtensionFunction> extensionFunctions = new ArrayList<>();
 
 		/**
 		 * Creates a new builder.
@@ -383,6 +397,16 @@ public class XMLSchema implements IXMLSchema {
 		}
 
 		/**
+		 * @param function
+		 * @return builder
+		 */
+		public Builder addExtensionFunction(IExtensionFunction function) {
+			this.extensionFunctions.add(function);
+			return this;
+
+		}
+
+		/**
 		 * Builder method of the builder.
 		 *
 		 * @return built class
@@ -390,6 +414,7 @@ public class XMLSchema implements IXMLSchema {
 		public XMLSchema build() {
 			return new XMLSchema(this);
 		}
+
 	}
 
 	@Override

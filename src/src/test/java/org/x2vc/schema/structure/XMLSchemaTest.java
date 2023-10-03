@@ -19,11 +19,13 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.x2vc.schema.structure.IElementType.ContentType;
 import org.x2vc.schema.structure.IElementType.ElementArrangement;
+import org.x2vc.schema.structure.IFunctionSignatureType.SequenceItemType;
 import org.x2vc.schema.structure.XMLSchema.Builder;
 import org.x2vc.stylesheet.IStylesheetInformation;
 import org.x2vc.utilities.URIUtilities;
 import org.x2vc.utilities.URIUtilities.ObjectType;
 
+import net.sf.saxon.s9api.OccurrenceIndicator;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
 @ExtendWith(MockitoExtension.class)
@@ -216,6 +218,14 @@ class XMLSchemaTest {
 		XMLElementReference.builder("a", elemRootA).withComment("reference to root element A").addTo(schemaBuilder);
 		XMLElementReference.builder("b", elemRootB).withComment("reference to root element B").addTo(schemaBuilder);
 		XMLElementReference.builder("c", elemRootC).withComment("reference to root element C").addTo(schemaBuilder);
+
+		final ExtensionFunction functionX = ExtensionFunction.builder("myFuncX")
+			.withNamespaceURI("http://foo.bar")
+			.withResultType(new FunctionSignatureType(SequenceItemType.STRING, OccurrenceIndicator.ONE))
+			.withArgumentType(new FunctionSignatureType(SequenceItemType.INT, OccurrenceIndicator.ZERO_OR_MORE))
+			.withArgumentType(new FunctionSignatureType(SequenceItemType.STRING, OccurrenceIndicator.ONE_OR_MORE))
+			.build();
+		schemaBuilder.addExtensionFunction(functionX);
 
 		final XMLSchema schema = schemaBuilder.build();
 
