@@ -15,9 +15,9 @@ import org.jsoup.select.Elements;
 import org.x2vc.report.IVulnerabilityCandidate;
 import org.x2vc.report.VulnerabilityCandidate;
 import org.x2vc.schema.ISchemaManager;
-import org.x2vc.schema.structure.IXMLElementType;
+import org.x2vc.schema.structure.IElementType;
 import org.x2vc.schema.structure.IXMLSchema;
-import org.x2vc.schema.structure.IXMLSchemaObject;
+import org.x2vc.schema.structure.ISchemaObject;
 import org.x2vc.schema.structure.XMLDataType;
 import org.x2vc.xml.document.IDocumentModifier;
 import org.x2vc.xml.document.IXMLDocumentContainer;
@@ -83,8 +83,8 @@ public class DisabledOutputEscapingCheckRule extends AbstractTextRule {
 				final UUID schemaElementID = valueDescriptor.getSchemaElementID();
 				// The disable-output-escaping vulnerability only applies to string data output
 				// elements
-				final IXMLSchemaObject schemaObject = schema.getObjectByID(schemaElementID);
-				if ((schemaObject instanceof final IXMLElementType schemaElement)
+				final ISchemaObject schemaObject = schema.getObjectByID(schemaElementID);
+				if ((schemaObject instanceof final IElementType schemaElement)
 						&& (schemaElement.hasDataContent() && schemaElement.getDataType() == XMLDataType.STRING)) {
 					// try to replace the entire element with script element
 					logger.debug("attempt to replace \"{}\" with \"&lt;script&gt;...\" for schema element {}",

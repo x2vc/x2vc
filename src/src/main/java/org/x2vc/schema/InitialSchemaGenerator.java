@@ -9,7 +9,7 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.x2vc.schema.structure.*;
-import org.x2vc.schema.structure.IXMLElementType.ContentType;
+import org.x2vc.schema.structure.IElementType.ContentType;
 import org.x2vc.stylesheet.IStylesheetInformation;
 import org.x2vc.stylesheet.structure.IXSLTTemplateNode;
 
@@ -43,7 +43,7 @@ public class InitialSchemaGenerator implements IInitialSchemaGenerator {
 			logger.warn("Unable to identify any root elements for stylesheet {}", stylesheet.getURI());
 		} else {
 			rootConstructionNode.children.values().forEach(rootChild -> {
-				final IXMLElementType elementType = addElementToBuilder(rootChild, schemaBuilder);
+				final IElementType elementType = addElementToBuilder(rootChild, schemaBuilder);
 				XMLElementReference.builder(rootChild.name, elementType)
 					.withComment(String.format("root element %s", rootChild.name))
 					.addTo(schemaBuilder);
@@ -57,7 +57,7 @@ public class InitialSchemaGenerator implements IInitialSchemaGenerator {
 	 * @param schemaBuilder
 	 * @return
 	 */
-	private IXMLElementType addElementToBuilder(SchemaConstructionNode constructionNode,
+	private IElementType addElementToBuilder(SchemaConstructionNode constructionNode,
 			XMLSchema.Builder schemaBuilder) {
 		final XMLElementType.Builder elementBuilder = XMLElementType.builder()
 			.withComment(String.format("element %s", constructionNode.name))
@@ -73,7 +73,7 @@ public class InitialSchemaGenerator implements IInitialSchemaGenerator {
 
 		// add sub-elements
 		constructionNode.children.values().forEach(rootChild -> {
-			final IXMLElementType elementType = addElementToBuilder(rootChild, schemaBuilder);
+			final IElementType elementType = addElementToBuilder(rootChild, schemaBuilder);
 			XMLElementReference.builder(rootChild.name, elementType)
 				.withComment(String.format("element %s", rootChild.name))
 				.addTo(elementBuilder);

@@ -10,16 +10,16 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * Standard 1mplementation of {@link IXMLElementReference}.
+ * Standard 1mplementation of {@link IElementReference}.
  */
-public final class XMLElementReference extends AbstractSchemaObject implements IXMLElementReference {
+public final class XMLElementReference extends AbstractSchemaObject implements IElementReference {
 
 	private static final Logger logger = LogManager.getLogger();
 
 	@XmlAttribute
 	private final String name;
 
-	private transient IXMLElementType element;
+	private transient IElementType element;
 
 	@XmlAttribute
 	private final UUID elementID;
@@ -54,7 +54,7 @@ public final class XMLElementReference extends AbstractSchemaObject implements I
 	}
 
 	@Override
-	public IXMLElementType getElement() {
+	public IElementType getElement() {
 		if (this.element == null) {
 			throw logger.throwing(new IllegalStateException(
 					"Attempt to follow element reference that has not been completed after copy operation."));
@@ -67,7 +67,7 @@ public final class XMLElementReference extends AbstractSchemaObject implements I
 		return this.elementID;
 	}
 
-	void fixElementReference(IXMLElementType element) {
+	void fixElementReference(IElementType element) {
 		if (this.element != null) {
 			throw logger.throwing(new IllegalStateException(
 					"Attempt to fix element reference that has already been completed after copy operation."));
@@ -96,7 +96,7 @@ public final class XMLElementReference extends AbstractSchemaObject implements I
 	 * @param xMLElementReference to initialize the builder with
 	 * @return created builder
 	 */
-	public static Builder builderFrom(IXMLElementReference xMLElementReference) {
+	public static Builder builderFrom(IElementReference xMLElementReference) {
 		return new Builder(xMLElementReference);
 	}
 
@@ -107,7 +107,7 @@ public final class XMLElementReference extends AbstractSchemaObject implements I
 	 * @param element
 	 * @return the builder
 	 */
-	public static Builder builder(String name, IXMLElementType element) {
+	public static Builder builder(String name, IElementType element) {
 		return new Builder(name, element);
 	}
 
@@ -119,7 +119,7 @@ public final class XMLElementReference extends AbstractSchemaObject implements I
 	 * @param element
 	 * @return the builder
 	 */
-	public static Builder builder(UUID id, String name, IXMLElementType element) {
+	public static Builder builder(UUID id, String name, IElementType element) {
 		return new Builder(id, name, element);
 	}
 
@@ -130,7 +130,7 @@ public final class XMLElementReference extends AbstractSchemaObject implements I
 		private UUID id;
 		private String comment;
 		private String name;
-		private IXMLElementType element;
+		private IElementType element;
 		private UUID elementID;
 		private Integer minOccurrence = 0;
 		private Integer maxOccurrence = null;
@@ -141,7 +141,7 @@ public final class XMLElementReference extends AbstractSchemaObject implements I
 		 * @param name
 		 * @param element
 		 */
-		private Builder(String name, IXMLElementType element) {
+		private Builder(String name, IElementType element) {
 			this.id = UUID.randomUUID();
 			this.name = name;
 			this.element = element;
@@ -155,14 +155,14 @@ public final class XMLElementReference extends AbstractSchemaObject implements I
 		 * @param name
 		 * @param element
 		 */
-		private Builder(UUID id, String name, IXMLElementType element) {
+		private Builder(UUID id, String name, IElementType element) {
 			this.id = id;
 			this.name = name;
 			this.element = element;
 			this.elementID = element.getID();
 		}
 
-		private Builder(IXMLElementReference xMLElementReference) {
+		private Builder(IElementReference xMLElementReference) {
 			this.id = xMLElementReference.getID();
 			this.comment = xMLElementReference.getComment().orElse(null);
 			this.elementID = xMLElementReference.getElement().getID();

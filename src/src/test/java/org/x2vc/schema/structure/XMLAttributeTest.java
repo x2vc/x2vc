@@ -78,7 +78,7 @@ class XMLAttributeTest {
 		XMLDiscreteValue.builder().withStringValue("foobar").addTo(builder);
 		final XMLAttribute attrib = builder.build();
 		assertEquals(1, attrib.getDiscreteValues().size());
-		assertEquals("foobar", attrib.getDiscreteValues().toArray(new IXMLDiscreteValue[0])[0].asString());
+		assertEquals("foobar", attrib.getDiscreteValues().toArray(new IDiscreteValue[0])[0].asString());
 	}
 
 	@Test
@@ -93,10 +93,10 @@ class XMLAttributeTest {
 		assertTrue(copy.getMaxLength().isPresent());
 		assertEquals(42, copy.getMaxLength().get());
 		assertEquals(1, copy.getDiscreteValues().size());
-		assertEquals("foobar", copy.getDiscreteValues().toArray(new IXMLDiscreteValue[0])[0].asString());
+		assertEquals("foobar", copy.getDiscreteValues().toArray(new IDiscreteValue[0])[0].asString());
 
 		// discrete values need to be copies, not the same objects reused
-		assertNotSame(value, copy.getDiscreteValues().toArray(new IXMLDiscreteValue[0])[0]);
+		assertNotSame(value, copy.getDiscreteValues().toArray(new IDiscreteValue[0])[0]);
 	}
 
 	@Test

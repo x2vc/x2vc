@@ -3,7 +3,7 @@ package org.x2vc.schema.evolution;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.x2vc.schema.structure.IXMLElementType.ContentType;
+import org.x2vc.schema.structure.IElementType.ContentType;
 
 import com.google.common.collect.ImmutableSet;
 

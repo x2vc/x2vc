@@ -5,7 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
-import org.x2vc.schema.structure.IXMLElementType.ContentType;
+import org.x2vc.schema.structure.IElementType.ContentType;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 

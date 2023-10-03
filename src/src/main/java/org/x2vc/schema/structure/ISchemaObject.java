@@ -6,7 +6,7 @@ import java.util.UUID;
 /**
  * Common interface for all schema objects.
  */
-public interface IXMLSchemaObject {
+public interface ISchemaObject {
 
 	/**
 	 * @return the schema element ID

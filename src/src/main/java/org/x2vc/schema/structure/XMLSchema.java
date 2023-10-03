@@ -8,7 +8,7 @@ import javax.xml.bind.annotation.*;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.x2vc.schema.structure.IXMLElementType.ContentType;
+import org.x2vc.schema.structure.IElementType.ContentType;
 
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
@@ -30,14 +30,14 @@ public class XMLSchema implements IXMLSchema {
 
 	@XmlElementWrapper(name = "elementTypes")
 	@XmlElement(type = XMLElementType.class, name = "elementType")
-	private List<IXMLElementType> elementTypes;
+	private List<IElementType> elementTypes;
 
 	@XmlElementWrapper(name = "rootElements")
 	@XmlElement(type = XMLElementReference.class, name = "rootElement")
-	private List<IXMLElementReference> rootElements;
+	private List<IElementReference> rootElements;
 
 	@XmlTransient
-	private Map<UUID, IXMLSchemaObject> objectMap;
+	private Map<UUID, ISchemaObject> objectMap;
 
 	/**
 	 * Parameterless constructor for deserialization only.
@@ -101,17 +101,17 @@ public class XMLSchema implements IXMLSchema {
 	}
 
 	@Override
-	public Collection<IXMLElementType> getElementTypes() {
+	public Collection<IElementType> getElementTypes() {
 		return this.elementTypes;
 	}
 
 	@Override
-	public Collection<IXMLElementReference> getRootElements() {
+	public Collection<IElementReference> getRootElements() {
 		return this.rootElements;
 	}
 
 	@Override
-	public IXMLSchemaObject getObjectByID(UUID id) throws IllegalArgumentException {
+	public ISchemaObject getObjectByID(UUID id) throws IllegalArgumentException {
 		if (this.objectMap == null) {
 			this.objectMap = buildObjectMap();
 		}
@@ -124,9 +124,9 @@ public class XMLSchema implements IXMLSchema {
 
 	@SuppressWarnings("unchecked")
 	@Override
-	public <T extends IXMLSchemaObject> T getObjectByID(UUID id, Class<T> requestedType)
+	public <T extends ISchemaObject> T getObjectByID(UUID id, Class<T> requestedType)
 			throws IllegalArgumentException {
-		final IXMLSchemaObject schemaObject = getObjectByID(id);
+		final ISchemaObject schemaObject = getObjectByID(id);
 		if (requestedType.isInstance(schemaObject)) {
 			return (T) schemaObject;
 		} else {
@@ -158,15 +158,15 @@ public class XMLSchema implements IXMLSchema {
 	 * Ensures that all element references are recreated after deserialization
 	 */
 	private void fixElementReferences() {
-		final HashSet<IXMLElementReference> references = Sets.newHashSet();
+		final HashSet<IElementReference> references = Sets.newHashSet();
 		references.addAll(this.rootElements);
 		references.addAll(this.elementTypes.stream()
 			.filter(element -> ((element.getContentType() == ContentType.ELEMENT)
 					|| (element.getContentType() == ContentType.MIXED)))
-			.<IXMLElementReference>mapMulti((element, consumer) -> element.getElements().forEach(consumer)).toList());
+			.<IElementReference>mapMulti((element, consumer) -> element.getElements().forEach(consumer)).toList());
 		references.forEach(ref -> {
 			if (ref instanceof final XMLElementReference elRef) {
-				elRef.fixElementReference((IXMLElementType) getObjectByID(elRef.getElementID()));
+				elRef.fixElementReference((IElementType) getObjectByID(elRef.getElementID()));
 			}
 		});
 	}
@@ -174,13 +174,13 @@ public class XMLSchema implements IXMLSchema {
 	/**
 	 * @return
 	 */
-	private Map<UUID, IXMLSchemaObject> buildObjectMap() {
+	private Map<UUID, ISchemaObject> buildObjectMap() {
 		logger.traceEntry();
-		final HashMap<UUID, IXMLSchemaObject> map = new HashMap<>();
-		for (final IXMLElementType element : this.elementTypes) {
+		final HashMap<UUID, ISchemaObject> map = new HashMap<>();
+		for (final IElementType element : this.elementTypes) {
 			addToMap(element, map);
 		}
-		for (final IXMLElementReference element : this.rootElements) {
+		for (final IElementReference element : this.rootElements) {
 			addToMap(element, map);
 		}
 		return logger.traceExit(Map.copyOf(map));
@@ -190,9 +190,9 @@ public class XMLSchema implements IXMLSchema {
 	 * @param attribute
 	 * @param map
 	 */
-	private void addToMap(IXMLAttribute attribute, Map<UUID, IXMLSchemaObject> map) {
+	private void addToMap(IAttribute attribute, Map<UUID, ISchemaObject> map) {
 		map.put(attribute.getID(), attribute);
-		for (final IXMLDiscreteValue value : attribute.getDiscreteValues()) {
+		for (final IDiscreteValue value : attribute.getDiscreteValues()) {
 			addToMap(value, map);
 		}
 	}
@@ -201,7 +201,7 @@ public class XMLSchema implements IXMLSchema {
 	 * @param value
 	 * @param map
 	 */
-	private void addToMap(IXMLDiscreteValue value, Map<UUID, IXMLSchemaObject> map) {
+	private void addToMap(IDiscreteValue value, Map<UUID, ISchemaObject> map) {
 		map.put(value.getID(), value);
 	}
 
@@ -209,7 +209,7 @@ public class XMLSchema implements IXMLSchema {
 	 * @param reference
 	 * @param map
 	 */
-	private void addToMap(IXMLElementReference reference, Map<UUID, IXMLSchemaObject> map) {
+	private void addToMap(IElementReference reference, Map<UUID, ISchemaObject> map) {
 		map.put(reference.getID(), reference);
 	}
 
@@ -217,18 +217,18 @@ public class XMLSchema implements IXMLSchema {
 	 * @param element
 	 * @param map
 	 */
-	private void addToMap(IXMLElementType element, Map<UUID, IXMLSchemaObject> map) {
+	private void addToMap(IElementType element, Map<UUID, ISchemaObject> map) {
 		map.put(element.getID(), element);
-		for (final IXMLAttribute attribute : element.getAttributes()) {
+		for (final IAttribute attribute : element.getAttributes()) {
 			addToMap(attribute, map);
 		}
 		if (element.hasDataContent()) {
-			for (final IXMLDiscreteValue value : element.getDiscreteValues()) {
+			for (final IDiscreteValue value : element.getDiscreteValues()) {
 				addToMap(value, map);
 			}
 		}
 		if (element.hasElementContent() || element.hasMixedContent()) {
-			for (final IXMLElementReference reference : element.getElements()) {
+			for (final IElementReference reference : element.getElements()) {
 				addToMap(reference, map);
 			}
 		}
@@ -258,7 +258,7 @@ public class XMLSchema implements IXMLSchema {
 	 * @param elemRef
 	 * @param parentPath
 	 */
-	private void addToPathMap(Multimap<UUID, String> map, IXMLElementReference elemRef, String parentPath) {
+	private void addToPathMap(Multimap<UUID, String> map, IElementReference elemRef, String parentPath) {
 		final String path = String.format("%s%s", parentPath, elemRef.getName());
 		map.put(elemRef.getID(), path);
 		addToPathMap(map, elemRef.getElement(), path);
@@ -269,7 +269,7 @@ public class XMLSchema implements IXMLSchema {
 	 * @param elemt
 	 * @param parentPath
 	 */
-	private void addToPathMap(Multimap<UUID, String> map, IXMLElementType elem, String parentPath) {
+	private void addToPathMap(Multimap<UUID, String> map, IElementType elem, String parentPath) {
 		map.put(elem.getID(), parentPath); // elements can only be addressed by their reference paths
 		final String path = String.format("%s/", parentPath);
 		elem.getAttributes().forEach(attrib -> addToPathMap(map, attrib, path));
@@ -283,19 +283,19 @@ public class XMLSchema implements IXMLSchema {
 	 * @param attrib
 	 * @param parentPath
 	 */
-	private void addToPathMap(Multimap<UUID, String> map, IXMLAttribute attrib, String parentPath) {
+	private void addToPathMap(Multimap<UUID, String> map, IAttribute attrib, String parentPath) {
 		map.put(attrib.getID(), String.format("%s@%s", parentPath, attrib.getName()));
 	}
 
 	@Override
-	public Set<IXMLElementReference> getReferencesUsing(IXMLElementType elementType) {
+	public Set<IElementReference> getReferencesUsing(IElementType elementType) {
 		logger.traceEntry();
-		final Set<IXMLElementReference> result = new HashSet<>();
+		final Set<IElementReference> result = new HashSet<>();
 		result.addAll(this.rootElements.stream()
 			.filter(ref -> ref.getElementID().equals(elementType.getID()))
 			.toList());
 		result.addAll(this.elementTypes.stream()
-			.filter(IXMLElementType::hasElementContent)
+			.filter(IElementType::hasElementContent)
 			.flatMap(elem -> elem.getElements().stream())
 			.filter(ref -> ref.getElementID().equals(elementType.getID()))
 			.toList());
@@ -331,8 +331,8 @@ public class XMLSchema implements IXMLSchema {
 		private URI stylesheetURI;
 		private URI schemaURI;
 		private int version;
-		private List<IXMLElementType> elementTypes = new ArrayList<>();
-		private List<IXMLElementReference> rootElements = new ArrayList<>();
+		private List<IElementType> elementTypes = new ArrayList<>();
+		private List<IElementReference> rootElements = new ArrayList<>();
 
 		/**
 		 * Creates a new builder.
@@ -361,7 +361,7 @@ public class XMLSchema implements IXMLSchema {
 		 * @param elementType field to set
 		 * @return builder
 		 */
-		public Builder addElementType(IXMLElementType elementType) {
+		public Builder addElementType(IElementType elementType) {
 			this.elementTypes.add(elementType);
 			return this;
 		}
@@ -372,7 +372,7 @@ public class XMLSchema implements IXMLSchema {
 		 * @param rootElement field to set
 		 * @return builder
 		 */
-		public Builder addRootElement(IXMLElementReference rootElement) {
+		public Builder addRootElement(IElementReference rootElement) {
 			this.rootElements.add(rootElement);
 			return this;
 		}

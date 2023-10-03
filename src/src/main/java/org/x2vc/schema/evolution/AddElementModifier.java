@@ -8,7 +8,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.x2vc.schema.structure.IXMLElementType.ContentType;
+import org.x2vc.schema.structure.IElementType.ContentType;
 
 import com.google.common.collect.ImmutableSet;
 

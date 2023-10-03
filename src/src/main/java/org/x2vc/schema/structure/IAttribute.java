@@ -3,7 +3,7 @@ package org.x2vc.schema.structure;
 /**
  * Attribute of an XML Element.
  */
-public interface IXMLAttribute extends IXMLDataObject {
+public interface IAttribute extends IDataObject {
 
 	/**
 	 * @return the name of the attribute

@@ -2,7 +2,7 @@ package org.x2vc.xml.value;
 
 import java.util.UUID;
 
-import org.x2vc.schema.structure.IXMLSchemaObject;
+import org.x2vc.schema.structure.ISchemaObject;
 import org.x2vc.xml.request.IGenerationRule;
 
 /**
@@ -11,7 +11,7 @@ import org.x2vc.xml.request.IGenerationRule;
 public interface IValueDescriptor {
 
 	/**
-	 * @return the ID of the schema element {@link IXMLSchemaObject} that describes
+	 * @return the ID of the schema element {@link ISchemaObject} that describes
 	 *         the value
 	 */
 	UUID getSchemaElementID();

@@ -4,10 +4,10 @@ import java.util.Collection;
 import java.util.Optional;
 
 /**
- * A subset of {@link IXMLSchemaObject} that can contain typed data, like an attribute or an element with content type
+ * A subset of {@link ISchemaObject} that can contain typed data, like an attribute or an element with content type
  * DATA.
  */
-public interface IXMLDataObject extends IXMLSchemaObject {
+public interface IDataObject extends ISchemaObject {
 
 	/**
 	 * @return the data type of the data
@@ -33,7 +33,7 @@ public interface IXMLDataObject extends IXMLSchemaObject {
 	 * @return the discrete values specified for the data. See {@link #isFixedValueset()} for additional information on
 	 *         how to interpret this value.
 	 */
-	Collection<IXMLDiscreteValue> getDiscreteValues();
+	Collection<IDiscreteValue> getDiscreteValues();
 
 	/**
 	 * Determines whether a set of discrete values specified for the data represent a fixed value set (i.e. a closed

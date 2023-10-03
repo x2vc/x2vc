@@ -7,7 +7,7 @@ import java.util.UUID;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
-import org.x2vc.schema.structure.IXMLAttribute;
+import org.x2vc.schema.structure.IAttribute;
 
 /**
  * Standard implementation of {@link ISetAttributeRule}.
@@ -51,7 +51,7 @@ public class SetAttributeRule extends AbstractGenerationRule implements ISetAttr
 	 * @param attribute
 	 * @param requestedValue
 	 */
-	public SetAttributeRule(UUID ruleID, IXMLAttribute attribute, IRequestedValue requestedValue) {
+	public SetAttributeRule(UUID ruleID, IAttribute attribute, IRequestedValue requestedValue) {
 		super(ruleID);
 		this.attributeID = attribute.getID();
 		this.requestedValue = requestedValue;
@@ -63,7 +63,7 @@ public class SetAttributeRule extends AbstractGenerationRule implements ISetAttr
 	 * @param attribute
 	 * @param requestedValue
 	 */
-	public SetAttributeRule(IXMLAttribute attribute, IRequestedValue requestedValue) {
+	public SetAttributeRule(IAttribute attribute, IRequestedValue requestedValue) {
 		super();
 		this.attributeID = attribute.getID();
 		this.requestedValue = requestedValue;
@@ -96,7 +96,7 @@ public class SetAttributeRule extends AbstractGenerationRule implements ISetAttr
 	 * @param ruleID
 	 * @param attribute
 	 */
-	public SetAttributeRule(UUID ruleID, IXMLAttribute attribute) {
+	public SetAttributeRule(UUID ruleID, IAttribute attribute) {
 		super(ruleID);
 		this.attributeID = attribute.getID();
 	}
@@ -106,7 +106,7 @@ public class SetAttributeRule extends AbstractGenerationRule implements ISetAttr
 	 *
 	 * @param attribute
 	 */
-	public SetAttributeRule(IXMLAttribute attribute) {
+	public SetAttributeRule(IAttribute attribute) {
 		super();
 		this.attributeID = attribute.getID();
 	}

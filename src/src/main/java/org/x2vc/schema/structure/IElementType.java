@@ -6,14 +6,14 @@ import java.util.Optional;
 
 /**
  * A XML schema element type, representing an element in the XML document. This object specifies everything but the
- * element name, which is specified by the {@link IXMLElementReference}.
+ * element name, which is specified by the {@link IElementReference}.
  */
-public interface IXMLElementType extends IXMLDataObject {
+public interface IElementType extends IDataObject {
 
 	/**
 	 * @return the attributes that can be set for the element. May be empty!
 	 */
-	Collection<IXMLAttribute> getAttributes();
+	Collection<IAttribute> getAttributes();
 
 	/**
 	 * This enum describes what kind of contents can be found inside this element.
@@ -61,7 +61,7 @@ public interface IXMLElementType extends IXMLDataObject {
 	 * @return the elements that can be encountered inside this element. Only set if the content type is
 	 *         {@link ContentType#ELEMENT} or {@link ContentType#MIXED}.
 	 */
-	List<IXMLElementReference> getElements();
+	List<IElementReference> getElements();
 
 	/**
 	 * The mode in which the sub-elements of an element can be arranged.

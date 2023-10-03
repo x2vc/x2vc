@@ -9,11 +9,11 @@ import java.util.concurrent.ThreadLocalRandom;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.x2vc.schema.ISchemaManager;
-import org.x2vc.schema.structure.IXMLAttribute;
-import org.x2vc.schema.structure.IXMLElementReference;
-import org.x2vc.schema.structure.IXMLElementType;
-import org.x2vc.schema.structure.IXMLElementType.ContentType;
-import org.x2vc.schema.structure.IXMLElementType.ElementArrangement;
+import org.x2vc.schema.structure.IAttribute;
+import org.x2vc.schema.structure.IElementReference;
+import org.x2vc.schema.structure.IElementType;
+import org.x2vc.schema.structure.IElementType.ContentType;
+import org.x2vc.schema.structure.IElementType.ElementArrangement;
 import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.xml.document.IDocumentModifier;
 import org.x2vc.xml.document.IDocumentValueModifier;
@@ -67,7 +67,7 @@ public class RequestGenerator implements IRequestGenerator {
 	 */
 	private IAddElementRule generateRootElementRule(IXMLSchema schema) {
 		logger.traceEntry();
-		final Collection<IXMLElementReference> rootElements = schema.getRootElements();
+		final Collection<IElementReference> rootElements = schema.getRootElements();
 		if (rootElements.isEmpty()) {
 			throw new IllegalStateException("Unable to generate document request for schema without root references");
 		}
@@ -83,11 +83,11 @@ public class RequestGenerator implements IRequestGenerator {
 	 * @param elementReference the element reference
 	 * @return the {@link IAddElementRule} generated
 	 */
-	private IAddElementRule generateSingleRuleForElementReference(IXMLElementReference elementReference) {
+	private IAddElementRule generateSingleRuleForElementReference(IElementReference elementReference) {
 		logger.traceEntry("element reference {} for element {}", elementReference.getID(),
 				elementReference.getElementID());
 		final Builder builder = AddElementRule.builder(elementReference);
-		final IXMLElementType element = elementReference.getElement();
+		final IElementType element = elementReference.getElement();
 
 		// add attributes if required
 		element.getAttributes().forEach(attrib -> {
@@ -115,7 +115,7 @@ public class RequestGenerator implements IRequestGenerator {
 	 * @param attrib the attribute
 	 * @return the {@link ISetAttributeRule}, or an empty object
 	 */
-	private Optional<ISetAttributeRule> generateAttributeRule(IXMLAttribute attrib) {
+	private Optional<ISetAttributeRule> generateAttributeRule(IAttribute attrib) {
 		logger.traceEntry("attribute {}", attrib.getID());
 		if (attrib.isOptional()) {
 			if (ThreadLocalRandom.current().nextInt(2) > 0) {
@@ -139,7 +139,7 @@ public class RequestGenerator implements IRequestGenerator {
 	 * @param element the element
 	 * @return a list of {@link IContentGenerationRule} to generate the conten
 	 */
-	private List<IContentGenerationRule> generateElementContent(IXMLElementType element) {
+	private List<IContentGenerationRule> generateElementContent(IElementType element) {
 		logger.traceEntry("element {}", element.getID());
 		List<IContentGenerationRule> result = Lists.newArrayList();
 
@@ -153,7 +153,7 @@ public class RequestGenerator implements IRequestGenerator {
 			// first generate any number of element
 			// references within the multiplicity range
 
-			for (final IXMLElementReference elementReference : element.getElements()) {
+			for (final IElementReference elementReference : element.getElements()) {
 				// determine number of element instances
 				final int elementCount = ThreadLocalRandom.current().nextInt(elementReference.getMinOccurrence(),
 						elementReference.getMaxOccurrence().orElse(this.maxElements) + 1);
@@ -191,7 +191,7 @@ public class RequestGenerator implements IRequestGenerator {
 	 * @param originalRules the {@link IContentGenerationRule} list
 	 * @return the {@link IContentGenerationRule} list with additional {@link IAddRawContentRule} instances mixed in.
 	 */
-	private List<IContentGenerationRule> addRandomRawRules(IXMLElementType element,
+	private List<IContentGenerationRule> addRandomRawRules(IElementType element,
 			List<IContentGenerationRule> originalRules) {
 		logger.traceEntry();
 		final List<IContentGenerationRule> newRules = Lists.newArrayList();
@@ -221,13 +221,13 @@ public class RequestGenerator implements IRequestGenerator {
 	 * @param references the list of possible references
 	 * @return the reference selected
 	 */
-	private IXMLElementReference selectOneReferenceOf(Collection<IXMLElementReference> references) {
+	private IElementReference selectOneReferenceOf(Collection<IElementReference> references) {
 		logger.traceEntry();
 		// shortcut for single-element reference lists
 		if (references.size() == 1) {
 			return logger.traceExit(references.iterator().next());
 		}
-		final IXMLElementReference[] referenceArray = references.toArray(new IXMLElementReference[0]);
+		final IElementReference[] referenceArray = references.toArray(new IElementReference[0]);
 		final int index = ThreadLocalRandom.current().nextInt(0, referenceArray.length);
 		logger.debug("aelected choice element reference {} out of {} options", index + 1, referenceArray.length);
 		return logger.traceExit(referenceArray[index]);

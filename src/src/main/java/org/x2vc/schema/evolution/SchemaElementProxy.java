@@ -4,8 +4,8 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.x2vc.schema.structure.IXMLElementReference;
-import org.x2vc.schema.structure.IXMLElementType;
+import org.x2vc.schema.structure.IElementReference;
+import org.x2vc.schema.structure.IElementType;
 
 /**
  * Standard implementation of {@link ISchemaElementProxy}.
@@ -13,7 +13,7 @@ import org.x2vc.schema.structure.IXMLElementType;
 public final class SchemaElementProxy implements ISchemaElementProxy {
 
 	private final ProxyType proxyType;
-	private final IXMLElementType existingElementType;
+	private final IElementType existingElementType;
 	private final IAddElementModifier modifier;
 
 	/**
@@ -21,7 +21,7 @@ public final class SchemaElementProxy implements ISchemaElementProxy {
 	 *
 	 * @param existingElementType
 	 */
-	public SchemaElementProxy(IXMLElementType existingElementType) {
+	public SchemaElementProxy(IElementType existingElementType) {
 		this.proxyType = ProxyType.ELEMENT;
 		this.existingElementType = existingElementType;
 		this.modifier = null;
@@ -80,7 +80,7 @@ public final class SchemaElementProxy implements ISchemaElementProxy {
 	}
 
 	@Override
-	public Optional<IXMLElementType> getElementType() {
+	public Optional<IElementType> getElementType() {
 		return Optional.ofNullable(this.existingElementType);
 	}
 
@@ -93,7 +93,7 @@ public final class SchemaElementProxy implements ISchemaElementProxy {
 	public Optional<ISchemaElementProxy> getSubElement(String name) {
 		switch (this.proxyType) {
 		case ELEMENT:
-			final Optional<IXMLElementReference> oElement = this.existingElementType.getElements().stream()
+			final Optional<IElementReference> oElement = this.existingElementType.getElements().stream()
 				.filter(elem -> elem.getName().equals(name))
 				.findAny();
 			if (oElement.isPresent()) {

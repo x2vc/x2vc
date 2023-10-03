@@ -332,11 +332,11 @@ public abstract class AbstractRule implements IAnalyzerRule {
 			Consumer<IDocumentModifier> collector) {
 		// check whether the requested value is valid and the input field is
 		logger.traceEntry();
-		final IXMLSchemaObject schemaObject = schema.getObjectByID(valueDescriptor.getSchemaElementID());
-		if (schemaObject instanceof final IXMLAttribute attribute) {
+		final ISchemaObject schemaObject = schema.getObjectByID(valueDescriptor.getSchemaElementID());
+		if (schemaObject instanceof final IAttribute attribute) {
 			requestAttributeModification(attribute, valueDescriptor, originalValue, replacementValue,
 					payload, collector);
-		} else if (schemaObject instanceof final IXMLElementType element) {
+		} else if (schemaObject instanceof final IElementType element) {
 			requestElementModification(element, valueDescriptor, originalValue, replacementValue,
 					payload, collector);
 		} else {
@@ -355,7 +355,7 @@ public abstract class AbstractRule implements IAnalyzerRule {
 	 * @param payload
 	 * @param collector
 	 */
-	protected void requestAttributeModification(final IXMLAttribute attribute, IValueDescriptor valueDescriptor,
+	protected void requestAttributeModification(final IAttribute attribute, IValueDescriptor valueDescriptor,
 			String originalValue, String replacementValue, IModifierPayload payload,
 			Consumer<IDocumentModifier> collector) {
 		logger.traceEntry();
@@ -392,7 +392,7 @@ public abstract class AbstractRule implements IAnalyzerRule {
 	 * @param payload
 	 * @param collector
 	 */
-	protected void requestElementModification(final IXMLElementType element, IValueDescriptor valueDescriptor,
+	protected void requestElementModification(final IElementType element, IValueDescriptor valueDescriptor,
 			String originalValue, String replacementValue, IModifierPayload payload,
 			Consumer<IDocumentModifier> collector) {
 		logger.traceEntry();
@@ -426,7 +426,7 @@ public abstract class AbstractRule implements IAnalyzerRule {
 	 * @param payload
 	 * @param collector
 	 */
-	protected void requestDataElementModification(final IXMLElementType element, IValueDescriptor valueDescriptor,
+	protected void requestDataElementModification(final IElementType element, IValueDescriptor valueDescriptor,
 			String originalValue, String replacementValue, IModifierPayload payload,
 			Consumer<IDocumentModifier> collector) {
 		logger.traceEntry();

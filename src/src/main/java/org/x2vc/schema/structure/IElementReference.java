@@ -4,9 +4,9 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * A reference to an {@link IXMLElementType}.
+ * A reference to an {@link IElementType}.
  */
-public interface IXMLElementReference extends IXMLSchemaObject {
+public interface IElementReference extends ISchemaObject {
 
 	/**
 	 * @return the name of the element
@@ -21,7 +21,7 @@ public interface IXMLElementReference extends IXMLSchemaObject {
 	/**
 	 * @return the referred element
 	 */
-	IXMLElementType getElement();
+	IElementType getElement();
 
 	/**
 	 * @return the minimum number of times the element should occur at the referred

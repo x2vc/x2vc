@@ -48,12 +48,12 @@ class ValueGeneratorTest {
 	// attribute in schema
 	private UUID attributeID;
 	@Mock
-	private IXMLAttribute attribute;
+	private IAttribute attribute;
 
 	// element in schema
 	private UUID elementID;
 	@Mock
-	private IXMLElementType element;
+	private IElementType element;
 
 	// request
 	@Mock
@@ -153,7 +153,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Prepares the {@link IXMLAttribute} mockup as string for use without discrete values
+	 * Prepares the {@link IAttribute} mockup as string for use without discrete values
 	 *
 	 * @param maxLength
 	 */
@@ -167,7 +167,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Prepares the {@link IXMLAttribute} mockup as string for use with discrete values
+	 * Prepares the {@link IAttribute} mockup as string for use with discrete values
 	 */
 	void prepareAttributeForString(@Nullable Integer maxLength, boolean fixedValueset, String... discreteValues) {
 		final List<XMLDiscreteValue> valueList = Arrays.stream(discreteValues)
@@ -181,7 +181,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Prepares the {@link IXMLAttribute} mockup as boolean
+	 * Prepares the {@link IAttribute} mockup as boolean
 	 */
 	void prepareAttributeForBoolean() {
 		lenient().when(this.attribute.getDataType()).thenReturn(XMLDataType.BOOLEAN);
@@ -193,7 +193,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Prepares the {@link IXMLAttribute} mockup as integer for use without discrete values
+	 * Prepares the {@link IAttribute} mockup as integer for use without discrete values
 	 */
 	void prepareAttributeForInteger(@Nullable Integer minValue, @Nullable Integer maxValue) {
 		lenient().when(this.attribute.getDataType()).thenReturn(XMLDataType.INTEGER);
@@ -205,7 +205,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Prepares the {@link IXMLAttribute} mockup as integer for use with discrete values
+	 * Prepares the {@link IAttribute} mockup as integer for use with discrete values
 	 */
 	void prepareAttributeForInteger(boolean fixedValueset, Integer... discreteValues) {
 		final List<XMLDiscreteValue> valueList = Arrays.stream(discreteValues)
@@ -678,7 +678,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Prepares the {@link IXMLElementType} mockup as string for use without discrete values
+	 * Prepares the {@link IElementType} mockup as string for use without discrete values
 	 *
 	 * @param maxLength
 	 */
@@ -692,7 +692,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Prepares the {@link IXMLElementType} mockup as string for use with discrete values
+	 * Prepares the {@link IElementType} mockup as string for use with discrete values
 	 */
 	void prepareElementForString(@Nullable Integer maxLength, boolean fixedValueset, String... discreteValues) {
 		final List<XMLDiscreteValue> valueList = Arrays.stream(discreteValues)
@@ -706,7 +706,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Prepares the {@link IXMLElementType} mockup as boolean
+	 * Prepares the {@link IElementType} mockup as boolean
 	 */
 	void prepareElementForBoolean() {
 		lenient().when(this.element.getDataType()).thenReturn(XMLDataType.BOOLEAN);
@@ -718,7 +718,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Prepares the {@link IXMLElementType} mockup as integer for use without discrete values
+	 * Prepares the {@link IElementType} mockup as integer for use without discrete values
 	 */
 	void prepareElementForInteger(@Nullable Integer minValue, @Nullable Integer maxValue) {
 		lenient().when(this.element.getDataType()).thenReturn(XMLDataType.INTEGER);
@@ -730,7 +730,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Prepares the {@link IXMLElementType} mockup as integer for use with discrete values
+	 * Prepares the {@link IElementType} mockup as integer for use with discrete values
 	 */
 	void prepareElementForInteger(boolean fixedValueset, Integer... discreteValues) {
 		final List<XMLDiscreteValue> valueList = Arrays.stream(discreteValues)

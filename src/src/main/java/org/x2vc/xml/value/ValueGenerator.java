@@ -82,7 +82,7 @@ public class ValueGenerator implements IValueGenerator {
 	public String generateValue(ISetAttributeRule rule) {
 		logger.traceEntry("for attribute {}", rule.getAttributeID());
 		loadSchema();
-		final IXMLAttribute attribute = this.schema.getObjectByID(rule.getAttributeID(), IXMLAttribute.class);
+		final IAttribute attribute = this.schema.getObjectByID(rule.getAttributeID(), IAttribute.class);
 		final Optional<IRequestedValue> requestedValue = rule.getRequestedValue();
 		final GeneratedValue genValue = generateValueForDataObject(attribute, requestedValue);
 		this.valueDescriptors
@@ -103,7 +103,7 @@ public class ValueGenerator implements IValueGenerator {
 	public String generateValue(IAddDataContentRule rule) {
 		logger.traceEntry("for element {}", rule.getElementID());
 		loadSchema();
-		final IXMLElementType element = this.schema.getObjectByID(rule.getElementID(), IXMLElementType.class);
+		final IElementType element = this.schema.getObjectByID(rule.getElementID(), IElementType.class);
 		final Optional<IRequestedValue> requestedValue = rule.getRequestedValue();
 		final GeneratedValue genValue = generateValueForDataObject(element, requestedValue);
 		this.valueDescriptors
@@ -118,7 +118,7 @@ public class ValueGenerator implements IValueGenerator {
 	 * @param requestedValue
 	 * @return a generated value for the schema object
 	 */
-	private GeneratedValue generateValueForDataObject(IXMLDataObject schemaObject,
+	private GeneratedValue generateValueForDataObject(IDataObject schemaObject,
 			Optional<IRequestedValue> requestedValue) {
 		logger.traceEntry("for schema object {}", schemaObject.getID());
 		GeneratedValue value = null;
@@ -147,7 +147,7 @@ public class ValueGenerator implements IValueGenerator {
 	 * @param schemaObject
 	 * @return whether the requested value is valid for the schema object
 	 */
-	private boolean requestedValueIsValidForDataObject(String value, IXMLDataObject schemaObject) {
+	private boolean requestedValueIsValidForDataObject(String value, IDataObject schemaObject) {
 		switch (schemaObject.getDataType()) {
 		case BOOLEAN:
 			return (value.equals("true") || value.equals("false"));
@@ -168,7 +168,7 @@ public class ValueGenerator implements IValueGenerator {
 	 * @param schemaObject
 	 * @return
 	 */
-	private boolean requestedValueIsValidForIntegerObject(String value, IXMLDataObject schemaObject) {
+	private boolean requestedValueIsValidForIntegerObject(String value, IDataObject schemaObject) {
 		logger.traceEntry();
 		boolean result = true;
 		try {
@@ -185,7 +185,7 @@ public class ValueGenerator implements IValueGenerator {
 						maxValue.get());
 				result = false;
 			}
-			final Collection<IXMLDiscreteValue> discreteValues = schemaObject.getDiscreteValues();
+			final Collection<IDiscreteValue> discreteValues = schemaObject.getDiscreteValues();
 			if (!discreteValues.isEmpty() && schemaObject.isFixedValueset().orElse(false) && (discreteValues.stream()
 				.noneMatch(dv -> (dv.getDataType() == XMLDataType.INTEGER) && (dv.asInteger() == intValue)))) {
 				logger.warn("requested value {} is not part of the fixed value set", value);
@@ -206,7 +206,7 @@ public class ValueGenerator implements IValueGenerator {
 	 * @param schemaObject
 	 * @return
 	 */
-	private boolean requestedValueIsValidForStringObject(String value, IXMLDataObject schemaObject) {
+	private boolean requestedValueIsValidForStringObject(String value, IDataObject schemaObject) {
 		logger.traceEntry();
 		boolean result = true;
 		final Optional<Integer> maxLength = schemaObject.getMaxLength();
@@ -215,7 +215,7 @@ public class ValueGenerator implements IValueGenerator {
 					maxLength.get());
 			result = false;
 		}
-		final Collection<IXMLDiscreteValue> discreteValues = schemaObject.getDiscreteValues();
+		final Collection<IDiscreteValue> discreteValues = schemaObject.getDiscreteValues();
 		if (!discreteValues.isEmpty() && schemaObject.isFixedValueset().orElse(false) && (discreteValues.stream()
 			.noneMatch(dv -> (dv.getDataType() == XMLDataType.STRING) && (dv.asString().equals(value))))) {
 			logger.warn("requested value {} is not part of the fixed value set", value);
@@ -231,7 +231,7 @@ public class ValueGenerator implements IValueGenerator {
 	 * @param schemaObject
 	 * @return
 	 */
-	private String generateValueForDataObject(IXMLDataObject schemaObject) {
+	private String generateValueForDataObject(IDataObject schemaObject) {
 		final XMLDataType dataType = schemaObject.getDataType();
 		if (dataType == null) {
 			throw logger.throwing(new IllegalStateException(
@@ -255,14 +255,14 @@ public class ValueGenerator implements IValueGenerator {
 	 * @param schemaObject
 	 * @return
 	 */
-	private String generateValueForIntegerObject(IXMLDataObject schemaObject) {
+	private String generateValueForIntegerObject(IDataObject schemaObject) {
 		logger.traceEntry();
 		String result = null;
 
 		// handle discrete values first
 		if (!schemaObject.getDiscreteValues().isEmpty()) {
-			final IXMLDiscreteValue[] discreteValues = schemaObject.getDiscreteValues()
-				.toArray(new IXMLDiscreteValue[0]);
+			final IDiscreteValue[] discreteValues = schemaObject.getDiscreteValues()
+				.toArray(new IDiscreteValue[0]);
 			// check whether we have to select from a fixed value set
 			boolean selectDiscreteValue = false;
 			if (schemaObject.isFixedValueset().orElse(false)) {
@@ -293,14 +293,14 @@ public class ValueGenerator implements IValueGenerator {
 	 * @param schemaObject
 	 * @return
 	 */
-	private String generateValueForStringObject(IXMLDataObject schemaObject) {
+	private String generateValueForStringObject(IDataObject schemaObject) {
 		logger.traceEntry();
 		String result = null;
 
 		// handle discrete values first
 		if (!schemaObject.getDiscreteValues().isEmpty()) {
-			final IXMLDiscreteValue[] discreteValues = schemaObject.getDiscreteValues()
-				.toArray(new IXMLDiscreteValue[0]);
+			final IDiscreteValue[] discreteValues = schemaObject.getDiscreteValues()
+				.toArray(new IDiscreteValue[0]);
 			// check whether we have to select from a fixed value set
 			boolean selectDiscreteValue = false;
 			if (schemaObject.isFixedValueset().orElse(false)) {

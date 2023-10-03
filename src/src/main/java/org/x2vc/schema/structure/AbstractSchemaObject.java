@@ -8,9 +8,9 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Base class of {@link IXMLSchemaObject} subtypes.
+ * Base class of {@link ISchemaObject} subtypes.
  */
-public abstract class AbstractSchemaObject implements IXMLSchemaObject {
+public abstract class AbstractSchemaObject implements ISchemaObject {
 
 	@XmlAttribute
 	private final UUID id;

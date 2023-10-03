@@ -3,12 +3,12 @@ package org.x2vc.schema.evolution;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.x2vc.schema.structure.IXMLElementType;
+import org.x2vc.schema.structure.IElementType;
 
 /**
  * A reference to
  * <ul>
- * <li>an existing {@link IXMLElementType},</li>
+ * <li>an existing {@link IElementType},</li>
  * <li>an {@link IAddElementModifier} or</li>
  * <li>the document root node</li>
  * </ul>
@@ -21,7 +21,7 @@ public interface ISchemaElementProxy {
 	 */
 	public enum ProxyType {
 		/**
-		 * Proxy for an existing {@link IXMLElementType}
+		 * Proxy for an existing {@link IElementType}
 		 */
 		ELEMENT,
 		/**
@@ -40,7 +40,7 @@ public interface ISchemaElementProxy {
 	ProxyType getType();
 
 	/**
-	 * @return <code>true</code> if the proxy refers to an existing {@link IXMLElementType}
+	 * @return <code>true</code> if the proxy refers to an existing {@link IElementType}
 	 */
 	boolean isElement();
 
@@ -63,7 +63,7 @@ public interface ISchemaElementProxy {
 	/**
 	 * @return the existing element type if the proxy type is ELEMENT
 	 */
-	Optional<IXMLElementType> getElementType();
+	Optional<IElementType> getElementType();
 
 	/**
 	 * @return the modifier to create an element type if the proxy type is MODIFIER

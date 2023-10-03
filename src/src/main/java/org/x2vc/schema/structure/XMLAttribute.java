@@ -7,9 +7,9 @@ import javax.xml.bind.annotation.XmlAttribute;
 import com.google.common.collect.Lists;
 
 /**
- * Standard implementation of {@link IXMLAttribute}.
+ * Standard implementation of {@link IAttribute}.
  */
-public final class XMLAttribute extends XMLDataObject implements IXMLAttribute {
+public final class XMLAttribute extends XMLDataObject implements IAttribute {
 
 	@XmlAttribute
 	private final String name;
@@ -61,7 +61,7 @@ public final class XMLAttribute extends XMLDataObject implements IXMLAttribute {
 	 * @param xmlAttribute to initialize the builder with
 	 * @return created builder
 	 */
-	public static Builder builderFrom(IXMLAttribute xmlAttribute) {
+	public static Builder builderFrom(IAttribute xmlAttribute) {
 		return new Builder(xmlAttribute);
 	}
 
@@ -98,7 +98,7 @@ public final class XMLAttribute extends XMLDataObject implements IXMLAttribute {
 		private Integer maxLength;
 		private Integer minValue;
 		private Integer maxValue;
-		private Set<IXMLDiscreteValue> discreteValues = new HashSet<>();
+		private Set<IDiscreteValue> discreteValues = new HashSet<>();
 		private boolean fixedValueset = false;
 		private boolean userModifiable;
 
@@ -123,7 +123,7 @@ public final class XMLAttribute extends XMLDataObject implements IXMLAttribute {
 			this.name = name;
 		}
 
-		private Builder(IXMLAttribute xMLAttribute) {
+		private Builder(IAttribute xMLAttribute) {
 			this.id = xMLAttribute.getID();
 			this.comment = xMLAttribute.getComment().orElse(null);
 			this.name = xMLAttribute.getName();
@@ -227,7 +227,7 @@ public final class XMLAttribute extends XMLDataObject implements IXMLAttribute {
 		 * @param discreteValue value to add
 		 * @return builder
 		 */
-		public Builder addDiscreteValue(IXMLDiscreteValue discreteValue) {
+		public Builder addDiscreteValue(IDiscreteValue discreteValue) {
 			this.discreteValues.add(discreteValue);
 			return this;
 		}

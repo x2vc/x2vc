@@ -18,8 +18,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.x2vc.report.IVulnerabilityCandidate;
-import org.x2vc.schema.structure.IXMLElementType;
-import org.x2vc.schema.structure.IXMLElementType.ContentType;
+import org.x2vc.schema.structure.IElementType;
+import org.x2vc.schema.structure.IElementType.ContentType;
 import org.x2vc.xml.document.IDocumentValueModifier;
 import org.x2vc.xml.value.IValueDescriptor;
 
@@ -71,13 +71,13 @@ class ElementCopyCheckRuleTest extends AnalyzerRuleTestBase {
 			"qwer1234xyz, DATA,  false",
 			"qwer1234xyz, MIXED, true"
 	})
-	void testCheckElementNode(String text, IXMLElementType.ContentType contentType, boolean modifiersExpected) {
+	void testCheckElementNode(String text, IElementType.ContentType contentType, boolean modifiersExpected) {
 		// common test values
 		final String valuePrefix = "qwer";
 		final int valueLength = 8;
 		final String generatedValue = "qwer1234";
 
-		IXMLElementType elementType;
+		IElementType elementType;
 		if (contentType == ContentType.DATA) {
 			elementType = mockUnlimitedStringElement();
 		} else if (contentType == ContentType.MIXED) {

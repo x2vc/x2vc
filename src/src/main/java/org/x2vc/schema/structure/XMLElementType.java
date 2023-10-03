@@ -11,14 +11,14 @@ import org.apache.logging.log4j.Logger;
 import com.google.common.collect.Lists;
 
 /**
- * Standard implementation of {@link IXMLElementType}.
+ * Standard implementation of {@link IElementType}.
  */
-public final class XMLElementType extends XMLDataObject implements IXMLElementType {
+public final class XMLElementType extends XMLDataObject implements IElementType {
 
 	private static final Logger logger = LogManager.getLogger();
 
 	@XmlElement(type = XMLAttribute.class, name = "attribute")
-	private final List<IXMLAttribute> attributes;
+	private final List<IAttribute> attributes;
 
 	@XmlAttribute
 	private final ContentType contentType;
@@ -27,7 +27,7 @@ public final class XMLElementType extends XMLDataObject implements IXMLElementTy
 	private final Boolean userModifiable;
 
 	@XmlElement(type = XMLElementReference.class, name = "subElement")
-	private final List<IXMLElementReference> elements;
+	private final List<IElementReference> elements;
 
 	@XmlAttribute
 	private final ElementArrangement elementArrangement;
@@ -58,7 +58,7 @@ public final class XMLElementType extends XMLDataObject implements IXMLElementTy
 	}
 
 	@Override
-	public Collection<IXMLAttribute> getAttributes() {
+	public Collection<IAttribute> getAttributes() {
 		return this.attributes;
 	}
 
@@ -119,7 +119,7 @@ public final class XMLElementType extends XMLDataObject implements IXMLElementTy
 	}
 
 	@Override
-	public Collection<IXMLDiscreteValue> getDiscreteValues() {
+	public Collection<IDiscreteValue> getDiscreteValues() {
 		if (this.contentType == ContentType.DATA) {
 			return super.getDiscreteValues();
 		} else {
@@ -137,7 +137,7 @@ public final class XMLElementType extends XMLDataObject implements IXMLElementTy
 	}
 
 	@Override
-	public List<IXMLElementReference> getElements() {
+	public List<IElementReference> getElements() {
 		if ((this.contentType == ContentType.ELEMENT) || (this.contentType == ContentType.MIXED)) {
 			return this.elements;
 		} else {
@@ -174,7 +174,7 @@ public final class XMLElementType extends XMLDataObject implements IXMLElementTy
 	 * @param copyElements   whether to copy all the element references
 	 * @return created builder
 	 */
-	public static Builder builderFrom(IXMLElementType xMLElementType, boolean copyAttributes, boolean copyElements) {
+	public static Builder builderFrom(IElementType xMLElementType, boolean copyAttributes, boolean copyElements) {
 		return new Builder(xMLElementType, copyAttributes, copyElements);
 	}
 
@@ -203,16 +203,16 @@ public final class XMLElementType extends XMLDataObject implements IXMLElementTy
 	public static final class Builder {
 		private UUID id;
 		private String comment;
-		private Set<IXMLAttribute> attributes = new HashSet<>();
+		private Set<IAttribute> attributes = new HashSet<>();
 		private ContentType contentType;
 		private XMLDataType dataType;
 		private Integer maxLength;
 		private Integer minValue;
 		private Integer maxValue;
-		private Set<IXMLDiscreteValue> discreteValues = new HashSet<>();
+		private Set<IDiscreteValue> discreteValues = new HashSet<>();
 		private Boolean fixedValueset;
 		private Boolean userModifiable;
-		private List<IXMLElementReference> elements = new ArrayList<>();
+		private List<IElementReference> elements = new ArrayList<>();
 		private ElementArrangement elementArrangement;
 
 		/**
@@ -231,7 +231,7 @@ public final class XMLElementType extends XMLDataObject implements IXMLElementTy
 			this.id = id;
 		}
 
-		private Builder(IXMLElementType xMLElementType, boolean copyAttributes, boolean copyElements) {
+		private Builder(IElementType xMLElementType, boolean copyAttributes, boolean copyElements) {
 			this.id = xMLElementType.getID();
 			this.comment = xMLElementType.getComment().orElse(null);
 			this.contentType = xMLElementType.getContentType();
@@ -301,7 +301,7 @@ public final class XMLElementType extends XMLDataObject implements IXMLElementTy
 		 * @param attribute field to set
 		 * @return builder
 		 */
-		public Builder addAttribute(IXMLAttribute attribute) {
+		public Builder addAttribute(IAttribute attribute) {
 			this.attributes.add(attribute);
 			return this;
 		}
@@ -367,7 +367,7 @@ public final class XMLElementType extends XMLDataObject implements IXMLElementTy
 		 * @param discreteValue field to set
 		 * @return builder
 		 */
-		public Builder addDiscreteValue(IXMLDiscreteValue discreteValue) {
+		public Builder addDiscreteValue(IDiscreteValue discreteValue) {
 			this.discreteValues.add(discreteValue);
 			return this;
 		}
@@ -400,7 +400,7 @@ public final class XMLElementType extends XMLDataObject implements IXMLElementTy
 		 * @param element field to set
 		 * @return builder
 		 */
-		public Builder addElement(IXMLElementReference element) {
+		public Builder addElement(IElementReference element) {
 			this.elements.add(element);
 			return this;
 		}

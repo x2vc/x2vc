@@ -15,9 +15,9 @@ import org.jsoup.select.Elements;
 import org.x2vc.report.IVulnerabilityCandidate;
 import org.x2vc.report.VulnerabilityCandidate;
 import org.x2vc.schema.ISchemaManager;
-import org.x2vc.schema.structure.IXMLElementType;
+import org.x2vc.schema.structure.IElementType;
 import org.x2vc.schema.structure.IXMLSchema;
-import org.x2vc.schema.structure.IXMLSchemaObject;
+import org.x2vc.schema.structure.ISchemaObject;
 import org.x2vc.xml.document.IDocumentModifier;
 import org.x2vc.xml.document.IXMLDocumentContainer;
 import org.x2vc.xml.value.IValueDescriptor;
@@ -81,8 +81,8 @@ public class ElementCopyCheckRule extends AbstractTextRule {
 				final String currentValue = valueDescriptor.getValue();
 				final UUID schemaElementID = valueDescriptor.getSchemaElementID();
 				// The xsl:copy/copy-of vulnerability only applies to mixed output elements
-				final IXMLSchemaObject schemaObject = schema.getObjectByID(schemaElementID);
-				if ((schemaObject instanceof final IXMLElementType schemaElement) && schemaElement.hasMixedContent()) {
+				final ISchemaObject schemaObject = schema.getObjectByID(schemaElementID);
+				if ((schemaObject instanceof final IElementType schemaElement) && schemaElement.hasMixedContent()) {
 					// try to replace the entire element with script element
 					logger.debug("attempt to replace \"{}\" with \"<script></script>\" for schema element {}",
 							currentValue,

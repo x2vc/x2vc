@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlElements;
 
-import org.x2vc.schema.structure.IXMLElementReference;
+import org.x2vc.schema.structure.IElementReference;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
@@ -91,7 +91,7 @@ public class AddElementRule extends AbstractGenerationRule implements IAddElemen
 	 * @param elementReference
 	 * @return the builder
 	 */
-	public static Builder builder(IXMLElementReference elementReference) {
+	public static Builder builder(IElementReference elementReference) {
 		return new Builder(elementReference);
 	}
 
@@ -118,7 +118,7 @@ public class AddElementRule extends AbstractGenerationRule implements IAddElemen
 		 *
 		 * @param elementReference
 		 */
-		private Builder(IXMLElementReference elementReference) {
+		private Builder(IElementReference elementReference) {
 			this.elementReferenceID = elementReference.getID();
 		}
 

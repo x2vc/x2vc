@@ -9,9 +9,9 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * Standard implementation of {@link IXMLDiscreteValue}
+ * Standard implementation of {@link IDiscreteValue}
  */
-public final class XMLDiscreteValue extends AbstractSchemaObject implements IXMLDiscreteValue {
+public final class XMLDiscreteValue extends AbstractSchemaObject implements IDiscreteValue {
 
 	private static final Logger logger = LogManager.getLogger();
 
@@ -89,7 +89,7 @@ public final class XMLDiscreteValue extends AbstractSchemaObject implements IXML
 	 * @param xMLDiscreteValue to initialize the builder with
 	 * @return created builder
 	 */
-	public static Builder builderFrom(IXMLDiscreteValue xMLDiscreteValue) {
+	public static Builder builderFrom(IDiscreteValue xMLDiscreteValue) {
 		return new Builder(xMLDiscreteValue);
 	}
 
@@ -138,7 +138,7 @@ public final class XMLDiscreteValue extends AbstractSchemaObject implements IXML
 			this.id = id;
 		}
 
-		private Builder(IXMLDiscreteValue xMLDiscreteValue) {
+		private Builder(IDiscreteValue xMLDiscreteValue) {
 			this.id = xMLDiscreteValue.getID();
 			this.comment = xMLDiscreteValue.getComment().orElse(null);
 			if (xMLDiscreteValue.getDataType() == XMLDataType.STRING) {

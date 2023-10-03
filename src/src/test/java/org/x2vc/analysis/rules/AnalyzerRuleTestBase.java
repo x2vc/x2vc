@@ -17,9 +17,9 @@ import org.junit.jupiter.api.BeforeEach;
 import org.x2vc.analysis.IAnalyzerRule;
 import org.x2vc.report.IVulnerabilityCandidate;
 import org.x2vc.schema.ISchemaManager;
-import org.x2vc.schema.structure.IXMLAttribute;
-import org.x2vc.schema.structure.IXMLElementType;
-import org.x2vc.schema.structure.IXMLElementType.ContentType;
+import org.x2vc.schema.structure.IAttribute;
+import org.x2vc.schema.structure.IElementType;
+import org.x2vc.schema.structure.IElementType.ContentType;
 import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.schema.structure.XMLDataType;
 import org.x2vc.utilities.URIUtilities;
@@ -113,9 +113,9 @@ public abstract class AnalyzerRuleTestBase {
 	 * @return
 	 * @throws IllegalArgumentException
 	 */
-	protected IXMLAttribute mockUnlimitedStringAttribute() throws IllegalArgumentException {
+	protected IAttribute mockUnlimitedStringAttribute() throws IllegalArgumentException {
 		final UUID attributeID = UUID.randomUUID();
-		final IXMLAttribute attribute = mock(IXMLAttribute.class);
+		final IAttribute attribute = mock(IAttribute.class);
 		lenient().when(this.schema.getObjectByID(attributeID)).thenReturn(attribute);
 		lenient().when(attribute.getID()).thenReturn(attributeID);
 		lenient().when(attribute.isUserModifiable()).thenReturn(true);
@@ -128,9 +128,9 @@ public abstract class AnalyzerRuleTestBase {
 	 * @return
 	 * @throws IllegalArgumentException
 	 */
-	protected IXMLElementType mockUnlimitedStringElement() throws IllegalArgumentException {
+	protected IElementType mockUnlimitedStringElement() throws IllegalArgumentException {
 		final UUID elementTypeID = UUID.randomUUID();
-		final IXMLElementType elementType = mock(IXMLElementType.class);
+		final IElementType elementType = mock(IElementType.class);
 		lenient().when(this.schema.getObjectByID(elementTypeID)).thenReturn(elementType);
 		lenient().when(elementType.getID()).thenReturn(elementTypeID);
 		lenient().when(elementType.isUserModifiable()).thenReturn(Optional.of(true));
@@ -145,9 +145,9 @@ public abstract class AnalyzerRuleTestBase {
 	 * @return
 	 * @throws IllegalArgumentException
 	 */
-	protected IXMLElementType mockMixedElement() throws IllegalArgumentException {
+	protected IElementType mockMixedElement() throws IllegalArgumentException {
 		final UUID elementTypeID = UUID.randomUUID();
-		final IXMLElementType elementType = mock(IXMLElementType.class);
+		final IElementType elementType = mock(IElementType.class);
 		lenient().when(this.schema.getObjectByID(elementTypeID)).thenReturn(elementType);
 		lenient().when(elementType.getID()).thenReturn(elementTypeID);
 		lenient().when(elementType.isUserModifiable()).thenReturn(Optional.of(true));

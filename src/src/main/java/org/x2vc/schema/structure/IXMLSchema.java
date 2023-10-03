@@ -40,19 +40,19 @@ public interface IXMLSchema {
 	/**
 	 * @return the element types that comprise the schema.
 	 */
-	Collection<IXMLElementType> getElementTypes();
+	Collection<IElementType> getElementTypes();
 
 	/**
 	 * @return the possible root element references
 	 */
-	Collection<IXMLElementReference> getRootElements();
+	Collection<IElementReference> getRootElements();
 
 	/**
 	 * @param id the ID of a schema object
 	 * @return the object with the ID
 	 * @throws IllegalArgumentException if the object is not part of the schema
 	 */
-	IXMLSchemaObject getObjectByID(UUID id) throws IllegalArgumentException;
+	ISchemaObject getObjectByID(UUID id) throws IllegalArgumentException;
 
 	/**
 	 * @param <T>
@@ -62,7 +62,7 @@ public interface IXMLSchema {
 	 * @throws IllegalArgumentException if the object is not part of the schema or the object is not of the requested
 	 *                                  type
 	 */
-	<T extends IXMLSchemaObject> T getObjectByID(UUID id, Class<T> requestedType) throws IllegalArgumentException;
+	<T extends ISchemaObject> T getObjectByID(UUID id, Class<T> requestedType) throws IllegalArgumentException;
 
 	/**
 	 * @param id the ID of a schema object
@@ -75,6 +75,6 @@ public interface IXMLSchema {
 	 * @param elementType
 	 * @return all element references contained in the schema that use to the element type
 	 */
-	Set<IXMLElementReference> getReferencesUsing(IXMLElementType elementType);
+	Set<IElementReference> getReferencesUsing(IElementType elementType);
 
 }

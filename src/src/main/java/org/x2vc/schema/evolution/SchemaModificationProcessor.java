@@ -103,12 +103,12 @@ public class SchemaModificationProcessor implements ISchemaModificationProcessor
 		 */
 		private void initializeElementBuilders() {
 			logger.traceEntry();
-			for (final IXMLElementType originalElement : this.inputSchema.getElementTypes()) {
+			for (final IElementType originalElement : this.inputSchema.getElementTypes()) {
 				logger.debug("initializing builder for element {}", originalElement.getID());
 				this.elementBuilders.put(originalElement.getID(), XMLElementType.builderFrom(originalElement, true,
 						false));
 				if (originalElement.hasElementContent()) {
-					for (final IXMLElementReference subElement : originalElement.getElements()) {
+					for (final IElementReference subElement : originalElement.getElements()) {
 						logger.debug("recording dependency from type {} (element {})", subElement.getElementID(),
 								subElement.getName());
 						this.elementDependencies.put(originalElement.getID(), subElement.getElementID());
@@ -128,8 +128,8 @@ public class SchemaModificationProcessor implements ISchemaModificationProcessor
 				final UUID parentElementID = entry.getKey();
 				logger.debug("processing attribute modifiers for element {}", parentElementID);
 
-				final IXMLElementType originalElement = this.inputSchema.getObjectByID(parentElementID,
-						IXMLElementType.class);
+				final IElementType originalElement = this.inputSchema.getObjectByID(parentElementID,
+						IElementType.class);
 				final XMLElementType.Builder elementBuilder = this.elementBuilders.get(parentElementID);
 
 				// use a set of existing attribute names to prevent the creation of duplicate attributes
@@ -174,8 +174,8 @@ public class SchemaModificationProcessor implements ISchemaModificationProcessor
 				final UUID parentElementID = entry.getKey();
 				logger.debug("processing element modifiers for element {}", parentElementID);
 
-				final IXMLElementType originalElement = this.inputSchema.getObjectByID(parentElementID,
-						IXMLElementType.class);
+				final IElementType originalElement = this.inputSchema.getObjectByID(parentElementID,
+						IElementType.class);
 				final XMLElementType.Builder elementBuilder = this.elementBuilders.get(parentElementID);
 
 				// use a set of existing element reference names to prevent the creation of duplicate attributes
@@ -208,13 +208,13 @@ public class SchemaModificationProcessor implements ISchemaModificationProcessor
 		}
 
 		/**
-		 * Processes an {@link IAddElementModifier} recursively to create the {@link IXMLElementReference} with all
+		 * Processes an {@link IAddElementModifier} recursively to create the {@link IElementReference} with all
 		 * sub-objects specified.
 		 *
 		 * @param elementModifier
 		 * @return the corresponding element reference.
 		 */
-		private IXMLElementReference buildElementReference(IAddElementModifier elementModifier) {
+		private IElementReference buildElementReference(IAddElementModifier elementModifier) {
 			logger.traceEntry();
 			logger.debug("creating element {} (type {}, reference {})", elementModifier.getName(),
 					elementModifier.getTypeID(), elementModifier.getReferenceID());
@@ -245,7 +245,7 @@ public class SchemaModificationProcessor implements ISchemaModificationProcessor
 			final XMLElementType elementType = typeBuilder.addTo(this.newSchemaBuilder);
 
 			// create reference
-			final IXMLElementReference result = XMLElementReference
+			final IElementReference result = XMLElementReference
 				.builder(elementModifier.getReferenceID(), elementModifier.getName(), elementType)
 				.withMinOccurrence(elementModifier.getMinOccurrence())
 				.withMaxOccurrence(elementModifier.getMaxOccurrence())
@@ -274,10 +274,10 @@ public class SchemaModificationProcessor implements ISchemaModificationProcessor
 					if (!this.elementDependencies.containsKey(elementID)) {
 						logger.debug("processing element {}", elementID);
 						final Builder builder = entry.getValue();
-						final IXMLElementType originalElement = this.inputSchema.getObjectByID(elementID,
-								IXMLElementType.class);
+						final IElementType originalElement = this.inputSchema.getObjectByID(elementID,
+								IElementType.class);
 						if (originalElement.hasElementContent()) {
-							for (final IXMLElementReference originalReference : originalElement.getElements()) {
+							for (final IElementReference originalReference : originalElement.getElements()) {
 								logger.debug("resolving reference to sub-element {} ({})", originalReference.getName(),
 										originalReference.getElementID());
 								final XMLElementType referredElement = this.elementTypesByID
@@ -322,7 +322,7 @@ public class SchemaModificationProcessor implements ISchemaModificationProcessor
 		 */
 		private void createRootReferences() {
 			logger.traceEntry();
-			for (final IXMLElementReference originalReference : this.inputSchema.getRootElements()) {
+			for (final IElementReference originalReference : this.inputSchema.getRootElements()) {
 				final XMLElementType referredElement = this.elementTypesByID.get(originalReference.getElementID());
 				XMLElementReference
 					.builder(originalReference.getID(), originalReference.getName(), referredElement)

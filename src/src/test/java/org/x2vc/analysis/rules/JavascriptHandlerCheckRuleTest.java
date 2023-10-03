@@ -17,8 +17,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.x2vc.report.IVulnerabilityCandidate;
-import org.x2vc.schema.structure.IXMLAttribute;
-import org.x2vc.schema.structure.IXMLElementType;
+import org.x2vc.schema.structure.IAttribute;
+import org.x2vc.schema.structure.IElementType;
 import org.x2vc.xml.document.IDocumentValueModifier;
 import org.x2vc.xml.value.IValueDescriptor;
 
@@ -78,7 +78,7 @@ class JavascriptHandlerCheckRuleTest extends AnalyzerRuleTestBase {
 		final String generatedValue = "qwer1234";
 
 		// prepare schema information
-		final IXMLAttribute attribute = mockUnlimitedStringAttribute();
+		final IAttribute attribute = mockUnlimitedStringAttribute();
 		final UUID attributeID = attribute.getID();
 
 		// prepare a value descriptor to return a known ID
@@ -134,7 +134,7 @@ class JavascriptHandlerCheckRuleTest extends AnalyzerRuleTestBase {
 		final int valueLength = 8;
 		final String generatedValue = "qwer1234";
 
-		final IXMLElementType elementType = mockUnlimitedStringElement();
+		final IElementType elementType = mockUnlimitedStringElement();
 		final UUID elementTypeID = elementType.getID();
 
 		// prepare a value descriptor to return a known ID

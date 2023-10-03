@@ -4,7 +4,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.x2vc.analysis.IAnalyzerRule;
-import org.x2vc.schema.structure.IXMLSchemaObject;
+import org.x2vc.schema.structure.ISchemaObject;
 import org.x2vc.xml.document.IModifierPayload;
 
 /**
@@ -20,7 +20,7 @@ public interface IAnalyzerRulePayload extends IModifierPayload {
 	Optional<String> getInjectedValue();
 
 	/**
-	 * @return the ID of the {@link IXMLSchemaObject} that describes the injection
+	 * @return the ID of the {@link ISchemaObject} that describes the injection
 	 *         point
 	 */
 	Optional<UUID> getSchemaElementID();

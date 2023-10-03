@@ -9,10 +9,10 @@ import org.x2vc.processor.IHTMLDocumentContainer;
 import org.x2vc.processor.ITraceEvent;
 import org.x2vc.processor.IValueAccessTraceEvent;
 import org.x2vc.schema.ISchemaManager;
-import org.x2vc.schema.structure.IXMLElementReference;
-import org.x2vc.schema.structure.IXMLElementType;
+import org.x2vc.schema.structure.IElementReference;
+import org.x2vc.schema.structure.IElementType;
 import org.x2vc.schema.structure.IXMLSchema;
-import org.x2vc.schema.structure.IXMLSchemaObject;
+import org.x2vc.schema.structure.ISchemaObject;
 import org.x2vc.xml.document.IXMLDocumentContainer;
 import org.x2vc.xml.request.IDocumentRequest;
 import org.x2vc.xml.request.IGenerationRule;
@@ -134,12 +134,12 @@ public class ValueTraceAnalyzer implements IValueTraceAnalyzer {
 						final Optional<UUID> oSchemaObjectID = rule.getSchemaObjectID();
 						if (oSchemaObjectID.isPresent()) {
 							final UUID schemaObjectID = oSchemaObjectID.get();
-							final IXMLSchemaObject schemaObject = schema.getObjectByID(schemaObjectID);
+							final ISchemaObject schemaObject = schema.getObjectByID(schemaObjectID);
 							// The schema object has to resolve to an element type because that's the only thing we can
 							// extend by adding new sub-elements or adding attributes.
-							if (schemaObject instanceof final IXMLElementType schemaElement) {
+							if (schemaObject instanceof final IElementType schemaElement) {
 								result.put(new SchemaElementProxy(schemaElement), event.getExpression());
-							} else if (schemaObject instanceof final IXMLElementReference schemaReference) {
+							} else if (schemaObject instanceof final IElementReference schemaReference) {
 								result.put(new SchemaElementProxy(schemaReference.getElement()),
 										event.getExpression());
 							} else {
@@ -639,7 +639,7 @@ public class ValueTraceAnalyzer implements IValueTraceAnalyzer {
 			final String localName = subElementName.getLocalPart();
 			if (namespaceURI.equals(NamespaceUri.NULL)) {
 				// check whether a root element with the name already exists
-				final List<IXMLElementReference> matchingRootReferences = this.schema.getRootElements()
+				final List<IElementReference> matchingRootReferences = this.schema.getRootElements()
 					.stream()
 					.filter(ref -> ref.getName().equals(localName))
 					.toList();
@@ -762,15 +762,15 @@ public class ValueTraceAnalyzer implements IValueTraceAnalyzer {
 		protected String generateElementModifierComment(ISchemaElementProxy schemaElement, final UUID parentElementID,
 				final String elementName) {
 			String comment = String.format("element %s of parent element %s", elementName, parentElementID);
-			final Optional<IXMLElementType> elementType = schemaElement.getElementType();
+			final Optional<IElementType> elementType = schemaElement.getElementType();
 			if (elementType.isPresent()) {
-				final Set<IXMLElementReference> references = this.schema.getReferencesUsing(elementType.get());
+				final Set<IElementReference> references = this.schema.getReferencesUsing(elementType.get());
 				switch (references.size()) {
 				case 0:
 					comment = String.format("element %s (no references found)", elementName);
 					break;
 				case 1:
-					final IXMLElementReference reference = references.iterator().next();
+					final IElementReference reference = references.iterator().next();
 					comment = String.format("element %s of parent element %s (%s)", elementName,
 							reference.getName(),
 							reference.getElementID());

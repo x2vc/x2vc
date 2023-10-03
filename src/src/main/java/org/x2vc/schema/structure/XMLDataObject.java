@@ -9,10 +9,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 /**
- * Base class for {@link IXMLSchemaObject}s that can contain typed data, like an attribute or an element with content
+ * Base class for {@link ISchemaObject}s that can contain typed data, like an attribute or an element with content
  * type DATA.
  */
-public abstract class XMLDataObject extends AbstractSchemaObject implements IXMLDataObject {
+public abstract class XMLDataObject extends AbstractSchemaObject implements IDataObject {
 
 	private static final Logger logger = LogManager.getLogger();
 
@@ -29,13 +29,13 @@ public abstract class XMLDataObject extends AbstractSchemaObject implements IXML
 	private final Integer maxValue;
 
 	@XmlElement(type = XMLDiscreteValue.class, name = "discreteValue")
-	private final List<IXMLDiscreteValue> discreteValues;
+	private final List<IDiscreteValue> discreteValues;
 
 	@XmlAttribute
 	private final Boolean fixedValueset;
 
 	protected XMLDataObject(UUID id, String comment, XMLDataType dataType, Integer maxLength, Integer minValue,
-			Integer maxValue, List<IXMLDiscreteValue> discreteValues, Boolean fixedValueset) {
+			Integer maxValue, List<IDiscreteValue> discreteValues, Boolean fixedValueset) {
 		super(id, comment);
 		this.dataType = dataType;
 		this.maxLength = maxLength;
@@ -78,7 +78,7 @@ public abstract class XMLDataObject extends AbstractSchemaObject implements IXML
 	}
 
 	@Override
-	public Collection<IXMLDiscreteValue> getDiscreteValues() {
+	public Collection<IDiscreteValue> getDiscreteValues() {
 		return this.discreteValues;
 	}
 

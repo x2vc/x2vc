@@ -27,8 +27,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.x2vc.schema.ISchemaManager;
-import org.x2vc.schema.structure.IXMLAttribute;
-import org.x2vc.schema.structure.IXMLElementReference;
+import org.x2vc.schema.structure.IAttribute;
+import org.x2vc.schema.structure.IElementReference;
 import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.schema.structure.XMLSchema;
 import org.x2vc.stylesheet.IStylesheetInformation;
@@ -127,8 +127,8 @@ class DocumentGeneratorTest {
 	void testGenerateDocument_EmptyElementWithAttribute() throws FileNotFoundException, JAXBException {
 		// load schema and extract relevant objects
 		this.schema = loadSchema("EmptyElementWithAttribute.x2vc_schema");
-		final IXMLElementReference rootElementReference = this.schema.getRootElements().iterator().next();
-		final IXMLAttribute rootAttribute = rootElementReference.getElement().getAttributes().iterator().next();
+		final IElementReference rootElementReference = this.schema.getRootElements().iterator().next();
+		final IAttribute rootAttribute = rootElementReference.getElement().getAttributes().iterator().next();
 
 		// prepare generation rules and request
 		final ISetAttributeRule rootAttributeRule = new SetAttributeRule(rootAttribute);
@@ -164,7 +164,7 @@ class DocumentGeneratorTest {
 	void testGenerateDocument_ElementWithDataContent() throws FileNotFoundException, JAXBException {
 		// load schema and extract relevant objects
 		this.schema = loadSchema("ElementWithDataContent.x2vc_schema");
-		final IXMLElementReference rootElementReference = this.schema.getRootElements().iterator().next();
+		final IElementReference rootElementReference = this.schema.getRootElements().iterator().next();
 
 		// prepare generation rules and request
 		final AddDataContentRule dataContentRule = new AddDataContentRule(rootElementReference.getID());
@@ -199,7 +199,7 @@ class DocumentGeneratorTest {
 	void testGenerateDocument_ElementWithDataContent_UnescapedEntities() throws FileNotFoundException, JAXBException {
 		// load schema and extract relevant objects
 		this.schema = loadSchema("ElementWithDataContent.x2vc_schema");
-		final IXMLElementReference rootElementReference = this.schema.getRootElements().iterator().next();
+		final IElementReference rootElementReference = this.schema.getRootElements().iterator().next();
 
 		// prepare generation rules and request
 		final AddDataContentRule dataContentRule = new AddDataContentRule(rootElementReference.getID());
@@ -235,8 +235,8 @@ class DocumentGeneratorTest {
 	void testGenerateDocument_ElementWithSubElement() throws FileNotFoundException, JAXBException {
 		// load schema and extract relevant objects
 		this.schema = loadSchema("ElementWithSubElement.x2vc_schema");
-		final IXMLElementReference rootElementReference = this.schema.getRootElements().iterator().next();
-		final IXMLElementReference subElementReference = rootElementReference.getElement().getElements().get(0);
+		final IElementReference rootElementReference = this.schema.getRootElements().iterator().next();
+		final IElementReference subElementReference = rootElementReference.getElement().getElements().get(0);
 
 		// prepare generation rules and request
 		final AddElementRule subElementRule1 = AddElementRule.builder(subElementReference).build();
@@ -262,8 +262,8 @@ class DocumentGeneratorTest {
 	void testGenerateDocument_VerifyTraceIDs() throws FileNotFoundException, JAXBException {
 		// same as testGenerateDocument_ElementWithSubElement
 		this.schema = loadSchema("ElementWithSubElement.x2vc_schema");
-		final IXMLElementReference rootElementReference = this.schema.getRootElements().iterator().next();
-		final IXMLElementReference subElementReference = rootElementReference.getElement().getElements().get(0);
+		final IElementReference rootElementReference = this.schema.getRootElements().iterator().next();
+		final IElementReference subElementReference = rootElementReference.getElement().getElements().get(0);
 		final AddElementRule subElementRule1 = AddElementRule.builder(subElementReference).build();
 		final AddElementRule subElementRule2 = AddElementRule.builder(subElementReference).build();
 		final AddElementRule subElementRule3 = AddElementRule.builder(subElementReference).build();
@@ -291,7 +291,7 @@ class DocumentGeneratorTest {
 	void testGenerateDocument_ElementWithRawContent() throws FileNotFoundException, JAXBException {
 		// load schema and extract relevant objects
 		this.schema = loadSchema("ElementWithRawContent.x2vc_schema");
-		final IXMLElementReference rootElementReference = this.schema.getRootElements().iterator().next();
+		final IElementReference rootElementReference = this.schema.getRootElements().iterator().next();
 
 		// prepare generation rules and request
 		final AddRawContentRule rawContentRule = new AddRawContentRule(rootElementReference.getID());

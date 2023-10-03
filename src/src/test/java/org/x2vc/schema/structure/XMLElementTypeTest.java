@@ -5,8 +5,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
-import org.x2vc.schema.structure.IXMLElementType.ContentType;
-import org.x2vc.schema.structure.IXMLElementType.ElementArrangement;
+import org.x2vc.schema.structure.IElementType.ContentType;
+import org.x2vc.schema.structure.IElementType.ElementArrangement;
 import org.x2vc.schema.structure.XMLElementType.Builder;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
@@ -85,7 +85,7 @@ class XMLElementTypeTest {
 		XMLAttribute.builder("aName").withType(XMLDataType.OTHER).addTo(builder);
 		final XMLElementType elem = builder.build();
 		assertEquals(1, elem.getAttributes().size());
-		assertEquals("aName", elem.getAttributes().toArray(new IXMLAttribute[0])[0].getName());
+		assertEquals("aName", elem.getAttributes().toArray(new IAttribute[0])[0].getName());
 	}
 
 	@Test
@@ -95,7 +95,7 @@ class XMLElementTypeTest {
 		XMLDiscreteValue.builder().withStringValue("foobar").addTo(builder);
 		final XMLElementType elem = builder.build();
 		assertEquals(1, elem.getDiscreteValues().size());
-		assertEquals("foobar", elem.getDiscreteValues().toArray(new IXMLDiscreteValue[0])[0].asString());
+		assertEquals("foobar", elem.getDiscreteValues().toArray(new IDiscreteValue[0])[0].asString());
 	}
 
 	@Test
@@ -113,12 +113,12 @@ class XMLElementTypeTest {
 
 		assertEquals(ContentType.DATA, copy.getContentType());
 		assertEquals(XMLDataType.STRING, copy.getDataType());
-		assertEquals("foobar", copy.getDiscreteValues().toArray(new IXMLDiscreteValue[0])[0].asString());
+		assertEquals("foobar", copy.getDiscreteValues().toArray(new IDiscreteValue[0])[0].asString());
 
 		// attributes need to be copies, not the same objects reused
-		assertNotSame(value, copy.getDiscreteValues().toArray(new IXMLDiscreteValue[0])[0]);
+		assertNotSame(value, copy.getDiscreteValues().toArray(new IDiscreteValue[0])[0]);
 		// discrete values need to be copies, not the same objects reused
-		assertNotSame(value, copy.getDiscreteValues().toArray(new IXMLDiscreteValue[0])[0]);
+		assertNotSame(value, copy.getDiscreteValues().toArray(new IDiscreteValue[0])[0]);
 	}
 
 	@Test

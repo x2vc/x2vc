@@ -17,8 +17,8 @@ import javax.xml.stream.events.Namespace;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.x2vc.schema.ISchemaManager;
-import org.x2vc.schema.structure.IXMLAttribute;
-import org.x2vc.schema.structure.IXMLElementReference;
+import org.x2vc.schema.structure.IAttribute;
+import org.x2vc.schema.structure.IElementReference;
 import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.stylesheet.IStylesheetInformation;
 import org.x2vc.stylesheet.IStylesheetManager;
@@ -185,8 +185,8 @@ public class DocumentGenerator implements IDocumentGenerator {
 		 */
 		private void processAddElementRule(IAddElementRule rule, boolean isRoot) throws XMLStreamException {
 			logger.traceEntry("for rule {} and element reference {}", rule.getID(), rule.getElementReferenceID());
-			final IXMLElementReference reference = this.schema.getObjectByID(rule.getElementReferenceID(),
-					IXMLElementReference.class);
+			final IElementReference reference = this.schema.getObjectByID(rule.getElementReferenceID(),
+					IElementReference.class);
 			final String elementName = reference.getName();
 
 			// produce element including trace ID
@@ -263,7 +263,7 @@ public class DocumentGenerator implements IDocumentGenerator {
 		 */
 		private void processSetAttributeRule(ISetAttributeRule rule) throws XMLStreamException {
 			logger.traceEntry("for rule {} and attribute {}", rule.getID(), rule.getAttributeID());
-			final IXMLAttribute attribute = this.schema.getObjectByID(rule.getAttributeID(), IXMLAttribute.class);
+			final IAttribute attribute = this.schema.getObjectByID(rule.getAttributeID(), IAttribute.class);
 			final String value = this.valueGenerator.generateValue(rule);
 			this.xmlWriter.add(this.eventFactory.createAttribute(attribute.getName(), value));
 			logger.traceExit();

@@ -14,8 +14,8 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.x2vc.schema.structure.IXMLElementReference;
-import org.x2vc.schema.structure.IXMLElementType;
+import org.x2vc.schema.structure.IElementReference;
+import org.x2vc.schema.structure.IElementType;
 import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.stylesheet.IStylesheetInformation;
 import org.x2vc.stylesheet.structure.IStylesheetStructure;
@@ -111,7 +111,7 @@ class InitialSchemaGeneratorTest {
 		});
 		when(this.structure.getTemplates()).thenReturn(ImmutableList.copyOf(templates));
 		final IXMLSchema schema = this.generator.generateSchema(this.stylesheet, this.schemaURI);
-		final Collection<IXMLElementReference> rootElements = schema.getRootElements();
+		final Collection<IElementReference> rootElements = schema.getRootElements();
 
 		// only check the element names for now
 		assertEquals(Lists.newArrayList(Splitter.on(",").split(rootElementNames)),
@@ -135,28 +135,28 @@ class InitialSchemaGeneratorTest {
 		when(this.structure.getTemplates()).thenReturn(ImmutableList.copyOf(templates));
 		final IXMLSchema schema = this.generator.generateSchema(this.stylesheet, this.schemaURI);
 
-		final Collection<IXMLElementReference> rootElements = schema.getRootElements();
+		final Collection<IElementReference> rootElements = schema.getRootElements();
 		assertEquals(1, rootElements.size());
 
-		final IXMLElementReference rootElementReference = rootElements.iterator().next();
+		final IElementReference rootElementReference = rootElements.iterator().next();
 		assertEquals("foo", rootElementReference.getName());
 
-		final IXMLElementType rootElementType = rootElementReference.getElement();
-		assertEquals(IXMLElementType.ContentType.MIXED, rootElementType.getContentType());
+		final IElementType rootElementType = rootElementReference.getElement();
+		assertEquals(IElementType.ContentType.MIXED, rootElementType.getContentType());
 		assertEquals(1, rootElementType.getElements().size());
 
-		final IXMLElementReference firstElementReference = rootElementType.getElements().get(0);
+		final IElementReference firstElementReference = rootElementType.getElements().get(0);
 		assertEquals("bar", firstElementReference.getName());
 
-		final IXMLElementType firstElementType = firstElementReference.getElement();
-		assertEquals(IXMLElementType.ContentType.MIXED, firstElementType.getContentType());
+		final IElementType firstElementType = firstElementReference.getElement();
+		assertEquals(IElementType.ContentType.MIXED, firstElementType.getContentType());
 		assertEquals(1, firstElementType.getElements().size());
 
-		final IXMLElementReference secondElementReference = firstElementType.getElements().get(0);
+		final IElementReference secondElementReference = firstElementType.getElements().get(0);
 		assertEquals("baz", secondElementReference.getName());
 
-		final IXMLElementType secondElementType = secondElementReference.getElement();
-		assertEquals(IXMLElementType.ContentType.MIXED, secondElementType.getContentType());
+		final IElementType secondElementType = secondElementReference.getElement();
+		assertEquals(IElementType.ContentType.MIXED, secondElementType.getContentType());
 		assertEquals(0, secondElementType.getElements().size());
 
 	}

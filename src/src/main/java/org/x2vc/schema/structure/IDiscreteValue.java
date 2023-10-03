@@ -4,7 +4,7 @@ package org.x2vc.schema.structure;
  * A discrete value used to represent either "interesting" values or hard
  * restrictions.
  */
-public interface IXMLDiscreteValue extends IXMLSchemaObject {
+public interface IDiscreteValue extends ISchemaObject {
 
 	/**
 	 * @return the data type of the value, represented as {@link XMLDataType}.
