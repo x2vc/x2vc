@@ -160,9 +160,9 @@ class XMLDocumentDescriptorTest {
 				UUID.fromString("a8e09856-8598-427e-af33-a106494568b8"));
 		final IXMLDocumentDescriptor descriptor = XMLDocumentDescriptor.builder("abcd", 8)
 			.addValueDescriptor(realValueDescriptor)
-			.addExtensionFunctionResult(realStringFunctionResult)
-			.addExtensionFunctionResult(realIntegerFunctionResult)
-			.addExtensionFunctionResult(realBooleanFunctionResult)
+			.withExtensionFunctionResult(realStringFunctionResult)
+			.withExtensionFunctionResult(realIntegerFunctionResult)
+			.withExtensionFunctionResult(realBooleanFunctionResult)
 			.withModifier(realModifier)
 			.withTraceIDToRuleIDMap(realTraceIDToRuleIDMap)
 			.build();

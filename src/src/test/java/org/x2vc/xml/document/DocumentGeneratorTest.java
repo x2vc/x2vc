@@ -2,8 +2,10 @@ package org.x2vc.xml.document;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.x2vc.CustomAssertions.assertXMLEquals;
 
@@ -11,10 +13,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.regex.Pattern;
 
 import javax.xml.bind.JAXBContext;
@@ -28,10 +27,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.w3c.dom.Node;
 import org.x2vc.schema.ISchemaManager;
-import org.x2vc.schema.structure.IAttribute;
-import org.x2vc.schema.structure.IElementReference;
-import org.x2vc.schema.structure.IXMLSchema;
-import org.x2vc.schema.structure.XMLSchema;
+import org.x2vc.schema.structure.*;
 import org.x2vc.stylesheet.IStylesheetInformation;
 import org.x2vc.stylesheet.IStylesheetManager;
 import org.x2vc.utilities.URIUtilities;
@@ -42,8 +38,7 @@ import org.x2vc.xml.value.IValueGenerator;
 import org.x2vc.xml.value.IValueGeneratorFactory;
 import org.x2vc.xml.value.ValueDescriptor;
 
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
+import com.google.common.collect.*;
 import com.google.common.io.Files;
 
 @ExtendWith(MockitoExtension.class)
@@ -80,6 +75,7 @@ class DocumentGeneratorTest {
 	@Mock
 	private IDocumentRequest request;
 	private IAddElementRule rootElementRule;
+	private List<IExtensionFunctionRule> extensionFunctionRules;
 	@Mock
 	private IRequestedValue requestedValue;
 
@@ -115,6 +111,9 @@ class DocumentGeneratorTest {
 		lenient().when(this.request.getSchemaVersion()).thenReturn(this.schemaVersion);
 		lenient().when(this.request.getStylesheeURI()).thenReturn(this.stylesheetURI);
 		lenient().when(this.request.getRootElementRule()).thenAnswer(a -> this.rootElementRule);
+		this.extensionFunctionRules = Lists.newArrayList();
+		lenient().when(this.request.getExtensionFunctionRules())
+			.thenAnswer(a -> ImmutableList.copyOf(this.extensionFunctionRules));
 
 		// document generator under test
 		this.documentGenerator = new DocumentGenerator(this.schemaManager, this.stylesheetManager,
@@ -319,6 +318,42 @@ class DocumentGeneratorTest {
 		final IValueDescriptor valDesc = valDescSet.get().iterator().next();
 		assertEquals(rootElementReference.getID(), valDesc.getSchemaObjectID());
 		assertEquals(rawContentRule.getID(), valDesc.getGenerationRuleID());
+	}
+
+	@Test
+	void testGenerateDocument_EmptyElementWithFunction() throws FileNotFoundException, JAXBException {
+		// load schema and extract relevant objects
+		this.schema = loadSchema("EmptyElementWithFunction.x2vc_schema");
+		final IElementReference rootElementReference = this.schema.getRootElements().iterator().next();
+		final IExtensionFunction extensionFunction = this.schema.getExtensionFunctions().iterator().next();
+
+		// prepare generation rules and request
+		this.rootElementRule = AddElementRule.builder(rootElementReference).build();
+		final ExtensionFunctionRule extensionFunctionRule = new ExtensionFunctionRule(extensionFunction.getID());
+		this.extensionFunctionRules.add(extensionFunctionRule);
+
+		// prepare value generator
+		final IExtensionFunctionResult functionResult = mock(IExtensionFunctionResult.class);
+		// when(functionResult.getXDMValue()).thenReturn(XdmValue.makeValue("foobar"));
+		when(this.valueGenerator.generateValue(extensionFunctionRule)).thenReturn(functionResult);
+		this.valueDescriptors
+			.add(new ValueDescriptor(extensionFunction.getID(), extensionFunctionRule.getID(), "foobar", false));
+
+		final IXMLDocumentContainer document = this.documentGenerator.generateDocument(this.request);
+		final IXMLDocumentDescriptor descriptor = document.getDocumentDescriptor();
+		assertEquals(VALUE_PREFIX, descriptor.getValuePrefix());
+		assertEquals(VALUE_LENGTH, descriptor.getValueLength());
+
+		final ImmutableCollection<IExtensionFunctionResult> functionResults = descriptor.getExtensionFunctionResults();
+		assertEquals(1, functionResults.size());
+		assertSame(functionResult, functionResults.iterator().next());
+
+		final Optional<ImmutableSet<IValueDescriptor>> valDescSet = descriptor.getValueDescriptors("foobar");
+		assertTrue(valDescSet.isPresent());
+		assertEquals(1, valDescSet.get().size());
+		final IValueDescriptor valDesc = valDescSet.get().iterator().next();
+		assertEquals(extensionFunction.getID(), valDesc.getSchemaObjectID());
+		assertEquals(extensionFunctionRule.getID(), valDesc.getGenerationRuleID());
 	}
 
 	private IXMLSchema loadSchema(String schemaFileName) throws FileNotFoundException, JAXBException {

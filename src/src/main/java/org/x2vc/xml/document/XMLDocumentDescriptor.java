@@ -221,8 +221,19 @@ public final class XMLDocumentDescriptor implements IXMLDocumentDescriptor {
 		 * @param result field to set
 		 * @return builder
 		 */
-		public Builder addExtensionFunctionResult(IExtensionFunctionResult result) {
+		public Builder withExtensionFunctionResult(final IExtensionFunctionResult result) {
 			this.extensionFunctionResults.add(result);
+			return this;
+		}
+
+		/**
+		 * Builder method for extensionFunctionResults parameter.
+		 *
+		 * @param results field to set
+		 * @return builder
+		 */
+		public Builder withExtensionFunctionResults(Collection<IExtensionFunctionResult> results) {
+			this.extensionFunctionResults.addAll(results);
 			return this;
 		}
 

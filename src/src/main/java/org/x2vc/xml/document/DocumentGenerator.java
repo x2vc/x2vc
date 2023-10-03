@@ -1,10 +1,7 @@
 package org.x2vc.xml.document;
 
 import java.io.StringWriter;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
 
 import javax.xml.XMLConstants;
 import javax.xml.stream.XMLEventFactory;
@@ -28,6 +25,7 @@ import org.x2vc.xml.request.*;
 import org.x2vc.xml.value.IValueGenerator;
 import org.x2vc.xml.value.IValueGeneratorFactory;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 
@@ -65,8 +63,9 @@ public class DocumentGenerator implements IDocumentGenerator {
 		final IStylesheetInformation stylesheetInformation = this.stylesheetManager.get(request.getStylesheeURI());
 		final Worker worker = new Worker(request, valueGenerator, schema, stylesheetInformation);
 		final String document = worker.generateXMLDocument();
+		final Collection<IExtensionFunctionResult> functionResults = worker.generateFunctionResults();
 		final IXMLDocumentDescriptor descriptor = generateDescriptor(request, valueGenerator,
-				worker.getTraceIDToRuleIDMap());
+				functionResults, worker.getTraceIDToRuleIDMap());
 		final XMLDocumentContainer container = new XMLDocumentContainer(request, descriptor, document);
 		return logger.traceExit(container);
 	}
@@ -77,13 +76,15 @@ public class DocumentGenerator implements IDocumentGenerator {
 	 * @param request
 	 * @param valueGenerator
 	 * @param traceIDToRuleIDMap
+	 * @param functionResults
 	 * @return
 	 */
 	private IXMLDocumentDescriptor generateDescriptor(IDocumentRequest request, IValueGenerator valueGenerator,
-			Map<UUID, UUID> traceIDToRuleIDMap) {
+			Collection<IExtensionFunctionResult> functionResults, Map<UUID, UUID> traceIDToRuleIDMap) {
 		logger.traceEntry();
-		final Builder builder = XMLDocumentDescriptor.builder(valueGenerator.getValuePrefix(),
-				valueGenerator.getValueLength())
+		final Builder builder = XMLDocumentDescriptor
+			.builder(valueGenerator.getValuePrefix(), valueGenerator.getValueLength())
+			.withExtensionFunctionResults(functionResults)
 			.withTraceIDToRuleIDMap(traceIDToRuleIDMap);
 		valueGenerator.getValueDescriptors().forEach(builder::addValueDescriptor);
 		final Optional<IDocumentModifier> modifier = request.getModifier();
@@ -154,6 +155,22 @@ public class DocumentGenerator implements IDocumentGenerator {
 			} catch (final XMLStreamException e) {
 				throw logger.throwing(new IllegalStateException("Error generating XML document", e));
 			}
+		}
+
+		/**
+		 * Generates the extension function return values.
+		 *
+		 * @return the extension function return values
+		 */
+		public Collection<IExtensionFunctionResult> generateFunctionResults() {
+			logger.traceEntry();
+			final List<IExtensionFunctionResult> results = Lists.newArrayList();
+			for (final IExtensionFunctionRule rule : this.request.getExtensionFunctionRules()) {
+				logger.debug("generating return value for function {} as requested by rule {}", rule.getFunctionID(),
+						rule.getID());
+				results.add(this.valueGenerator.generateValue(rule));
+			}
+			return logger.traceExit(results);
 		}
 
 		/**
