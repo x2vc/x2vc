@@ -3,14 +3,24 @@ package org.x2vc.xml.value;
 import java.util.Objects;
 import java.util.UUID;
 
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+
 /**
  * Standard implementation of {@link IValueDescriptor}.
  */
 public final class ValueDescriptor implements IValueDescriptor {
 
+	@XmlAttribute
 	private final UUID schemaObjectID;
+
+	@XmlAttribute
 	private final UUID generationRuleID;
+
+	@XmlElement
 	private final String value;
+
+	@XmlAttribute
 	private final boolean requested;
 
 	/**

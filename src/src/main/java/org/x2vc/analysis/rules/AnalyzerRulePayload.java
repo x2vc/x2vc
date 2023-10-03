@@ -4,15 +4,27 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+
 /**
  * Standard implementation of {@link IAnalyzerRulePayload}.
  */
 public final class AnalyzerRulePayload implements IAnalyzerRulePayload {
 
+	@XmlElement
 	private final String injectedValue;
+
+	@XmlAttribute
 	private final UUID schemaElementID;
+
+	@XmlElement
 	private final String elementSelector;
+
+	@XmlAttribute
 	private final String elementName;
+
+	@XmlAttribute
 	private final String attributeName;
 
 	private AnalyzerRulePayload(Builder builder) {

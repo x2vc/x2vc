@@ -2,28 +2,60 @@ package org.x2vc.xml.document;
 
 import java.util.*;
 
-import org.x2vc.xml.value.IValueDescriptor;
+import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.x2vc.xml.value.IValueDescriptor;
+import org.x2vc.xml.value.ValueDescriptor;
+
+import com.google.common.base.Supplier;
+import com.google.common.base.Suppliers;
 import com.google.common.collect.*;
 
 /**
  * Standard implementation of {@link IXMLDocumentDescriptor}
  */
+@XmlRootElement(name = "descriptor")
 public final class XMLDocumentDescriptor implements IXMLDocumentDescriptor {
+
+	private static final Logger logger = LogManager.getLogger();
 
 	private final String valuePrefix;
 	private final int valueLength;
-	private final HashMultimap<String, IValueDescriptor> valueDescriptors;
+
+	@XmlElementWrapper(name = "valueDescriptors")
+	@XmlElement(name = "valueDescriptor", type = ValueDescriptor.class)
+	private final List<IValueDescriptor> valueDescriptors;
+
+	@XmlElements({
+			@XmlElement(name = "documentValueModifier", type = DocumentValueModifier.class)
+	})
 	private final IDocumentModifier modifier;
+
+	@XmlElement(name = "traceRuleMapping")
+	@XmlJavaTypeAdapter(IDMapAdapter.class)
 	private final Map<UUID, UUID> traceIDToRuleIDMap;
 
-//	@XmlElementWrapper(name = "functionResults")
-//	@XmlElements({
-//			@XmlElement(name = "stringResult", type = StringExtensionFunctionResult.class),
-//			@XmlElement(name = "integerResult", type = IntegerExtensionFunctionResult.class),
-//			@XmlElement(name = "booleanResult", type = BooleanExtensionFunctionResult.class)
-//	})
+	@XmlElementWrapper(name = "functionResults")
+	@XmlElements({
+			@XmlElement(name = "stringResult", type = StringExtensionFunctionResult.class),
+			@XmlElement(name = "integerResult", type = IntegerExtensionFunctionResult.class),
+			@XmlElement(name = "booleanResult", type = BooleanExtensionFunctionResult.class)
+	})
 	private final List<IExtensionFunctionResult> extensionFunctionResults;
+
+	private XMLDocumentDescriptor() {
+		// used for marshalling/unmarshalling only
+		this.valuePrefix = null;
+		this.valueLength = -1;
+		this.valueDescriptors = null;
+		this.modifier = null;
+		this.traceIDToRuleIDMap = null;
+		this.extensionFunctionResults = null;
+	}
 
 	private XMLDocumentDescriptor(Builder builder) {
 		this.valuePrefix = builder.valuePrefix;
@@ -34,22 +66,50 @@ public final class XMLDocumentDescriptor implements IXMLDocumentDescriptor {
 		this.extensionFunctionResults = builder.extensionFunctionResults;
 	}
 
+	@XmlAttribute
 	@Override
 	public String getValuePrefix() {
 		return this.valuePrefix;
 	}
 
+	@XmlAttribute
 	@Override
 	public int getValueLength() {
 		return this.valueLength;
 	}
 
+	private ImmutableCollection<IValueDescriptor> getValueDescriptors() {
+		return ImmutableList.copyOf(this.valueDescriptors);
+	}
+
+	@SuppressWarnings("java:S4738") // Java supplier does not support memoization
+	private transient Supplier<HashMultimap<String, IValueDescriptor>> descriptorMapSupplier = Suppliers.memoize(() -> {
+		logger.traceEntry();
+		final HashMultimap<String, IValueDescriptor> result = HashMultimap.create();
+		for (final IValueDescriptor valueDescriptor : getValueDescriptors()) {
+			final String value = valueDescriptor.getValue();
+			result.put(value, valueDescriptor);
+			if (value.length() > getValueLength()) {
+				// add prefixed substrings to index
+				int position = value.indexOf(getValuePrefix(), 0);
+				final int maxPosition = value.length() - getValueLength();
+				while (position >= 0 && position < maxPosition) {
+					final String candidate = value.substring(position, position + getValueLength());
+					result.put(candidate, valueDescriptor);
+					position = value.indexOf(getValuePrefix(), position + getValueLength() - 1);
+				}
+			}
+		}
+		return logger.traceExit(result);
+	});
+
 	@Override
 	public Optional<ImmutableSet<IValueDescriptor>> getValueDescriptors(String value) {
 		final String searchKey = value;
 		final HashSet<IValueDescriptor> result = new HashSet<>();
-		if (this.valueDescriptors.containsKey(searchKey)) {
-			result.addAll(this.valueDescriptors.get(searchKey));
+		final HashMultimap<String, IValueDescriptor> descriptorMap = this.descriptorMapSupplier.get();
+		if (descriptorMap.containsKey(searchKey)) {
+			result.addAll(descriptorMap.get(searchKey));
 		}
 		// check for substring matches
 		if (value.length() > this.valueLength) {
@@ -57,8 +117,8 @@ public final class XMLDocumentDescriptor implements IXMLDocumentDescriptor {
 			while (position >= 0) {
 				if (position + this.valueLength < value.length()) {
 					final String candidate = value.substring(position, position + this.valueLength);
-					if (this.valueDescriptors.containsKey(candidate)) {
-						result.addAll(this.valueDescriptors.get(candidate));
+					if (descriptorMap.containsKey(candidate)) {
+						result.addAll(descriptorMap.get(candidate));
 					}
 					position = value.indexOf(this.valuePrefix, position + this.valueLength - 1);
 				} else {
@@ -106,7 +166,7 @@ public final class XMLDocumentDescriptor implements IXMLDocumentDescriptor {
 	public static final class Builder {
 		private String valuePrefix;
 		private int valueLength;
-		private HashMultimap<String, IValueDescriptor> valueDescriptors = HashMultimap.create();
+		private List<IValueDescriptor> valueDescriptors = Lists.newArrayList();
 		private IDocumentModifier modifier;
 		private Map<UUID, UUID> traceIDToRuleIDMap;
 		private List<IExtensionFunctionResult> extensionFunctionResults = Lists.newArrayList();
@@ -129,18 +189,7 @@ public final class XMLDocumentDescriptor implements IXMLDocumentDescriptor {
 		 * @return builder
 		 */
 		public Builder addValueDescriptor(IValueDescriptor valueDescriptor) {
-			final String value = valueDescriptor.getValue();
-			this.valueDescriptors.put(value, valueDescriptor);
-			if (value.length() > this.valueLength) {
-				// add prefixed substrings to index
-				int position = value.indexOf(this.valuePrefix, 0);
-				final int maxPosition = value.length() - this.valueLength;
-				while (position >= 0 && position < maxPosition) {
-					final String candidate = value.substring(position, position + this.valueLength);
-					this.valueDescriptors.put(candidate, valueDescriptor);
-					position = value.indexOf(this.valuePrefix, position + this.valueLength - 1);
-				}
-			}
+			this.valueDescriptors.add(valueDescriptor);
 			return this;
 		}
 
@@ -209,6 +258,43 @@ public final class XMLDocumentDescriptor implements IXMLDocumentDescriptor {
 				&& Objects.equals(this.valueDescriptors, other.valueDescriptors)
 				&& this.valueLength == other.valueLength
 				&& Objects.equals(this.valuePrefix, other.valuePrefix);
+	}
+
+	private static class IDMapElement {
+		@XmlAttribute
+		public UUID traceID;
+		@XmlAttribute
+		public UUID ruleID;
+
+		private IDMapElement() {
+		}
+
+		private IDMapElement(UUID traceID, UUID ruleID) {
+			this.traceID = traceID;
+			this.ruleID = ruleID;
+		}
+	}
+
+	protected static class IDMapAdapter extends XmlAdapter<IDMapElement[], Map<UUID, UUID>> {
+		@Override
+		public IDMapElement[] marshal(Map<UUID, UUID> arg0) throws Exception {
+			final IDMapElement[] mapElements = new IDMapElement[arg0.size()];
+			int i = 0;
+			for (final Map.Entry<UUID, UUID> entry : arg0.entrySet()) {
+				mapElements[i++] = new IDMapElement(entry.getKey(), entry.getValue());
+			}
+
+			return mapElements;
+		}
+
+		@Override
+		public Map<UUID, UUID> unmarshal(IDMapElement[] arg0) throws Exception {
+			final Map<UUID, UUID> r = new HashMap<>();
+			for (final IDMapElement mapelement : arg0) {
+				r.put(mapelement.traceID, mapelement.ruleID);
+			}
+			return r;
+		}
 	}
 
 }

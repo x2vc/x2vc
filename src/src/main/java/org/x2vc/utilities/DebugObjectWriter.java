@@ -22,6 +22,7 @@ import org.x2vc.schema.evolution.SchemaModifierCollector;
 import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.schema.structure.XMLSchema;
 import org.x2vc.xml.document.IXMLDocumentContainer;
+import org.x2vc.xml.document.XMLDocumentDescriptor;
 import org.x2vc.xml.request.DocumentRequest;
 import org.x2vc.xml.request.IDocumentRequest;
 
@@ -89,14 +90,30 @@ public class DebugObjectWriter implements IDebugObjectWriter {
 		logger.traceExit();
 	}
 
+	@SuppressWarnings("java:S4738") // Java supplier does not support memoization
+	Supplier<JAXBContext> xmlDocumentContextSupplier = Suppliers.memoize(() -> {
+		try {
+			return JAXBContext.newInstance(XMLDocumentDescriptor.class);
+		} catch (final JAXBException e) {
+			logger.error("Unable to provide JAXB context for document requests", e);
+			throw new DebugOutputError(e);
+		}
+	});
+
 	@Override
 	public void writeXMLDocument(UUID taskID, IXMLDocumentContainer xmlDocument) {
 		logger.traceEntry("for task ID {}", taskID);
 		if (this.xmlOutputEnabled) {
 			try {
-				final File outputFile = provideOutputFile(taskID, "input", "xml");
-				Files.asCharSink(outputFile, Charset.defaultCharset()).write(xmlDocument.getDocument());
-			} catch (final IOException e) {
+				// XML Document
+				final File contentOutputFile = provideOutputFile(taskID, "input_doc", "xml");
+				Files.asCharSink(contentOutputFile, Charset.defaultCharset()).write(xmlDocument.getDocument());
+				// Descriptor to separate file
+				final File descriptorOutputFile = provideOutputFile(taskID, "input_desc", "xml");
+				final Marshaller marshaller = this.xmlDocumentContextSupplier.get().createMarshaller();
+				marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+				marshaller.marshal(xmlDocument.getDocumentDescriptor(), descriptorOutputFile);
+			} catch (final Exception e) {
 				logger.error("Unable to write XML document to file", e);
 			}
 		}

@@ -6,8 +6,10 @@ import java.util.UUID;
 import java.util.function.Consumer;
 
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlTransient;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElements;
 
+import org.x2vc.analysis.rules.AnalyzerRulePayload;
 import org.x2vc.xml.value.IValueDescriptor;
 
 /**
@@ -15,7 +17,9 @@ import org.x2vc.xml.value.IValueDescriptor;
  */
 public class DocumentValueModifier implements IDocumentValueModifier {
 
-	@XmlTransient
+	@XmlElements({
+			@XmlElement(name = "analyzerRulePayload", type = AnalyzerRulePayload.class)
+	})
 	private IModifierPayload payload;
 
 	@XmlAttribute
@@ -24,10 +28,10 @@ public class DocumentValueModifier implements IDocumentValueModifier {
 	@XmlAttribute
 	private UUID generationRuleID;
 
-	@XmlAttribute
+	@XmlElement
 	private String originalValue;
 
-	@XmlAttribute
+	@XmlElement
 	private String replacementValue;
 
 	@XmlAttribute
