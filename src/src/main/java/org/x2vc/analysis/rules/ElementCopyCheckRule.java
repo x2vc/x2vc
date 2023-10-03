@@ -15,6 +15,7 @@ import org.jsoup.select.Elements;
 import org.x2vc.report.IVulnerabilityCandidate;
 import org.x2vc.report.VulnerabilityCandidate;
 import org.x2vc.schema.ISchemaManager;
+import org.x2vc.schema.structure.IXMLElementType;
 import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.schema.structure.IXMLSchemaObject;
 import org.x2vc.xml.document.IDocumentModifier;
@@ -25,9 +26,8 @@ import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
 
 /**
- * Rule E.2: Check the text content of every element that contains the prefix
- * used to generate the values whether it is possible to inject arbitrary code.
- * This checks for xsl:copy and xsl:copy-of vulnerabilities.
+ * Rule E.2: Check the text content of every element that contains the prefix used to generate the values whether it is
+ * possible to inject arbitrary code. This checks for xsl:copy and xsl:copy-of vulnerabilities.
  */
 public class ElementCopyCheckRule extends AbstractTextRule {
 
@@ -81,8 +81,8 @@ public class ElementCopyCheckRule extends AbstractTextRule {
 				final String currentValue = valueDescriptor.getValue();
 				final UUID schemaElementID = valueDescriptor.getSchemaElementID();
 				// The xsl:copy/copy-of vulnerability only applies to mixed output elements
-				final IXMLSchemaObject schemaElement = schema.getObjectByID(schemaElementID);
-				if (schemaElement.isElement() && schemaElement.asElement().hasMixedContent()) {
+				final IXMLSchemaObject schemaObject = schema.getObjectByID(schemaElementID);
+				if ((schemaObject instanceof final IXMLElementType schemaElement) && schemaElement.hasMixedContent()) {
 					// try to replace the entire element with script element
 					logger.debug("attempt to replace \"{}\" with \"<script></script>\" for schema element {}",
 							currentValue,

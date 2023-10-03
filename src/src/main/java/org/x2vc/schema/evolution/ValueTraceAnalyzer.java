@@ -136,12 +136,11 @@ public class ValueTraceAnalyzer implements IValueTraceAnalyzer {
 							final UUID schemaObjectID = oSchemaObjectID.get();
 							final IXMLSchemaObject schemaObject = schema.getObjectByID(schemaObjectID);
 							// The schema object has to resolve to an element type because that's the only thing we can
-							// extend
-							// by adding new sub-elements or adding attributes.
-							if (schemaObject.isElement()) {
-								result.put(new SchemaElementProxy(schemaObject.asElement()), event.getExpression());
-							} else if (schemaObject.isReference()) {
-								result.put(new SchemaElementProxy(schemaObject.asReference().getElement()),
+							// extend by adding new sub-elements or adding attributes.
+							if (schemaObject instanceof final IXMLElementType schemaElement) {
+								result.put(new SchemaElementProxy(schemaElement), event.getExpression());
+							} else if (schemaObject instanceof final IXMLElementReference schemaReference) {
+								result.put(new SchemaElementProxy(schemaReference.getElement()),
 										event.getExpression());
 							} else {
 								logger.warn("Unable to process trace events relating to schema object {}",
@@ -650,12 +649,12 @@ public class ValueTraceAnalyzer implements IValueTraceAnalyzer {
 					logger.warn("root element creation not supported yet (name {})", localName);
 					break;
 				case 1:
-					newSchemaElement = new SchemaElementProxy(matchingRootReferences.get(0).asElement());
+					newSchemaElement = new SchemaElementProxy(matchingRootReferences.get(0).getElement());
 					break;
 				default:
 					logger.warn("Multiple root references matching \"{}\", randomly choosing the first one.",
 							localName);
-					newSchemaElement = new SchemaElementProxy(matchingRootReferences.get(0).asElement());
+					newSchemaElement = new SchemaElementProxy(matchingRootReferences.get(0).getElement());
 					break;
 				}
 			} else {

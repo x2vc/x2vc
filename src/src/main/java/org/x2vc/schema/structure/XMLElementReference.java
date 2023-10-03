@@ -49,16 +49,6 @@ public final class XMLElementReference extends AbstractSchemaObject implements I
 	}
 
 	@Override
-	public boolean isReference() {
-		return true;
-	}
-
-	@Override
-	public IXMLElementReference asReference() {
-		return this;
-	}
-
-	@Override
 	public String getName() {
 		return this.name;
 	}

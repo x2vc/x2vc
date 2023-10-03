@@ -333,11 +333,11 @@ public abstract class AbstractRule implements IAnalyzerRule {
 		// check whether the requested value is valid and the input field is
 		logger.traceEntry();
 		final IXMLSchemaObject schemaObject = schema.getObjectByID(valueDescriptor.getSchemaElementID());
-		if (schemaObject.isAttribute()) {
-			requestAttributeModification(schemaObject.asAttribute(), valueDescriptor, originalValue, replacementValue,
+		if (schemaObject instanceof final IXMLAttribute attribute) {
+			requestAttributeModification(attribute, valueDescriptor, originalValue, replacementValue,
 					payload, collector);
-		} else if (schemaObject.isElement()) {
-			requestElementModification(schemaObject.asElement(), valueDescriptor, originalValue, replacementValue,
+		} else if (schemaObject instanceof final IXMLElementType element) {
+			requestElementModification(element, valueDescriptor, originalValue, replacementValue,
 					payload, collector);
 		} else {
 			throw logger

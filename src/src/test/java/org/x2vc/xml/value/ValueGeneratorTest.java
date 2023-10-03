@@ -1,6 +1,8 @@
 package org.x2vc.xml.value;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 
@@ -99,14 +101,14 @@ class ValueGeneratorTest {
 		// attribute in schema
 		this.attributeID = UUID.randomUUID();
 		lenient().when(this.attribute.getID()).thenReturn(this.attributeID);
-		lenient().when(this.attribute.asAttribute()).thenReturn(this.attribute);
 		lenient().when(this.schema.getObjectByID(this.attributeID)).thenReturn(this.attribute);
+		lenient().when(this.schema.getObjectByID(eq(this.attributeID), any())).thenReturn(this.attribute);
 
 		// element in schema
 		this.elementID = UUID.randomUUID();
 		lenient().when(this.element.getID()).thenReturn(this.elementID);
-		lenient().when(this.element.asElement()).thenReturn(this.element);
 		lenient().when(this.schema.getObjectByID(this.elementID)).thenReturn(this.element);
+		lenient().when(this.schema.getObjectByID(eq(this.elementID), any())).thenReturn(this.element);
 
 		// request
 		lenient().when(this.request.getStylesheeURI()).thenReturn(this.stylesheetURI);

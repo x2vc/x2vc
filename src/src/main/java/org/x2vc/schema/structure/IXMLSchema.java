@@ -55,6 +55,16 @@ public interface IXMLSchema {
 	IXMLSchemaObject getObjectByID(UUID id) throws IllegalArgumentException;
 
 	/**
+	 * @param <T>
+	 * @param id            the ID of a schema object
+	 * @param requestedType the requested type
+	 * @return the object with the ID, cast to the requested type
+	 * @throws IllegalArgumentException if the object is not part of the schema or the object is not of the requested
+	 *                                  type
+	 */
+	<T extends IXMLSchemaObject> T getObjectByID(UUID id, Class<T> requestedType) throws IllegalArgumentException;
+
+	/**
 	 * @param id the ID of a schema object
 	 * @return a set of all the paths the object can appear in a document
 	 * @throws IllegalArgumentException if the object is not part of the schema

@@ -14,10 +14,6 @@ class XMLAttributeTest {
 	@Test
 	void testBuilderMinimal() {
 		final XMLAttribute attrib = XMLAttribute.builder("aName").withType(XMLDataType.OTHER).build();
-		assertTrue(attrib.isAttribute());
-		assertFalse(attrib.isElement());
-		assertFalse(attrib.isReference());
-		assertFalse(attrib.isValue());
 		assertEquals("aName", attrib.getName());
 		assertEquals(XMLDataType.OTHER, attrib.getDataType());
 		assertFalse(attrib.getComment().isPresent());

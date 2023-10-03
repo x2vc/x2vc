@@ -15,10 +15,6 @@ class XMLElementReferenceTest {
 	void testBuilderMinimal() {
 		final XMLElementType innerElem = XMLElementType.builder().withContentType(ContentType.ELEMENT).build();
 		final XMLElementReference ref = XMLElementReference.builder("aName", innerElem).build();
-		assertFalse(ref.isAttribute());
-		assertFalse(ref.isElement());
-		assertTrue(ref.isReference());
-		assertFalse(ref.isValue());
 		assertFalse(ref.getComment().isPresent());
 		assertSame(innerElem, ref.getElement());
 		assertEquals(innerElem.getID(), ref.getElementID());

@@ -16,10 +16,6 @@ class XMLDiscreteValueTest {
 	@Test
 	void testBuilderForString() {
 		final XMLDiscreteValue value = XMLDiscreteValue.builder().withStringValue("foo").build();
-		assertFalse(value.isAttribute());
-		assertFalse(value.isElement());
-		assertFalse(value.isReference());
-		assertTrue(value.isValue());
 
 		assertFalse(value.getComment().isPresent());
 		assertEquals(XMLDataType.STRING, value.getDataType());
@@ -32,10 +28,6 @@ class XMLDiscreteValueTest {
 	@Test
 	void testBuilderForBoolean() {
 		final XMLDiscreteValue value = XMLDiscreteValue.builder().withBooleanValue(true).build();
-		assertFalse(value.isAttribute());
-		assertFalse(value.isElement());
-		assertFalse(value.isReference());
-		assertTrue(value.isValue());
 
 		assertFalse(value.getComment().isPresent());
 		assertEquals(XMLDataType.BOOLEAN, value.getDataType());
@@ -48,10 +40,6 @@ class XMLDiscreteValueTest {
 	@Test
 	void testBuilderForInteger() {
 		final XMLDiscreteValue value = XMLDiscreteValue.builder().withIntegerValue(42).build();
-		assertFalse(value.isAttribute());
-		assertFalse(value.isElement());
-		assertFalse(value.isReference());
-		assertTrue(value.isValue());
 
 		assertFalse(value.getComment().isPresent());
 		assertEquals(XMLDataType.INTEGER, value.getDataType());
@@ -64,10 +52,6 @@ class XMLDiscreteValueTest {
 	@Test
 	void testBuilderForOther() {
 		final XMLDiscreteValue value = XMLDiscreteValue.builder().build();
-		assertFalse(value.isAttribute());
-		assertFalse(value.isElement());
-		assertFalse(value.isReference());
-		assertTrue(value.isValue());
 
 		assertFalse(value.getComment().isPresent());
 		assertEquals(XMLDataType.OTHER, value.getDataType());
@@ -81,7 +65,6 @@ class XMLDiscreteValueTest {
 	void testBuilderWithComment() {
 		final XMLDiscreteValue value = XMLDiscreteValue.builder().withIntegerValue(42).withComment("rhubarb")
 			.build();
-		assertTrue(value.isValue());
 
 		assertTrue(value.getComment().isPresent());
 		assertEquals("rhubarb", value.getComment().get());
@@ -98,11 +81,6 @@ class XMLDiscreteValueTest {
 	void testBuilderOfCopy() {
 		final XMLDiscreteValue value = XMLDiscreteValue.builder().withStringValue("foo").build();
 		final XMLDiscreteValue copy = XMLDiscreteValue.builderFrom(value).withComment("rhubarb").build();
-
-		assertFalse(copy.isAttribute());
-		assertFalse(copy.isElement());
-		assertFalse(copy.isReference());
-		assertTrue(copy.isValue());
 
 		assertTrue(copy.getComment().isPresent());
 		assertEquals("rhubarb", copy.getComment().get());

@@ -122,6 +122,24 @@ public class XMLSchema implements IXMLSchema {
 		return this.objectMap.get(id);
 	}
 
+	@SuppressWarnings("unchecked")
+	@Override
+	public <T extends IXMLSchemaObject> T getObjectByID(UUID id, Class<T> requestedType)
+			throws IllegalArgumentException {
+		final IXMLSchemaObject schemaObject = getObjectByID(id);
+		if (requestedType.isInstance(schemaObject)) {
+			return (T) schemaObject;
+		} else {
+
+			final String actualTypeName = schemaObject.getClass().getSimpleName();
+			final String requestedTypeName = requestedType.getSimpleName();
+			throw logger.throwing(
+					new IllegalArgumentException(String.format(
+							"The object with ID %s exists in this schema, but is of type %s and not as requested of type %s",
+							id, actualTypeName, requestedTypeName)));
+		}
+	}
+
 	/**
 	 * This method is called after all the properties (except IDREF) are unmarshalled for this object, but before this
 	 * object is set to the parent object.

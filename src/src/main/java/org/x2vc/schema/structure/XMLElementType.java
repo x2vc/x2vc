@@ -58,16 +58,6 @@ public final class XMLElementType extends XMLDataObject implements IXMLElementTy
 	}
 
 	@Override
-	public boolean isElement() {
-		return true;
-	}
-
-	@Override
-	public IXMLElementType asElement() {
-		return this;
-	}
-
-	@Override
 	public Collection<IXMLAttribute> getAttributes() {
 		return this.attributes;
 	}

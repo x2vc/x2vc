@@ -82,7 +82,7 @@ public class ValueGenerator implements IValueGenerator {
 	public String generateValue(ISetAttributeRule rule) {
 		logger.traceEntry("for attribute {}", rule.getAttributeID());
 		loadSchema();
-		final IXMLAttribute attribute = this.schema.getObjectByID(rule.getAttributeID()).asAttribute();
+		final IXMLAttribute attribute = this.schema.getObjectByID(rule.getAttributeID(), IXMLAttribute.class);
 		final Optional<IRequestedValue> requestedValue = rule.getRequestedValue();
 		final GeneratedValue genValue = generateValueForDataObject(attribute, requestedValue);
 		this.valueDescriptors
@@ -103,7 +103,7 @@ public class ValueGenerator implements IValueGenerator {
 	public String generateValue(IAddDataContentRule rule) {
 		logger.traceEntry("for element {}", rule.getElementID());
 		loadSchema();
-		final IXMLElementType element = this.schema.getObjectByID(rule.getElementID()).asElement();
+		final IXMLElementType element = this.schema.getObjectByID(rule.getElementID(), IXMLElementType.class);
 		final Optional<IRequestedValue> requestedValue = rule.getRequestedValue();
 		final GeneratedValue genValue = generateValueForDataObject(element, requestedValue);
 		this.valueDescriptors

@@ -97,8 +97,7 @@ public abstract class AnalyzerRuleTestBase {
 	}
 
 	/**
-	 * Parses a bit of text embedded in HTML using Jsoup and returns the element
-	 * node
+	 * Parses a bit of text embedded in HTML using Jsoup and returns the element node
 	 *
 	 * @param text
 	 * @return
@@ -119,8 +118,6 @@ public abstract class AnalyzerRuleTestBase {
 		final IXMLAttribute attribute = mock(IXMLAttribute.class);
 		lenient().when(this.schema.getObjectByID(attributeID)).thenReturn(attribute);
 		lenient().when(attribute.getID()).thenReturn(attributeID);
-		lenient().when(attribute.isAttribute()).thenReturn(true);
-		lenient().when(attribute.asAttribute()).thenReturn(attribute);
 		lenient().when(attribute.isUserModifiable()).thenReturn(true);
 		lenient().when(attribute.getDataType()).thenReturn(XMLDataType.STRING);
 		lenient().when(attribute.getMaxLength()).thenReturn(Optional.empty());
@@ -136,8 +133,6 @@ public abstract class AnalyzerRuleTestBase {
 		final IXMLElementType elementType = mock(IXMLElementType.class);
 		lenient().when(this.schema.getObjectByID(elementTypeID)).thenReturn(elementType);
 		lenient().when(elementType.getID()).thenReturn(elementTypeID);
-		lenient().when(elementType.asElement()).thenReturn(elementType);
-		lenient().when(elementType.isElement()).thenReturn(true);
 		lenient().when(elementType.isUserModifiable()).thenReturn(Optional.of(true));
 		lenient().when(elementType.getContentType()).thenReturn(ContentType.DATA);
 		lenient().when(elementType.hasDataContent()).thenReturn(true);
@@ -155,8 +150,6 @@ public abstract class AnalyzerRuleTestBase {
 		final IXMLElementType elementType = mock(IXMLElementType.class);
 		lenient().when(this.schema.getObjectByID(elementTypeID)).thenReturn(elementType);
 		lenient().when(elementType.getID()).thenReturn(elementTypeID);
-		lenient().when(elementType.asElement()).thenReturn(elementType);
-		lenient().when(elementType.isElement()).thenReturn(true);
 		lenient().when(elementType.isUserModifiable()).thenReturn(Optional.of(true));
 		lenient().when(elementType.getContentType()).thenReturn(ContentType.MIXED);
 		lenient().when(elementType.hasMixedContent()).thenReturn(true);

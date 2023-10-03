@@ -41,16 +41,6 @@ public final class XMLAttribute extends XMLDataObject implements IXMLAttribute {
 	}
 
 	@Override
-	public boolean isAttribute() {
-		return true;
-	}
-
-	@Override
-	public IXMLAttribute asAttribute() {
-		return this;
-	}
-
-	@Override
 	public String getName() {
 		return this.name;
 	}

@@ -19,10 +19,6 @@ class XMLElementTypeTest {
 			.withContentType(ContentType.ELEMENT)
 			.withElementArrangement(ElementArrangement.ALL)
 			.build();
-		assertFalse(elem.isAttribute());
-		assertTrue(elem.isElement());
-		assertFalse(elem.isReference());
-		assertFalse(elem.isValue());
 		assertEquals(0, elem.getAttributes().size());
 		assertEquals(ContentType.ELEMENT, elem.getContentType());
 		assertFalse(elem.hasDataContent());

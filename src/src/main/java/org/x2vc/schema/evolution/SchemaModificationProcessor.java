@@ -128,7 +128,8 @@ public class SchemaModificationProcessor implements ISchemaModificationProcessor
 				final UUID parentElementID = entry.getKey();
 				logger.debug("processing attribute modifiers for element {}", parentElementID);
 
-				final IXMLElementType originalElement = this.inputSchema.getObjectByID(parentElementID).asElement();
+				final IXMLElementType originalElement = this.inputSchema.getObjectByID(parentElementID,
+						IXMLElementType.class);
 				final XMLElementType.Builder elementBuilder = this.elementBuilders.get(parentElementID);
 
 				// use a set of existing attribute names to prevent the creation of duplicate attributes
@@ -173,7 +174,8 @@ public class SchemaModificationProcessor implements ISchemaModificationProcessor
 				final UUID parentElementID = entry.getKey();
 				logger.debug("processing element modifiers for element {}", parentElementID);
 
-				final IXMLElementType originalElement = this.inputSchema.getObjectByID(parentElementID).asElement();
+				final IXMLElementType originalElement = this.inputSchema.getObjectByID(parentElementID,
+						IXMLElementType.class);
 				final XMLElementType.Builder elementBuilder = this.elementBuilders.get(parentElementID);
 
 				// use a set of existing element reference names to prevent the creation of duplicate attributes
@@ -272,7 +274,8 @@ public class SchemaModificationProcessor implements ISchemaModificationProcessor
 					if (!this.elementDependencies.containsKey(elementID)) {
 						logger.debug("processing element {}", elementID);
 						final Builder builder = entry.getValue();
-						final IXMLElementType originalElement = this.inputSchema.getObjectByID(elementID).asElement();
+						final IXMLElementType originalElement = this.inputSchema.getObjectByID(elementID,
+								IXMLElementType.class);
 						if (originalElement.hasElementContent()) {
 							for (final IXMLElementReference originalReference : originalElement.getElements()) {
 								logger.debug("resolving reference to sub-element {} ({})", originalReference.getName(),

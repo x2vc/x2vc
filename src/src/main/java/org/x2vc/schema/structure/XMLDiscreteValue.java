@@ -52,16 +52,6 @@ public final class XMLDiscreteValue extends AbstractSchemaObject implements IXML
 	}
 
 	@Override
-	public boolean isValue() {
-		return true;
-	}
-
-	@Override
-	public IXMLDiscreteValue asValue() {
-		return this;
-	}
-
-	@Override
 	public XMLDataType getDataType() {
 		return this.dataType;
 	}
