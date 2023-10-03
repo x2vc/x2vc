@@ -1,7 +1,6 @@
 package org.x2vc.schema.evolution;
 
-import static org.junit.jupiter.api.AssertionFailureBuilder.assertionFailure;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.x2vc.CustomAssertions.assertXMLEquals;
 
 import java.io.File;
 import java.io.IOException;
@@ -28,9 +27,6 @@ import org.x2vc.schema.structure.XMLDataType;
 import org.x2vc.schema.structure.XMLSchema;
 import org.x2vc.utilities.URIUtilities;
 import org.x2vc.utilities.URIUtilities.ObjectType;
-import org.xmlunit.builder.DiffBuilder;
-import org.xmlunit.builder.Input;
-import org.xmlunit.diff.Diff;
 
 import com.google.common.io.Files;
 
@@ -81,7 +77,7 @@ class SchemaModificationProcessorTest {
 		this.marshaller.marshal(modifiedSchema, actualSchemaSourceWriter);
 		final String actualSchemaSource = actualSchemaSourceWriter.toString();
 		final String expectedSchemaSource = originalSchemaSource.replace("version=\"1\">", "version=\"2\">");
-		compareXML(expectedSchemaSource, actualSchemaSource);
+		assertXMLEquals(expectedSchemaSource, actualSchemaSource);
 	}
 
 	@Test
@@ -142,7 +138,7 @@ class SchemaModificationProcessorTest {
 		this.marshaller.marshal(modifiedSchema, actualSchemaSourceWriter);
 		final String actualSchemaSource = actualSchemaSourceWriter.toString();
 
-		compareXML(expectedSchemaSource, actualSchemaSource);
+		assertXMLEquals(expectedSchemaSource, actualSchemaSource);
 	}
 
 	@Test
@@ -205,7 +201,7 @@ class SchemaModificationProcessorTest {
 		this.marshaller.marshal(modifiedSchema, actualSchemaSourceWriter);
 		final String actualSchemaSource = actualSchemaSourceWriter.toString();
 
-		compareXML(expectedSchemaSource, actualSchemaSource);
+		assertXMLEquals(expectedSchemaSource, actualSchemaSource);
 	}
 
 	@Test
@@ -267,7 +263,7 @@ class SchemaModificationProcessorTest {
 		this.marshaller.marshal(modifiedSchema, actualSchemaSourceWriter);
 		final String actualSchemaSource = actualSchemaSourceWriter.toString();
 
-		compareXML(expectedSchemaSource, actualSchemaSource);
+		assertXMLEquals(expectedSchemaSource, actualSchemaSource);
 	}
 
 	@Test
@@ -332,7 +328,7 @@ class SchemaModificationProcessorTest {
 		this.marshaller.marshal(modifiedSchema, actualSchemaSourceWriter);
 		final String actualSchemaSource = actualSchemaSourceWriter.toString();
 
-		compareXML(expectedSchemaSource, actualSchemaSource);
+		assertXMLEquals(expectedSchemaSource, actualSchemaSource);
 	}
 
 	@Test
@@ -405,7 +401,7 @@ class SchemaModificationProcessorTest {
 		this.marshaller.marshal(modifiedSchema, actualSchemaSourceWriter);
 		final String actualSchemaSource = actualSchemaSourceWriter.toString();
 
-		compareXML(expectedSchemaSource, actualSchemaSource);
+		assertXMLEquals(expectedSchemaSource, actualSchemaSource);
 	}
 
 	@Test
@@ -476,7 +472,7 @@ class SchemaModificationProcessorTest {
 		this.marshaller.marshal(modifiedSchema, actualSchemaSourceWriter);
 		final String actualSchemaSource = actualSchemaSourceWriter.toString();
 
-		compareXML(expectedSchemaSource, actualSchemaSource);
+		assertXMLEquals(expectedSchemaSource, actualSchemaSource);
 	}
 
 	@Test
@@ -551,22 +547,7 @@ class SchemaModificationProcessorTest {
 		this.marshaller.marshal(modifiedSchema, actualSchemaSourceWriter);
 		final String actualSchemaSource = actualSchemaSourceWriter.toString();
 
-		compareXML(expectedSchemaSource, actualSchemaSource);
-	}
-
-	private void compareXML(String expected, String actual) {
-		assertNotNull(actual);
-		final Diff d = DiffBuilder.compare(Input.fromString(expected))
-			.ignoreWhitespace()
-			.withTest(actual)
-			.build();
-		if (d.hasDifferences()) {
-			assertionFailure()
-				.message(d.fullDescription())
-				.expected(expected)
-				.actual(actual)
-				.buildAndThrow();
-		}
+		assertXMLEquals(expectedSchemaSource, actualSchemaSource);
 	}
 
 }

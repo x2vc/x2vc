@@ -1,9 +1,9 @@
 package org.x2vc.xml.request;
 
-import static org.junit.jupiter.api.AssertionFailureBuilder.assertionFailure;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
+import static org.x2vc.CustomAssertions.assertXMLEquals;
 
 import java.io.StringWriter;
 import java.net.URI;
@@ -16,9 +16,6 @@ import javax.xml.bind.Marshaller;
 import org.junit.jupiter.api.Test;
 import org.x2vc.xml.document.IDocumentModifier;
 import org.x2vc.xml.request.AddElementRule.Builder;
-import org.xmlunit.builder.DiffBuilder;
-import org.xmlunit.builder.Input;
-import org.xmlunit.diff.Diff;
 
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableMultimap;
@@ -133,8 +130,7 @@ class DocumentRequestTest {
 								    </extensionFunctions>
 								</request>
 								""";
-		compareXML(expected, writer.toString());
-
+		assertXMLEquals(expected, writer.toString());
 	}
 
 	/**
@@ -323,18 +319,4 @@ class DocumentRequestTest {
 		EqualsVerifier.forClass(DocumentRequest.class).verify();
 	}
 
-	private void compareXML(String expected, String actual) {
-		assertNotNull(actual);
-		final Diff d = DiffBuilder.compare(Input.fromString(expected))
-			.ignoreWhitespace()
-			.withTest(actual)
-			.build();
-		if (d.hasDifferences()) {
-			assertionFailure()
-				.message(d.fullDescription())
-				.expected(expected)
-				.actual(actual)
-				.buildAndThrow();
-		}
-	}
 }

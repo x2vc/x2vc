@@ -1,11 +1,11 @@
 package org.x2vc.xml.document;
 
-import static org.junit.jupiter.api.AssertionFailureBuilder.assertionFailure;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
+import static org.x2vc.CustomAssertions.assertXMLEquals;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.w3c.dom.Node;
 import org.x2vc.schema.ISchemaManager;
 import org.x2vc.schema.structure.IAttribute;
 import org.x2vc.schema.structure.IElementReference;
@@ -40,9 +41,6 @@ import org.x2vc.xml.value.IValueDescriptor;
 import org.x2vc.xml.value.IValueGenerator;
 import org.x2vc.xml.value.IValueGeneratorFactory;
 import org.x2vc.xml.value.ValueDescriptor;
-import org.xmlunit.builder.DiffBuilder;
-import org.xmlunit.builder.Input;
-import org.xmlunit.diff.Diff;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
@@ -146,7 +144,7 @@ class DocumentGeneratorTest {
 		final String expectedXML = """
 									<root someAttribute="foobar"/>
 									""";
-		compareXML(expectedXML, document.getDocument());
+		assertXMLEquals(expectedXML, document.getDocument(), node -> traceNodeFilter(node));
 
 		final IXMLDocumentDescriptor descriptor = document.getDocumentDescriptor();
 		assertEquals(VALUE_PREFIX, descriptor.getValuePrefix());
@@ -181,7 +179,7 @@ class DocumentGeneratorTest {
 		final String expectedXML = """
 									<root>foobar</root>
 									""";
-		compareXML(expectedXML, document.getDocument());
+		assertXMLEquals(expectedXML, document.getDocument(), node -> traceNodeFilter(node));
 
 		final IXMLDocumentDescriptor descriptor = document.getDocumentDescriptor();
 		assertEquals(VALUE_PREFIX, descriptor.getValuePrefix());
@@ -217,7 +215,7 @@ class DocumentGeneratorTest {
 		final String expectedXML = """
 									<root>foo&lt;br/&gt;bar</root>
 									""";
-		compareXML(expectedXML, document.getDocument());
+		assertXMLEquals(expectedXML, document.getDocument(), node -> traceNodeFilter(node));
 
 		final IXMLDocumentDescriptor descriptor = document.getDocumentDescriptor();
 		assertEquals(VALUE_PREFIX, descriptor.getValuePrefix());
@@ -255,7 +253,7 @@ class DocumentGeneratorTest {
 										<item/>
 									</root>
 									""";
-		compareXML(expectedXML, document.getDocument());
+		assertXMLEquals(expectedXML, document.getDocument(), node -> traceNodeFilter(node));
 	}
 
 	@Test
@@ -308,7 +306,7 @@ class DocumentGeneratorTest {
 		final String expectedXML = """
 									<root><b>foo</b><i>bar</i></root>
 									""";
-		compareXML(expectedXML, document.getDocument());
+		assertXMLEquals(expectedXML, document.getDocument(), node -> traceNodeFilter(node));
 
 		final IXMLDocumentDescriptor descriptor = document.getDocumentDescriptor();
 		assertEquals(VALUE_PREFIX, descriptor.getValuePrefix());
@@ -332,20 +330,8 @@ class DocumentGeneratorTest {
 		return schema;
 	}
 
-	private void compareXML(String expected, String actual) {
-		assertNotNull(actual);
-		final Diff d = DiffBuilder.compare(Input.fromString(expected))
-			.ignoreWhitespace()
-			.withTest(actual)
-			.withNodeFilter(node -> node.getPrefix() != null && !node.getPrefix().equals(this.traceNamespacePrefix))
-			.build();
-		if (d.hasDifferences()) {
-			assertionFailure()
-				.message(d.fullDescription())
-				.expected(expected)
-				.actual(actual)
-				.buildAndThrow();
-		}
+	private boolean traceNodeFilter(Node node) {
+		return node.getPrefix() != null && !node.getPrefix().equals(this.traceNamespacePrefix);
 	}
 
 }
