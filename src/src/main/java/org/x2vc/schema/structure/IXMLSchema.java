@@ -1,9 +1,10 @@
 package org.x2vc.schema.structure;
 
 import java.net.URI;
-import java.util.Collection;
-import java.util.Set;
 import java.util.UUID;
+
+import com.google.common.collect.ImmutableCollection;
+import com.google.common.collect.ImmutableSet;
 
 /**
  * A working copy of the XML Schema. This contains the stylesheet parameters as well as an simplified version of a
@@ -40,12 +41,12 @@ public interface IXMLSchema {
 	/**
 	 * @return the element types that comprise the schema.
 	 */
-	Collection<IElementType> getElementTypes();
+	ImmutableCollection<IElementType> getElementTypes();
 
 	/**
 	 * @return the possible root element references
 	 */
-	Collection<IElementReference> getRootElements();
+	ImmutableCollection<IElementReference> getRootElements();
 
 	/**
 	 * @param id the ID of a schema object
@@ -69,12 +70,12 @@ public interface IXMLSchema {
 	 * @return a set of all the paths the object can appear in a document
 	 * @throws IllegalArgumentException if the object is not part of the schema
 	 */
-	Set<String> getObjectPaths(UUID id) throws IllegalArgumentException;
+	ImmutableSet<String> getObjectPaths(UUID id) throws IllegalArgumentException;
 
 	/**
 	 * @param elementType
 	 * @return all element references contained in the schema that use to the element type
 	 */
-	Set<IElementReference> getReferencesUsing(IElementType elementType);
+	ImmutableSet<IElementReference> getReferencesUsing(IElementType elementType);
 
 }

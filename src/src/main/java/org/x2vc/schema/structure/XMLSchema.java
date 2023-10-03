@@ -42,7 +42,8 @@ public class XMLSchema implements IXMLSchema {
 	/**
 	 * Parameterless constructor for deserialization only.
 	 */
-	XMLSchema() {
+	@SuppressWarnings("java:S4738") // suggestion is nonsense, java type does not fit
+	private XMLSchema() {
 		this.elementTypes = Lists.newArrayList();
 		this.rootElements = Lists.newArrayList();
 	}
@@ -53,8 +54,12 @@ public class XMLSchema implements IXMLSchema {
 		this.version = builder.version;
 		// sort the element types and root references by ID - irrelevant for the actual function, but makes unit testing
 		// A LOT easier
-		this.elementTypes = builder.elementTypes.stream().sorted((e1, e2) -> e1.getID().compareTo(e2.getID())).toList();
-		this.rootElements = builder.rootElements.stream().sorted((e1, e2) -> e1.getID().compareTo(e2.getID())).toList();
+		this.elementTypes = builder.elementTypes.stream()
+			.sorted((e1, e2) -> e1.getID().compareTo(e2.getID()))
+			.toList();
+		this.rootElements = builder.rootElements.stream()
+			.sorted((e1, e2) -> e1.getID().compareTo(e2.getID()))
+			.toList();
 	}
 
 	@XmlAttribute
@@ -101,13 +106,13 @@ public class XMLSchema implements IXMLSchema {
 	}
 
 	@Override
-	public Collection<IElementType> getElementTypes() {
-		return this.elementTypes;
+	public ImmutableCollection<IElementType> getElementTypes() {
+		return ImmutableList.copyOf(this.elementTypes);
 	}
 
 	@Override
-	public Collection<IElementReference> getRootElements() {
-		return this.rootElements;
+	public ImmutableCollection<IElementReference> getRootElements() {
+		return ImmutableList.copyOf(this.rootElements);
 	}
 
 	@Override
@@ -244,7 +249,7 @@ public class XMLSchema implements IXMLSchema {
 	});
 
 	@Override
-	public Set<String> getObjectPaths(UUID id) throws IllegalArgumentException {
+	public ImmutableSet<String> getObjectPaths(UUID id) throws IllegalArgumentException {
 		final Multimap<UUID, String> objectPathMap = this.objectPathMapSupplier.get();
 		if (!objectPathMap.containsKey(id)) {
 			throw logger.throwing(
@@ -288,7 +293,7 @@ public class XMLSchema implements IXMLSchema {
 	}
 
 	@Override
-	public Set<IElementReference> getReferencesUsing(IElementType elementType) {
+	public ImmutableSet<IElementReference> getReferencesUsing(IElementType elementType) {
 		logger.traceEntry();
 		final Set<IElementReference> result = new HashSet<>();
 		result.addAll(this.rootElements.stream()
@@ -299,7 +304,7 @@ public class XMLSchema implements IXMLSchema {
 			.flatMap(elem -> elem.getElements().stream())
 			.filter(ref -> ref.getElementID().equals(elementType.getID()))
 			.toList());
-		return logger.traceExit(result);
+		return logger.traceExit(ImmutableSet.copyOf(result));
 	}
 
 	/**
