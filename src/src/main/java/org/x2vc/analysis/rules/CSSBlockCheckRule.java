@@ -69,7 +69,7 @@ public class CSSBlockCheckRule extends AbstractElementRule {
 				final String currentValue = valueDescriptor.getValue();
 				// try to replace the entire script contents with some dummy value
 				final AnalyzerRulePayload payload = AnalyzerRulePayload.builder()
-					.withSchemaElementID(valueDescriptor.getSchemaElementID())
+					.withSchemaElementID(valueDescriptor.getSchemaObjectID())
 					.withElementSelector(elementPath)
 					.withInjectedValue("XSS-S.2")
 					.build();

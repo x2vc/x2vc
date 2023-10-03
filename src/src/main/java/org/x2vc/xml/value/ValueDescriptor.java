@@ -6,42 +6,43 @@ import java.util.UUID;
 /**
  * Standard implementation of {@link IValueDescriptor}.
  */
-public class ValueDescriptor implements IValueDescriptor {
+public final class ValueDescriptor implements IValueDescriptor {
 
-	private UUID schemaElementID;
-	private UUID generationRuleID;
-	private String value;
-	private boolean requested = false;
+	private final UUID schemaObjectID;
+	private final UUID generationRuleID;
+	private final String value;
+	private final boolean requested;
 
 	/**
-	 * @param schemaElementID
+	 * @param schemaObjectID
 	 * @param generationRuleID
 	 * @param value
 	 * @param requested
 	 */
-	public ValueDescriptor(UUID schemaElementID, UUID generationRuleID, String value, boolean requested) {
+	public ValueDescriptor(UUID schemaObjectID, UUID generationRuleID, String value, boolean requested) {
 		super();
-		this.schemaElementID = schemaElementID;
+		this.schemaObjectID = schemaObjectID;
 		this.generationRuleID = generationRuleID;
 		this.value = value;
 		this.requested = requested;
 	}
 
 	/**
-	 * @param schemaElementID
+	 * @param schemaObjectID
 	 * @param generationRuleID
 	 * @param value
 	 */
-	public ValueDescriptor(UUID schemaElementID, UUID generationRuleID, String value) {
+	public ValueDescriptor(UUID schemaObjectID, UUID generationRuleID, String value) {
 		super();
-		this.schemaElementID = schemaElementID;
+		this.schemaObjectID = schemaObjectID;
 		this.generationRuleID = generationRuleID;
 		this.value = value;
+		this.requested = false;
 	}
 
 	@Override
-	public UUID getSchemaElementID() {
-		return this.schemaElementID;
+	public UUID getSchemaObjectID() {
+		return this.schemaObjectID;
 	}
 
 	@Override
@@ -61,7 +62,7 @@ public class ValueDescriptor implements IValueDescriptor {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(this.generationRuleID, this.requested, this.schemaElementID, this.value);
+		return Objects.hash(this.generationRuleID, this.requested, this.schemaObjectID, this.value);
 	}
 
 	@Override
@@ -77,7 +78,7 @@ public class ValueDescriptor implements IValueDescriptor {
 		}
 		final ValueDescriptor other = (ValueDescriptor) obj;
 		return Objects.equals(this.generationRuleID, other.generationRuleID) && this.requested == other.requested
-				&& Objects.equals(this.schemaElementID, other.schemaElementID)
+				&& Objects.equals(this.schemaObjectID, other.schemaObjectID)
 				&& Objects.equals(this.value, other.value);
 	}
 

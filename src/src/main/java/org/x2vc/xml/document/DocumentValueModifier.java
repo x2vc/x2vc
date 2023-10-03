@@ -19,7 +19,7 @@ public class DocumentValueModifier implements IDocumentValueModifier {
 	private IModifierPayload payload;
 
 	@XmlAttribute
-	private UUID schemaElementID;
+	private UUID schemaObjectID;
 
 	@XmlAttribute
 	private UUID generationRuleID;
@@ -35,7 +35,7 @@ public class DocumentValueModifier implements IDocumentValueModifier {
 
 	private DocumentValueModifier(Builder builder) {
 		this.payload = builder.payload;
-		this.schemaElementID = builder.schemaElementID;
+		this.schemaObjectID = builder.schemaObjectID;
 		this.generationRuleID = builder.generationRuleID;
 		this.originalValue = builder.originalValue;
 		this.replacementValue = builder.replacementValue;
@@ -48,8 +48,8 @@ public class DocumentValueModifier implements IDocumentValueModifier {
 	}
 
 	@Override
-	public UUID getSchemaElementID() {
-		return this.schemaElementID;
+	public UUID getSchemaObjectID() {
+		return this.schemaObjectID;
 	}
 
 	@Override
@@ -96,13 +96,13 @@ public class DocumentValueModifier implements IDocumentValueModifier {
 	/**
 	 * Creates a new builder
 	 *
-	 * @param schemaElementID
+	 * @param schemaObjectID
 	 * @param generationRuleID
 	 * @return the builder
 	 *
 	 */
-	public static Builder builder(UUID schemaElementID, UUID generationRuleID) {
-		return new Builder(schemaElementID, generationRuleID);
+	public static Builder builder(UUID schemaObjectID, UUID generationRuleID) {
+		return new Builder(schemaObjectID, generationRuleID);
 	}
 
 	/**
@@ -110,7 +110,7 @@ public class DocumentValueModifier implements IDocumentValueModifier {
 	 */
 	public static final class Builder {
 		private IModifierPayload payload;
-		private UUID schemaElementID;
+		private UUID schemaObjectID;
 		private UUID generationRuleID;
 		private String originalValue;
 		private String replacementValue;
@@ -122,25 +122,25 @@ public class DocumentValueModifier implements IDocumentValueModifier {
 		 * @param valueDescriptor the descriptor of the value to modify
 		 */
 		private Builder(IValueDescriptor valueDescriptor) {
-			this.schemaElementID = valueDescriptor.getSchemaElementID();
+			this.schemaObjectID = valueDescriptor.getSchemaObjectID();
 			this.generationRuleID = valueDescriptor.getGenerationRuleID();
 		}
 
 		/**
 		 * Creates a new builder
 		 *
-		 * @param schemaElementID
+		 * @param schemaObjectID
 		 * @param generationRuleID
 		 *
 		 */
-		private Builder(UUID schemaElementID, UUID generationRuleID) {
-			this.schemaElementID = schemaElementID;
+		private Builder(UUID schemaObjectID, UUID generationRuleID) {
+			this.schemaObjectID = schemaObjectID;
 			this.generationRuleID = generationRuleID;
 		}
 
 		private Builder(DocumentValueModifier documentValueModifier) {
 			this.payload = documentValueModifier.payload;
-			this.schemaElementID = documentValueModifier.schemaElementID;
+			this.schemaObjectID = documentValueModifier.schemaObjectID;
 			this.generationRuleID = documentValueModifier.generationRuleID;
 			this.originalValue = documentValueModifier.originalValue;
 			this.replacementValue = documentValueModifier.replacementValue;
@@ -216,7 +216,7 @@ public class DocumentValueModifier implements IDocumentValueModifier {
 	@Override
 	public int hashCode() {
 		return Objects.hash(this.analyzerRuleID, this.generationRuleID, this.originalValue, this.payload,
-				this.replacementValue, this.schemaElementID);
+				this.replacementValue, this.schemaObjectID);
 	}
 
 	@Override
@@ -236,7 +236,7 @@ public class DocumentValueModifier implements IDocumentValueModifier {
 				&& Objects.equals(this.originalValue, other.originalValue)
 				&& Objects.equals(this.payload, other.payload)
 				&& Objects.equals(this.replacementValue, other.replacementValue)
-				&& Objects.equals(this.schemaElementID, other.schemaElementID);
+				&& Objects.equals(this.schemaObjectID, other.schemaObjectID);
 	}
 
 }

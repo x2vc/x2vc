@@ -16,8 +16,8 @@ import org.x2vc.report.IVulnerabilityCandidate;
 import org.x2vc.report.VulnerabilityCandidate;
 import org.x2vc.schema.ISchemaManager;
 import org.x2vc.schema.structure.IElementType;
-import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.schema.structure.ISchemaObject;
+import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.schema.structure.XMLDataType;
 import org.x2vc.xml.document.IDocumentModifier;
 import org.x2vc.xml.document.IXMLDocumentContainer;
@@ -80,7 +80,7 @@ public class DisabledOutputEscapingCheckRule extends AbstractTextRule {
 			final IXMLSchema schema = this.schemaManager.getSchema(xmlContainer.getStylesheeURI());
 			for (final IValueDescriptor valueDescriptor : valueDescriptors.get()) {
 				final String currentValue = valueDescriptor.getValue();
-				final UUID schemaElementID = valueDescriptor.getSchemaElementID();
+				final UUID schemaElementID = valueDescriptor.getSchemaObjectID();
 				// The disable-output-escaping vulnerability only applies to string data output
 				// elements
 				final ISchemaObject schemaObject = schema.getObjectByID(schemaElementID);

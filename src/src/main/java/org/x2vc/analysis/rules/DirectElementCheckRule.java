@@ -71,7 +71,7 @@ public class DirectElementCheckRule extends AbstractElementRule {
 				final String currentValue = valueDescriptor.getValue();
 				// try to replace the entire element with script element
 				final AnalyzerRulePayload payload = AnalyzerRulePayload.builder()
-					.withSchemaElementID(valueDescriptor.getSchemaElementID())
+					.withSchemaElementID(valueDescriptor.getSchemaObjectID())
 					.withElementSelector(parentElementPath + "/xss-e1-element")
 					.withInjectedValue("xss-e1-element")
 					.build();

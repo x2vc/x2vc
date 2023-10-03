@@ -20,6 +20,7 @@ import org.x2vc.xml.document.IDocumentValueModifier;
 import org.x2vc.xml.request.AddElementRule.Builder;
 
 import com.github.racc.tscg.TypesafeConfig;
+import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 
@@ -52,9 +53,11 @@ public class RequestGenerator implements IRequestGenerator {
 			MixedContentGenerationMode mixedContentGenerationMode) {
 		logger.traceEntry();
 		final IAddElementRule rootElementRule = generateRootElementRule(schema);
+		final Collection<IExtensionFunctionRule> extensionFunctionRules = generateExtensionFunctionRules(schema);
 		final DocumentRequest request = DocumentRequest
 			.builder(schema, rootElementRule)
 			.withMixedContentGenerationMode(mixedContentGenerationMode)
+			.addExtensionFunctionRules(extensionFunctionRules)
 			.build();
 		return logger.traceExit(request);
 	}
@@ -233,6 +236,20 @@ public class RequestGenerator implements IRequestGenerator {
 		return logger.traceExit(referenceArray[index]);
 	}
 
+	/**
+	 * Generates the rules for the extension functions
+	 *
+	 * @param schema
+	 * @return
+	 */
+	private Collection<IExtensionFunctionRule> generateExtensionFunctionRules(IXMLSchema schema) {
+		logger.traceEntry();
+		final List<IExtensionFunctionRule> newRules = schema.getExtensionFunctions().stream()
+			.map(f -> (IExtensionFunctionRule) new ExtensionFunctionRule(f.getID()))
+			.toList();
+		return logger.traceExit(newRules);
+	}
+
 	// ===== request modification ==========
 
 	@Override
@@ -242,10 +259,13 @@ public class RequestGenerator implements IRequestGenerator {
 		final IXMLSchema schema = this.schemaManager.getSchema(originalRequest.getStylesheeURI(),
 				originalRequest.getSchemaVersion());
 		IAddElementRule rootElementRule = null;
+		Collection<IExtensionFunctionRule> extensionFunctionRules = null;
 
 		// dispatch according to modifier type
 		if (modifier instanceof final IDocumentValueModifier valueModifier) {
 			rootElementRule = copyAndModifyAddElementRule(originalRequest.getRootElementRule(), valueModifier);
+			extensionFunctionRules = copyAndModifyExtensionFunctionRules(originalRequest.getExtensionFunctionRules(),
+					valueModifier);
 		} else {
 			throw logger.throwing(new IllegalArgumentException(
 					String.format("Unknown modifier type %s", modifier.getClass().toString())));
@@ -254,6 +274,7 @@ public class RequestGenerator implements IRequestGenerator {
 		final DocumentRequest request = DocumentRequest
 			.builder(schema, rootElementRule)
 			.withModifier(modifier)
+			.addExtensionFunctionRules(extensionFunctionRules)
 			.withMixedContentGenerationMode(mixedContentGenerationMode)
 			.build();
 		return logger.traceExit(request);
@@ -357,6 +378,32 @@ public class RequestGenerator implements IRequestGenerator {
 			newRule = new SetAttributeRule(originalRule.getID(), originalRule.getAttributeID());
 		}
 		return logger.traceExit(newRule);
+	}
+
+	/**
+	 * Creates a copy of the {@link IExtensionFunctionRule}s while applying the modification specified by a
+	 * {@link IDocumentValueModifier}.
+	 *
+	 * @param originalRules
+	 * @param valueModifier
+	 * @return
+	 */
+	private Collection<IExtensionFunctionRule> copyAndModifyExtensionFunctionRules(
+			ImmutableCollection<IExtensionFunctionRule> originalRules, IDocumentValueModifier valueModifier) {
+		logger.traceEntry();
+		final List<IExtensionFunctionRule> newRules = Lists.newArrayList();
+		for (final IExtensionFunctionRule originalRule : originalRules) {
+			if (originalRule.getID().equals(valueModifier.getGenerationRuleID())) {
+				logger.debug("Adding requested value to rule {} to generate result of function {}",
+						originalRule.getID(),
+						originalRule.getFunctionID());
+				newRules.add(new ExtensionFunctionRule(originalRule.getID(), originalRule.getFunctionID(),
+						new RequestedValue(valueModifier)));
+			} else {
+				newRules.add(new ExtensionFunctionRule(originalRule.getID(), originalRule.getFunctionID()));
+			}
+		}
+		return logger.traceExit(newRules);
 	}
 
 }

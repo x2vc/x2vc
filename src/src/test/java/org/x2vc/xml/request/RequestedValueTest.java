@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -38,7 +37,6 @@ class RequestedValueTest {
 	 * Test method for {@link org.x2vc.xml.request.RequestedValue#equals(java.lang.Object)}.
 	 */
 	@Test
-	@Disabled("implementation needs to be adjusted") // TODO check equals() and hashCode()
 	void testEqualsObject() {
 		EqualsVerifier.forClass(RequestedValue.class).verify();
 	}

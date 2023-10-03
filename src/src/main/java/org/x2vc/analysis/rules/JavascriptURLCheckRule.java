@@ -23,8 +23,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
 
 /**
- * Rule J.2: Check whether the src attribute of a script tag can be manipulated
- * via the input data.
+ * Rule J.2: Check whether the src attribute of a script tag can be manipulated via the input data.
  */
 public class JavascriptURLCheckRule extends AbstractAttributeRule {
 
@@ -81,7 +80,7 @@ public class JavascriptURLCheckRule extends AbstractAttributeRule {
 
 				// try to inject a source path into the attribute
 				final AnalyzerRulePayload stylePayload = AnalyzerRulePayload.builder()
-					.withSchemaElementID(valueDescriptor.getSchemaElementID())
+					.withSchemaElementID(valueDescriptor.getSchemaObjectID())
 					.withInjectedValue("XSS-J.2")
 					.withElementSelector(elementPath)
 					.build();

@@ -5,8 +5,8 @@ import java.util.*;
 
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -16,39 +16,47 @@ import org.x2vc.xml.document.IDocumentModifier;
 
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableMultimap;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.MultimapBuilder;
+import com.google.common.collect.*;
 
 /**
  * Standard implementation of {@link IDocumentRequest}.
  */
 @XmlRootElement(name = "request")
-public class DocumentRequest implements IDocumentRequest {
+public final class DocumentRequest implements IDocumentRequest {
 
 	private static final Logger logger = LogManager.getLogger();
 
 	@XmlAttribute
-	private URI schemaURI;
+	private final URI schemaURI;
 
 	@XmlAttribute
-	private int schemaVersion;
+	private final int schemaVersion;
 
 	@XmlAttribute
-	private URI stylesheetURI;
+	private final URI stylesheetURI;
 
 	@XmlElement(type = AddElementRule.class)
-	private IAddElementRule rootElementRule;
+	private final IAddElementRule rootElementRule;
 
 	@XmlElement(type = DocumentValueModifier.class)
-	private IDocumentModifier modifier;
+	private final IDocumentModifier modifier;
+
+	@XmlElementWrapper(name = "extensionFunctions")
+	@XmlElement(name = "function", type = ExtensionFunctionRule.class)
+	private final List<IExtensionFunctionRule> extensionFunctionRules;
 
 	@XmlAttribute
-	private MixedContentGenerationMode mixedContentGenerationMode;
+	private final MixedContentGenerationMode mixedContentGenerationMode;
 
-	DocumentRequest() {
+	private DocumentRequest() {
 		// used for de-/serialization only
+		this.schemaURI = null;
+		this.schemaVersion = -1;
+		this.stylesheetURI = null;
+		this.rootElementRule = null;
+		this.modifier = null;
+		this.mixedContentGenerationMode = null;
+		this.extensionFunctionRules = null;
 	}
 
 	private DocumentRequest(Builder builder) {
@@ -58,6 +66,7 @@ public class DocumentRequest implements IDocumentRequest {
 		this.rootElementRule = builder.rootElementRule;
 		this.modifier = builder.modifier;
 		this.mixedContentGenerationMode = builder.mixedContentGenerationMode;
+		this.extensionFunctionRules = builder.extensionFunctionRules;
 	}
 
 	@Override
@@ -81,6 +90,11 @@ public class DocumentRequest implements IDocumentRequest {
 	}
 
 	@Override
+	public ImmutableCollection<IExtensionFunctionRule> getExtensionFunctionRules() {
+		return ImmutableList.copyOf(this.extensionFunctionRules);
+	}
+
+	@Override
 	public MixedContentGenerationMode getMixedContentGenerationMode() {
 		return this.mixedContentGenerationMode;
 	}
@@ -96,12 +110,11 @@ public class DocumentRequest implements IDocumentRequest {
 		}
 	}
 
-	@XmlTransient
 	@SuppressWarnings("java:S4738") // Java supplier does not support memoization
-	Supplier<ImmutableMap<UUID, IGenerationRule>> ruleByIDSupplier = Suppliers.memoize(() -> {
+	private transient Supplier<ImmutableMap<UUID, IGenerationRule>> ruleByIDSupplier = Suppliers.memoize(() -> {
 		logger.traceEntry();
 		final Map<UUID, IGenerationRule> newMap = new HashMap<>();
-		addRuleIDsToMapRecursively(this.rootElementRule, newMap);
+		addRuleIDsToMapRecursively(getRootElementRule(), newMap);
 		return logger.traceExit(ImmutableMap.copyOf(newMap));
 	});
 
@@ -122,14 +135,20 @@ public class DocumentRequest implements IDocumentRequest {
 		return this.requestedValuesSupplier.get();
 	}
 
-	@XmlTransient
 	@SuppressWarnings("java:S4738") // Java supplier does not support memoization
-	Supplier<ImmutableMultimap<UUID, IRequestedValue>> requestedValuesSupplier = Suppliers.memoize(() -> {
-		logger.traceEntry();
-		final Multimap<UUID, IRequestedValue> newMap = MultimapBuilder.hashKeys().arrayListValues().build();
-		addRequestedValuesToMapRecursively(this.rootElementRule, newMap);
-		return logger.traceExit(ImmutableMultimap.copyOf(newMap));
-	});
+	private transient Supplier<ImmutableMultimap<UUID, IRequestedValue>> requestedValuesSupplier = Suppliers
+		.memoize(() -> {
+			logger.traceEntry();
+			final Multimap<UUID, IRequestedValue> newMap = MultimapBuilder.hashKeys().arrayListValues().build();
+			addRequestedValuesToMapRecursively(getRootElementRule(), newMap);
+			for (final IExtensionFunctionRule functionRule : getExtensionFunctionRules()) {
+				final Optional<IRequestedValue> oRV = functionRule.getRequestedValue();
+				if (oRV.isPresent()) {
+					newMap.put(functionRule.getFunctionID(), oRV.get());
+				}
+			}
+			return logger.traceExit(ImmutableMultimap.copyOf(newMap));
+		});
 
 	/**
 	 * @param rootElementRule2
@@ -213,6 +232,7 @@ public class DocumentRequest implements IDocumentRequest {
 		private IAddElementRule rootElementRule;
 		private IDocumentModifier modifier;
 		private MixedContentGenerationMode mixedContentGenerationMode = MixedContentGenerationMode.FULL;
+		private List<IExtensionFunctionRule> extensionFunctionRules = Lists.newArrayList();
 
 		private Builder(URI schemaURI, int schemaVersion, URI stylesheetURI, IAddElementRule rootElementRule) {
 			this.schemaURI = schemaURI;
@@ -251,6 +271,28 @@ public class DocumentRequest implements IDocumentRequest {
 		}
 
 		/**
+		 * Builder method for extensionFunctionRules parameter.
+		 *
+		 * @param extensionFunctionRule field to set
+		 * @return builder
+		 */
+		public Builder addExtensionFunctionRule(IExtensionFunctionRule extensionFunctionRule) {
+			this.extensionFunctionRules.add(extensionFunctionRule);
+			return this;
+		}
+
+		/**
+		 * Builder method for extensionFunctionRules parameter.
+		 *
+		 * @param extensionFunctionRules field to set
+		 * @return builder
+		 */
+		public Builder addExtensionFunctionRules(Collection<IExtensionFunctionRule> extensionFunctionRules) {
+			this.extensionFunctionRules.addAll(extensionFunctionRules);
+			return this;
+		}
+
+		/**
 		 * Builder method of the builder.
 		 *
 		 * @return built class
@@ -262,9 +304,9 @@ public class DocumentRequest implements IDocumentRequest {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(this.mixedContentGenerationMode, this.modifier, this.rootElementRule, this.schemaURI,
-				this.schemaVersion,
-				this.stylesheetURI);
+		return Objects.hash(this.extensionFunctionRules, this.mixedContentGenerationMode, this.modifier,
+				this.rootElementRule, this.schemaURI,
+				this.schemaVersion, this.stylesheetURI);
 	}
 
 	@Override
@@ -272,14 +314,12 @@ public class DocumentRequest implements IDocumentRequest {
 		if (this == obj) {
 			return true;
 		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
+		if (!(obj instanceof DocumentRequest)) {
 			return false;
 		}
 		final DocumentRequest other = (DocumentRequest) obj;
-		return this.mixedContentGenerationMode == other.mixedContentGenerationMode
+		return Objects.equals(this.extensionFunctionRules, other.extensionFunctionRules)
+				&& this.mixedContentGenerationMode == other.mixedContentGenerationMode
 				&& Objects.equals(this.modifier, other.modifier)
 				&& Objects.equals(this.rootElementRule, other.rootElementRule)
 				&& Objects.equals(this.schemaURI, other.schemaURI) && this.schemaVersion == other.schemaVersion

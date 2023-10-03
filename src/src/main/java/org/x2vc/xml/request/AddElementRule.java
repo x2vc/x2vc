@@ -17,33 +17,33 @@ import com.google.common.collect.Sets;
 /**
  * Standard implementation of {@link IAddElementRule}.
  */
-public class AddElementRule extends AbstractGenerationRule implements IAddElementRule {
+public final class AddElementRule extends AbstractGenerationRule implements IAddElementRule {
 
 	@XmlAttribute
-	private UUID elementReferenceID;
+	private final UUID elementReferenceID;
 
 	@XmlElementWrapper(name = "attributeRules")
 	@XmlElement(type = SetAttributeRule.class, name = "attributeRule")
-	private ImmutableSet<ISetAttributeRule> attributeRules;
+	private final Set<ISetAttributeRule> attributeRules;
 
 	@XmlElementWrapper(name = "contentRules")
 	@XmlElements({ @XmlElement(name = "addDataContentRule", type = AddDataContentRule.class),
 			@XmlElement(name = "addElementRule", type = AddElementRule.class),
 			@XmlElement(name = "addRawContentRule", type = AddRawContentRule.class) })
-	private ImmutableList<IContentGenerationRule> contentRules;
+	private final List<IContentGenerationRule> contentRules;
 
 	private AddElementRule(UUID ruleID, Builder builder) {
 		super(ruleID);
 		this.elementReferenceID = builder.elementReferenceID;
-		this.attributeRules = ImmutableSet.copyOf(builder.attributeRules);
-		this.contentRules = ImmutableList.copyOf(builder.contentRules);
+		this.attributeRules = builder.attributeRules;
+		this.contentRules = builder.contentRules;
 	}
 
 	private AddElementRule(Builder builder) {
 		super();
 		this.elementReferenceID = builder.elementReferenceID;
-		this.attributeRules = ImmutableSet.copyOf(builder.attributeRules);
-		this.contentRules = ImmutableList.copyOf(builder.contentRules);
+		this.attributeRules = builder.attributeRules;
+		this.contentRules = builder.contentRules;
 	}
 
 	@Override
@@ -58,12 +58,12 @@ public class AddElementRule extends AbstractGenerationRule implements IAddElemen
 
 	@Override
 	public ImmutableSet<ISetAttributeRule> getAttributeRules() {
-		return this.attributeRules;
+		return ImmutableSet.copyOf(this.attributeRules);
 	}
 
 	@Override
 	public ImmutableList<IContentGenerationRule> getContentRules() {
-		return this.contentRules;
+		return ImmutableList.copyOf(this.contentRules);
 	}
 
 	@Override

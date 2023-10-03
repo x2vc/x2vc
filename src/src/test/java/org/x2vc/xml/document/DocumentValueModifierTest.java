@@ -36,7 +36,7 @@ class DocumentValueModifierTest {
 		final DocumentValueModifier normalizedModifier = (DocumentValueModifier) originalModifier.normalize();
 
 		assertNotSame(originalModifier, normalizedModifier);
-		assertEquals(schemaElementID, normalizedModifier.getSchemaElementID());
+		assertEquals(schemaElementID, normalizedModifier.getSchemaObjectID());
 		assertEquals(UUID.fromString("0000-00-00-00-000000"), normalizedModifier.getGenerationRuleID());
 		assertTrue(normalizedModifier.getOriginalValue().isEmpty());
 		assertEquals(replacementValue, normalizedModifier.getReplacementValue());

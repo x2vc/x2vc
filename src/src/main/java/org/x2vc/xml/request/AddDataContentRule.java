@@ -10,13 +10,13 @@ import javax.xml.bind.annotation.XmlElement;
 /**
  * Standard implementation of {@link IAddDataContentRule}.
  */
-public class AddDataContentRule extends AbstractGenerationRule implements IAddDataContentRule {
+public final class AddDataContentRule extends AbstractGenerationRule implements IAddDataContentRule {
 
 	@XmlAttribute
-	private UUID elementID;
+	private final UUID elementID;
 
 	@XmlElement(type = RequestedValue.class)
-	private IRequestedValue requestedValue;
+	private final IRequestedValue requestedValue;
 
 	/**
 	 * Create a new rule with a specified ID and a requested value specified.
@@ -52,6 +52,7 @@ public class AddDataContentRule extends AbstractGenerationRule implements IAddDa
 	public AddDataContentRule(UUID ruleID, UUID elementID) {
 		super(ruleID);
 		this.elementID = elementID;
+		this.requestedValue = null;
 	}
 
 	/**
@@ -62,6 +63,7 @@ public class AddDataContentRule extends AbstractGenerationRule implements IAddDa
 	public AddDataContentRule(UUID elementID) {
 		super();
 		this.elementID = elementID;
+		this.requestedValue = null;
 	}
 
 	@Override
@@ -77,13 +79,6 @@ public class AddDataContentRule extends AbstractGenerationRule implements IAddDa
 	@Override
 	public Optional<IRequestedValue> getRequestedValue() {
 		return Optional.ofNullable(this.requestedValue);
-	}
-
-	/**
-	 * @param requestedValue the requestedValue to set
-	 */
-	public void setRequestedValue(IRequestedValue requestedValue) {
-		this.requestedValue = requestedValue;
 	}
 
 	@Override

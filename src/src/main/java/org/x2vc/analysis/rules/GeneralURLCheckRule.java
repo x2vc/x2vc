@@ -23,8 +23,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
 
 /**
- * Rule U.1: Check whether the URL attributes of various tags can be manipulated
- * via the input data.
+ * Rule U.1: Check whether the URL attributes of various tags can be manipulated via the input data.
  */
 public class GeneralURLCheckRule extends AbstractAttributeRule {
 
@@ -92,7 +91,7 @@ public class GeneralURLCheckRule extends AbstractAttributeRule {
 
 				// try to replace the entire attribute with an attempted code injection
 				final AnalyzerRulePayload stylePayload = AnalyzerRulePayload.builder()
-					.withSchemaElementID(valueDescriptor.getSchemaElementID())
+					.withSchemaElementID(valueDescriptor.getSchemaObjectID())
 					.withAttributeName(attribute.getKey())
 					.withInjectedValue("XSS-U.1")
 					.withElementSelector(elementPath)

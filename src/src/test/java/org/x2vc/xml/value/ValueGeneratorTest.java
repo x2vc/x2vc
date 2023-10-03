@@ -1270,7 +1270,7 @@ class ValueGeneratorTest {
 	 */
 	void assertValueDescriptorPresent(UUID schemaElementID, String generatedValue, Boolean isRequested) {
 		assertTrue(this.valueGenerator.getValueDescriptors().stream()
-			.anyMatch(vd -> vd.getSchemaElementID().equals(schemaElementID)
+			.anyMatch(vd -> vd.getSchemaObjectID().equals(schemaElementID)
 					&& vd.getGenerationRuleID().equals(this.ruleID) && vd.getValue().equals(generatedValue)
 					&& vd.isRequested() == isRequested),
 				"generated value missing from value descriptors");

@@ -23,8 +23,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
 
 /**
- * Rule H.1: Check every JavaScript handler attribute whether it susceptible to
- * code injection.
+ * Rule H.1: Check every JavaScript handler attribute whether it susceptible to code injection.
  */
 public class JavascriptHandlerCheckRule extends AbstractAttributeRule {
 
@@ -83,7 +82,7 @@ public class JavascriptHandlerCheckRule extends AbstractAttributeRule {
 
 				// try to replace the entire attribute with an attempted code injection
 				final AnalyzerRulePayload stylePayload = AnalyzerRulePayload.builder()
-					.withSchemaElementID(valueDescriptor.getSchemaElementID())
+					.withSchemaElementID(valueDescriptor.getSchemaObjectID())
 					.withAttributeName(attribute.getKey())
 					.withInjectedValue("XSS-H.1")
 					.withElementSelector(elementPath)

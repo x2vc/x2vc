@@ -332,7 +332,7 @@ public abstract class AbstractRule implements IAnalyzerRule {
 			Consumer<IDocumentModifier> collector) {
 		// check whether the requested value is valid and the input field is
 		logger.traceEntry();
-		final ISchemaObject schemaObject = schema.getObjectByID(valueDescriptor.getSchemaElementID());
+		final ISchemaObject schemaObject = schema.getObjectByID(valueDescriptor.getSchemaObjectID());
 		if (schemaObject instanceof final IAttribute attribute) {
 			requestAttributeModification(attribute, valueDescriptor, originalValue, replacementValue,
 					payload, collector);

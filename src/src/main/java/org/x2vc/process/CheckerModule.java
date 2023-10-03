@@ -51,6 +51,8 @@ public class CheckerModule extends AbstractModule {
 	private static final Logger logger = LogManager.getLogger();
 	private Config configuration;
 
+	// TODO https://stackoverflow.com/questions/26710191/how-to-test-implementations-of-guice-abstractmodule
+
 	/**
 	 * @param configuration
 	 */

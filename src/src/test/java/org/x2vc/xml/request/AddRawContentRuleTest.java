@@ -9,7 +9,6 @@ import static org.mockito.Mockito.when;
 
 import java.util.UUID;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -60,9 +59,11 @@ class AddRawContentRuleTest {
 	 * Test method for {@link org.x2vc.xml.request.AddRawContentRule#equals(java.lang.Object)}.
 	 */
 	@Test
-	@Disabled("implementation needs to be adjusted") // TODO check equals() and hashCode()
 	void testEqualsObject() {
-		EqualsVerifier.forClass(AddRawContentRule.class).verify();
+		EqualsVerifier.forClass(AddRawContentRule.class)
+			.withRedefinedSuperclass()
+			.usingGetClass()
+			.verify();
 	}
 
 }

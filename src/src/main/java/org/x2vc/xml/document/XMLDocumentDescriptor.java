@@ -4,26 +4,34 @@ import java.util.*;
 
 import org.x2vc.xml.value.IValueDescriptor;
 
-import com.google.common.collect.HashMultimap;
-import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.*;
 
 /**
  * Standard implementation of {@link IXMLDocumentDescriptor}
  */
-public class XMLDocumentDescriptor implements IXMLDocumentDescriptor {
+public final class XMLDocumentDescriptor implements IXMLDocumentDescriptor {
 
-	private String valuePrefix;
-	private int valueLength;
-	private HashMultimap<String, IValueDescriptor> valueDescriptors;
-	private IDocumentModifier modifier;
-	private Map<UUID, UUID> traceIDToRuleIDMap;
+	private final String valuePrefix;
+	private final int valueLength;
+	private final HashMultimap<String, IValueDescriptor> valueDescriptors;
+	private final IDocumentModifier modifier;
+	private final Map<UUID, UUID> traceIDToRuleIDMap;
 
-	XMLDocumentDescriptor(Builder builder) {
+//	@XmlElementWrapper(name = "functionResults")
+//	@XmlElements({
+//			@XmlElement(name = "stringResult", type = StringExtensionFunctionResult.class),
+//			@XmlElement(name = "integerResult", type = IntegerExtensionFunctionResult.class),
+//			@XmlElement(name = "booleanResult", type = BooleanExtensionFunctionResult.class)
+//	})
+	private final List<IExtensionFunctionResult> extensionFunctionResults;
+
+	private XMLDocumentDescriptor(Builder builder) {
 		this.valuePrefix = builder.valuePrefix;
 		this.valueLength = builder.valueLength;
 		this.valueDescriptors = builder.valueDescriptors;
 		this.modifier = builder.modifier;
 		this.traceIDToRuleIDMap = builder.traceIDToRuleIDMap;
+		this.extensionFunctionResults = builder.extensionFunctionResults;
 	}
 
 	@Override
@@ -76,6 +84,11 @@ public class XMLDocumentDescriptor implements IXMLDocumentDescriptor {
 		return this.traceIDToRuleIDMap;
 	}
 
+	@Override
+	public ImmutableCollection<IExtensionFunctionResult> getExtensionFunctionResults() {
+		return ImmutableList.copyOf(this.extensionFunctionResults);
+	}
+
 	/**
 	 * Creates a new builder
 	 *
@@ -96,6 +109,7 @@ public class XMLDocumentDescriptor implements IXMLDocumentDescriptor {
 		private HashMultimap<String, IValueDescriptor> valueDescriptors = HashMultimap.create();
 		private IDocumentModifier modifier;
 		private Map<UUID, UUID> traceIDToRuleIDMap;
+		private List<IExtensionFunctionResult> extensionFunctionResults = Lists.newArrayList();
 
 		/**
 		 * Creates a new builder
@@ -153,6 +167,17 @@ public class XMLDocumentDescriptor implements IXMLDocumentDescriptor {
 		}
 
 		/**
+		 * Builder method for extensionFunctionResults parameter.
+		 *
+		 * @param result field to set
+		 * @return builder
+		 */
+		public Builder addExtensionFunctionResult(IExtensionFunctionResult result) {
+			this.extensionFunctionResults.add(result);
+			return this;
+		}
+
+		/**
 		 * Builder method of the builder.
 		 *
 		 * @return built class
@@ -164,7 +189,8 @@ public class XMLDocumentDescriptor implements IXMLDocumentDescriptor {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(this.modifier, this.traceIDToRuleIDMap, this.valueDescriptors, this.valueLength,
+		return Objects.hash(this.extensionFunctionResults, this.modifier, this.traceIDToRuleIDMap,
+				this.valueDescriptors, this.valueLength,
 				this.valuePrefix);
 	}
 
@@ -173,14 +199,12 @@ public class XMLDocumentDescriptor implements IXMLDocumentDescriptor {
 		if (this == obj) {
 			return true;
 		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
+		if (!(obj instanceof XMLDocumentDescriptor)) {
 			return false;
 		}
 		final XMLDocumentDescriptor other = (XMLDocumentDescriptor) obj;
-		return Objects.equals(this.modifier, other.modifier)
+		return Objects.equals(this.extensionFunctionResults, other.extensionFunctionResults)
+				&& Objects.equals(this.modifier, other.modifier)
 				&& Objects.equals(this.traceIDToRuleIDMap, other.traceIDToRuleIDMap)
 				&& Objects.equals(this.valueDescriptors, other.valueDescriptors)
 				&& this.valueLength == other.valueLength

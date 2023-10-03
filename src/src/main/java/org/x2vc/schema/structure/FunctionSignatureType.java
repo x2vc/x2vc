@@ -39,7 +39,6 @@ public final class FunctionSignatureType implements IFunctionSignatureType {
 	@XmlAttribute(name = "occurrence")
 	@Override
 	public OccurrenceIndicator getOccurrenceIndicator() {
-		// TODO Auto-generated method stub
 		return this.occurrenceIndicator;
 	}
 

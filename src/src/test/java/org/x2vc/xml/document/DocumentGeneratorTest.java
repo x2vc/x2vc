@@ -156,7 +156,7 @@ class DocumentGeneratorTest {
 		assertTrue(valDescSet.isPresent());
 		assertEquals(1, valDescSet.get().size());
 		final IValueDescriptor valDesc = valDescSet.get().iterator().next();
-		assertEquals(rootAttribute.getID(), valDesc.getSchemaElementID());
+		assertEquals(rootAttribute.getID(), valDesc.getSchemaObjectID());
 		assertEquals(rootAttributeRule.getID(), valDesc.getGenerationRuleID());
 	}
 
@@ -191,7 +191,7 @@ class DocumentGeneratorTest {
 		assertTrue(valDescSet.isPresent());
 		assertEquals(1, valDescSet.get().size());
 		final IValueDescriptor valDesc = valDescSet.get().iterator().next();
-		assertEquals(rootElementReference.getID(), valDesc.getSchemaElementID());
+		assertEquals(rootElementReference.getID(), valDesc.getSchemaObjectID());
 		assertEquals(dataContentRule.getID(), valDesc.getGenerationRuleID());
 	}
 
@@ -227,7 +227,7 @@ class DocumentGeneratorTest {
 		assertTrue(valDescSet.isPresent());
 		assertEquals(1, valDescSet.get().size());
 		final IValueDescriptor valDesc = valDescSet.get().iterator().next();
-		assertEquals(rootElementReference.getID(), valDesc.getSchemaElementID());
+		assertEquals(rootElementReference.getID(), valDesc.getSchemaObjectID());
 		assertEquals(dataContentRule.getID(), valDesc.getGenerationRuleID());
 	}
 
@@ -319,7 +319,7 @@ class DocumentGeneratorTest {
 		assertTrue(valDescSet.isPresent());
 		assertEquals(1, valDescSet.get().size());
 		final IValueDescriptor valDesc = valDescSet.get().iterator().next();
-		assertEquals(rootElementReference.getID(), valDesc.getSchemaElementID());
+		assertEquals(rootElementReference.getID(), valDesc.getSchemaObjectID());
 		assertEquals(rawContentRule.getID(), valDesc.getGenerationRuleID());
 	}
 

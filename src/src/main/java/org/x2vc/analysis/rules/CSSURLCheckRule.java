@@ -83,7 +83,7 @@ public class CSSURLCheckRule extends AbstractAttributeRule {
 
 				// try to inject a source path into the attribute
 				final AnalyzerRulePayload stylePayload = AnalyzerRulePayload.builder()
-					.withSchemaElementID(valueDescriptor.getSchemaElementID())
+					.withSchemaElementID(valueDescriptor.getSchemaObjectID())
 					.withInjectedValue("XSS-S.3")
 					.withElementSelector(elementPath)
 					.build();

@@ -11,14 +11,12 @@ import org.x2vc.xml.request.IGenerationRule;
 public interface IValueDescriptor {
 
 	/**
-	 * @return the ID of the schema element {@link ISchemaObject} that describes
-	 *         the value
+	 * @return the ID of the schema element {@link ISchemaObject} that describes the value
 	 */
-	UUID getSchemaElementID();
+	UUID getSchemaObjectID();
 
 	/**
-	 * @return the ID of the {@link IGenerationRule} that was responsible for
-	 *         creating the value
+	 * @return the ID of the {@link IGenerationRule} that was responsible for creating the value
 	 */
 	UUID getGenerationRuleID();
 

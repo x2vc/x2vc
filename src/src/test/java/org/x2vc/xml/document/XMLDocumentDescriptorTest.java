@@ -8,7 +8,6 @@ import static org.mockito.Mockito.when;
 
 import java.util.Optional;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -96,7 +95,6 @@ class XMLDocumentDescriptorTest {
 	 * Test method for {@link org.x2vc.xml.document.XMLDocumentDescriptor#equals(java.lang.Object)}.
 	 */
 	@Test
-	@Disabled("implementation needs to be adjusted") // TODO check equals() and hashCode()
 	void testEqualsObject() {
 		EqualsVerifier.forClass(XMLDocumentDescriptor.class).verify();
 	}

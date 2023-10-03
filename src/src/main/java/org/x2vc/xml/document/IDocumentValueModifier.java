@@ -7,19 +7,17 @@ import java.util.function.Consumer;
 import org.x2vc.xml.request.IGenerationRule;
 
 /**
- * A type of {@link IDocumentModifier} that requests the modification of a data
- * value.
+ * A type of {@link IDocumentModifier} that requests the modification of a data value.
  */
 public interface IDocumentValueModifier extends IDocumentModifier {
 
 	/**
 	 * @return the ID of the schema element that describes the value to be modified
 	 */
-	UUID getSchemaElementID();
+	UUID getSchemaObjectID();
 
 	/**
-	 * @return the ID of the {@link IGenerationRule} that was responsible for
-	 *         creating the value to be modified
+	 * @return the ID of the {@link IGenerationRule} that was responsible for creating the value to be modified
 	 */
 	UUID getGenerationRuleID();
 

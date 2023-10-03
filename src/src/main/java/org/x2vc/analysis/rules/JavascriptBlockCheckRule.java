@@ -69,7 +69,7 @@ public class JavascriptBlockCheckRule extends AbstractElementRule {
 				final String currentValue = valueDescriptor.getValue();
 				// try to replace the entire script contents with some dummy value
 				final AnalyzerRulePayload payload = AnalyzerRulePayload.builder()
-					.withSchemaElementID(valueDescriptor.getSchemaElementID())
+					.withSchemaElementID(valueDescriptor.getSchemaObjectID())
 					.withElementSelector(elementPath)
 					.withInjectedValue("XSS-J.1")
 					.build();

@@ -82,7 +82,7 @@ public class DirectAttributeCheckRule extends AbstractAttributeRule {
 
 				// try to replace the entire attribute with style attribute
 				final AnalyzerRulePayload stylePayload = AnalyzerRulePayload.builder()
-					.withSchemaElementID(valueDescriptor.getSchemaElementID())
+					.withSchemaElementID(valueDescriptor.getSchemaObjectID())
 					.withInjectedValue("style")
 					.withElementSelector(elementPath)
 					.build();
@@ -90,7 +90,7 @@ public class DirectAttributeCheckRule extends AbstractAttributeRule {
 
 				// try to replace the entire Attribute with a Javascript event handler
 				final AnalyzerRulePayload handlerPayload = AnalyzerRulePayload.builder()
-					.withSchemaElementID(valueDescriptor.getSchemaElementID())
+					.withSchemaElementID(valueDescriptor.getSchemaObjectID())
 					.withInjectedValue("onerror")
 					.withElementSelector(elementPath)
 					.build();

@@ -12,12 +12,13 @@ import org.x2vc.xml.document.IDocumentValueModifier;
 /**
  * Standard implementation of {@link IRequestedValue}.
  */
-public class RequestedValue implements IRequestedValue {
+public final class RequestedValue implements IRequestedValue {
 
-	private String value;
+	@XmlElement
+	private final String value;
 
 	@XmlElement(type = DocumentValueModifier.class)
-	private IDocumentModifier modifier;
+	private final IDocumentModifier modifier;
 
 	/**
 	 * Create a new requested value based on a value modifier specification.
@@ -50,6 +51,7 @@ public class RequestedValue implements IRequestedValue {
 	RequestedValue(String value) {
 		super();
 		this.value = value;
+		this.modifier = null;
 	}
 
 	@Override
@@ -57,23 +59,9 @@ public class RequestedValue implements IRequestedValue {
 		return this.value;
 	}
 
-	/**
-	 * @param value the value to set
-	 */
-	public void setValue(String value) {
-		this.value = value;
-	}
-
 	@Override
 	public Optional<IDocumentModifier> getModifier() {
 		return Optional.ofNullable(this.modifier);
-	}
-
-	/**
-	 * @param modifier the modifier to set
-	 */
-	public void setModifier(IDocumentModifier modifier) {
-		this.modifier = modifier;
 	}
 
 	@Override

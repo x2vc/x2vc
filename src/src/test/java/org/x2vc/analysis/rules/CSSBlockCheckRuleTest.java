@@ -40,8 +40,7 @@ class CSSBlockCheckRuleTest extends AnalyzerRuleTestBase {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.x2vc.analysis.rules.AbstractElementRule#getRuleID()}.
+	 * Test method for {@link org.x2vc.analysis.rules.AbstractElementRule#getRuleID()}.
 	 */
 	@Test
 	void testRuleID() {
@@ -52,12 +51,9 @@ class CSSBlockCheckRuleTest extends AnalyzerRuleTestBase {
 	 * Test method for
 	 * {@link org.x2vc.analysis.rules.AbstractElementRule#checkNode(org.jsoup.nodes.Node, org.x2vc.xml.document.IXMLDocumentDescriptor, java.util.function.Consumer)}.
 	 *
-	 * @param html              the source code of the node that will be passed to
-	 *                          the rule to check
-	 * @param query             the query value that is supposed to be used to
-	 *                          retrieve the value descriptor
-	 * @param modifiersExpected whether the check should result in modifiers being
-	 *                          issued
+	 * @param html              the source code of the node that will be passed to the rule to check
+	 * @param query             the query value that is supposed to be used to retrieve the value descriptor
+	 * @param modifiersExpected whether the check should result in modifiers being issued
 	 */
 	@ParameterizedTest
 	@CsvSource({
@@ -77,7 +73,7 @@ class CSSBlockCheckRuleTest extends AnalyzerRuleTestBase {
 
 		// prepare a value descriptor to return a known ID
 		final IValueDescriptor valueDescriptor = mock(IValueDescriptor.class);
-		lenient().when(valueDescriptor.getSchemaElementID()).thenReturn(attributeID);
+		lenient().when(valueDescriptor.getSchemaObjectID()).thenReturn(attributeID);
 		lenient().when(valueDescriptor.getValue()).thenReturn(generatedValue);
 
 		final Element node = parseToElement(html);
@@ -93,7 +89,7 @@ class CSSBlockCheckRuleTest extends AnalyzerRuleTestBase {
 		assertEquals(modifiersExpected, !this.modifiers.isEmpty());
 		this.modifiers.forEach(m -> {
 			if (m instanceof final IDocumentValueModifier vm) {
-				assertEquals(attributeID, vm.getSchemaElementID());
+				assertEquals(attributeID, vm.getSchemaObjectID());
 				assertTrue(vm.getOriginalValue().isPresent());
 				assertEquals(generatedValue, vm.getOriginalValue().get());
 			}
@@ -104,12 +100,9 @@ class CSSBlockCheckRuleTest extends AnalyzerRuleTestBase {
 	 * Test method for
 	 * {@link org.x2vc.analysis.rules.AbstractElementRule#checkNode(org.jsoup.nodes.Node, org.x2vc.xml.document.IXMLDocumentDescriptor, java.util.function.Consumer)}.
 	 *
-	 * @param html              the source code of the node that will be passed to
-	 *                          the rule to check
-	 * @param query             the query value that is supposed to be used to
-	 *                          retrieve the value descriptor
-	 * @param modifiersExpected whether the check should result in modifiers being
-	 *                          issued
+	 * @param html              the source code of the node that will be passed to the rule to check
+	 * @param query             the query value that is supposed to be used to retrieve the value descriptor
+	 * @param modifiersExpected whether the check should result in modifiers being issued
 	 */
 	@ParameterizedTest
 	@CsvSource({
@@ -129,7 +122,7 @@ class CSSBlockCheckRuleTest extends AnalyzerRuleTestBase {
 
 		// prepare a value descriptor to return a known ID
 		final IValueDescriptor valueDescriptor = mock(IValueDescriptor.class);
-		lenient().when(valueDescriptor.getSchemaElementID()).thenReturn(elementTypeID);
+		lenient().when(valueDescriptor.getSchemaObjectID()).thenReturn(elementTypeID);
 		lenient().when(valueDescriptor.getValue()).thenReturn(generatedValue);
 
 		final Element node = parseToElement(html);
@@ -145,7 +138,7 @@ class CSSBlockCheckRuleTest extends AnalyzerRuleTestBase {
 		assertEquals(modifiersExpected, !this.modifiers.isEmpty());
 		this.modifiers.forEach(m -> {
 			if (m instanceof final IDocumentValueModifier vm) {
-				assertEquals(elementTypeID, vm.getSchemaElementID());
+				assertEquals(elementTypeID, vm.getSchemaObjectID());
 				assertTrue(vm.getOriginalValue().isPresent());
 				assertEquals(generatedValue, vm.getOriginalValue().get());
 			}
@@ -156,14 +149,10 @@ class CSSBlockCheckRuleTest extends AnalyzerRuleTestBase {
 	 * Test method for
 	 * {@link org.x2vc.analysis.rules.CSSBlockCheckRule#verifyNode(org.jsoup.nodes.Node, org.x2vc.xml.document.IXMLDocumentContainer, java.util.function.Consumer)}.
 	 *
-	 * @param html                       the source code of the node that will be
-	 *                                   passed to the rule to verify
-	 * @param elementSelector            the selector issued by the rule to identify
-	 *                                   the element
-	 * @param injectedElement            the name of the injected element identified
-	 *                                   by the payload
-	 * @param expectedVulnerabilityCount the number of vulnerabilities we expect to
-	 *                                   find
+	 * @param html                       the source code of the node that will be passed to the rule to verify
+	 * @param elementSelector            the selector issued by the rule to identify the element
+	 * @param injectedElement            the name of the injected element identified by the payload
+	 * @param expectedVulnerabilityCount the number of vulnerabilities we expect to find
 	 * @param expectedOutputElement      the expected output element path
 	 */
 	@ParameterizedTest

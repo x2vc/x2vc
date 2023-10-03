@@ -11,7 +11,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 public abstract class AbstractGenerationRule implements IGenerationRule {
 
 	@XmlAttribute
-	private UUID ruleID;
+	private final UUID ruleID;
 
 	/**
 	 * Creates a new rule with a random ID.

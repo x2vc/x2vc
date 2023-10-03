@@ -79,7 +79,7 @@ public class CSSAttributeCheckRule extends AbstractAttributeRule {
 
 				// try to replace the entire attribute with an attempted code injection
 				final AnalyzerRulePayload stylePayload = AnalyzerRulePayload.builder()
-					.withSchemaElementID(valueDescriptor.getSchemaElementID())
+					.withSchemaElementID(valueDescriptor.getSchemaObjectID())
 					.withInjectedValue("XSS-S.1")
 					.withElementSelector(elementPath)
 					.build();

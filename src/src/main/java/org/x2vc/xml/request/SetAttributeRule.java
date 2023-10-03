@@ -12,12 +12,12 @@ import org.x2vc.schema.structure.IAttribute;
 /**
  * Standard implementation of {@link ISetAttributeRule}.
  */
-public class SetAttributeRule extends AbstractGenerationRule implements ISetAttributeRule {
+public final class SetAttributeRule extends AbstractGenerationRule implements ISetAttributeRule {
 
-	private UUID attributeID;
+	private final UUID attributeID;
 
 	@XmlElement(type = RequestedValue.class)
-	private IRequestedValue requestedValue;
+	private final IRequestedValue requestedValue;
 
 	/**
 	 * Creates a new attribute rule with a specified ID and a requested value specified.
@@ -78,6 +78,7 @@ public class SetAttributeRule extends AbstractGenerationRule implements ISetAttr
 	public SetAttributeRule(UUID ruleID, UUID attributeID) {
 		super(ruleID);
 		this.attributeID = attributeID;
+		this.requestedValue = null;
 	}
 
 	/**
@@ -88,6 +89,7 @@ public class SetAttributeRule extends AbstractGenerationRule implements ISetAttr
 	public SetAttributeRule(UUID attributeID) {
 		super();
 		this.attributeID = attributeID;
+		this.requestedValue = null;
 	}
 
 	/**
@@ -99,6 +101,7 @@ public class SetAttributeRule extends AbstractGenerationRule implements ISetAttr
 	public SetAttributeRule(UUID ruleID, IAttribute attribute) {
 		super(ruleID);
 		this.attributeID = attribute.getID();
+		this.requestedValue = null;
 	}
 
 	/**
@@ -109,6 +112,7 @@ public class SetAttributeRule extends AbstractGenerationRule implements ISetAttr
 	public SetAttributeRule(IAttribute attribute) {
 		super();
 		this.attributeID = attribute.getID();
+		this.requestedValue = null;
 	}
 
 	@XmlAttribute
@@ -122,23 +126,9 @@ public class SetAttributeRule extends AbstractGenerationRule implements ISetAttr
 		return Optional.of(this.attributeID);
 	}
 
-	/**
-	 * @param attributeID the attributeID to set
-	 */
-	public void setAttributeID(UUID attributeID) {
-		this.attributeID = attributeID;
-	}
-
 	@Override
 	public Optional<IRequestedValue> getRequestedValue() {
 		return Optional.ofNullable(this.requestedValue);
-	}
-
-	/**
-	 * @param requestedValue the requestedValue to set
-	 */
-	public void setRequestedValue(IRequestedValue requestedValue) {
-		this.requestedValue = requestedValue;
 	}
 
 	@Override

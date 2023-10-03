@@ -41,8 +41,7 @@ class DisabledOutputEscapingCheckRuleTest extends AnalyzerRuleTestBase {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.x2vc.analysis.rules.AbstractElementRule#getRuleID()}.
+	 * Test method for {@link org.x2vc.analysis.rules.AbstractElementRule#getRuleID()}.
 	 */
 	@Test
 	void testRuleID() {
@@ -53,12 +52,9 @@ class DisabledOutputEscapingCheckRuleTest extends AnalyzerRuleTestBase {
 	 * Test method for
 	 * {@link org.x2vc.analysis.rules.AbstractElementRule#checkNode(org.jsoup.nodes.Node, org.x2vc.xml.document.IXMLDocumentDescriptor, java.util.function.Consumer)}.
 	 *
-	 * @param html              the source code of the node that will be passed to
-	 *                          the rule to check
-	 * @param query             the query value that is supposed to be used to
-	 *                          retrieve the value descriptor
-	 * @param modifiersExpected whether the check should result in modifiers being
-	 *                          issued
+	 * @param html              the source code of the node that will be passed to the rule to check
+	 * @param query             the query value that is supposed to be used to retrieve the value descriptor
+	 * @param modifiersExpected whether the check should result in modifiers being issued
 	 */
 	@ParameterizedTest
 	@CsvSource({
@@ -91,7 +87,7 @@ class DisabledOutputEscapingCheckRuleTest extends AnalyzerRuleTestBase {
 		// prepare a value descriptor to return a known ID
 		final IValueDescriptor valueDescriptor = mock(IValueDescriptor.class);
 
-		lenient().when(valueDescriptor.getSchemaElementID()).thenReturn(elementTypeID);
+		lenient().when(valueDescriptor.getSchemaObjectID()).thenReturn(elementTypeID);
 		lenient().when(valueDescriptor.getValue()).thenReturn(generatedValue);
 
 		final Node node = parseToNode(text);
@@ -107,7 +103,7 @@ class DisabledOutputEscapingCheckRuleTest extends AnalyzerRuleTestBase {
 		assertEquals(modifiersExpected, !this.modifiers.isEmpty());
 		this.modifiers.forEach(m -> {
 			if (m instanceof final IDocumentValueModifier vm) {
-				assertEquals(elementTypeID, vm.getSchemaElementID());
+				assertEquals(elementTypeID, vm.getSchemaObjectID());
 				assertTrue(vm.getOriginalValue().isPresent());
 				assertEquals(generatedValue, vm.getOriginalValue().get());
 			}
@@ -118,15 +114,11 @@ class DisabledOutputEscapingCheckRuleTest extends AnalyzerRuleTestBase {
 	 * Test method for
 	 * {@link org.x2vc.analysis.rules.DirectElementCheckRule#verifyNode(org.jsoup.nodes.Node, org.x2vc.xml.document.IXMLDocumentContainer, java.util.function.Consumer)}.
 	 *
-	 * @param html                       the source of the HTML snippet containing
-	 *                                   the text that will be passed to the rule to
-	 *                                   verify
-	 * @param elementSelector            the selector issued by the rule to identify
-	 *                                   the element
-	 * @param injectedElement            the name of the injected element identified
-	 *                                   by the payload
-	 * @param expectedVulnerabilityCount the number of vulnerabilities we expect to
-	 *                                   find
+	 * @param html                       the source of the HTML snippet containing the text that will be passed to the
+	 *                                   rule to verify
+	 * @param elementSelector            the selector issued by the rule to identify the element
+	 * @param injectedElement            the name of the injected element identified by the payload
+	 * @param expectedVulnerabilityCount the number of vulnerabilities we expect to find
 	 * @param expectedOutputElement      the expected output element path
 	 */
 	@ParameterizedTest

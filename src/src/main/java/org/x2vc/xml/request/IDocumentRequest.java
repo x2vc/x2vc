@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.x2vc.xml.document.IDocumentModifier;
 
+import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Multimap;
 
@@ -55,6 +56,11 @@ public interface IDocumentRequest {
 	 * @throws IllegalArgumentException if no rule with that ID was found
 	 */
 	IGenerationRule getRuleByID(UUID ruleID) throws IllegalArgumentException;
+
+	/**
+	 * @return the rules to register the extension functions with the XSLT processor
+	 */
+	ImmutableCollection<IExtensionFunctionRule> getExtensionFunctionRules();
 
 	/**
 	 * Provides a view of the the specific values that have been requested for individual elements or attributes,

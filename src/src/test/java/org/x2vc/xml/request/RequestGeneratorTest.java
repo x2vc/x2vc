@@ -378,6 +378,21 @@ class RequestGeneratorTest {
 	}
 
 	@Test
+	void testGenerateNewRequest_SingleEmptyElement_WithExtensionFunctons()
+			throws URISyntaxException, FileNotFoundException, JAXBException {
+		final IXMLSchema schema = loadSchema("SingleEmptyElement_WithExtensionFunctions.x2vc_schema");
+
+		final IDocumentRequest request = this.requestGenerator.generateNewRequest(schema,
+				MixedContentGenerationMode.FULL);
+
+		final ImmutableCollection<IExtensionFunctionRule> functionResults = request.getExtensionFunctionRules();
+		assertEquals(1, functionResults.size());
+		final IExtensionFunctionRule result = functionResults.iterator().next();
+		assertEquals(UUID.fromString("b2104652-4db3-4801-9426-f8876fce19b7"), result.getFunctionID());
+		assertFalse(result.getRequestedValue().isPresent());
+	}
+
+	@Test
 	void testModifyRequest_ForAttributeValue() throws FileNotFoundException, JAXBException {
 
 		final IXMLSchema schema = loadSchema("SingleEmptyElement_WithRequiredAttribute.x2vc_schema");
@@ -394,7 +409,7 @@ class RequestGeneratorTest {
 		assertEquals(modifiedAttributeID, originalRootAttributeRule.getAttributeID());
 
 		lenient().when(this.valueModifier.getGenerationRuleID()).thenReturn(originalRootAttributeRule.getID());
-		lenient().when(this.valueModifier.getSchemaElementID()).thenReturn(originalRootAttributeRule.getAttributeID());
+		lenient().when(this.valueModifier.getSchemaObjectID()).thenReturn(originalRootAttributeRule.getAttributeID());
 		lenient().when(this.valueModifier.getReplacementValue()).thenReturn("foobar");
 
 		final IDocumentRequest modifiedRequest = this.requestGenerator.modifyRequest(originalRequest,
@@ -440,7 +455,7 @@ class RequestGeneratorTest {
 		assertEquals(modifiedElementID, originalRootContentRule.getElementID());
 
 		lenient().when(this.valueModifier.getGenerationRuleID()).thenReturn(originalRootContentRule.getID());
-		lenient().when(this.valueModifier.getSchemaElementID()).thenReturn(originalRootContentRule.getElementID());
+		lenient().when(this.valueModifier.getSchemaObjectID()).thenReturn(originalRootContentRule.getElementID());
 		lenient().when(this.valueModifier.getReplacementValue()).thenReturn("foobar");
 
 		final IDocumentRequest modifiedRequest = this.requestGenerator.modifyRequest(originalRequest,
@@ -462,6 +477,50 @@ class RequestGeneratorTest {
 		final ImmutableMultimap<UUID, IRequestedValue> rvMap = modifiedRequest.getRequestedValues();
 		assertTrue(rvMap.containsKey(modifiedElementID));
 		final ImmutableCollection<IRequestedValue> valuesFromMap = rvMap.get(modifiedElementID);
+		assertEquals(1, valuesFromMap.size());
+		assertSame(requestedValue, valuesFromMap.iterator().next());
+
+		assertTrue(modifiedRequest.getModifier().isPresent());
+		assertSame(this.valueModifier, modifiedRequest.getModifier().get());
+	}
+
+	@Test
+	void testModifyRequest_ForExtensionFunction() throws FileNotFoundException, JAXBException {
+
+		final IXMLSchema schema = loadSchema("SingleEmptyElement_WithExtensionFunctions.x2vc_schema");
+		// shortcut to provide schema for request construction
+		lenient().when(this.schemaManager.getSchema(URI.create("file://somewhere/SampleStylesheet.xslt"), 1))
+			.thenReturn(schema);
+
+		final IDocumentRequest originalRequest = this.requestGenerator.generateNewRequest(schema,
+				MixedContentGenerationMode.FULL);
+		final IExtensionFunctionRule originalFunctionRule = originalRequest.getExtensionFunctionRules().iterator()
+			.next();
+		final UUID modifiedFunctionID = UUID.fromString("b2104652-4db3-4801-9426-f8876fce19b7");
+		assertEquals(modifiedFunctionID, originalFunctionRule.getFunctionID());
+
+		lenient().when(this.valueModifier.getGenerationRuleID()).thenReturn(originalFunctionRule.getID());
+		lenient().when(this.valueModifier.getSchemaObjectID()).thenReturn(modifiedFunctionID);
+		lenient().when(this.valueModifier.getReplacementValue()).thenReturn("foobar");
+
+		final IDocumentRequest modifiedRequest = this.requestGenerator.modifyRequest(originalRequest,
+				this.valueModifier, MixedContentGenerationMode.FULL);
+
+		final IExtensionFunctionRule modifiedFunctionRule = modifiedRequest.getExtensionFunctionRules().iterator()
+			.next();
+
+		final Optional<IRequestedValue> rv = modifiedFunctionRule.getRequestedValue();
+		assertTrue(rv.isPresent());
+		final IRequestedValue requestedValue = rv.get();
+		final Optional<IDocumentModifier> mod = requestedValue.getModifier();
+		assertTrue(mod.isPresent());
+		final IDocumentModifier modifier = mod.get();
+		assertSame(this.valueModifier, modifier);
+		assertEquals("foobar", requestedValue.getValue());
+
+		final ImmutableMultimap<UUID, IRequestedValue> rvMap = modifiedRequest.getRequestedValues();
+		assertTrue(rvMap.containsKey(modifiedFunctionID));
+		final ImmutableCollection<IRequestedValue> valuesFromMap = rvMap.get(modifiedFunctionID);
 		assertEquals(1, valuesFromMap.size());
 		assertSame(requestedValue, valuesFromMap.iterator().next());
 

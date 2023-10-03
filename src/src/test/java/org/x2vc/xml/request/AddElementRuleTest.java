@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -57,9 +56,11 @@ class AddElementRuleTest {
 	 * Test method for {@link org.x2vc.xml.request.AddElementRule#equals(java.lang.Object)}.
 	 */
 	@Test
-	@Disabled("implementation needs to be adjusted") // TODO check equals() and hashCode()
 	void testEqualsObject() {
-		EqualsVerifier.forClass(AddElementRule.class).verify();
+		EqualsVerifier.forClass(AddElementRule.class)
+			.withRedefinedSuperclass()
+			.usingGetClass()
+			.verify();
 	}
 
 }
