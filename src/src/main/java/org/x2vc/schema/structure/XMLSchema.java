@@ -40,9 +40,6 @@ public class XMLSchema implements IXMLSchema {
 	@XmlElement(type = ExtensionFunction.class, name = "function")
 	private List<IExtensionFunction> extensionFunctions;
 
-	@XmlTransient
-	private Map<UUID, ISchemaObject> objectMap;
-
 	/**
 	 * Parameterless constructor for deserialization only.
 	 */
@@ -128,16 +125,30 @@ public class XMLSchema implements IXMLSchema {
 		return ImmutableList.copyOf(this.extensionFunctions);
 	}
 
+	@SuppressWarnings("java:S4738") // Java supplier does not support memoization
+	private transient Supplier<Map<UUID, ISchemaObject>> objectMapSupplier = Suppliers.memoize(() -> {
+		logger.traceEntry();
+		final HashMap<UUID, ISchemaObject> map = new HashMap<>();
+		for (final IElementType element : this.elementTypes) {
+			addToMap(element, map);
+		}
+		for (final IElementReference element : this.rootElements) {
+			addToMap(element, map);
+		}
+		for (final IExtensionFunction function : this.extensionFunctions) {
+			addToMap(function, map);
+		}
+		return logger.traceExit(Map.copyOf(map));
+	});
+
 	@Override
 	public ISchemaObject getObjectByID(UUID id) throws IllegalArgumentException {
-		if (this.objectMap == null) {
-			this.objectMap = buildObjectMap();
-		}
-		if (!this.objectMap.containsKey(id)) {
+		final Map<UUID, ISchemaObject> objectMap = this.objectMapSupplier.get();
+		if (!objectMap.containsKey(id)) {
 			throw logger.throwing(
 					new IllegalArgumentException(String.format("No object with ID %s exists in this schema.", id)));
 		}
-		return this.objectMap.get(id);
+		return objectMap.get(id);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -190,21 +201,6 @@ public class XMLSchema implements IXMLSchema {
 	}
 
 	/**
-	 * @return
-	 */
-	private Map<UUID, ISchemaObject> buildObjectMap() {
-		logger.traceEntry();
-		final HashMap<UUID, ISchemaObject> map = new HashMap<>();
-		for (final IElementType element : this.elementTypes) {
-			addToMap(element, map);
-		}
-		for (final IElementReference element : this.rootElements) {
-			addToMap(element, map);
-		}
-		return logger.traceExit(Map.copyOf(map));
-	}
-
-	/**
 	 * @param attribute
 	 * @param map
 	 */
@@ -229,6 +225,14 @@ public class XMLSchema implements IXMLSchema {
 	 */
 	private void addToMap(IElementReference reference, Map<UUID, ISchemaObject> map) {
 		map.put(reference.getID(), reference);
+	}
+
+	/**
+	 * @param function
+	 * @param map
+	 */
+	private void addToMap(IExtensionFunction function, HashMap<UUID, ISchemaObject> map) {
+		map.put(function.getID(), function);
 	}
 
 	/**

@@ -114,6 +114,14 @@ class XMLSchemaTest {
 		XMLElementReference.builder("b", elemRootB).withComment("reference to root element B").addTo(schemaBuilder);
 		XMLElementReference.builder("c", elemRootC).withComment("reference to root element C").addTo(schemaBuilder);
 
+		final ExtensionFunction functionX = ExtensionFunction.builder("myFuncX")
+			.withNamespaceURI("http://foo.bar")
+			.withResultType(new FunctionSignatureType(SequenceItemType.STRING, OccurrenceIndicator.ONE))
+			.withArgumentType(new FunctionSignatureType(SequenceItemType.INT, OccurrenceIndicator.ZERO_OR_MORE))
+			.withArgumentType(new FunctionSignatureType(SequenceItemType.STRING, OccurrenceIndicator.ONE_OR_MORE))
+			.build();
+		schemaBuilder.addExtensionFunction(functionX);
+
 		final XMLSchema schema = schemaBuilder.build();
 
 		assertEquals(elemChildStringType, schema.getObjectByID(elemChildStringType.getID()));
@@ -130,6 +138,7 @@ class XMLSchemaTest {
 		assertEquals(attrBoolChoice, schema.getObjectByID(attrBoolChoice.getID()));
 		assertEquals(elemChildBoolChoice, schema.getObjectByID(elemChildBoolChoice.getID()));
 		assertEquals(elemRootC, schema.getObjectByID(elemRootC.getID()));
+		assertEquals(functionX, schema.getObjectByID(functionX.getID()));
 
 	}
 
