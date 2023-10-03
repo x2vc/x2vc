@@ -9,12 +9,18 @@ import net.sf.saxon.s9api.XdmValue;
 /**
  * Implementation of {@link IExtensionFunctionResult} that contains an integer value.
  */
-public class IntegerExtensionFunctionResult extends AbstractExtensionFunctionResult {
+public final class IntegerExtensionFunctionResult extends AbstractExtensionFunctionResult {
 
 	@XmlElement
 	private final Integer result;
 
-	protected IntegerExtensionFunctionResult(UUID functionID, Integer result) {
+	/**
+	 * Creates a new function result.
+	 *
+	 * @param functionID
+	 * @param result
+	 */
+	public IntegerExtensionFunctionResult(UUID functionID, Integer result) {
 		super(functionID);
 		this.result = result;
 	}

@@ -1,18 +1,15 @@
 package org.x2vc.xml.value;
 
-import org.x2vc.xml.request.IAddDataContentRule;
-import org.x2vc.xml.request.IAddRawContentRule;
-import org.x2vc.xml.request.IGenerationRule;
-import org.x2vc.xml.request.ISetAttributeRule;
+import org.x2vc.xml.document.IExtensionFunctionResult;
+import org.x2vc.xml.request.*;
 
 import com.google.common.collect.ImmutableSet;
 
 /**
- * This component generates the attribute and element data values according to
- * the specification of the schema whenever requested by an
- * {@link IGenerationRule}. It also collects all generated values to supply the
- * list of {@link IValueDescriptor}s. For this reason, the instances of this
- * component are only to be used for a single target document!
+ * This component generates the attribute and element data values according to the specification of the schema whenever
+ * requested by an {@link IGenerationRule}. It also collects all generated values to supply the list of
+ * {@link IValueDescriptor}s. For this reason, the instances of this component are only to be used for a single target
+ * document!
  */
 public interface IValueGenerator {
 
@@ -35,6 +32,12 @@ public interface IValueGenerator {
 	String generateValue(IAddRawContentRule rule);
 
 	/**
+	 * @param rule a rule to add a return value for an extension function
+	 * @return the result of the function invocation
+	 */
+	IExtensionFunctionResult generateValue(IExtensionFunctionRule rule);
+
+	/**
 	 * @return the common prefix of all generated string values
 	 */
 	String getValuePrefix();
@@ -45,8 +48,7 @@ public interface IValueGenerator {
 	int getValueLength();
 
 	/**
-	 * @return the set of value descriptors that have been collected by the value
-	 *         generator so far
+	 * @return the set of value descriptors that have been collected by the value generator so far
 	 */
 	ImmutableSet<IValueDescriptor> getValueDescriptors();
 

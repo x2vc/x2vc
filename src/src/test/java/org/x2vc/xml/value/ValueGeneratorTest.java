@@ -19,14 +19,21 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.x2vc.schema.ISchemaManager;
 import org.x2vc.schema.structure.*;
+import org.x2vc.schema.structure.IFunctionSignatureType.SequenceItemType;
 import org.x2vc.stylesheet.IStylesheetInformation;
 import org.x2vc.utilities.URIUtilities;
 import org.x2vc.utilities.URIUtilities.ObjectType;
+import org.x2vc.xml.document.IExtensionFunctionResult;
 import org.x2vc.xml.request.*;
 import org.x2vc.xml.value.IPrefixSelector.PrefixData;
 
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
+
+import net.sf.saxon.s9api.ItemType;
+import net.sf.saxon.s9api.OccurrenceIndicator;
+import net.sf.saxon.s9api.SequenceType;
+import net.sf.saxon.s9api.XdmValue;
 
 @ExtendWith(MockitoExtension.class)
 class ValueGeneratorTest {
@@ -55,6 +62,13 @@ class ValueGeneratorTest {
 	@Mock
 	private IElementType element;
 
+	// function in schema
+	private UUID functionID;
+	@Mock
+	IExtensionFunction function;
+	@Mock
+	IFunctionSignatureType functionResultType;
+
 	// request
 	@Mock
 	private IDocumentRequest request;
@@ -73,6 +87,8 @@ class ValueGeneratorTest {
 	private IAddDataContentRule addDataContentRule;
 	@Mock
 	private IAddRawContentRule addRawContentRule;
+	@Mock
+	private IExtensionFunctionRule extensionFunctionRule;
 
 	// requested value
 	@Mock
@@ -109,6 +125,13 @@ class ValueGeneratorTest {
 		lenient().when(this.element.getID()).thenReturn(this.elementID);
 		lenient().when(this.schema.getObjectByID(this.elementID)).thenReturn(this.element);
 		lenient().when(this.schema.getObjectByID(eq(this.elementID), any())).thenReturn(this.element);
+
+		// extension function in schema
+		this.functionID = UUID.randomUUID();
+		lenient().when(this.function.getID()).thenReturn(this.functionID);
+		lenient().when(this.function.getResultType()).thenReturn(this.functionResultType);
+		lenient().when(this.schema.getObjectByID(this.functionID)).thenReturn(this.function);
+		lenient().when(this.schema.getObjectByID(eq(this.functionID), any())).thenReturn(this.function);
 
 		// request
 		lenient().when(this.request.getStylesheeURI()).thenReturn(this.stylesheetURI);
@@ -149,6 +172,21 @@ class ValueGeneratorTest {
 			lenient().when(this.setAttributeRule.getRequestedValue()).thenReturn(Optional.of(this.requestedValue));
 		} else {
 			lenient().when(this.setAttributeRule.getRequestedValue()).thenReturn(Optional.empty());
+		}
+	}
+
+	/**
+	 * Prepares the {@link IExtensionFunctionRule} mockup for use
+	 *
+	 * @param withRequestedValue
+	 */
+	void prepareExtensionFunctionRule(boolean withRequestedValue) {
+		lenient().when(this.extensionFunctionRule.getID()).thenReturn(this.ruleID);
+		lenient().when(this.extensionFunctionRule.getFunctionID()).thenReturn(this.functionID);
+		if (withRequestedValue) {
+			lenient().when(this.extensionFunctionRule.getRequestedValue()).thenReturn(Optional.of(this.requestedValue));
+		} else {
+			lenient().when(this.extensionFunctionRule.getRequestedValue()).thenReturn(Optional.empty());
 		}
 	}
 
@@ -216,6 +254,41 @@ class ValueGeneratorTest {
 		lenient().when(this.attribute.getMaxLength()).thenThrow(new IllegalStateException()); // n/a for integer
 		lenient().when(this.attribute.getMinValue()).thenReturn(Optional.empty());
 		lenient().when(this.attribute.getMaxValue()).thenReturn(Optional.empty());
+	}
+
+	/**
+	 * Prepares the {@link IExtensionFunction} mockup as string for use without discrete values
+	 *
+	 * @param maxLength
+	 */
+	void prepareFunctionForString() {
+		lenient().when(this.functionResultType.getItemType()).thenReturn(ItemType.STRING);
+		lenient().when(this.functionResultType.getOccurrenceIndicator()).thenReturn(OccurrenceIndicator.ONE);
+		lenient().when(this.functionResultType.getSequenceItemType()).thenReturn(SequenceItemType.STRING);
+		lenient().when(this.functionResultType.getSequenceType())
+			.thenReturn(SequenceType.makeSequenceType(ItemType.STRING, OccurrenceIndicator.ONE));
+	}
+
+	/**
+	 * Prepares the {@link IExtensionFunction} mockup as boolean
+	 */
+	void prepareFunctionForBoolean() {
+		lenient().when(this.functionResultType.getItemType()).thenReturn(ItemType.BOOLEAN);
+		lenient().when(this.functionResultType.getOccurrenceIndicator()).thenReturn(OccurrenceIndicator.ONE);
+		lenient().when(this.functionResultType.getSequenceItemType()).thenReturn(SequenceItemType.BOOLEAN);
+		lenient().when(this.functionResultType.getSequenceType())
+			.thenReturn(SequenceType.makeSequenceType(ItemType.BOOLEAN, OccurrenceIndicator.ONE));
+	}
+
+	/**
+	 * Prepares the {@link IExtensionFunction} mockup as integer for use without discrete values
+	 */
+	void prepareFunctionForInteger() {
+		lenient().when(this.functionResultType.getItemType()).thenReturn(ItemType.INTEGER);
+		lenient().when(this.functionResultType.getOccurrenceIndicator()).thenReturn(OccurrenceIndicator.ONE);
+		lenient().when(this.functionResultType.getSequenceItemType()).thenReturn(SequenceItemType.INTEGER);
+		lenient().when(this.functionResultType.getSequenceType())
+			.thenReturn(SequenceType.makeSequenceType(ItemType.INTEGER, OccurrenceIndicator.ONE));
 	}
 
 	/**
@@ -1259,6 +1332,125 @@ class ValueGeneratorTest {
 		final String generatedValue = this.valueGenerator.generateValue(this.addRawContentRule);
 		assertEquals(value, generatedValue);
 		assertValueDescriptorPresent(this.elementID, generatedValue, true);
+	}
+
+	/**
+	 * Test method for
+	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IExtensionFunctionRule)} and
+	 * {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
+	 */
+	@Test
+	void testGenerateValue_ExtensionFunctionRule_String() {
+		prepareExtensionFunctionRule(false);
+		prepareFunctionForString();
+
+		final IExtensionFunctionResult generatedValue = this.valueGenerator.generateValue(this.extensionFunctionRule);
+		assertEquals(this.functionID, generatedValue.getFunctionID());
+		final XdmValue xdmValue = generatedValue.getXDMValue();
+		assertFalse(xdmValue.isEmpty());
+		assertTrue(xdmValue.toString().startsWith(TEST_PREFIX), "generated value does not start with prefix");
+		assertValueDescriptorPresent(this.functionID, xdmValue.toString(), false);
+	}
+
+	/**
+	 * Test method for
+	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IExtensionFunctionRule)} and
+	 * {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
+	 */
+	@Test
+	void testGenerateValue_ExtensionFunctionRule_StringRequestedValue() {
+		final String value = "foobar42";
+		when(this.requestedValue.getValue()).thenReturn(value);
+
+		prepareExtensionFunctionRule(true);
+		prepareFunctionForString();
+
+		final IExtensionFunctionResult generatedValue = this.valueGenerator.generateValue(this.extensionFunctionRule);
+		assertEquals(this.functionID, generatedValue.getFunctionID());
+		final XdmValue xdmValue = generatedValue.getXDMValue();
+		assertFalse(xdmValue.isEmpty());
+		assertEquals(value, xdmValue.toString());
+		assertValueDescriptorPresent(this.functionID, value, true);
+	}
+
+	/**
+	 * Test method for
+	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IExtensionFunctionRule)} and
+	 * {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
+	 */
+	@Test
+	void testGenerateValue_ExtensionFunctionRule_Integer() {
+		prepareExtensionFunctionRule(false);
+		prepareFunctionForInteger();
+
+		final IExtensionFunctionResult generatedValue = this.valueGenerator.generateValue(this.extensionFunctionRule);
+		assertEquals(this.functionID, generatedValue.getFunctionID());
+		final XdmValue xdmValue = generatedValue.getXDMValue();
+		assertFalse(xdmValue.isEmpty());
+		final Integer generatedInteger = Integer.parseInt(xdmValue.toString());
+		assertNotNull(generatedInteger);
+		assertValueDescriptorPresent(this.functionID, xdmValue.toString(), false);
+	}
+
+	/**
+	 * Test method for
+	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IExtensionFunctionRule)} and
+	 * {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
+	 */
+	@Test
+	void testGenerateValue_ExtensionFunctionRule_IntegerRequestedValue() {
+		final String value = "42";
+		when(this.requestedValue.getValue()).thenReturn(value);
+
+		prepareExtensionFunctionRule(true);
+		prepareFunctionForString();
+
+		final IExtensionFunctionResult generatedValue = this.valueGenerator.generateValue(this.extensionFunctionRule);
+		assertEquals(this.functionID, generatedValue.getFunctionID());
+		final XdmValue xdmValue = generatedValue.getXDMValue();
+		assertFalse(xdmValue.isEmpty());
+		final Integer generatedInteger = Integer.parseInt(xdmValue.toString());
+		assertEquals(42, generatedInteger);
+		assertValueDescriptorPresent(this.functionID, value, true);
+	}
+
+	/**
+	 * Test method for
+	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IExtensionFunctionRule)} and
+	 * {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
+	 */
+	@Test
+	void testGenerateValue_ExtensionFunctionRule_Boolean() {
+		prepareExtensionFunctionRule(false);
+		prepareFunctionForBoolean();
+
+		final IExtensionFunctionResult generatedValue = this.valueGenerator.generateValue(this.extensionFunctionRule);
+		assertEquals(this.functionID, generatedValue.getFunctionID());
+		final XdmValue xdmValue = generatedValue.getXDMValue();
+		assertFalse(xdmValue.isEmpty());
+		assertTrue(xdmValue.toString().equals("true") || xdmValue.toString().equals("false"));
+		assertValueDescriptorPresent(this.functionID, xdmValue.toString(), false);
+	}
+
+	/**
+	 * Test method for
+	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IExtensionFunctionRule)} and
+	 * {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
+	 */
+	@Test
+	void testGenerateValue_ExtensionFunctionRule_BooleanRequestedValue() {
+		final String value = "true";
+		when(this.requestedValue.getValue()).thenReturn(value);
+
+		prepareExtensionFunctionRule(true);
+		prepareFunctionForBoolean();
+
+		final IExtensionFunctionResult generatedValue = this.valueGenerator.generateValue(this.extensionFunctionRule);
+		assertEquals(this.functionID, generatedValue.getFunctionID());
+		final XdmValue xdmValue = generatedValue.getXDMValue();
+		assertFalse(xdmValue.isEmpty());
+		assertEquals(value, xdmValue.toString());
+		assertValueDescriptorPresent(this.functionID, value, true);
 	}
 
 	/**

@@ -9,6 +9,10 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.x2vc.schema.ISchemaManager;
 import org.x2vc.schema.structure.*;
+import org.x2vc.xml.document.BooleanExtensionFunctionResult;
+import org.x2vc.xml.document.IExtensionFunctionResult;
+import org.x2vc.xml.document.IntegerExtensionFunctionResult;
+import org.x2vc.xml.document.StringExtensionFunctionResult;
 import org.x2vc.xml.request.*;
 import org.x2vc.xml.value.IPrefixSelector.PrefixData;
 
@@ -18,6 +22,8 @@ import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.thedeanda.lorem.LoremIpsum;
+
+import net.sf.saxon.s9api.OccurrenceIndicator;
 
 /**
  * Standard implementation of {@link IValueGenerator}.
@@ -320,28 +326,41 @@ public class ValueGenerator implements IValueGenerator {
 
 		// if no discrete value was used, generate a new one within the limits specified
 		if (result == null) {
-			// start with a prefixed value to provide a means of identification
-			final int counterLength = this.getValueLength() - this.getValuePrefix().length();
-			final String format = "%s%0" + counterLength + "d";
-			final String prefixValue = String.format(format, this.valuePrefix, this.nextGeneratedValueCounter++);
-			final String text = this.textGenerator.getWords(this.stringMinWordCount, this.stringMaxWordCount);
-			result = prefixValue + " " + text;
-
-			// ensure the length restriction is met, if any is specified
 			final Optional<Integer> maxLength = schemaObject.getMaxLength();
-			if (maxLength.isPresent()) {
-				final Integer maxLengthValue = maxLength.get();
-				if (result.length() > maxLengthValue) {
-					result = result.substring(0, maxLengthValue - 1);
-				}
-			}
+			result = generateRandomStringWithPrefix(maxLength);
 		}
 		return logger.traceExit(result);
+	}
+
+	/**
+	 * Generates a random string starting with a generated prefix.
+	 *
+	 * @param maxLength
+	 * @return the random string
+	 */
+	protected String generateRandomStringWithPrefix(final Optional<Integer> maxLength) {
+		String result;
+		// start with a prefixed value to provide a means of identification
+		final int counterLength = this.getValueLength() - this.getValuePrefix().length();
+		final String format = "%s%0" + counterLength + "d";
+		final String prefixValue = String.format(format, this.valuePrefix, this.nextGeneratedValueCounter++);
+		final String text = this.textGenerator.getWords(this.stringMinWordCount, this.stringMaxWordCount);
+		result = prefixValue + " " + text;
+
+		// ensure the length restriction is met, if any is specified
+		if (maxLength.isPresent()) {
+			final Integer maxLengthValue = maxLength.get();
+			if (result.length() > maxLengthValue) {
+				result = result.substring(0, maxLengthValue - 1);
+			}
+		}
+		return result;
 	}
 
 	@Override
 	public String generateValue(IAddRawContentRule rule) {
 		logger.traceEntry("for element {}", rule.getElementID());
+		loadSchema();
 		String value = null;
 		final Optional<IRequestedValue> requestedValue = rule.getRequestedValue();
 		if (requestedValue.isPresent()) {
@@ -377,6 +396,110 @@ public class ValueGenerator implements IValueGenerator {
 	}
 
 	@Override
+	public IExtensionFunctionResult generateValue(IExtensionFunctionRule rule) {
+		logger.traceEntry("for function {}", rule.getFunctionID());
+		loadSchema();
+		final IExtensionFunction function = this.schema.getObjectByID(rule.getFunctionID(), IExtensionFunction.class);
+		final Optional<IRequestedValue> oRequestedValue = rule.getRequestedValue();
+		IExtensionFunctionResult result = null;
+		if (oRequestedValue.isPresent()) {
+			result = generateRequestedFunctionResult(function, oRequestedValue.get());
+		} else {
+			result = generateFunctionResult(function);
+		}
+		this.valueDescriptors
+			.add(new ValueDescriptor(rule.getFunctionID(), rule.getID(), result.getXDMValue().toString(),
+					oRequestedValue.isPresent()));
+		return logger.traceExit("with generated result \"{}\"", result);
+	}
+
+	/**
+	 * @param function
+	 * @return
+	 */
+	private IExtensionFunctionResult generateFunctionResult(IExtensionFunction function) {
+		logger.traceEntry();
+		IExtensionFunctionResult result = null;
+
+		final IFunctionSignatureType resultType = function.getResultType();
+		if (resultType.getOccurrenceIndicator() != OccurrenceIndicator.ONE) {
+			// TODO Extension Functions: support other return type occurrence indicators
+			throw logger.throwing(new UnsupportedOperationException(
+					String.format("Generating a value with an occurrence of %s is not yet supported",
+							resultType.getOccurrenceIndicator())));
+		}
+
+		switch (resultType.getSequenceItemType()) {
+		case BOOLEAN:
+			result = new BooleanExtensionFunctionResult(function.getID(),
+					ThreadLocalRandom.current().nextBoolean());
+			break;
+		case INT:
+			result = new IntegerExtensionFunctionResult(function.getID(),
+					ThreadLocalRandom.current().nextInt());
+			break;
+		case INTEGER:
+			result = new IntegerExtensionFunctionResult(function.getID(),
+					ThreadLocalRandom.current().nextInt());
+			break;
+		case STRING:
+			result = new StringExtensionFunctionResult(function.getID(),
+					generateRandomStringWithPrefix(Optional.empty()));
+			break;
+		default:
+			// TODO Extension Functions: support other return type data types
+			throw logger.throwing(new UnsupportedOperationException(
+					String.format("Generating a value with an item tyoe of %s is not yet supported",
+							resultType.getSequenceItemType())));
+		}
+		return logger.traceExit(result);
+	}
+
+	/**
+	 * @param function
+	 * @param requestedValue
+	 * @return
+	 */
+	private IExtensionFunctionResult generateRequestedFunctionResult(IExtensionFunction function,
+			IRequestedValue requestedValue) {
+		logger.traceEntry();
+		IExtensionFunctionResult result = null;
+
+		final IFunctionSignatureType resultType = function.getResultType();
+		if (resultType.getOccurrenceIndicator() != OccurrenceIndicator.ONE) {
+			// TODO Extension Functions: support other return type occurrence indicators
+			throw logger.throwing(new UnsupportedOperationException(
+					String.format("Generating a value with an occurrence of %s is not yet supported",
+							resultType.getOccurrenceIndicator())));
+		}
+
+		switch (resultType.getSequenceItemType()) {
+		case BOOLEAN:
+			result = new BooleanExtensionFunctionResult(function.getID(),
+					Boolean.parseBoolean(requestedValue.getValue()));
+			break;
+		case INT:
+			result = new IntegerExtensionFunctionResult(function.getID(),
+					Integer.parseInt(requestedValue.getValue()));
+			break;
+		case INTEGER:
+			result = new IntegerExtensionFunctionResult(function.getID(),
+					Integer.parseInt(requestedValue.getValue()));
+			break;
+		case STRING:
+			result = new StringExtensionFunctionResult(function.getID(),
+					requestedValue.getValue());
+			break;
+		default:
+			// TODO Extension Functions: support other return type data types
+			throw logger.throwing(new UnsupportedOperationException(
+					String.format("Generating a value with an item tyoe of %s is not yet supported",
+							resultType.getSequenceItemType())));
+		}
+		return logger.traceExit(result);
+	}
+
+	@Override
 	public String getValuePrefix() {
 		if (this.valuePrefix == null) {
 			selectPrefixAndLength();
@@ -392,6 +515,11 @@ public class ValueGenerator implements IValueGenerator {
 		return this.valueLength;
 	}
 
+	@Override
+	public ImmutableSet<IValueDescriptor> getValueDescriptors() {
+		return ImmutableSet.copyOf(this.valueDescriptors);
+	}
+
 	/**
 	 * Uses the {@link IPrefixSelector} to determine a unique prefix and a default length for the generated values.
 	 */
@@ -402,11 +530,6 @@ public class ValueGenerator implements IValueGenerator {
 		this.valuePrefix = data.prefix();
 		this.valueLength = data.valueLength();
 		logger.traceExit();
-	}
-
-	@Override
-	public ImmutableSet<IValueDescriptor> getValueDescriptors() {
-		return ImmutableSet.copyOf(this.valueDescriptors);
 	}
 
 }

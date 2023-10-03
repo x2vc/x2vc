@@ -9,12 +9,18 @@ import net.sf.saxon.s9api.XdmValue;
 /**
  * Implementation of {@link IExtensionFunctionResult} that contains a boolean value.
  */
-public class BooleanExtensionFunctionResult extends AbstractExtensionFunctionResult {
+public final class BooleanExtensionFunctionResult extends AbstractExtensionFunctionResult {
 
 	@XmlElement
 	private final Boolean result;
 
-	protected BooleanExtensionFunctionResult(UUID functionID, Boolean result) {
+	/**
+	 * Creates a new function result.
+	 *
+	 * @param functionID
+	 * @param result
+	 */
+	public BooleanExtensionFunctionResult(UUID functionID, Boolean result) {
 		super(functionID);
 		this.result = result;
 	}
