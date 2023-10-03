@@ -10,6 +10,8 @@ import javax.xml.transform.stream.StreamSource;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.x2vc.processor.IHTMLDocumentFactory.Builder;
+import org.x2vc.schema.ISchemaManager;
+import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.stylesheet.IStylesheetInformation;
 import org.x2vc.stylesheet.IStylesheetManager;
 import org.x2vc.xml.document.IXMLDocumentContainer;
@@ -31,52 +33,78 @@ import net.sf.saxon.s9api.*;
 @Singleton
 public class XSLTProcessor implements IXSLTProcessor {
 
+	/**
+	 * Internal class to keep all the cached stuff bundled together.
+	 */
+	private record ProcessorCacheEntry(
+			Processor processor,
+			XsltCompiler compiler,
+			IExtensionFunctionHandler functionHandler,
+			XsltExecutable executable) {
+	}
+
+	/**
+	 * The key used to organize the cache.
+	 */
+	private record CacheKey(URI stylesheetURI, URI schemaURI, int schemaVersion) {
+		public static CacheKey fromXMLDocumentContainer(IXMLDocumentContainer dc) {
+			return new CacheKey(dc.getStylesheeURI(), dc.getSchemaURI(), dc.getSchemaVersion());
+		}
+	}
+
 	private static final Logger logger = LogManager.getLogger();
 
 	private IStylesheetManager stylesheetManager;
-	private Processor processor;
+	private ISchemaManager schemaManager;
 	private IHTMLDocumentFactory documentFactory;
 	private Integer cacheSize;
 
 	@Inject
-	XSLTProcessor(IStylesheetManager stylesheetManager, Processor processor, IHTMLDocumentFactory documentFactory,
+	XSLTProcessor(IStylesheetManager stylesheetManager, ISchemaManager schemaManager,
+			IHTMLDocumentFactory documentFactory,
 			@TypesafeConfig("x2vc.stylesheet.compiled.cachesize") Integer cacheSize) {
 		this.stylesheetManager = stylesheetManager;
-		this.processor = processor;
+		this.schemaManager = schemaManager;
 		this.documentFactory = documentFactory;
 		this.cacheSize = cacheSize;
 	}
 
 	@SuppressWarnings("java:S4738") // Java supplier does not support memoization
-	Supplier<LoadingCache<URI, XsltExecutable>> stylesheetCacheSupplier = Suppliers.memoize(() -> {
+	Supplier<LoadingCache<CacheKey, ProcessorCacheEntry>> processorCacheSupplier = Suppliers.memoize(() -> {
 		logger.traceEntry();
-		logger.debug("Initializing compiled stylesheet cache (max. {} entries)", this.cacheSize);
-		final LoadingCache<URI, XsltExecutable> stylesheetCache = CacheBuilder.newBuilder().maximumSize(this.cacheSize)
-			.build(new StylesheetCacheLoader(this.processor));
-		return logger.traceExit(stylesheetCache);
+		logger.debug("Initializing XSLT processor cache (max. {} entries)", this.cacheSize);
+		final LoadingCache<CacheKey, ProcessorCacheEntry> procesorCache = CacheBuilder.newBuilder()
+			.maximumSize(this.cacheSize)
+			.build(new ProcessorCacheLoader(this.stylesheetManager, this.schemaManager));
+		return logger.traceExit(procesorCache);
 	});
 
 	@Override
 	public IHTMLDocumentContainer processDocument(IXMLDocumentContainer xmlDocument) {
 		logger.traceEntry();
 		final Builder builder = this.documentFactory.newBuilder(xmlDocument);
-		XsltExecutable stylesheet = null;
+		ProcessorCacheEntry cacheEntry = null;
 		try {
-			stylesheet = this.stylesheetCacheSupplier.get().get(xmlDocument.getStylesheeURI());
+			cacheEntry = this.processorCacheSupplier.get().get(CacheKey.fromXMLDocumentContainer(xmlDocument));
 		} catch (final ExecutionException e) {
 			logger.error("Error retrieving compiled stylesheet from cache", e);
 			builder.withCompilationError((SaxonApiException) e.getCause());
 		}
-		if (stylesheet != null) {
+		if (cacheEntry != null) {
 			try {
+				logger.debug("preparing for transformation");
 				final StringWriter stringWriter = new StringWriter();
-				final Serializer out = this.processor.newSerializer(stringWriter);
+				final Serializer out = cacheEntry.processor.newSerializer(stringWriter);
 				final ProcessorObserver observer = new ProcessorObserver();
-				final Xslt30Transformer transformer = stylesheet.load30();
+				final Xslt30Transformer transformer = cacheEntry.executable.load30();
 				transformer.setMessageHandler(observer);
 				transformer.setErrorListener(observer);
 				transformer.setTraceListener(observer);
+				cacheEntry.functionHandler.storeFunctionResults(xmlDocument.getDocumentDescriptor());
+				logger.debug("preparations complete, launching transformer");
 				transformer.transform(new StreamSource(new StringReader(xmlDocument.getDocument())), out);
+				logger.debug("transformation complete, processing results");
+				cacheEntry.functionHandler.clearFunctionResults();
 				builder.withHtmlDocument(stringWriter.toString());
 				builder.withTraceEvents(observer.getTraceEvents());
 				builder.withDocumentTraceID(observer.getDocumentTraceID());
@@ -84,6 +112,7 @@ public class XSLTProcessor implements IXSLTProcessor {
 				// we expect some errors due to the explorative nature of the tests (monkey
 				// testing), so don't log them, just add them to the result object
 				builder.withProcessingError(e);
+				cacheEntry.functionHandler.clearFunctionResults();
 			}
 		}
 		final IHTMLDocumentContainer container = builder.build();
@@ -93,26 +122,55 @@ public class XSLTProcessor implements IXSLTProcessor {
 	/**
 	 * A {@link CacheLoader} to provide precompiled instances for stylesheets.
 	 */
-	private final class StylesheetCacheLoader extends CacheLoader<URI, XsltExecutable> {
+	private final class ProcessorCacheLoader extends CacheLoader<CacheKey, ProcessorCacheEntry> {
 
 		private static final Logger logger = LogManager.getLogger();
-		private XsltCompiler compiler;
+		private IStylesheetManager stylesheetManager;
+		private ISchemaManager schemaManager;
 
 		/**
-		 * @param processor the XSLT processor to uses
+		 * @param stylesheetManager
+		 * @param schemaManager
 		 */
-		private StylesheetCacheLoader(Processor processor) {
-			this.compiler = processor.newXsltCompiler();
-			this.compiler.setCompileWithTracing(true);
+		public ProcessorCacheLoader(IStylesheetManager stylesheetManager, ISchemaManager schemaManager) {
+			this.stylesheetManager = stylesheetManager;
+			this.schemaManager = schemaManager;
 		}
 
 		@Override
-		public XsltExecutable load(URI stylesheetURI) throws SaxonApiException {
+		public ProcessorCacheEntry load(CacheKey cacheKey) throws SaxonApiException {
 			logger.traceEntry();
-			final IStylesheetInformation stylesheet = XSLTProcessor.this.stylesheetManager.get(stylesheetURI);
-			logger.debug("Compiling stylesheet to provide cache entry");
-			final XsltExecutable result = this.compiler
+			// load stylesheet and schema
+			final IStylesheetInformation stylesheet = this.stylesheetManager.get(cacheKey.stylesheetURI());
+			final IXMLSchema schema = this.schemaManager.getSchema(cacheKey.stylesheetURI(),
+					cacheKey.schemaVersion());
+
+			logger.debug("preparing new XSLT processor and compiler");
+
+			// because the extension functions are registered on a processor level, we
+			// need to acquire a new processor instance for each schema version
+			final Processor processor = new Processor();
+
+			// create and register the extension handler
+			final IExtensionFunctionHandler functionHandler = new ExtensionFunctionHandler(schema);
+			functionHandler.registerFunctions(processor);
+
+			// create compiler in trace mode
+			final XsltCompiler compiler = processor.newXsltCompiler();
+			compiler.setCompileWithTracing(true);
+
+			logger.debug("Compiling stylesheet");
+
+			// compile the stylesheet to produce the executable
+			final XsltExecutable executable = compiler
 				.compile(new StreamSource(new StringReader(stylesheet.getPreparedStylesheet())));
+
+			logger.debug("Stylesheet compiled successfully");
+
+			// bundle it all together...
+			final ProcessorCacheEntry result = new ProcessorCacheEntry(processor, compiler, functionHandler,
+					executable);
+
 			return logger.traceExit(result);
 		}
 	}

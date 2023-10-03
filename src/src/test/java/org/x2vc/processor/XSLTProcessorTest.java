@@ -12,47 +12,53 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.x2vc.schema.ISchemaManager;
+import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.stylesheet.IStylesheetInformation;
 import org.x2vc.stylesheet.IStylesheetManager;
 import org.x2vc.utilities.URIUtilities;
 import org.x2vc.utilities.URIUtilities.ObjectType;
 import org.x2vc.xml.document.IXMLDocumentContainer;
+import org.x2vc.xml.document.IXMLDocumentDescriptor;
 
-import net.sf.saxon.s9api.Processor;
+import com.google.common.collect.ImmutableList;
 
 @ExtendWith(MockitoExtension.class)
 class XSLTProcessorTest {
 
-	// This series of tests uses the actual Saxon XSLT processor. Using a mocked
-	// version would be more stable, but it's a lot of work...
-	// TODO XSLT: provide tests that do not require Saxon
-
-	private Processor saxonProcessor;
 	private XSLTProcessor wrapper;
 
 	@Mock
-	IStylesheetManager stylesheetManager;
+	private IStylesheetManager stylesheetManager;
 
 	@Mock
-	IStylesheetInformation stylesheet;
+	private ISchemaManager schemaManager;
 
-	IHTMLDocumentFactory documentFactory;
+	@Mock
+	private IStylesheetInformation stylesheet;
+
+	private IHTMLDocumentFactory documentFactory;
 
 	@Mock
 	private IXMLDocumentContainer xmlDocument;
 
+	@Mock
+	private IXMLDocumentDescriptor xmlDescriptor;
+
 	private URI stylesheetURI;
 	private URI schemaURI;
 	private int schemaVersion;
+
+	@Mock
+	private IXMLSchema schema;
 
 	/**
 	 * @throws java.lang.Exception
 	 */
 	@BeforeEach
 	void setUp() throws Exception {
-		this.saxonProcessor = new Processor();
 		this.documentFactory = new HTMLDocumentFactory(this.stylesheetManager);
-		this.wrapper = new XSLTProcessor(this.stylesheetManager, this.saxonProcessor, this.documentFactory, 25);
+		this.wrapper = new XSLTProcessor(this.stylesheetManager, this.schemaManager, this.documentFactory, 25);
 
 		this.stylesheetURI = URIUtilities.makeMemoryURI(ObjectType.STYLESHEET, "foo");
 		lenient().when(this.xmlDocument.getStylesheeURI()).thenReturn(this.stylesheetURI);
@@ -62,6 +68,13 @@ class XSLTProcessorTest {
 		lenient().when(this.xmlDocument.getSchemaURI()).thenReturn(this.schemaURI);
 		this.schemaVersion = 1;
 		lenient().when(this.xmlDocument.getSchemaVersion()).thenReturn(this.schemaVersion);
+		lenient().when(this.xmlDocument.getDocumentDescriptor()).thenReturn(this.xmlDescriptor);
+		lenient().when(this.xmlDescriptor.getExtensionFunctionResults()).thenReturn(ImmutableList.of());
+
+		lenient().when(this.schemaManager.getSchema(this.stylesheetURI)).thenReturn(this.schema);
+		lenient().when(this.schemaManager.getSchema(this.stylesheetURI, this.schemaVersion)).thenReturn(this.schema);
+
+		lenient().when(this.schema.getExtensionFunctions()).thenReturn(ImmutableList.of());
 
 	}
 
