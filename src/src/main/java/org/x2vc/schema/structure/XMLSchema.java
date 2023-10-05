@@ -4,7 +4,10 @@ import java.net.URI;
 import java.util.*;
 
 import javax.xml.bind.Unmarshaller;
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementWrapper;
+import javax.xml.bind.annotation.XmlRootElement;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,7 +21,7 @@ import com.google.common.collect.*;
  * Standard implementation of {@link IXMLSchema}.
  */
 @XmlRootElement(name = "schema")
-public class XMLSchema implements IXMLSchema {
+public final class XMLSchema implements IXMLSchema {
 
 	private static final Logger logger = LogManager.getLogger();
 
@@ -256,9 +259,8 @@ public class XMLSchema implements IXMLSchema {
 		}
 	}
 
-	@XmlTransient
 	@SuppressWarnings("java:S4738") // Java supplier does not support memoization
-	private Supplier<Multimap<UUID, String>> objectPathMapSupplier = Suppliers.memoize(() -> {
+	private transient Supplier<Multimap<UUID, String>> objectPathMapSupplier = Suppliers.memoize(() -> {
 		logger.traceEntry();
 		final Multimap<UUID, String> map = MultimapBuilder.hashKeys().arrayListValues().build();
 		this.rootElements.forEach(elem -> addToPathMap(map, elem, "/"));
@@ -423,7 +425,8 @@ public class XMLSchema implements IXMLSchema {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(this.elementTypes, this.rootElements, this.schemaURI, this.stylesheetURI, this.version);
+		return Objects.hash(this.elementTypes, this.extensionFunctions, this.rootElements, this.schemaURI,
+				this.stylesheetURI, this.version);
 	}
 
 	@Override
@@ -431,14 +434,12 @@ public class XMLSchema implements IXMLSchema {
 		if (this == obj) {
 			return true;
 		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
+		if (!(obj instanceof XMLSchema)) {
 			return false;
 		}
 		final XMLSchema other = (XMLSchema) obj;
 		return Objects.equals(this.elementTypes, other.elementTypes)
+				&& Objects.equals(this.extensionFunctions, other.extensionFunctions)
 				&& Objects.equals(this.rootElements, other.rootElements)
 				&& Objects.equals(this.schemaURI, other.schemaURI)
 				&& Objects.equals(this.stylesheetURI, other.stylesheetURI) && this.version == other.version;

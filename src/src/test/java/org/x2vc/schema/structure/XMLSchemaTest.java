@@ -15,7 +15,6 @@ import javax.xml.bind.Marshaller;
 import javax.xml.bind.Unmarshaller;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -30,6 +29,7 @@ import org.x2vc.utilities.URIUtilities.ObjectType;
 
 import net.sf.saxon.s9api.OccurrenceIndicator;
 import nl.jqno.equalsverifier.EqualsVerifier;
+import nl.jqno.equalsverifier.Warning;
 
 @ExtendWith(MockitoExtension.class)
 class XMLSchemaTest {
@@ -411,9 +411,10 @@ class XMLSchemaTest {
 	 * Test method for {@link org.x2vc.schema.structure.XMLSchema#equals(java.lang.Object)}.
 	 */
 	@Test
-	@Disabled("implementation needs to be adjusted") // TODO check equals() and hashCode()
 	void testEqualsObject() {
-		EqualsVerifier.forClass(XMLSchema.class).verify();
+		EqualsVerifier.forClass(XMLSchema.class)
+			.suppress(Warning.NONFINAL_FIELDS)
+			.verify();
 	}
 
 }

@@ -3,6 +3,7 @@ package org.x2vc.schema.structure;
 import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlTransient;
 
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
@@ -16,7 +17,10 @@ import net.sf.saxon.s9api.SequenceType;
  */
 public final class FunctionSignatureType implements IFunctionSignatureType {
 
+	@XmlAttribute(name = "type")
 	private final SequenceItemType itemType;
+
+	@XmlAttribute(name = "occurrence")
 	private final OccurrenceIndicator occurrenceIndicator;
 
 	protected FunctionSignatureType(SequenceItemType itemType, OccurrenceIndicator occurrenceIndicator) {
@@ -30,13 +34,13 @@ public final class FunctionSignatureType implements IFunctionSignatureType {
 		this.occurrenceIndicator = null;
 	}
 
-	@XmlAttribute(name = "type")
+	@XmlTransient
 	@Override
 	public SequenceItemType getSequenceItemType() {
 		return this.itemType;
 	}
 
-	@XmlAttribute(name = "occurrence")
+	@XmlTransient
 	@Override
 	public OccurrenceIndicator getOccurrenceIndicator() {
 		return this.occurrenceIndicator;
