@@ -151,10 +151,21 @@ public final class ExtensionFunction implements IExtensionFunction {
 	}
 
 	/**
+	 * Creates builder to build {@link ExtensionFunction}.
+	 *
+	 * @param functionID
+	 * @param localName
+	 * @return created builder
+	 */
+	public static Builder builder(UUID functionID, String localName) {
+		return new Builder(functionID, localName);
+	}
+
+	/**
 	 * Builder to build {@link ExtensionFunction}.
 	 */
 	public static final class Builder {
-		private UUID id = UUID.randomUUID();
+		private UUID id;
 		private String comment;
 		private String namespaceURI;
 		private String localName;
@@ -162,18 +173,13 @@ public final class ExtensionFunction implements IExtensionFunction {
 		private List<IFunctionSignatureType> argumentTypes = new ArrayList<>();
 
 		private Builder(String localName) {
+			this.id = UUID.randomUUID();
 			this.localName = localName;
 		}
 
-		/**
-		 * Builder method for id parameter.
-		 *
-		 * @param id field to set
-		 * @return builder
-		 */
-		public Builder withID(UUID id) {
+		private Builder(UUID id, String localName) {
 			this.id = id;
-			return this;
+			this.localName = localName;
 		}
 
 		/**

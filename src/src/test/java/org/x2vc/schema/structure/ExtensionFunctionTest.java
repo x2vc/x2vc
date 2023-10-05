@@ -24,8 +24,7 @@ class ExtensionFunctionTest {
 	@Test
 	void testGetID() {
 		final UUID id = UUID.randomUUID();
-		final ExtensionFunction function = ExtensionFunction.builder("myFunc")
-			.withID(id)
+		final ExtensionFunction function = ExtensionFunction.builder(id, "myFunc")
 			.build();
 		assertEquals(id, function.getID());
 	}
