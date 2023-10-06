@@ -10,7 +10,7 @@ import picocli.CommandLine;
 import picocli.CommandLine.IFactory;
 
 /**
- * Custom {@link IFactory} to initialize dependency injection.
+ * Custom {@link IFactory} to initialize command line processing via dependency injection.
  */
 public class CheckerFactory implements IFactory {
 	private Injector injector;
