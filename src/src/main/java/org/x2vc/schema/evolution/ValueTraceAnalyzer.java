@@ -11,8 +11,8 @@ import org.x2vc.processor.IValueAccessTraceEvent;
 import org.x2vc.schema.ISchemaManager;
 import org.x2vc.schema.structure.IElementReference;
 import org.x2vc.schema.structure.IElementType;
-import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.schema.structure.ISchemaObject;
+import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.xml.document.IXMLDocumentContainer;
 import org.x2vc.xml.request.IDocumentRequest;
 import org.x2vc.xml.request.IGenerationRule;
@@ -24,6 +24,7 @@ import com.google.common.collect.MultimapBuilder;
 import com.google.inject.Inject;
 
 import net.sf.saxon.expr.*;
+import net.sf.saxon.expr.compat.GeneralComparison10;
 import net.sf.saxon.expr.instruct.Block;
 import net.sf.saxon.expr.instruct.TraceExpression;
 import net.sf.saxon.expr.instruct.ValueOf;
@@ -233,9 +234,18 @@ public class ValueTraceAnalyzer implements IValueTraceAnalyzer {
 			// TODO support Expression subclass ....net.sf.saxon.expr.BooleanExpression (abstract)
 			// TODO support Expression subclass ......net.sf.saxon.expr.AndExpression
 			// TODO support Expression subclass ......net.sf.saxon.expr.OrExpression
-			// TODO support Expression subclass ....net.sf.saxon.expr.FilterExpression
-			// TODO support Expression subclass ....net.sf.saxon.expr.GeneralComparison (abstract)
-			// TODO support Expression subclass ......net.sf.saxon.expr.GeneralComparison20
+			else if (expression instanceof final FilterExpression slashExpression) {
+				// Expression subclass ....net.sf.saxon.expr.FilterExpression
+				final ISchemaElementProxy baseSchemaElement = processExpression(schemaElement,
+						slashExpression.getBase());
+				processExpression(baseSchemaElement, slashExpression.getFilter());
+
+			} else if (expression instanceof final GeneralComparison generalComparison) {
+				// Expression subclass ....net.sf.saxon.expr.GeneralComparison (abstract)
+				// Expression subclass ......net.sf.saxon.expr.GeneralComparison20
+				processExpression(schemaElement, generalComparison.getLhsExpression());
+				processExpression(schemaElement, generalComparison.getRhsExpression());
+			}
 			// TODO support Expression subclass ....net.sf.saxon.expr.IdentityComparison
 			// TODO support Expression subclass ....net.sf.saxon.expr.LookupExpression
 			else if (expression instanceof final SlashExpression slashExpression) {
@@ -253,8 +263,11 @@ public class ValueTraceAnalyzer implements IValueTraceAnalyzer {
 			}
 			// TODO support Expression subclass ....net.sf.saxon.expr.VennExpression
 			// TODO support Expression subclass ......net.sf.saxon.expr.SingletonIntersectExpression
-			// TODO support Expression subclass ....net.sf.saxon.expr.compat.GeneralComparison10
-			else if (expression instanceof ContextItemExpression) {
+			else if (expression instanceof final GeneralComparison10 generalComparison10) {
+				// Expression subclass ....net.sf.saxon.expr.compat.GeneralComparison10
+				processExpression(schemaElement, generalComparison10.getLhsExpression());
+				processExpression(schemaElement, generalComparison10.getRhsExpression());
+			} else if (expression instanceof ContextItemExpression) {
 				// Expression subclass ..net.sf.saxon.expr.ContextItemExpression
 				// Expression subclass ....net.sf.saxon.expr.CurrentItemExpression
 				// Although technically a value access, we can't learn anything new from a "this" (.) access...
