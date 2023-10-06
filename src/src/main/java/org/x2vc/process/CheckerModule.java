@@ -13,10 +13,7 @@ import org.x2vc.processor.HTMLDocumentFactory;
 import org.x2vc.processor.IHTMLDocumentFactory;
 import org.x2vc.processor.IXSLTProcessor;
 import org.x2vc.processor.XSLTProcessor;
-import org.x2vc.report.IReportWriter;
-import org.x2vc.report.IVulnerabilityCandidateCollector;
-import org.x2vc.report.ReportWriter;
-import org.x2vc.report.VulnerabilityCandidateCollector;
+import org.x2vc.report.*;
 import org.x2vc.schema.IInitialSchemaGenerator;
 import org.x2vc.schema.ISchemaManager;
 import org.x2vc.schema.InitialSchemaGenerator;
@@ -36,12 +33,9 @@ import org.x2vc.xml.request.RequestGenerator;
 import org.x2vc.xml.value.*;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.Provides;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.multibindings.Multibinder;
 import com.typesafe.config.Config;
-
-import net.sf.saxon.s9api.Processor;
 
 /**
  * The Guice module to configure the checker application.
@@ -50,8 +44,6 @@ public class CheckerModule extends AbstractModule {
 
 	private static final Logger logger = LogManager.getLogger();
 	private Config configuration;
-
-	// TODO https://stackoverflow.com/questions/26710191/how-to-test-implementations-of-guice-abstractmodule
 
 	/**
 	 * @param configuration
@@ -105,8 +97,9 @@ public class CheckerModule extends AbstractModule {
 		bind(IXSLTProcessor.class).to(XSLTProcessor.class);
 
 		// report
-		bind(IVulnerabilityCandidateCollector.class).to(VulnerabilityCandidateCollector.class);
+		bind(IProcessingMessageCollector.class).to(ProcessingMessageCollector.class);
 		bind(IReportWriter.class).to(ReportWriter.class);
+		bind(IVulnerabilityCandidateCollector.class).to(VulnerabilityCandidateCollector.class);
 
 		// schema evolution
 		bind(IValueTraceAnalyzer.class).to(ValueTraceAnalyzer.class);
@@ -136,7 +129,8 @@ public class CheckerModule extends AbstractModule {
 
 		// xml value
 		bind(IPrefixSelector.class).to(PrefixSelector.class);
-		install(new FactoryModuleBuilder().implement(IValueGenerator.class, ValueGenerator.class)
+		install(new FactoryModuleBuilder()
+			.implement(IValueGenerator.class, ValueGenerator.class)
 			.build(IValueGeneratorFactory.class));
 
 		logger.traceExit();
@@ -148,7 +142,7 @@ public class CheckerModule extends AbstractModule {
 	@SuppressWarnings("unchecked")
 	protected void configureAnalyzerRules() {
 		logger.traceEntry();
-		// use a multibinder for the analyzer rules (plugin-like
+		// use a multibinder for the analyzer rules (plugin-like structure)
 		final Multibinder<IAnalyzerRule> ruleBinder = Multibinder.newSetBinder(binder(), IAnalyzerRule.class);
 		final List<String> enabledRules = this.configuration.getStringList("x2vc.analysis.enabled_rules");
 		enabledRules.forEach(ruleName -> {
@@ -164,12 +158,6 @@ public class CheckerModule extends AbstractModule {
 			}
 		});
 		logger.traceExit();
-	}
-
-	@Provides
-	static Processor provideProcessor() {
-		// TODO Infrastructure: supply XSLT processor configuration
-		return new Processor();
 	}
 
 }
