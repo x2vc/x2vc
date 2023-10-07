@@ -102,9 +102,10 @@ public class CheckerModule extends AbstractModule {
 		bind(IVulnerabilityCandidateCollector.class).to(VulnerabilityCandidateCollector.class);
 
 		// schema evolution
-		bind(IValueTraceAnalyzer.class).to(ValueTraceAnalyzer.class);
 		bind(ISchemaModificationProcessor.class).to(SchemaModificationProcessor.class);
 		bind(ISchemaModifierCollector.class).to(SchemaModifierCollector.class);
+		bind(IValueTraceAnalyzer.class).to(ValueTraceAnalyzer.class);
+		bind(IValueTracePreprocessor.class).to(ValueTracePreprocessor.class);
 
 		// schema
 		bind(ISchemaManager.class).to(SchemaManager.class);

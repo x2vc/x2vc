@@ -30,6 +30,7 @@ import org.x2vc.schema.ISchemaManager;
 import org.x2vc.schema.evolution.ISchemaModificationProcessor;
 import org.x2vc.schema.evolution.ISchemaModifierCollector;
 import org.x2vc.schema.evolution.IValueTraceAnalyzer;
+import org.x2vc.schema.evolution.IValueTracePreprocessor;
 import org.x2vc.stylesheet.INamespaceExtractor;
 import org.x2vc.stylesheet.IStylesheetManager;
 import org.x2vc.stylesheet.IStylesheetPreprocessor;
@@ -91,11 +92,13 @@ class CheckerModuleTest {
 	@Inject
 	private Provider<IVulnerabilityCandidateCollector> vulnerabilityCandidateCollectorProvider;
 	@Inject
-	private Provider<IValueTraceAnalyzer> valueTraceAnalyzerProvider;
-	@Inject
 	private Provider<ISchemaModificationProcessor> schemaModificationProcessorProvider;
 	@Inject
 	private Provider<ISchemaModifierCollector> schemaModifierCollectorProvider;
+	@Inject
+	private Provider<IValueTraceAnalyzer> valueTraceAnalyzerProvider;
+	@Inject
+	private Provider<IValueTracePreprocessor> valueTracePreprocessorProvider;
 	@Inject
 	private Provider<ISchemaManager> schemaManagerProvider;
 	@Inject
@@ -253,11 +256,6 @@ class CheckerModuleTest {
 	}
 
 	@Test
-	void testValueTraceAnalyzer() {
-		assertNotNull(this.valueTraceAnalyzerProvider.get());
-	}
-
-	@Test
 	void testSchemaModificationProcessor() {
 		assertNotNull(this.schemaModificationProcessorProvider.get());
 	}
@@ -265,6 +263,16 @@ class CheckerModuleTest {
 	@Test
 	void testSchemaModifierCollector() {
 		assertNotNull(this.schemaModifierCollectorProvider.get());
+	}
+
+	@Test
+	void testValueTraceAnalyzer() {
+		assertNotNull(this.valueTraceAnalyzerProvider.get());
+	}
+
+	@Test
+	void testValueTracePreprocessor() {
+		assertNotNull(this.valueTracePreprocessorProvider.get());
 	}
 
 	@Test

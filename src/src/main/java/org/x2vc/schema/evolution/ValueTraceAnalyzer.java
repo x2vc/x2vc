@@ -6,21 +6,13 @@ import java.util.function.Consumer;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.x2vc.processor.IHTMLDocumentContainer;
-import org.x2vc.processor.ITraceEvent;
-import org.x2vc.processor.IValueAccessTraceEvent;
 import org.x2vc.schema.ISchemaManager;
 import org.x2vc.schema.structure.IElementReference;
 import org.x2vc.schema.structure.IElementType;
-import org.x2vc.schema.structure.ISchemaObject;
 import org.x2vc.schema.structure.IXMLSchema;
-import org.x2vc.xml.document.IXMLDocumentContainer;
 import org.x2vc.xml.request.IDocumentRequest;
-import org.x2vc.xml.request.IGenerationRule;
 
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Multimap;
-import com.google.common.collect.MultimapBuilder;
+import com.google.common.collect.ImmutableMultimap;
 import com.google.inject.Inject;
 
 import net.sf.saxon.expr.*;
@@ -41,11 +33,13 @@ public class ValueTraceAnalyzer implements IValueTraceAnalyzer {
 	private static final Logger logger = LogManager.getLogger();
 
 	private ISchemaManager schemaManager;
+	private IValueTracePreprocessor valueTracePreprocessor;
 
 	@Inject
-	protected ValueTraceAnalyzer(ISchemaManager schemaManager) {
+	protected ValueTraceAnalyzer(ISchemaManager schemaManager, IValueTracePreprocessor valueTracePreprocessor) {
 		super();
 		this.schemaManager = schemaManager;
+		this.valueTracePreprocessor = valueTracePreprocessor;
 	}
 
 	@Override
@@ -53,15 +47,13 @@ public class ValueTraceAnalyzer implements IValueTraceAnalyzer {
 			Consumer<ISchemaModifier> modifierCollector) {
 		logger.traceEntry();
 
-		// Filter the trace events down to the value access events we need.
-		final List<IValueAccessTraceEvent> valueTraceEvents = getValueTraceEvents(htmlContainer);
-
-		// The raw trace events point to the document elements - resolve these to the
-		// schema element references the elements are based on.
+		// Resolve the schema reference
 		final IDocumentRequest request = htmlContainer.getSource().getRequest();
 		final IXMLSchema schema = this.schemaManager.getSchema(request.getStylesheeURI(), request.getSchemaVersion());
-		final Multimap<ISchemaElementProxy, Expression> schemaTraceEvents = mapEventsToSchema(valueTraceEvents,
-				htmlContainer.getSource(), htmlContainer.getDocumentTraceID(), schema);
+
+		// Let the preprocessor re-order the events to a more usable form
+		final ImmutableMultimap<ISchemaElementProxy, Expression> schemaTraceEvents = this.valueTracePreprocessor
+			.prepareEvents(htmlContainer);
 
 		if (schemaTraceEvents.isEmpty()) {
 			logger.warn("No usable tracing information was found for this document");
@@ -79,97 +71,6 @@ public class ValueTraceAnalyzer implements IValueTraceAnalyzer {
 		expressionProcessor.elementModifiers.values().forEach(modifierCollector::accept);
 
 		logger.traceExit();
-	}
-
-	/**
-	 * Extract the trace events relevant to the schema analyzer.
-	 *
-	 * @param container
-	 * @return
-	 */
-	protected List<IValueAccessTraceEvent> getValueTraceEvents(IHTMLDocumentContainer container) {
-		logger.traceEntry();
-		List<IValueAccessTraceEvent> valueTraceEvents;
-		final Optional<ImmutableList<ITraceEvent>> oTraceEvents = container.getTraceEvents();
-		if (oTraceEvents.isPresent()) {
-			valueTraceEvents = oTraceEvents.get().stream()
-				.filter(IValueAccessTraceEvent.class::isInstance)
-				.map(IValueAccessTraceEvent.class::cast)
-				.toList();
-		} else {
-			logger.warn("No trace events were recorded for the generated document");
-			valueTraceEvents = Lists.newArrayList();
-		}
-		return logger.traceExit(valueTraceEvents);
-	}
-
-	/**
-	 * Resolve the schema references and group the trace events by schema ID.
-	 *
-	 * @param events
-	 * @param source
-	 * @param documentTraceID
-	 * @return
-	 */
-	private Multimap<ISchemaElementProxy, Expression> mapEventsToSchema(List<IValueAccessTraceEvent> events,
-			IXMLDocumentContainer source, UUID documentTraceID, IXMLSchema schema) {
-		logger.traceEntry();
-		final Multimap<ISchemaElementProxy, Expression> result = MultimapBuilder.hashKeys().hashSetValues().build();
-
-		final Map<UUID, UUID> traceIDToRuleIDMap = source.getDocumentDescriptor().getTraceIDToRuleIDMap();
-		final IDocumentRequest request = source.getRequest();
-		final SchemaElementProxy documentProxy = new SchemaElementProxy();
-		int discardedElements = 0;
-		int eventIndex = -1;
-		for (final IValueAccessTraceEvent event : events) {
-			eventIndex++;
-			final Optional<UUID> oElementID = event.getContextElementID();
-			if (oElementID.isPresent()) {
-				final UUID elementID = oElementID.get();
-				if (elementID.equals(documentTraceID)) {
-					result.put(documentProxy, event.getExpression());
-				} else if (traceIDToRuleIDMap.containsKey(elementID)) {
-					final UUID ruleID = traceIDToRuleIDMap.get(elementID);
-					try {
-						final IGenerationRule rule = request.getRuleByID(ruleID);
-						final Optional<UUID> oSchemaObjectID = rule.getSchemaObjectID();
-						if (oSchemaObjectID.isPresent()) {
-							final UUID schemaObjectID = oSchemaObjectID.get();
-							final ISchemaObject schemaObject = schema.getObjectByID(schemaObjectID);
-							// The schema object has to resolve to an element type because that's the only thing we can
-							// extend by adding new sub-elements or adding attributes.
-							if (schemaObject instanceof final IElementType schemaElement) {
-								result.put(new SchemaElementProxy(schemaElement), event.getExpression());
-							} else if (schemaObject instanceof final IElementReference schemaReference) {
-								result.put(new SchemaElementProxy(schemaReference.getElement()),
-										event.getExpression());
-							} else {
-								logger.warn("Unable to process trace events relating to schema object {}",
-										schemaObject);
-							}
-						} else {
-							logger.debug("rule {} identified by event {} does not relate to a schema object", ruleID,
-									eventIndex);
-							discardedElements++;
-						}
-					} catch (final IllegalArgumentException e) {
-						logger.debug("rule {} identified by event {} cannot found in document request", ruleID,
-								eventIndex);
-						discardedElements++;
-					}
-				} else {
-					logger.debug("element ID {} of event {} cannot be resolved to a rule ID", elementID, eventIndex);
-					discardedElements++;
-				}
-			} else {
-				logger.debug("event {} does not have a context ID", eventIndex);
-				discardedElements++;
-			}
-		}
-		if (discardedElements > 0) {
-			logger.debug("A total of {} incomplete trace events were ignored", discardedElements);
-		}
-		return logger.traceExit(result);
 	}
 
 	private record AttributeKey(UUID parentElement, String attributeName) {
