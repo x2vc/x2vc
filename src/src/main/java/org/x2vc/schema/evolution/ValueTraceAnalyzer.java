@@ -135,11 +135,11 @@ public class ValueTraceAnalyzer implements IValueTraceAnalyzer {
 			// TODO support Expression subclass ....net.sf.saxon.expr.BooleanExpression (abstract)
 			// TODO support Expression subclass ......net.sf.saxon.expr.AndExpression
 			// TODO support Expression subclass ......net.sf.saxon.expr.OrExpression
-			else if (expression instanceof final FilterExpression slashExpression) {
+			else if (expression instanceof final FilterExpression filterExpression) {
 				// Expression subclass ....net.sf.saxon.expr.FilterExpression
 				final ISchemaElementProxy baseSchemaElement = processExpression(schemaElement,
-						slashExpression.getBase());
-				processExpression(baseSchemaElement, slashExpression.getFilter());
+						filterExpression.getBase());
+				processExpression(baseSchemaElement, filterExpression.getFilter());
 
 			} else if (expression instanceof final GeneralComparison generalComparison) {
 				// Expression subclass ....net.sf.saxon.expr.GeneralComparison (abstract)
