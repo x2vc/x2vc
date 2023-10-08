@@ -74,12 +74,11 @@ public class EvaluationTreeItemFactory implements IEvaluationTreeItemFactory {
 //		}
 //		// TODO support Expression subclass ....net.sf.saxon.expr.IdentityComparison
 //		// TODO support Expression subclass ....net.sf.saxon.expr.LookupExpression
-//		else if (expression instanceof final SlashExpression slashExpression) {
-//			// Expression subclass ....net.sf.saxon.expr.SlashExpression
-//			// Expression subclass ......net.sf.saxon.expr.SimpleStepExpression
-//			newSchemaElement = processExpression(schemaElement, slashExpression.getFirstStep());
-//			newSchemaElement = processExpression(newSchemaElement, slashExpression.getRemainingSteps());
-//		}
+		else if (expression instanceof final SlashExpression slashExpression) {
+			// Expression subclass ....net.sf.saxon.expr.SlashExpression
+			// Expression subclass ......net.sf.saxon.expr.SimpleStepExpression
+			newItem = new SlashExpressionItem(this.schema, this.coordinator, slashExpression);
+		}
 //		// TODO support Expression subclass ....net.sf.saxon.expr.SwitchCaseComparison
 //		else if (expression instanceof final ValueComparison valueComparison) {
 //			// Expression subclass ....net.sf.saxon.expr.ValueComparison
