@@ -13,9 +13,7 @@ import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
-import net.sf.saxon.expr.AttributeGetter;
-import net.sf.saxon.expr.AxisExpression;
-import net.sf.saxon.expr.Expression;
+import net.sf.saxon.expr.*;
 import net.sf.saxon.pattern.NodeTest;
 
 /**
@@ -114,12 +112,13 @@ public class EvaluationTreeItemFactory implements IEvaluationTreeItemFactory {
 //		// TODO support Expression subclass ....net.sf.saxon.xpath.XPathFunctionCall
 //		// TODO support Expression subclass ..net.sf.saxon.expr.IntegerRangeTest
 //		// TODO support Expression subclass ..net.sf.saxon.expr.IsLastExpression
-//		else if (expression instanceof Literal) {
-//			// Expression subclass ..net.sf.saxon.expr.Literal
-//			// Expression subclass ....net.sf.saxon.expr.StringLiteral
-//			// Expression subclass ....net.sf.saxon.functions.hof.FunctionLiteral
-//			// no value access to be extracted here
-//		}
+		else if (expression instanceof final Literal literal) {
+			// Expression subclass ..net.sf.saxon.expr.Literal
+			// Expression subclass ....net.sf.saxon.expr.StringLiteral
+			// Expression subclass ....net.sf.saxon.functions.hof.FunctionLiteral
+			// no value access to be extracted here
+			newItem = new NoOperationItem<Literal>(this.schema, this.coordinator, literal);
+		}
 //		// TODO support Expression subclass ..net.sf.saxon.expr.NumberSequenceFormatter
 //		// TODO support Expression subclass ..net.sf.saxon.expr.PseudoExpression (abstract)
 //		// TODO support Expression subclass ....net.sf.saxon.expr.DefaultedArgumentExpression
@@ -207,12 +206,13 @@ public class EvaluationTreeItemFactory implements IEvaluationTreeItemFactory {
 //		// TODO support Expression subclass ....net.sf.saxon.expr.instruct.WherePopulated
 //		// TODO support Expression subclass ....net.sf.saxon.expr.sort.DocumentSorter
 //		// TODO support Expression subclass ....net.sf.saxon.functions.hof.FunctionSequenceCoercer
-//		else if (expression instanceof VariableReference) {
-//			// Expression subclass ..net.sf.saxon.expr.VariableReference (abstract)
-//			// Expression subclass ....net.sf.saxon.expr.GlobalVariableReference
-//			// Expression subclass ....net.sf.saxon.expr.LocalVariableReference
-//			// Variable references do not constitute a context access and do not have any sub-expressions to check
-//		}
+		else if (expression instanceof final VariableReference variableReference) {
+			// Expression subclass ..net.sf.saxon.expr.VariableReference (abstract)
+			// Expression subclass ....net.sf.saxon.expr.GlobalVariableReference
+			// Expression subclass ....net.sf.saxon.expr.LocalVariableReference
+			// Variable references do not constitute a context access and do not have any sub-expressions to check
+			newItem = new NoOperationItem<VariableReference>(this.schema, this.coordinator, variableReference);
+		}
 //		// TODO support Expression subclass ..net.sf.saxon.expr.flwor.FLWORExpression
 //		// TODO support Expression subclass ..net.sf.saxon.expr.flwor.TupleExpression
 //		// TODO support Expression subclass ..net.sf.saxon.expr.instruct.EvaluateInstr
