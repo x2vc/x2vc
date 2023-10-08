@@ -1,0 +1,37 @@
+package org.x2vc.schema.evolution.items;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.x2vc.schema.evolution.IModifierCreationCoordinator;
+import org.x2vc.schema.evolution.ISchemaElementProxy;
+import org.x2vc.schema.structure.IXMLSchema;
+
+import com.google.common.collect.ImmutableCollection;
+import com.google.common.collect.ImmutableSet;
+
+import net.sf.saxon.pattern.NodeTest;
+
+/**
+ * {@link IEvaluationTreeItem} to represent a {@link NodeTest} for which no specialized implementation is available yet.
+ */
+public class UnsupportedNodeTestItem extends AbstractEvaluationTreeItem<NodeTest> {
+
+	private static final Logger logger = LogManager.getLogger();
+
+	UnsupportedNodeTestItem(IXMLSchema schema, IModifierCreationCoordinator coordinator, NodeTest target) {
+		super(schema, coordinator, target);
+	}
+
+	@Override
+	protected void initialize(IEvaluationTreeItemFactory itemFactory, NodeTest target) {
+		logger.warn("Unsupported node test type {}: {}", target.getClass().getSimpleName(), target);
+	}
+
+	@Override
+	@SuppressWarnings("java:S4738") // suggestion is nonsense, java type does not fit
+	protected ImmutableCollection<ISchemaElementProxy> evaluate(ISchemaElementProxy contextItem, NodeTest target) {
+		// return the context item unchanged
+		return ImmutableSet.of(contextItem);
+	}
+
+}

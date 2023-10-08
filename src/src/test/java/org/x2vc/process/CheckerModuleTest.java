@@ -27,10 +27,9 @@ import org.x2vc.report.IReportWriter;
 import org.x2vc.report.IVulnerabilityCandidateCollector;
 import org.x2vc.schema.IInitialSchemaGenerator;
 import org.x2vc.schema.ISchemaManager;
-import org.x2vc.schema.evolution.ISchemaModificationProcessor;
-import org.x2vc.schema.evolution.ISchemaModifierCollector;
-import org.x2vc.schema.evolution.IValueTraceAnalyzer;
-import org.x2vc.schema.evolution.IValueTracePreprocessor;
+import org.x2vc.schema.evolution.*;
+import org.x2vc.schema.evolution.items.IEvaluationTreeItemFactoryFactory;
+import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.stylesheet.INamespaceExtractor;
 import org.x2vc.stylesheet.IStylesheetManager;
 import org.x2vc.stylesheet.IStylesheetPreprocessor;
@@ -91,6 +90,10 @@ class CheckerModuleTest {
 	private Provider<IReportWriter> reportWriterProvider;
 	@Inject
 	private Provider<IVulnerabilityCandidateCollector> vulnerabilityCandidateCollectorProvider;
+	@Inject
+	private Provider<IEvaluationTreeItemFactoryFactory> evaluationTreeItemFactoryFactoryProvider;
+	@Inject
+	private Provider<IModifierCreationCoordinatorFactory> modifierCreationCoordinatorFactoryProvider;
 	@Inject
 	private Provider<ISchemaModificationProcessor> schemaModificationProcessorProvider;
 	@Inject
@@ -253,6 +256,21 @@ class CheckerModuleTest {
 	@Test
 	void testVulnerabilityCandidateCollector() {
 		assertNotNull(this.vulnerabilityCandidateCollectorProvider.get());
+	}
+
+	@Test
+	void testEvaluationTreeItemFactoryFactoryProvider() {
+		final IEvaluationTreeItemFactoryFactory factory = this.evaluationTreeItemFactoryFactoryProvider.get();
+		assertNotNull(factory);
+		assertNotNull(factory.createFactory(mock(IXMLSchema.class), mock(IModifierCreationCoordinator.class)));
+	}
+
+	@SuppressWarnings("unchecked")
+	@Test
+	void testIModifierCreationCoordinatorFactory() {
+		final IModifierCreationCoordinatorFactory factory = this.modifierCreationCoordinatorFactoryProvider.get();
+		assertNotNull(factory);
+		assertNotNull(factory.createCoordinator(mock(IXMLSchema.class), mock(Consumer.class)));
 	}
 
 	@Test

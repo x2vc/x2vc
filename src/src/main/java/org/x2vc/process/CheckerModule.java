@@ -19,6 +19,9 @@ import org.x2vc.schema.ISchemaManager;
 import org.x2vc.schema.InitialSchemaGenerator;
 import org.x2vc.schema.SchemaManager;
 import org.x2vc.schema.evolution.*;
+import org.x2vc.schema.evolution.items.EvaluationTreeItemFactory;
+import org.x2vc.schema.evolution.items.IEvaluationTreeItemFactory;
+import org.x2vc.schema.evolution.items.IEvaluationTreeItemFactoryFactory;
 import org.x2vc.stylesheet.*;
 import org.x2vc.stylesheet.structure.IStylesheetStructureExtractor;
 import org.x2vc.stylesheet.structure.StylesheetStructureExtractor;
@@ -101,7 +104,15 @@ public class CheckerModule extends AbstractModule {
 		bind(IReportWriter.class).to(ReportWriter.class);
 		bind(IVulnerabilityCandidateCollector.class).to(VulnerabilityCandidateCollector.class);
 
+		// schema evolution items
+		install(new FactoryModuleBuilder()
+			.implement(IEvaluationTreeItemFactory.class, EvaluationTreeItemFactory.class)
+			.build(IEvaluationTreeItemFactoryFactory.class));
+
 		// schema evolution
+		install(new FactoryModuleBuilder()
+			.implement(IModifierCreationCoordinator.class, ModifierCreationCoordinator.class)
+			.build(IModifierCreationCoordinatorFactory.class));
 		bind(ISchemaModificationProcessor.class).to(SchemaModificationProcessor.class);
 		bind(ISchemaModifierCollector.class).to(SchemaModifierCollector.class);
 		bind(IValueTraceAnalyzer.class).to(ValueTraceAnalyzer.class);
