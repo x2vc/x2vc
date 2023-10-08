@@ -5,33 +5,34 @@ import org.x2vc.schema.evolution.ISchemaElementProxy;
 import org.x2vc.schema.structure.IXMLSchema;
 
 import com.google.common.collect.ImmutableCollection;
-import com.google.common.collect.ImmutableSet;
 
-import net.sf.saxon.expr.Expression;
+import net.sf.saxon.expr.UnaryExpression;
 
 /**
- * {@link IEvaluationTreeItemFactory} to represent any operation that does not perform any access, does not involve any
- * subordinate items and does not change the context element. This is the case e.g. for literal expressions.
+ * {@link IEvaluationTreeItemFactory} to represent subclasses of {@link UnaryExpression} that do not perform any access
+ * themselves and do not change the context element themselves. The processing is simply deferred to the base
+ * expression.
  *
  * @param <T> the type of the object being evaluated
  */
-public class NoOperationItem<T extends Expression> extends AbstractEvaluationTreeItem<T> {
+public class UnaryExpressionItem<T extends UnaryExpression> extends AbstractEvaluationTreeItem<T> {
 
-	NoOperationItem(IXMLSchema schema, IModifierCreationCoordinator coordinator, T target) {
+	private IEvaluationTreeItem baseItem;
+
+	UnaryExpressionItem(IXMLSchema schema, IModifierCreationCoordinator coordinator, T target) {
 		super(schema, coordinator, target);
 	}
 
 	@Override
 	protected void initialize(IEvaluationTreeItemFactory itemFactory, T target) {
-		// this expression does not have any subordinate items
+		this.baseItem = itemFactory.createItemForExpression(target.getBaseExpression());
 	}
 
 	@Override
 	@SuppressWarnings("java:S4738") // suggestion is nonsense, java type does not fit
 	protected ImmutableCollection<ISchemaElementProxy> evaluate(ISchemaElementProxy contextItem,
 			T target) {
-		// return the context item unchanged
-		return ImmutableSet.of(contextItem);
+		return this.baseItem.evaluate(contextItem);
 	}
 
 }

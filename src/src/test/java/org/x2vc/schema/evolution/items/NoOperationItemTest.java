@@ -6,7 +6,6 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,30 +18,28 @@ import org.x2vc.schema.structure.IXMLSchema;
 
 import com.google.common.collect.ImmutableCollection;
 
-import net.sf.saxon.expr.AttributeGetter;
-import net.sf.saxon.om.FingerprintedQName;
-import net.sf.saxon.om.StructuredQName;
+import net.sf.saxon.expr.Literal;
 
 @ExtendWith(MockitoExtension.class)
-class AttributeGetterItemTest {
+class NoOperationItemTest {
 
 	@Mock
 	private IXMLSchema schema;
 	@Mock
 	private IModifierCreationCoordinator coordinator;
 	@Mock
-	private AttributeGetter expression;
+	private Literal expression;
 	@Mock
 	private IEvaluationTreeItemFactory itemFactory;
 
-	private AttributeGetterItem treeItem;
+	private NoOperationItem<Literal> treeItem;
 
 	/**
 	 * @throws java.lang.Exception
 	 */
 	@BeforeEach
 	void setUp() throws Exception {
-		this.treeItem = new AttributeGetterItem(this.schema, this.coordinator, this.expression);
+		this.treeItem = new NoOperationItem<Literal>(this.schema, this.coordinator, this.expression);
 	}
 
 	@Test
@@ -60,22 +57,17 @@ class AttributeGetterItemTest {
 
 	@Test
 	void testEvaluation() {
-		final StructuredQName attributeName = new StructuredQName("pfx", "foo://bar", "baz");
-		final FingerprintedQName fingerprintedAttributeName = mock(FingerprintedQName.class);
-		when(fingerprintedAttributeName.getStructuredQName()).thenReturn(attributeName);
-		when(this.expression.getAttributeName()).thenReturn(fingerprintedAttributeName);
-
 		final ISchemaElementProxy contextItem = mock();
 
 		this.treeItem.initialize(this.itemFactory);
 		final ImmutableCollection<ISchemaElementProxy> result = this.treeItem.evaluate(contextItem);
 
-		verify(this.coordinator).handleAttributeAccess(contextItem, attributeName);
+		// the expression does not record any access
+		verify(this.coordinator, never()).handleAttributeAccess(any(), any());
 		verify(this.coordinator, never()).handleElementAccess(any(), any());
 
 		assertEquals(1, result.size());
 		assertTrue(result.contains(contextItem));
-
 	}
 
 }

@@ -17,7 +17,7 @@ public interface IEvaluationTreeItemFactory {
 	 * @param expression
 	 * @return the item
 	 */
-	IEvaluationTreeItem createItem(Expression expression);
+	IEvaluationTreeItem createItemForExpression(Expression expression);
 
 	/**
 	 * Creates a new item for a {@link NodeTest}.
@@ -25,7 +25,7 @@ public interface IEvaluationTreeItemFactory {
 	 * @param nodeTest
 	 * @return the item
 	 */
-	IEvaluationTreeItem createItem(NodeTest nodeTest);
+	IEvaluationTreeItem createItemForNodeTest(NodeTest nodeTest);
 
 	/**
 	 * Calls {@link IEvaluationTreeItem#initialize(IEvaluationTreeItemFactory)} for all items this factory has created

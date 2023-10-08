@@ -37,7 +37,7 @@ public class EvaluationTreeItemFactory implements IEvaluationTreeItemFactory {
 	}
 
 	@Override
-	public IEvaluationTreeItem createItem(Expression expression) {
+	public IEvaluationTreeItem createItemForExpression(Expression expression) {
 		logger.traceEntry("for {} {}", expression.getClass().getSimpleName(), expression);
 		IEvaluationTreeItem newItem = null;
 //		// TODO support Expression subclass net.sf.saxon.expr.Expression (abstract)
@@ -150,31 +150,36 @@ public class EvaluationTreeItemFactory implements IEvaluationTreeItemFactory {
 //		// TODO support Expression subclass ..net.sf.saxon.expr.SuppliedParameterReference
 //		// TODO support Expression subclass ..net.sf.saxon.expr.TryCatch
 //		// TODO support Expression subclass ..net.sf.saxon.expr.UnaryExpression (abstract)
-//		else if (expression instanceof final AdjacentTextNodeMerger adjacentTextNodeMerger) {
-//			// Expression subclass ....net.sf.saxon.expr.AdjacentTextNodeMerger
-//			// check all sub-expressions
-//			newSchemaElement = processExpression(schemaElement, adjacentTextNodeMerger.getBaseExpression());
-//		} else if (expression instanceof final AtomicSequenceConverter atomicSequenceConverter) {
-//			// Expression subclass ....net.sf.saxon.expr.AtomicSequenceConverter
-//			// The conversion itself does not constitute a value access, but check the contained expression.
-//			newSchemaElement = processExpression(schemaElement, atomicSequenceConverter.getBaseExpression());
-//		}
-//		// TODO support Expression subclass ......net.sf.saxon.expr.UntypedSequenceConverter
-//		else if (expression instanceof final Atomizer atomizer) {
-//			// Expression subclass ....net.sf.saxon.expr.Atomizer
-//			// The atomizer itself does not constitute a value access, but check the contained expression.
-//			newSchemaElement = processExpression(schemaElement, atomizer.getBaseExpression());
-//		} else if (expression instanceof final CardinalityChecker cardinalityChecker) {
-//			// Expression subclass ....net.sf.saxon.expr.CardinalityChecker
-//			// The check itself does not constitute a value access, but check the contained expression.
-//			newSchemaElement = processExpression(schemaElement, cardinalityChecker.getBaseExpression());
-//		} else if (expression instanceof final CastingExpression castingExpression) {
-//			// Expression subclass ....net.sf.saxon.expr.CastingExpression (abstract)
-//			// Expression subclass ......net.sf.saxon.expr.CastExpression
-//			// Expression subclass ......net.sf.saxon.expr.CastableExpression
-//			// The cast itself does not constitute a value access, but check the contained expression.
-//			newSchemaElement = processExpression(schemaElement, castingExpression.getBaseExpression());
-//		}
+		else if (expression instanceof final AdjacentTextNodeMerger adjacentTextNodeMerger) {
+			// Expression subclass ....net.sf.saxon.expr.AdjacentTextNodeMerger
+			// check all sub-expressions
+			newItem = new UnaryExpressionItem<AdjacentTextNodeMerger>(this.schema, this.coordinator,
+					adjacentTextNodeMerger);
+		} else if (expression instanceof final AtomicSequenceConverter atomicSequenceConverter) {
+			// Expression subclass ....net.sf.saxon.expr.AtomicSequenceConverter
+			// The conversion itself does not constitute a value access, but check the contained expression.
+			newItem = new UnaryExpressionItem<AtomicSequenceConverter>(this.schema, this.coordinator,
+					atomicSequenceConverter);
+		} else if (expression instanceof final UntypedSequenceConverter untypedSequenceConverter) {
+			// Expression subclass ......net.sf.saxon.expr.UntypedSequenceConverter
+			// The conversion itself does not constitute a value access, but check the contained expression.
+			newItem = new UnaryExpressionItem<AtomicSequenceConverter>(this.schema, this.coordinator,
+					untypedSequenceConverter);
+		} else if (expression instanceof final Atomizer atomizer) {
+			// Expression subclass ....net.sf.saxon.expr.Atomizer
+			// The atomizer itself does not constitute a value access, but check the contained expression.
+			newItem = new UnaryExpressionItem<Atomizer>(this.schema, this.coordinator, atomizer);
+		} else if (expression instanceof final CardinalityChecker cardinalityChecker) {
+			// Expression subclass ....net.sf.saxon.expr.CardinalityChecker
+			// The check itself does not constitute a value access, but check the contained expression.
+			newItem = new UnaryExpressionItem<CardinalityChecker>(this.schema, this.coordinator, cardinalityChecker);
+		} else if (expression instanceof final CastingExpression castingExpression) {
+			// Expression subclass ....net.sf.saxon.expr.CastingExpression (abstract)
+			// Expression subclass ......net.sf.saxon.expr.CastExpression
+			// Expression subclass ......net.sf.saxon.expr.CastableExpression
+			// The cast itself does not constitute a value access, but check the contained expression.
+			newItem = new UnaryExpressionItem<CastingExpression>(this.schema, this.coordinator, castingExpression);
+		}
 //		// TODO support Expression subclass ....net.sf.saxon.expr.CompareToConstant (abstract)
 //		// TODO support Expression subclass ......net.sf.saxon.expr.CompareToIntegerConstant
 //		// TODO support Expression subclass ......net.sf.saxon.expr.CompareToStringConstant
@@ -182,21 +187,21 @@ public class EvaluationTreeItemFactory implements IEvaluationTreeItemFactory {
 //		// TODO support Expression subclass ....net.sf.saxon.expr.EmptyTextNodeRemover
 //		// TODO support Expression subclass ....net.sf.saxon.expr.HomogeneityChecker
 //		// TODO support Expression subclass ....net.sf.saxon.expr.InstanceOfExpression
-//		else if (expression instanceof final ItemChecker itemChecker) {
-//			// Expression subclass ....net.sf.saxon.expr.ItemChecker
-//			// The check itself does not constitute a value access, but check the contained expression.
-//			newSchemaElement = processExpression(schemaElement, itemChecker.getBaseExpression());
-//		}
+		else if (expression instanceof final ItemChecker itemChecker) {
+			// Expression subclass ....net.sf.saxon.expr.ItemChecker
+			// The check itself does not constitute a value access, but check the contained expression.
+			newItem = new UnaryExpressionItem<ItemChecker>(this.schema, this.coordinator, itemChecker);
+		}
 //		// TODO support Expression subclass ....net.sf.saxon.expr.LookupAllExpression
 //		// TODO support Expression subclass ....net.sf.saxon.expr.NegateExpression
-//		else if (expression instanceof final SingleItemFilter singleItemFilter) {
-//			// Expression subclass ....net.sf.saxon.expr.SingleItemFilter (abstract)
-//			// Expression subclass ......net.sf.saxon.expr.FirstItemExpression
-//			// Expression subclass ......net.sf.saxon.expr.LastItemExpression
-//			// Expression subclass ......net.sf.saxon.expr.SubscriptExpression
-//			// The item selection itself does not constitute a value access, but check the contained expression.
-//			newSchemaElement = processExpression(schemaElement, singleItemFilter.getBaseExpression());
-//		}
+		else if (expression instanceof final SingleItemFilter singleItemFilter) {
+			// Expression subclass ....net.sf.saxon.expr.SingleItemFilter (abstract)
+			// Expression subclass ......net.sf.saxon.expr.FirstItemExpression
+			// Expression subclass ......net.sf.saxon.expr.LastItemExpression
+			// Expression subclass ......net.sf.saxon.expr.SubscriptExpression
+			// The item selection itself does not constitute a value access, but check the contained expression.
+			newItem = new UnaryExpressionItem<SingleItemFilter>(this.schema, this.coordinator, singleItemFilter);
+		}
 //		// TODO support Expression subclass ....net.sf.saxon.expr.SingletonAtomizer
 //		// TODO support Expression subclass ....net.sf.saxon.expr.TailCallLoop
 //		// TODO support Expression subclass ....net.sf.saxon.expr.TailExpression
@@ -291,7 +296,7 @@ public class EvaluationTreeItemFactory implements IEvaluationTreeItemFactory {
 	}
 
 	@Override
-	public IEvaluationTreeItem createItem(NodeTest nodeTest) {
+	public IEvaluationTreeItem createItemForNodeTest(NodeTest nodeTest) {
 		logger.traceEntry("for {} {}", nodeTest.getClass().getSimpleName(), nodeTest);
 		IEvaluationTreeItem newItem = null;
 		// TODO add type switch here

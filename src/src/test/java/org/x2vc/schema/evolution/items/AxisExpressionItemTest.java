@@ -20,7 +20,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
 import net.sf.saxon.expr.AxisExpression;
-import net.sf.saxon.expr.Expression;
 import net.sf.saxon.om.AxisInfo;
 import net.sf.saxon.pattern.NodeTest;
 
@@ -53,8 +52,8 @@ class AxisExpressionItemTest {
 		this.treeItem.initialize(this.itemFactory);
 
 		// no subordinate items required for this item type
-		verify(this.itemFactory, never()).createItem(any(Expression.class));
-		verify(this.itemFactory, never()).createItem(any(NodeTest.class));
+		verify(this.itemFactory, never()).createItemForExpression(any());
+		verify(this.itemFactory, never()).createItemForNodeTest(any());
 
 		// access may not be recorded in the initialization phase
 		verify(this.coordinator, never()).handleAttributeAccess(any(), any());
@@ -69,10 +68,10 @@ class AxisExpressionItemTest {
 		this.treeItem.initialize(this.itemFactory);
 
 		// no subordinate expressions required for this item type
-		verify(this.itemFactory, never()).createItem(any(Expression.class));
+		verify(this.itemFactory, never()).createItemForExpression(any());
 
 		// a node test should have been required
-		verify(this.itemFactory, times(1)).createItem(any(NodeTest.class));
+		verify(this.itemFactory, times(1)).createItemForNodeTest(nodeTest);
 
 		// access may not be recorded in the initialization phase
 		verify(this.coordinator, never()).handleAttributeAccess(any(), any());
@@ -108,7 +107,7 @@ class AxisExpressionItemTest {
 	void testEvaluation_AxisAttribute_WithNodeTest() {
 		final NodeTest nodeTest = mock();
 		final IEvaluationTreeItem nodeTestItem = mock();
-		when(this.itemFactory.createItem(nodeTest)).thenReturn(nodeTestItem);
+		when(this.itemFactory.createItemForNodeTest(nodeTest)).thenReturn(nodeTestItem);
 
 		when(this.expression.getAxis()).thenReturn(AxisInfo.ATTRIBUTE);
 		when(this.expression.getNodeTest()).thenReturn(nodeTest);
@@ -172,7 +171,7 @@ class AxisExpressionItemTest {
 	void testEvaluation_AxisChild_WithNodeTest() {
 		final NodeTest nodeTest = mock();
 		final IEvaluationTreeItem nodeTestItem = mock();
-		when(this.itemFactory.createItem(nodeTest)).thenReturn(nodeTestItem);
+		when(this.itemFactory.createItemForNodeTest(nodeTest)).thenReturn(nodeTestItem);
 
 		when(this.expression.getAxis()).thenReturn(AxisInfo.CHILD);
 		when(this.expression.getNodeTest()).thenReturn(nodeTest);
@@ -230,7 +229,7 @@ class AxisExpressionItemTest {
 	void testEvaluation_AxisSelf_WithNodeTest() {
 		final NodeTest nodeTest = mock();
 		final IEvaluationTreeItem nodeTestItem = mock();
-		when(this.itemFactory.createItem(nodeTest)).thenReturn(nodeTestItem);
+		when(this.itemFactory.createItemForNodeTest(nodeTest)).thenReturn(nodeTestItem);
 
 		when(this.expression.getAxis()).thenReturn(AxisInfo.SELF);
 		when(this.expression.getNodeTest()).thenReturn(nodeTest);

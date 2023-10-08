@@ -33,7 +33,7 @@ public class AxisExpressionItem extends AbstractEvaluationTreeItem<AxisExpressio
 	protected void initialize(IEvaluationTreeItemFactory itemFactory, AxisExpression target) {
 		final NodeTest targetNodeTest = target.getNodeTest();
 		if (targetNodeTest != null) {
-			this.nodeTest = itemFactory.createItem(target.getNodeTest());
+			this.nodeTest = itemFactory.createItemForNodeTest(target.getNodeTest());
 		}
 	}
 

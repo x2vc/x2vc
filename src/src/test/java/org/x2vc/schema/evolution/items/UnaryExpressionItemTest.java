@@ -3,10 +3,7 @@ package org.x2vc.schema.evolution.items;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -18,39 +15,44 @@ import org.x2vc.schema.evolution.ISchemaElementProxy;
 import org.x2vc.schema.structure.IXMLSchema;
 
 import com.google.common.collect.ImmutableCollection;
+import com.google.common.collect.ImmutableSet;
 
-import net.sf.saxon.expr.AttributeGetter;
-import net.sf.saxon.om.FingerprintedQName;
-import net.sf.saxon.om.StructuredQName;
+import net.sf.saxon.expr.Atomizer;
+import net.sf.saxon.expr.Expression;
 
 @ExtendWith(MockitoExtension.class)
-class AttributeGetterItemTest {
+class UnaryExpressionItemTest {
 
 	@Mock
 	private IXMLSchema schema;
 	@Mock
 	private IModifierCreationCoordinator coordinator;
 	@Mock
-	private AttributeGetter expression;
+	private Atomizer expression;
 	@Mock
 	private IEvaluationTreeItemFactory itemFactory;
 
-	private AttributeGetterItem treeItem;
+	private UnaryExpressionItem<Atomizer> treeItem;
 
 	/**
 	 * @throws java.lang.Exception
 	 */
 	@BeforeEach
 	void setUp() throws Exception {
-		this.treeItem = new AttributeGetterItem(this.schema, this.coordinator, this.expression);
+		this.treeItem = new UnaryExpressionItem<Atomizer>(this.schema, this.coordinator, this.expression);
 	}
 
 	@Test
 	void testInitialization() {
+		final Expression baseExpression = mock();
+		when(this.expression.getBaseExpression()).thenReturn(baseExpression);
+
 		this.treeItem.initialize(this.itemFactory);
 
-		// no subordinate items required for this item type
-		verify(this.itemFactory, never()).createItemForExpression(any());
+		// check that item for base expression was requested
+		verify(this.itemFactory, times(1)).createItemForExpression(baseExpression);
+
+		// no subordinate node test items required for this item type
 		verify(this.itemFactory, never()).createItemForNodeTest(any());
 
 		// access may not be recorded in the initialization phase
@@ -60,21 +62,29 @@ class AttributeGetterItemTest {
 
 	@Test
 	void testEvaluation() {
-		final StructuredQName attributeName = new StructuredQName("pfx", "foo://bar", "baz");
-		final FingerprintedQName fingerprintedAttributeName = mock(FingerprintedQName.class);
-		when(fingerprintedAttributeName.getStructuredQName()).thenReturn(attributeName);
-		when(this.expression.getAttributeName()).thenReturn(fingerprintedAttributeName);
+		final Expression baseExpression = mock();
+		when(this.expression.getBaseExpression()).thenReturn(baseExpression);
+
+		final IEvaluationTreeItem baseItem = mock();
+		when(this.itemFactory.createItemForExpression(baseExpression)).thenReturn(baseItem);
 
 		final ISchemaElementProxy contextItem = mock();
+		final ISchemaElementProxy resultItem = mock();
+		when(baseItem.evaluate(contextItem)).thenReturn(ImmutableSet.of(resultItem));
 
 		this.treeItem.initialize(this.itemFactory);
 		final ImmutableCollection<ISchemaElementProxy> result = this.treeItem.evaluate(contextItem);
 
-		verify(this.coordinator).handleAttributeAccess(contextItem, attributeName);
+		// the expression does not record any access
+		verify(this.coordinator, never()).handleAttributeAccess(any(), any());
 		verify(this.coordinator, never()).handleElementAccess(any(), any());
 
+		// verify the base expression was evaluated
+		verify(baseItem, times(1)).evaluate(contextItem);
+
+		// the result set should consist of the element returned by the base expression
 		assertEquals(1, result.size());
-		assertTrue(result.contains(contextItem));
+		assertTrue(result.contains(resultItem));
 
 	}
 

@@ -42,7 +42,7 @@ class EvaluationTreeItemFactoryTest {
 	@Test
 	void testCreateItem_Expression() {
 		final Expression expression = mock(Expression.class);
-		final IEvaluationTreeItem item = this.factory.createItem(expression);
+		final IEvaluationTreeItem item = this.factory.createItemForExpression(expression);
 		assertInstanceOf(UnsupportedExpressionItem.class, item);
 		assertSame(this.schema, ((UnsupportedExpressionItem) item).getSchema());
 	}
@@ -50,7 +50,7 @@ class EvaluationTreeItemFactoryTest {
 	@Test
 	void testCreateItem_NodeTest() {
 		final NodeTest nodeTest = mock(NodeTest.class);
-		final IEvaluationTreeItem item = this.factory.createItem(nodeTest);
+		final IEvaluationTreeItem item = this.factory.createItemForNodeTest(nodeTest);
 		assertInstanceOf(UnsupportedNodeTestItem.class, item);
 		assertSame(this.schema, ((UnsupportedNodeTestItem) item).getSchema());
 	}

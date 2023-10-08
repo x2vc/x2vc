@@ -91,7 +91,7 @@ public class ValueTraceAnalyzer implements IValueTraceAnalyzer {
 		logger.traceEntry("for context item {}", contextItem);
 		for (final Expression expression : expressions) {
 			logger.debug("creating evaluation tree for expression {}", expression);
-			final IEvaluationTreeItem topLevelItem = factory.createItem(expression);
+			final IEvaluationTreeItem topLevelItem = factory.createItemForExpression(expression);
 			factory.initializeAllCreatedItems();
 			logger.debug("processing evaluation tree for expression {}", expression);
 			topLevelItem.evaluate(contextItem);

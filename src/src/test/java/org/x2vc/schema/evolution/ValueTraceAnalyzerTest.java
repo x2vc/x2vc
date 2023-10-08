@@ -87,10 +87,10 @@ class ValueTraceAnalyzerTest {
 		final IEvaluationTreeItem item2a = mock(IEvaluationTreeItem.class, "item 2a");
 		final IEvaluationTreeItem item2b = mock(IEvaluationTreeItem.class, "item 2b");
 		final IEvaluationTreeItemFactory evaluationTreeItemFactory = mock(IEvaluationTreeItemFactory.class);
-		when(evaluationTreeItemFactory.createItem(expression1a)).thenReturn(item1a);
-		when(evaluationTreeItemFactory.createItem(expression1b)).thenReturn(item1b);
-		when(evaluationTreeItemFactory.createItem(expression2a)).thenReturn(item2a);
-		when(evaluationTreeItemFactory.createItem(expression2b)).thenReturn(item2b);
+		when(evaluationTreeItemFactory.createItemForExpression(expression1a)).thenReturn(item1a);
+		when(evaluationTreeItemFactory.createItemForExpression(expression1b)).thenReturn(item1b);
+		when(evaluationTreeItemFactory.createItemForExpression(expression2a)).thenReturn(item2a);
+		when(evaluationTreeItemFactory.createItemForExpression(expression2b)).thenReturn(item2b);
 		final IEvaluationTreeItemFactoryFactory evaluationTreeItemFactoryFactory = mock(
 				IEvaluationTreeItemFactoryFactory.class);
 		when(evaluationTreeItemFactoryFactory.createFactory(schema, modifierCreationCoordinator))
