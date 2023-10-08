@@ -32,8 +32,6 @@ class AttributeGetterItemTest {
 	private AttributeGetter expression;
 	@Mock
 	private IEvaluationTreeItemFactory itemFactory;
-	@Mock
-	private ISchemaElementProxy contextItem;
 
 	private AttributeGetterItem treeItem;
 
@@ -62,8 +60,9 @@ class AttributeGetterItemTest {
 		final FingerprintedQName fingerprintedAttributeName = mock(FingerprintedQName.class);
 		when(fingerprintedAttributeName.getStructuredQName()).thenReturn(attributeName);
 		when(this.expression.getAttributeName()).thenReturn(fingerprintedAttributeName);
-		this.treeItem.evaluate(this.contextItem);
-		verify(this.coordinator).handleAttributeAccess(this.contextItem, attributeName);
+		final ISchemaElementProxy contextItem = mock();
+		this.treeItem.evaluate(contextItem);
+		verify(this.coordinator).handleAttributeAccess(contextItem, attributeName);
 		verify(this.coordinator, never()).handleElementAccess(any(), any());
 	}
 

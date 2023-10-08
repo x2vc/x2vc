@@ -14,6 +14,7 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
 import net.sf.saxon.expr.AttributeGetter;
+import net.sf.saxon.expr.AxisExpression;
 import net.sf.saxon.expr.Expression;
 import net.sf.saxon.pattern.NodeTest;
 
@@ -28,7 +29,8 @@ public class EvaluationTreeItemFactory implements IEvaluationTreeItemFactory {
 	private final Deque<IEvaluationTreeItem> uninitializedItems;
 
 	@Inject
-	protected EvaluationTreeItemFactory(@Assisted IXMLSchema schema, @Assisted IModifierCreationCoordinator coordinator) {
+	protected EvaluationTreeItemFactory(@Assisted IXMLSchema schema,
+			@Assisted IModifierCreationCoordinator coordinator) {
 		super();
 		checkNotNull(schema);
 		this.schema = schema;
@@ -40,7 +42,6 @@ public class EvaluationTreeItemFactory implements IEvaluationTreeItemFactory {
 	public IEvaluationTreeItem createItem(Expression expression) {
 		logger.traceEntry("for {} {}", expression.getClass().getSimpleName(), expression);
 		IEvaluationTreeItem newItem = null;
-		// TODO add type switch here
 //		// TODO support Expression subclass net.sf.saxon.expr.Expression (abstract)
 //		// TODO support Expression subclass ..net.sf.saxon.expr.Assignation (abstract)
 //		// TODO support Expression subclass ....net.sf.saxon.expr.ForExpression
@@ -51,11 +52,10 @@ public class EvaluationTreeItemFactory implements IEvaluationTreeItemFactory {
 		if (expression instanceof final AttributeGetter attributeGetter) {
 			// Expression subclass ..net.sf.saxon.expr.AttributeGetter
 			newItem = new AttributeGetterItem(this.schema, this.coordinator, attributeGetter);
+		} else if (expression instanceof final AxisExpression axisExpression) {
+			// Expression subclass ..net.sf.saxon.expr.AxisExpression
+			newItem = new AxisExpressionItem(this.schema, this.coordinator, axisExpression);
 		}
-//		} else if (expression instanceof final AxisExpression axisExpression) {
-//			// Expression subclass ..net.sf.saxon.expr.AxisExpression
-//			newSchemaElement = processAxisExpression(schemaElement, axisExpression);
-//		}
 //		// TODO support Expression subclass ..net.sf.saxon.expr.BinaryExpression (abstract)
 //		// TODO support Expression subclass ....net.sf.saxon.expr.ArithmeticExpression
 //		// TODO support Expression subclass ......net.sf.saxon.expr.compat.ArithmeticExpression10

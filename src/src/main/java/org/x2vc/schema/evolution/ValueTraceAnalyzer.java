@@ -102,40 +102,6 @@ public class ValueTraceAnalyzer implements IValueTraceAnalyzer {
 //
 //		/**
 //		 * @param schemaElement
-//		 * @param axisExpression
-//		 */
-//		private ISchemaElementProxy processAxisExpression(ISchemaElementProxy schemaElement,
-//				AxisExpression axisExpression) {
-//			logger.traceEntry("with axis expression {}", axisExpression);
-//			ISchemaElementProxy newSchemaElement = schemaElement;
-//			switch (axisExpression.getAxis()) {
-//			// TODO support axis ANCESTOR
-//			// TODO support axis ANCESTOR_OR_SELF
-//			// TODO support axis ATTRIBUTE
-//			case AxisInfo.ATTRIBUTE:
-//				newSchemaElement = processNodeTest(schemaElement, axisExpression.getNodeTest(), true);
-//				break;
-//			case AxisInfo.CHILD:
-//				newSchemaElement = processNodeTest(schemaElement, axisExpression.getNodeTest(), false);
-//				break;
-//			// TODO support axis DESCENDANT
-//			// TODO support axis DESCENDANT_OR_SELF
-//			// TODO support axis FOLLOWING
-//			// TODO support axis FOLLOWING_SIBLING
-//			// TODO support axis NAMESPACE
-//			// TODO support axis PARENT
-//			// TODO support axis PRECEDING
-//			// TODO support axis PRECEDING_SIBLING
-//			// TODO support axis SELF
-//			// TODO support axis PRECEDING_OR_ANCESTOR
-//			default:
-//				logger.warn("Unsupported axis {}: {}", AxisInfo.axisName[axisExpression.getAxis()], axisExpression);
-//			}
-//			return logger.traceExit(newSchemaElement);
-//		}
-//
-//		/**
-//		 * @param schemaElement
 //		 * @param systemFunctionCall
 //		 * @return
 //		 */
