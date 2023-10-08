@@ -52,9 +52,11 @@ public class ModifierCreationCoordinator implements IModifierCreationCoordinator
 		case ELEMENT:
 			newContextItem = processExistingElementAccess(contextItem, elementName);
 			break;
-		case MODIFIER:
+		case ELEMENT_MODIFIER:
 			newContextItem = processModifierElementAccess(contextItem, elementName);
 			break;
+		default:
+			throw logger.throwing(new IllegalArgumentException("Attempt to register element acces to attribute proxy"));
 		}
 		return logger.traceExit(newContextItem);
 	}
@@ -142,7 +144,7 @@ public class ModifierCreationCoordinator implements IModifierCreationCoordinator
 			StructuredQName subElementName) {
 		logger.traceEntry();
 		ISchemaElementProxy newSchemaElement = contextItem;
-		final IAddElementModifier parentElementModifier = contextItem.getModifier()
+		final IAddElementModifier parentElementModifier = contextItem.getElementModifier()
 			.orElseThrow(() -> new IllegalArgumentException("Modifier must be present at this point"));
 
 		final NamespaceUri namespaceURI = subElementName.getNamespaceUri();
@@ -215,7 +217,7 @@ public class ModifierCreationCoordinator implements IModifierCreationCoordinator
 				comment = String.format("element %s of parent elements %s", elementName, referenceList);
 			}
 		} else {
-			final Optional<IAddElementModifier> elementModifier = contextItem.getModifier();
+			final Optional<IAddElementModifier> elementModifier = contextItem.getElementModifier();
 			if (elementModifier.isPresent()) {
 				comment = String.format("element %s of parent element %s (%s)", elementName,
 						elementModifier.get().getName(), parentElementID);
@@ -237,8 +239,8 @@ public class ModifierCreationCoordinator implements IModifierCreationCoordinator
 		final String localName = attributeName.getLocalPart();
 		if (namespaceURI.equals(NamespaceUri.NULL)) {
 			// check whether an attribute with that name already exists
-			if (!contextItem.hasAttribute(localName)) {
-				final Optional<IAddElementModifier> oElementModifier = contextItem.getModifier();
+			if (!contextItem.hasSubAttribute(localName)) {
+				final Optional<IAddElementModifier> oElementModifier = contextItem.getElementModifier();
 				if (oElementModifier.isPresent()) {
 					// parent element is newly created - add the attribute modifier below it
 					logger.debug("First attempt to access non-existing attribute {} of element type {}", localName,

@@ -118,8 +118,8 @@ class ModifierCreationCoordinatorTest {
 
 		// verify the properties of the proxy returned
 		assertNotNull(newProxy);
-		assertEquals(ProxyType.MODIFIER, newProxy.getType());
-		assertEquals(Optional.of(modifier), newProxy.getModifier());
+		assertEquals(ProxyType.ELEMENT_MODIFIER, newProxy.getType());
+		assertEquals(Optional.of(modifier), newProxy.getElementModifier());
 	}
 
 	/**
@@ -179,8 +179,8 @@ class ModifierCreationCoordinatorTest {
 
 		// verify the properties of the proxy returned
 		assertNotNull(newProxy);
-		assertEquals(ProxyType.MODIFIER, newProxy.getType());
-		assertEquals(Optional.of(modifier), newProxy.getModifier());
+		assertEquals(ProxyType.ELEMENT_MODIFIER, newProxy.getType());
+		assertEquals(Optional.of(modifier), newProxy.getElementModifier());
 	}
 
 	/**
@@ -234,7 +234,7 @@ class ModifierCreationCoordinatorTest {
 	void testOnAttributeAccess_OfElement_Present() {
 		// prepare an element proxy with an existing attribute of the desired name
 		final ISchemaElementProxy targetElementProxy = createElementProxyMock(UUID.randomUUID(), mock());
-		when(targetElementProxy.hasAttribute("attributeName")).thenReturn(true);
+		when(targetElementProxy.hasSubAttribute("attributeName")).thenReturn(true);
 
 		// record an attempt to access the attribute
 		final StructuredQName attributeName = new StructuredQName("", NamespaceUri.NULL, "attributeName");
@@ -253,7 +253,7 @@ class ModifierCreationCoordinatorTest {
 		// prepare an element proxy with no existing attribute of the desired name
 		final UUID targetElementID = UUID.randomUUID();
 		final ISchemaElementProxy targetElementProxy = createElementProxyMock(targetElementID, mock());
-		when(targetElementProxy.hasAttribute("attributeName")).thenReturn(false);
+		when(targetElementProxy.hasSubAttribute("attributeName")).thenReturn(false);
 
 		// record an attempt to access the attribute
 		final StructuredQName attributeName = new StructuredQName("", NamespaceUri.NULL, "attributeName");
@@ -277,7 +277,7 @@ class ModifierCreationCoordinatorTest {
 		final UUID targetElementID = UUID.randomUUID();
 		final IAddElementModifier targetElementModifier = mock();
 		final ISchemaElementProxy targetElementProxy = createModifierProxyMock(targetElementID, targetElementModifier);
-		when(targetElementProxy.hasAttribute("attributeName")).thenReturn(true);
+		when(targetElementProxy.hasSubAttribute("attributeName")).thenReturn(true);
 
 		// record an attempt to access the element
 		final StructuredQName attributeName = new StructuredQName("", NamespaceUri.NULL, "attributeName");
@@ -298,7 +298,7 @@ class ModifierCreationCoordinatorTest {
 		final UUID targetElementID = UUID.randomUUID();
 		final IAddElementModifier targetElementModifier = mock();
 		final ISchemaElementProxy targetElementProxy = createModifierProxyMock(targetElementID, targetElementModifier);
-		when(targetElementProxy.hasAttribute("attributeName")).thenReturn(false);
+		when(targetElementProxy.hasSubAttribute("attributeName")).thenReturn(false);
 
 		// record an attempt to access the attribute
 		final StructuredQName attributeName = new StructuredQName("", NamespaceUri.NULL, "attributeName");
@@ -353,10 +353,10 @@ class ModifierCreationCoordinatorTest {
 	 */
 	protected ISchemaElementProxy createModifierProxyMock(final UUID elementTypeID, IAddElementModifier modifier) {
 		final ISchemaElementProxy contextItem = mock();
-		lenient().when(contextItem.getType()).thenReturn(ProxyType.MODIFIER);
-		lenient().when(contextItem.isModifier()).thenReturn(true);
+		lenient().when(contextItem.getType()).thenReturn(ProxyType.ELEMENT_MODIFIER);
+		lenient().when(contextItem.isElementModifier()).thenReturn(true);
 		lenient().when(contextItem.getElementTypeID()).thenReturn(Optional.of(elementTypeID));
-		lenient().when(contextItem.getModifier()).thenReturn(Optional.ofNullable(modifier));
+		lenient().when(contextItem.getElementModifier()).thenReturn(Optional.ofNullable(modifier));
 		return contextItem;
 	}
 
@@ -369,7 +369,7 @@ class ModifierCreationCoordinatorTest {
 		lenient().when(contextItem.isDocument()).thenReturn(true);
 		lenient().when(contextItem.getElementTypeID()).thenReturn(Optional.empty());
 		lenient().when(contextItem.getElementType()).thenReturn(Optional.empty());
-		lenient().when(contextItem.getModifier()).thenReturn(Optional.empty());
+		lenient().when(contextItem.getElementModifier()).thenReturn(Optional.empty());
 		return contextItem;
 	}
 

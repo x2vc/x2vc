@@ -3,13 +3,19 @@ package org.x2vc.schema.evolution;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.x2vc.schema.structure.IAttribute;
 import org.x2vc.schema.structure.IElementType;
+
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 
 /**
  * A reference to
  * <ul>
  * <li>an existing {@link IElementType},</li>
- * <li>an {@link IAddElementModifier} or</li>
+ * <li>an existing {@link IAttribute},</li>
+ * <li>an {@link IAddElementModifier},</li>
+ * <li>an {@link IAddAttributeModifier} or</li>
  * <li>the document root node</li>
  * </ul>
  * that was recorded in order to create an element reference and type.
@@ -27,7 +33,15 @@ public interface ISchemaElementProxy {
 		/**
 		 * Proxy for an {@link IAddElementModifier}
 		 */
-		MODIFIER,
+		ELEMENT_MODIFIER,
+		/**
+		 * Proxy for an existing {@link IAttribute}
+		 */
+		ATTRIBUTE,
+		/**
+		 * Proxy for an {@link IAddAttributeModifier}
+		 */
+		ATTRIBUTE_MODIFIER,
 		/**
 		 * Proxy for the document root node
 		 */
@@ -47,7 +61,17 @@ public interface ISchemaElementProxy {
 	/**
 	 * @return <code>true</code> if the proxy refers to an {@link IAddElementModifier}
 	 */
-	boolean isModifier();
+	boolean isElementModifier();
+
+	/**
+	 * @return <code>true</code> if the proxy refers to an existing {@link IAttribute}
+	 */
+	boolean isAttribute();
+
+	/**
+	 * @return <code>true</code> if the proxy refers to an {@link IAddAttributeModifier}
+	 */
+	boolean isAttributeModifier();
 
 	/**
 	 * @return <code>true</code> if the proxy refers to the document root node
@@ -55,8 +79,8 @@ public interface ISchemaElementProxy {
 	boolean isDocument();
 
 	/**
-	 * @return the ID of the element type (either existing or to be generated) or an empty object for the document root
-	 *         node
+	 * @return the ID of the element type (either existing or to be generated) or an empty object for attributes or the
+	 *         document root node
 	 */
 	Optional<UUID> getElementTypeID();
 
@@ -66,13 +90,23 @@ public interface ISchemaElementProxy {
 	Optional<IElementType> getElementType();
 
 	/**
-	 * @return the modifier to create an element type if the proxy type is MODIFIER
+	 * @return the modifier to create an element type if the proxy type is ELEMENT_MODIFIER
 	 */
-	Optional<IAddElementModifier> getModifier();
+	Optional<IAddElementModifier> getElementModifier();
+
+	/**
+	 * @return the existing attribute if the proxy type is ATTRIBUTE
+	 */
+	Optional<IAttribute> getAttribute();
+
+	/**
+	 * @return the modifier to create an attribute if the proxy type is ATTRIBUTE_MODIFIER
+	 */
+	Optional<IAddAttributeModifier> getAttributeModifier();
 
 	/**
 	 * Returns the proxy representing the sub-element of the given name if present. Will always return an empty object
-	 * for the document root node.
+	 * for attributes, attribute modifiers or the document root node.
 	 *
 	 * @param name the name of the element
 	 * @return the proxy representing the sub-element of the given name if present
@@ -80,10 +114,38 @@ public interface ISchemaElementProxy {
 	Optional<ISchemaElementProxy> getSubElement(String name);
 
 	/**
+	 * @return a collection of all sub-elements of an existing element, an element modifier or the document root, or an
+	 *         empty collection for attributes and attribute modifiers
+	 */
+	ImmutableList<ISchemaElementProxy> getSubElements();
+
+	/**
+	 * @param name the name of the element
+	 * @return <code>true</code> if the element has a sub-element of the given name (always <code>false</code> for
+	 *         attributes, attribute modifiers or the document root node)
+	 */
+	boolean hasSubElement(String name);
+
+	/**
+	 * Returns the proxy representing the attribute of the given name if present. Will always return an empty object for
+	 * attributes, attribute modifiers or the document root node.
+	 *
+	 * @param name the name of the attribute
+	 * @return the proxy representing the sub-element of the given name if present
+	 */
+	Optional<ISchemaElementProxy> getSubAttribute(String name);
+
+	/**
+	 * @return a collection of all attributes of an existing element or an element modifier, or an empty collection for
+	 *         attributes, attribute modifiers or the document root
+	 */
+	ImmutableSet<ISchemaElementProxy> getSubAttributes();
+
+	/**
 	 * @param name the name of the attribute
 	 * @return <code>true</code> if the element has an attribute of the given name (always <code>false</code> for the
 	 *         document root node)
 	 */
-	boolean hasAttribute(String name);
+	boolean hasSubAttribute(String name);
 
 }
