@@ -83,8 +83,8 @@ public final class AddElementModifier implements IAddElementModifier {
 	}
 
 	@Override
-	public UUID getElementID() {
-		return this.elementID;
+	public Optional<UUID> getElementID() {
+		return Optional.of(this.elementID);
 	}
 
 	@Override
@@ -240,7 +240,7 @@ public final class AddElementModifier implements IAddElementModifier {
 		private Builder(IAddElementModifier addElementModifier) {
 			this.schemaURI = addElementModifier.getSchemaURI();
 			this.schemaVersion = addElementModifier.getSchemaVersion();
-			this.elementID = addElementModifier.getElementID();
+			this.elementID = addElementModifier.getElementID().orElseThrow();
 			this.referenceID = addElementModifier.getReferenceID();
 			this.name = addElementModifier.getName();
 			this.typeID = addElementModifier.getTypeID();

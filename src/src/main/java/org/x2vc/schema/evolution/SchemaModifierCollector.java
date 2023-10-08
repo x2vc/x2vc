@@ -95,7 +95,8 @@ public class SchemaModifierCollector implements ISchemaModifierCollector {
 	 */
 	private void addAttributeModifier(IAddAttributeModifier attributeModifier) {
 		logger.traceEntry();
-		final ModifierKey attributeKey = new ModifierKey(attributeModifier.getElementID(), attributeModifier.getName());
+		final ModifierKey attributeKey = new ModifierKey(attributeModifier.getElementID().orElseThrow(),
+				attributeModifier.getName());
 		if (!this.attributeModifiers.containsKey(attributeKey)) {
 			logger.debug("Adding first modifier for attribute {} of element ID {}", attributeKey.objectName,
 					attributeKey.elementID);
@@ -121,7 +122,8 @@ public class SchemaModifierCollector implements ISchemaModifierCollector {
 	 */
 	private void addElementModifier(IAddElementModifier elementModifier) {
 		logger.traceEntry();
-		final ModifierKey elementKey = new ModifierKey(elementModifier.getElementID(), elementModifier.getName());
+		final ModifierKey elementKey = new ModifierKey(elementModifier.getElementID().orElseThrow(),
+				elementModifier.getName());
 		if (!this.elementModifiers.containsKey(elementKey)) {
 			logger.debug("Adding first modifier for element {} of element ID {}", elementKey.objectName,
 					elementKey.elementID);
@@ -165,7 +167,7 @@ public class SchemaModifierCollector implements ISchemaModifierCollector {
 	 */
 	private void mergeElementModifierAttributes(IAddElementModifier existingModifier, IAddElementModifier newModifier) {
 		logger.traceEntry();
-		final UUID targetElementID = existingModifier.getElementID();
+		final UUID targetElementID = existingModifier.getElementID().orElseThrow();
 		final Multimap<String, IAddAttributeModifier> existingAttributeModifiers = MultimapBuilder.hashKeys()
 			.arrayListValues().build();
 		existingModifier.getAttributes().forEach(attrib -> existingAttributeModifiers.put(attrib.getName(), attrib));
@@ -206,7 +208,7 @@ public class SchemaModifierCollector implements ISchemaModifierCollector {
 	 */
 	private void mergeElementModifierElements(IAddElementModifier existingModifier, IAddElementModifier newModifier) {
 		logger.traceEntry();
-		final UUID targetElementID = existingModifier.getElementID();
+		final UUID targetElementID = existingModifier.getElementID().orElseThrow();
 		final Multimap<String, IAddElementModifier> existingElementModifiers = MultimapBuilder.hashKeys()
 			.arrayListValues().build();
 		existingModifier.getSubElements().forEach(elem -> existingElementModifiers.put(elem.getName(), elem));

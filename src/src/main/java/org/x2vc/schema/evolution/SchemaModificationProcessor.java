@@ -51,10 +51,10 @@ public class SchemaModificationProcessor implements ISchemaModificationProcessor
 			this.elementModifiersByParentID = MultimapBuilder.hashKeys().arrayListValues().build();
 			modifiers.stream().forEach(modifier -> {
 				if (modifier instanceof final IAddAttributeModifier attributeModifier) {
-					this.attributeModifiers.put(modifier.getElementID(), attributeModifier);
+					this.attributeModifiers.put(modifier.getElementID().orElseThrow(), attributeModifier);
 				} else if (modifier instanceof final IAddElementModifier elementModifier) {
 					this.elementModifiersByTypeID.put(elementModifier.getTypeID(), elementModifier);
-					this.elementModifiersByParentID.put(modifier.getElementID(), elementModifier);
+					this.elementModifiersByParentID.put(modifier.getElementID().orElseThrow(), elementModifier);
 				} else {
 					throw new IllegalArgumentException(
 							String.format("Unknown modifier type %s", modifier.getClass().getSimpleName()));

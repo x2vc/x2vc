@@ -8,6 +8,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.net.URI;
+import java.util.Optional;
 import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -40,6 +41,7 @@ class SchemaModifierCollectorTest {
 		final IAddAttributeModifier modifier1 = mock();
 		when(modifier1.getSchemaURI()).thenReturn(URIUtilities.makeMemoryURI(ObjectType.SCHEMA, "foo"));
 		when(modifier1.getSchemaVersion()).thenReturn(1);
+		when(modifier1.getElementID()).thenReturn(Optional.of(UUID.randomUUID()));
 		this.collector.addModifier(modifier1);
 
 		final IAddAttributeModifier modifier2 = mock();
@@ -54,6 +56,7 @@ class SchemaModifierCollectorTest {
 		final IAddAttributeModifier modifier1 = mock();
 		when(modifier1.getSchemaURI()).thenReturn(URIUtilities.makeMemoryURI(ObjectType.SCHEMA, "foo"));
 		when(modifier1.getSchemaVersion()).thenReturn(1);
+		when(modifier1.getElementID()).thenReturn(Optional.of(UUID.randomUUID()));
 		this.collector.addModifier(modifier1);
 
 		final IAddAttributeModifier modifier2 = mock();
@@ -143,13 +146,13 @@ class SchemaModifierCollectorTest {
 		final UUID elementID1 = UUID.randomUUID();
 
 		final IAddElementModifier topElemModifier1 = createAddElementMock(elementID1, "elem1");
-		final UUID topElementID1 = topElemModifier1.getElementID();
+		final UUID topElementID1 = topElemModifier1.getElementID().orElseThrow();
 		final IAddAttributeModifier attribModifier1 = createAddAttributeMock(topElementID1, "attrib1");
 		when(topElemModifier1.getAttributes()).thenReturn(ImmutableSet.of(attribModifier1));
 		when(topElemModifier1.getSubElements()).thenReturn(ImmutableSet.of());
 
 		final IAddElementModifier topElemModifier2 = createAddElementMock(elementID1, "elem1");
-		final UUID topElementID2 = topElemModifier2.getElementID();
+		final UUID topElementID2 = topElemModifier2.getElementID().orElseThrow();
 		final IAddAttributeModifier attribModifier2 = createAddAttributeMock(topElementID2, "attrib1");
 		when(topElemModifier2.getAttributes()).thenReturn(ImmutableSet.of(attribModifier2));
 		when(topElemModifier2.getSubElements()).thenReturn(ImmutableSet.of());
@@ -177,7 +180,7 @@ class SchemaModifierCollectorTest {
 		final UUID elementID1 = UUID.randomUUID();
 
 		final IAddElementModifier topElemModifier1 = createAddElementMock(elementID1, "elem1");
-		final UUID topElementID1 = topElemModifier1.getElementID();
+		final UUID topElementID1 = topElemModifier1.getElementID().orElseThrow();
 		final IAddElementModifier subElemModifier1 = createAddElementMock(topElementID1, "elem2");
 		when(topElemModifier1.getAttributes()).thenReturn(ImmutableSet.of());
 		when(topElemModifier1.getSubElements()).thenReturn(ImmutableSet.of(subElemModifier1));
@@ -185,7 +188,7 @@ class SchemaModifierCollectorTest {
 		when(subElemModifier1.getSubElements()).thenReturn(ImmutableSet.of());
 
 		final IAddElementModifier topElemModifier2 = createAddElementMock(elementID1, "elem1");
-		final UUID topElementID2 = topElemModifier2.getElementID();
+		final UUID topElementID2 = topElemModifier2.getElementID().orElseThrow();
 		final IAddElementModifier subElemModifier2 = createAddElementMock(topElementID2, "elem2");
 		when(topElemModifier2.getAttributes()).thenReturn(ImmutableSet.of());
 		when(topElemModifier2.getSubElements()).thenReturn(ImmutableSet.of(subElemModifier2));
@@ -219,7 +222,7 @@ class SchemaModifierCollectorTest {
 		final IAddAttributeModifier modifier = mock();
 		lenient().when(modifier.getSchemaURI()).thenReturn(this.schemaURI);
 		lenient().when(modifier.getSchemaVersion()).thenReturn(1);
-		lenient().when(modifier.getElementID()).thenReturn(elementID);
+		lenient().when(modifier.getElementID()).thenReturn(Optional.of(elementID));
 		lenient().when(modifier.getName()).thenReturn(name);
 		return modifier;
 	}
@@ -228,7 +231,7 @@ class SchemaModifierCollectorTest {
 		final IAddElementModifier modifier = mock();
 		lenient().when(modifier.getSchemaURI()).thenReturn(this.schemaURI);
 		lenient().when(modifier.getSchemaVersion()).thenReturn(1);
-		lenient().when(modifier.getElementID()).thenReturn(elementID);
+		lenient().when(modifier.getElementID()).thenReturn(Optional.of(elementID));
 		lenient().when(modifier.getName()).thenReturn(name);
 		return modifier;
 	}

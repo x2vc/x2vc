@@ -1,6 +1,7 @@
 package org.x2vc.schema.evolution;
 
 import java.net.URI;
+import java.util.Optional;
 import java.util.UUID;
 
 /**
@@ -9,19 +10,19 @@ import java.util.UUID;
 public interface ISchemaModifier {
 
 	/**
-	 * @return the URI of the schema itself (containing the URI)
+	 * @return the URI of the schema to be modified
 	 */
 	URI getSchemaURI();
 
 	/**
-	 * @return the version of the schema
+	 * @return the version of the schema the modification refers to
 	 */
 	int getSchemaVersion();
 
 	/**
-	 * @return the ID of the schema element being modified
+	 * @return the ID of the schema element being modified, or an empty value if the document is being modified
 	 */
-	UUID getElementID();
+	Optional<UUID> getElementID();
 
 	/**
 	 * @param otherModifier

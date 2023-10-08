@@ -73,7 +73,7 @@ public final class SchemaElementProxy implements ISchemaElementProxy {
 		case ELEMENT:
 			return Optional.of(this.existingElementType.getID());
 		case MODIFIER:
-			return Optional.of(this.modifier.getElementID());
+			return this.modifier.getElementID();
 		default:
 			return Optional.empty();
 		}
