@@ -22,6 +22,7 @@ public abstract class AbstractEvaluationTreeItem<T> implements IEvaluationTreeIt
 	private final IXMLSchema schema;
 	private final T target;
 	private final IModifierCreationCoordinator coordinator;
+	private boolean initialized;
 
 	/**
 	 * Creates a new item.
@@ -32,6 +33,7 @@ public abstract class AbstractEvaluationTreeItem<T> implements IEvaluationTreeIt
 		this.schema = schema;
 		this.coordinator = coordinator;
 		this.target = target;
+		this.initialized = false;
 	}
 
 	@Override
@@ -39,6 +41,7 @@ public abstract class AbstractEvaluationTreeItem<T> implements IEvaluationTreeIt
 		logger.trace("initializing {} for {} {}", this.getClass().getSimpleName(),
 				this.target.getClass().getSimpleName(), this.target);
 		initialize(itemFactory, this.target);
+		this.initialized = true;
 	}
 
 	/**
@@ -53,6 +56,9 @@ public abstract class AbstractEvaluationTreeItem<T> implements IEvaluationTreeIt
 
 	@Override
 	public final ImmutableCollection<ISchemaElementProxy> evaluate(ISchemaElementProxy contextItem) {
+		if (!this.initialized) {
+			throw logger.throwing(new IllegalStateException("evaluate() called on uninitialized item"));
+		}
 		logger.trace("evaluating {} for {} {}", this.getClass().getSimpleName(), this.target.getClass().getSimpleName(),
 				this.target);
 		return evaluate(contextItem, this.target);
