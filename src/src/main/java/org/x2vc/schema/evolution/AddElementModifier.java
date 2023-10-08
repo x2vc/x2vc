@@ -10,6 +10,7 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import org.x2vc.schema.structure.IElementType.ContentType;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
 /**
@@ -399,8 +400,8 @@ public final class AddElementModifier implements IAddElementModifier {
 	}
 
 	@Override
-	public ImmutableSet<IAddElementModifier> getSubElements() {
-		return ImmutableSet.copyOf(this.elementModifiers);
+	public ImmutableList<IAddElementModifier> getSubElements() {
+		return ImmutableList.copyOf(this.elementModifiers);
 	}
 
 	@Override

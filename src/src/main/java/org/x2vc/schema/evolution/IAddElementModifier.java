@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.x2vc.schema.structure.IElementType.ContentType;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
 /**
@@ -71,7 +72,7 @@ public interface IAddElementModifier extends ISchemaModifier {
 	/**
 	 * @return the modifiers to create elements below this element
 	 */
-	ImmutableSet<IAddElementModifier> getSubElements();
+	ImmutableList<IAddElementModifier> getSubElements();
 
 	/**
 	 * Adds a sub-element modifier to this element.

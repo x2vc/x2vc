@@ -18,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.x2vc.utilities.URIUtilities;
 import org.x2vc.utilities.URIUtilities.ObjectType;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
 @ExtendWith(MockitoExtension.class)
@@ -108,11 +109,11 @@ class SchemaModifierCollectorTest {
 		final UUID elementID2 = UUID.randomUUID();
 		final IAddElementModifier modifier2a = createAddElementMock(elementID2, "elem2");
 		when(modifier2a.getAttributes()).thenReturn(ImmutableSet.of());
-		when(modifier2a.getSubElements()).thenReturn(ImmutableSet.of());
+		when(modifier2a.getSubElements()).thenReturn(ImmutableList.of());
 
 		final IAddElementModifier modifier2b = createAddElementMock(elementID2, "elem2");
 		when(modifier2b.getAttributes()).thenReturn(ImmutableSet.of());
-		when(modifier2b.getSubElements()).thenReturn(ImmutableSet.of());
+		when(modifier2b.getSubElements()).thenReturn(ImmutableList.of());
 
 		lenient().when(modifier2a.equalsIgnoringIDs(modifier2b)).thenReturn(true);
 		lenient().when(modifier2b.equalsIgnoringIDs(modifier2a)).thenReturn(true);
@@ -149,13 +150,13 @@ class SchemaModifierCollectorTest {
 		final UUID topElementID1 = topElemModifier1.getElementID().orElseThrow();
 		final IAddAttributeModifier attribModifier1 = createAddAttributeMock(topElementID1, "attrib1");
 		when(topElemModifier1.getAttributes()).thenReturn(ImmutableSet.of(attribModifier1));
-		when(topElemModifier1.getSubElements()).thenReturn(ImmutableSet.of());
+		when(topElemModifier1.getSubElements()).thenReturn(ImmutableList.of());
 
 		final IAddElementModifier topElemModifier2 = createAddElementMock(elementID1, "elem1");
 		final UUID topElementID2 = topElemModifier2.getElementID().orElseThrow();
 		final IAddAttributeModifier attribModifier2 = createAddAttributeMock(topElementID2, "attrib1");
 		when(topElemModifier2.getAttributes()).thenReturn(ImmutableSet.of(attribModifier2));
-		when(topElemModifier2.getSubElements()).thenReturn(ImmutableSet.of());
+		when(topElemModifier2.getSubElements()).thenReturn(ImmutableList.of());
 
 		lenient().when(topElemModifier1.equalsIgnoringIDs(topElemModifier2)).thenReturn(true);
 		lenient().when(topElemModifier2.equalsIgnoringIDs(topElemModifier1)).thenReturn(true);
@@ -183,17 +184,17 @@ class SchemaModifierCollectorTest {
 		final UUID topElementID1 = topElemModifier1.getElementID().orElseThrow();
 		final IAddElementModifier subElemModifier1 = createAddElementMock(topElementID1, "elem2");
 		when(topElemModifier1.getAttributes()).thenReturn(ImmutableSet.of());
-		when(topElemModifier1.getSubElements()).thenReturn(ImmutableSet.of(subElemModifier1));
+		when(topElemModifier1.getSubElements()).thenReturn(ImmutableList.of(subElemModifier1));
 		when(subElemModifier1.getAttributes()).thenReturn(ImmutableSet.of());
-		when(subElemModifier1.getSubElements()).thenReturn(ImmutableSet.of());
+		when(subElemModifier1.getSubElements()).thenReturn(ImmutableList.of());
 
 		final IAddElementModifier topElemModifier2 = createAddElementMock(elementID1, "elem1");
 		final UUID topElementID2 = topElemModifier2.getElementID().orElseThrow();
 		final IAddElementModifier subElemModifier2 = createAddElementMock(topElementID2, "elem2");
 		when(topElemModifier2.getAttributes()).thenReturn(ImmutableSet.of());
-		when(topElemModifier2.getSubElements()).thenReturn(ImmutableSet.of(subElemModifier2));
+		when(topElemModifier2.getSubElements()).thenReturn(ImmutableList.of(subElemModifier2));
 		when(subElemModifier2.getAttributes()).thenReturn(ImmutableSet.of());
-		when(subElemModifier2.getSubElements()).thenReturn(ImmutableSet.of());
+		when(subElemModifier2.getSubElements()).thenReturn(ImmutableList.of());
 
 		lenient().when(topElemModifier1.equalsIgnoringIDs(topElemModifier2)).thenReturn(true);
 		lenient().when(topElemModifier2.equalsIgnoringIDs(topElemModifier1)).thenReturn(true);
