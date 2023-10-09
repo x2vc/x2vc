@@ -25,7 +25,7 @@ import org.x2vc.processor.IHTMLDocumentContainer;
 import org.x2vc.processor.ValueAccessTraceEvent;
 import org.x2vc.schema.ISchemaManager;
 import org.x2vc.schema.evolution.ISchemaElementProxy.ProxyType;
-import org.x2vc.schema.structure.IElementType;
+import org.x2vc.schema.structure.IElementReference;
 import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.utilities.URIUtilities;
 import org.x2vc.utilities.URIUtilities.ObjectType;
@@ -151,11 +151,11 @@ class ValueTracePreprocessorTest {
 		// --> traceIDN
 		// ------> ruleIDn
 		// ----------> ruleN
-		// ----------> elementN(elementIDN)
+		// ----------> referenceN(referenceIDN)
 		// --> expressionN
 
-		final UUID elementID1 = UUID.randomUUID();
-		final UUID elementID2 = UUID.randomUUID();
+		final UUID referenceID1 = UUID.randomUUID();
+		final UUID referenceID2 = UUID.randomUUID();
 		final UUID traceID1 = UUID.randomUUID();
 		final UUID traceID2 = UUID.randomUUID();
 		final UUID ruleID1 = UUID.randomUUID();
@@ -166,21 +166,21 @@ class ValueTracePreprocessorTest {
 		when(this.traceIDToRuleIDMap.containsKey(traceID1)).thenReturn(true);
 		when(this.traceIDToRuleIDMap.containsKey(traceID2)).thenReturn(true);
 
-		final IElementType element1 = mock(IElementType.class);
-		final IElementType element2 = mock(IElementType.class);
-		when(element1.getID()).thenReturn(elementID1);
-		when(element2.getID()).thenReturn(elementID2);
-		lenient().when(this.schema.getObjectByID(elementID1, IElementType.class)).thenReturn(element1);
-		lenient().when(this.schema.getObjectByID(elementID2, IElementType.class)).thenReturn(element2);
-		lenient().when(this.schema.getObjectByID(elementID1)).thenReturn(element1);
-		lenient().when(this.schema.getObjectByID(elementID2)).thenReturn(element2);
+		final IElementReference reference1 = mock(IElementReference.class);
+		final IElementReference reference2 = mock(IElementReference.class);
+		when(reference1.getID()).thenReturn(referenceID1);
+		when(reference2.getID()).thenReturn(referenceID2);
+		lenient().when(this.schema.getObjectByID(referenceID1, IElementReference.class)).thenReturn(reference1);
+		lenient().when(this.schema.getObjectByID(referenceID2, IElementReference.class)).thenReturn(reference2);
+		lenient().when(this.schema.getObjectByID(referenceID1)).thenReturn(reference1);
+		lenient().when(this.schema.getObjectByID(referenceID2)).thenReturn(reference2);
 
 		final IGenerationRule rule1 = mock(IGenerationRule.class);
 		final IGenerationRule rule2 = mock(IGenerationRule.class);
 		when(this.request.getRuleByID(ruleID1)).thenReturn(rule1);
 		when(this.request.getRuleByID(ruleID2)).thenReturn(rule2);
-		when(rule1.getSchemaObjectID()).thenReturn(Optional.of(elementID1));
-		when(rule2.getSchemaObjectID()).thenReturn(Optional.of(elementID2));
+		when(rule1.getSchemaObjectID()).thenReturn(Optional.of(referenceID1));
+		when(rule2.getSchemaObjectID()).thenReturn(Optional.of(referenceID2));
 
 		final Expression expression1 = mock(Expression.class);
 		final Expression expression2 = mock(Expression.class);
@@ -203,21 +203,20 @@ class ValueTracePreprocessorTest {
 		assertEquals(2, resultKeys.size());
 		for (final ISchemaElementProxy resultKey : resultKeys) {
 			assertEquals(ProxyType.ELEMENT, resultKey.getType());
-			final Optional<UUID> oElementID = resultKey.getElementTypeID();
-			assertTrue(oElementID.isPresent());
+			final UUID referenceID = resultKey.getElementReference().orElseThrow().getID();
 
-			final Optional<IElementType> oElementType = resultKey.getElementType();
+			final Optional<IElementReference> oElementReference = resultKey.getElementReference();
 			final ImmutableCollection<Expression> expressions = result.get(resultKey);
 
-			if (oElementID.get().equals(elementID1)) {
-				assertTrue(oElementType.isPresent());
-				assertSame(element1, oElementType.get());
+			if (referenceID.equals(referenceID1)) {
+				assertTrue(oElementReference.isPresent());
+				assertSame(reference1, oElementReference.get());
 				assertEquals(1, expressions.size());
 				assertTrue(expressions.contains(expression1));
 
-			} else if (oElementID.get().equals(elementID2)) {
-				assertTrue(oElementType.isPresent());
-				assertSame(element2, oElementType.get());
+			} else if (referenceID.equals(referenceID2)) {
+				assertTrue(oElementReference.isPresent());
+				assertSame(reference2, oElementReference.get());
 				assertEquals(1, expressions.size());
 				assertTrue(expressions.contains(expression2));
 
@@ -238,11 +237,11 @@ class ValueTracePreprocessorTest {
 		// --> traceIDNX
 		// ------> ruleIDNX
 		// ----------> ruleNX
-		// ----------> elementN(elementIDN) - these stay the same, expressions have to be collected!
+		// ----------> referenceN(referenceIDN) - these stay the same, expressions have to be collected!
 		// --> expressionNX
 
-		final UUID elementID1 = UUID.randomUUID();
-		final UUID elementID2 = UUID.randomUUID();
+		final UUID referenceID1 = UUID.randomUUID();
+		final UUID referenceID2 = UUID.randomUUID();
 		final UUID traceID1a = UUID.randomUUID();
 		final UUID traceID1b = UUID.randomUUID();
 		final UUID traceID2a = UUID.randomUUID();
@@ -261,14 +260,14 @@ class ValueTracePreprocessorTest {
 		when(this.traceIDToRuleIDMap.containsKey(traceID2a)).thenReturn(true);
 		when(this.traceIDToRuleIDMap.containsKey(traceID2b)).thenReturn(true);
 
-		final IElementType element1 = mock(IElementType.class);
-		final IElementType element2 = mock(IElementType.class);
-		when(element1.getID()).thenReturn(elementID1);
-		when(element2.getID()).thenReturn(elementID2);
-		lenient().when(this.schema.getObjectByID(elementID1, IElementType.class)).thenReturn(element1);
-		lenient().when(this.schema.getObjectByID(elementID2, IElementType.class)).thenReturn(element2);
-		lenient().when(this.schema.getObjectByID(elementID1)).thenReturn(element1);
-		lenient().when(this.schema.getObjectByID(elementID2)).thenReturn(element2);
+		final IElementReference reference1 = mock(IElementReference.class);
+		final IElementReference reference2 = mock(IElementReference.class);
+		when(reference1.getID()).thenReturn(referenceID1);
+		when(reference2.getID()).thenReturn(referenceID2);
+		lenient().when(this.schema.getObjectByID(referenceID1, IElementReference.class)).thenReturn(reference1);
+		lenient().when(this.schema.getObjectByID(referenceID2, IElementReference.class)).thenReturn(reference2);
+		lenient().when(this.schema.getObjectByID(referenceID1)).thenReturn(reference1);
+		lenient().when(this.schema.getObjectByID(referenceID2)).thenReturn(reference2);
 
 		final IGenerationRule rule1a = mock(IGenerationRule.class);
 		final IGenerationRule rule1b = mock(IGenerationRule.class);
@@ -278,10 +277,10 @@ class ValueTracePreprocessorTest {
 		when(this.request.getRuleByID(ruleID1b)).thenReturn(rule1b);
 		when(this.request.getRuleByID(ruleID2a)).thenReturn(rule2a);
 		when(this.request.getRuleByID(ruleID2b)).thenReturn(rule2b);
-		when(rule1a.getSchemaObjectID()).thenReturn(Optional.of(elementID1));
-		when(rule1b.getSchemaObjectID()).thenReturn(Optional.of(elementID1));
-		when(rule2a.getSchemaObjectID()).thenReturn(Optional.of(elementID2));
-		when(rule2b.getSchemaObjectID()).thenReturn(Optional.of(elementID2));
+		when(rule1a.getSchemaObjectID()).thenReturn(Optional.of(referenceID1));
+		when(rule1b.getSchemaObjectID()).thenReturn(Optional.of(referenceID1));
+		when(rule2a.getSchemaObjectID()).thenReturn(Optional.of(referenceID2));
+		when(rule2b.getSchemaObjectID()).thenReturn(Optional.of(referenceID2));
 
 		final Expression expression1a = mock(Expression.class);
 		final Expression expression1b = mock(Expression.class);
@@ -315,22 +314,21 @@ class ValueTracePreprocessorTest {
 		assertEquals(2, resultKeys.size());
 		for (final ISchemaElementProxy resultKey : resultKeys) {
 			assertEquals(ProxyType.ELEMENT, resultKey.getType());
-			final Optional<UUID> oElementID = resultKey.getElementTypeID();
-			assertTrue(oElementID.isPresent());
+			final UUID referenceID = resultKey.getElementReference().orElseThrow().getID();
 
-			final Optional<IElementType> oElementType = resultKey.getElementType();
+			final Optional<IElementReference> oElementReference = resultKey.getElementReference();
 			final ImmutableCollection<Expression> expressions = result.get(resultKey);
 
-			if (oElementID.get().equals(elementID1)) {
-				assertTrue(oElementType.isPresent());
-				assertSame(element1, oElementType.get());
+			if (referenceID.equals(referenceID1)) {
+				assertTrue(oElementReference.isPresent());
+				assertSame(reference1, oElementReference.get());
 				assertEquals(2, expressions.size());
 				assertTrue(expressions.contains(expression1a));
 				assertTrue(expressions.contains(expression1b));
 
-			} else if (oElementID.get().equals(elementID2)) {
-				assertTrue(oElementType.isPresent());
-				assertSame(element2, oElementType.get());
+			} else if (referenceID.equals(referenceID2)) {
+				assertTrue(oElementReference.isPresent());
+				assertSame(reference2, oElementReference.get());
 				assertEquals(2, expressions.size());
 				assertTrue(expressions.contains(expression2a));
 				assertTrue(expressions.contains(expression2b));

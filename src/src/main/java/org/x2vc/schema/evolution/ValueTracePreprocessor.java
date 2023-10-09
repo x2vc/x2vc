@@ -12,7 +12,6 @@ import org.x2vc.processor.ITraceEvent;
 import org.x2vc.processor.IValueAccessTraceEvent;
 import org.x2vc.schema.ISchemaManager;
 import org.x2vc.schema.structure.IElementReference;
-import org.x2vc.schema.structure.IElementType;
 import org.x2vc.schema.structure.ISchemaObject;
 import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.xml.document.IXMLDocumentContainer;
@@ -151,13 +150,9 @@ public final class ValueTracePreprocessor implements IValueTracePreprocessor {
 						final UUID schemaObjectID = oSchemaObjectID.get();
 						final ISchemaObject schemaObject = this.schema.getObjectByID(schemaObjectID);
 						// The schema object has to resolve to an element type because that's the only thing we
-						// can
-						// extend by adding new sub-elements or adding attributes.
-						if (schemaObject instanceof final IElementType schemaElement) {
-							this.result.put(new SchemaElementProxy(schemaElement), event.getExpression());
-						} else if (schemaObject instanceof final IElementReference schemaReference) {
-							this.result.put(new SchemaElementProxy(schemaReference.getElement()),
-									event.getExpression());
+						// can extend by adding new sub-elements or adding attributes.
+						if (schemaObject instanceof final IElementReference schemaReference) {
+							this.result.put(new SchemaElementProxy(schemaReference), event.getExpression());
 						} else {
 							logger.warn("Unable to process trace events relating to schema object {}",
 									schemaObject);

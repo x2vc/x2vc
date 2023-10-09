@@ -17,7 +17,7 @@ import com.google.common.collect.ImmutableSet;
 public final class SchemaElementProxy implements ISchemaElementProxy {
 
 	private final ProxyType proxyType;
-	private final IElementType existingElementType;
+	private final IElementReference existingElementReference;
 	private final IAddElementModifier elementModifier;
 	private final IAttribute existingAttribute;
 	private final IAddAttributeModifier attributeModifier;
@@ -25,11 +25,11 @@ public final class SchemaElementProxy implements ISchemaElementProxy {
 	/**
 	 * Creates a new proxy referring to an actual element type.
 	 *
-	 * @param existingElementType
+	 * @param existingElementReference
 	 */
-	public SchemaElementProxy(IElementType existingElementType) {
+	public SchemaElementProxy(IElementReference existingElementReference) {
 		this.proxyType = ProxyType.ELEMENT;
-		this.existingElementType = existingElementType;
+		this.existingElementReference = existingElementReference;
 		this.elementModifier = null;
 		this.existingAttribute = null;
 		this.attributeModifier = null;
@@ -43,7 +43,7 @@ public final class SchemaElementProxy implements ISchemaElementProxy {
 	 */
 	public SchemaElementProxy(IAddElementModifier elementModifier) {
 		this.proxyType = ProxyType.ELEMENT_MODIFIER;
-		this.existingElementType = null;
+		this.existingElementReference = null;
 		this.elementModifier = elementModifier;
 		this.existingAttribute = null;
 		this.attributeModifier = null;
@@ -56,7 +56,7 @@ public final class SchemaElementProxy implements ISchemaElementProxy {
 	 */
 	public SchemaElementProxy(IAttribute existingAttribute) {
 		this.proxyType = ProxyType.ATTRIBUTE;
-		this.existingElementType = null;
+		this.existingElementReference = null;
 		this.elementModifier = null;
 		this.existingAttribute = existingAttribute;
 		this.attributeModifier = null;
@@ -69,7 +69,7 @@ public final class SchemaElementProxy implements ISchemaElementProxy {
 	 */
 	public SchemaElementProxy(IAddAttributeModifier attributeModifier) {
 		this.proxyType = ProxyType.ATTRIBUTE_MODIFIER;
-		this.existingElementType = null;
+		this.existingElementReference = null;
 		this.elementModifier = null;
 		this.existingAttribute = null;
 		this.attributeModifier = attributeModifier;
@@ -80,7 +80,7 @@ public final class SchemaElementProxy implements ISchemaElementProxy {
 	 */
 	public SchemaElementProxy() {
 		this.proxyType = ProxyType.DOCUMENT;
-		this.existingElementType = null;
+		this.existingElementReference = null;
 		this.elementModifier = null;
 		this.existingAttribute = null;
 		this.attributeModifier = null;
@@ -120,7 +120,7 @@ public final class SchemaElementProxy implements ISchemaElementProxy {
 	public Optional<UUID> getElementTypeID() {
 		switch (this.proxyType) {
 		case ELEMENT:
-			return Optional.of(this.existingElementType.getID());
+			return Optional.of(this.existingElementReference.getElementID());
 		case ELEMENT_MODIFIER:
 			return this.elementModifier.getElementID();
 		default:
@@ -129,13 +129,58 @@ public final class SchemaElementProxy implements ISchemaElementProxy {
 	}
 
 	@Override
+	public Optional<String> getElementName() {
+		switch (this.proxyType) {
+		case ELEMENT:
+			return Optional.of(this.existingElementReference.getName());
+		case ELEMENT_MODIFIER:
+			return Optional.of(this.elementModifier.getName());
+		default:
+			return Optional.empty();
+		}
+	}
+
+	@Override
 	public Optional<IElementType> getElementType() {
-		return Optional.ofNullable(this.existingElementType);
+		if (this.proxyType == ProxyType.ELEMENT) {
+			return Optional.of(this.existingElementReference.getElement());
+		} else {
+			return Optional.empty();
+		}
+	}
+
+	@Override
+	public Optional<IElementReference> getElementReference() {
+		return Optional.ofNullable(this.existingElementReference);
 	}
 
 	@Override
 	public Optional<IAddElementModifier> getElementModifier() {
 		return Optional.ofNullable(this.elementModifier);
+	}
+
+	@Override
+	public Optional<UUID> getAttributeID() {
+		switch (this.proxyType) {
+		case ATTRIBUTE:
+			return Optional.of(this.existingAttribute.getID());
+		case ATTRIBUTE_MODIFIER:
+			return Optional.of(this.attributeModifier.getAttributeID());
+		default:
+			return Optional.empty();
+		}
+	}
+
+	@Override
+	public Optional<String> getAttributeName() {
+		switch (this.proxyType) {
+		case ATTRIBUTE:
+			return Optional.of(this.existingAttribute.getName());
+		case ATTRIBUTE_MODIFIER:
+			return Optional.of(this.attributeModifier.getName());
+		default:
+			return Optional.empty();
+		}
 	}
 
 	@Override
@@ -152,12 +197,12 @@ public final class SchemaElementProxy implements ISchemaElementProxy {
 	public Optional<ISchemaElementProxy> getSubElement(String name) {
 		switch (this.proxyType) {
 		case ELEMENT:
-			final Optional<IElementReference> oElement = this.existingElementType.getElements()
+			final Optional<IElementReference> oElement = this.existingElementReference.getElement().getElements()
 				.stream()
 				.filter(elem -> elem.getName().equals(name))
 				.findAny();
 			if (oElement.isPresent()) {
-				return Optional.of(new SchemaElementProxy(oElement.get().getElement()));
+				return Optional.of(new SchemaElementProxy(oElement.get()));
 			} else {
 				return Optional.empty();
 			}
@@ -181,9 +226,9 @@ public final class SchemaElementProxy implements ISchemaElementProxy {
 	public ImmutableList<ISchemaElementProxy> getSubElements() {
 		switch (this.proxyType) {
 		case ELEMENT:
-			return ImmutableList.copyOf(this.existingElementType.getElements()
+			return ImmutableList.copyOf(this.existingElementReference.getElement().getElements()
 				.stream()
-				.map(ref -> new SchemaElementProxy(ref.getElement()))
+				.map(SchemaElementProxy::new)
 				.toList());
 		case ELEMENT_MODIFIER:
 			return ImmutableList.copyOf(this.elementModifier.getSubElements()
@@ -204,7 +249,7 @@ public final class SchemaElementProxy implements ISchemaElementProxy {
 	public Optional<ISchemaElementProxy> getSubAttribute(String name) {
 		switch (this.proxyType) {
 		case ELEMENT:
-			final Optional<IAttribute> oAttrib = this.existingElementType.getAttributes()
+			final Optional<IAttribute> oAttrib = this.existingElementReference.getElement().getAttributes()
 				.stream()
 				.filter(attrib -> attrib.getName().equals(name))
 				.findAny();
@@ -233,7 +278,7 @@ public final class SchemaElementProxy implements ISchemaElementProxy {
 	public ImmutableSet<ISchemaElementProxy> getSubAttributes() {
 		switch (this.proxyType) {
 		case ELEMENT:
-			return ImmutableSet.copyOf(this.existingElementType.getAttributes()
+			return ImmutableSet.copyOf(this.existingElementReference.getElement().getAttributes()
 				.stream()
 				.map(SchemaElementProxy::new)
 				.toList());
@@ -251,9 +296,16 @@ public final class SchemaElementProxy implements ISchemaElementProxy {
 	public boolean hasSubAttribute(String name) {
 		switch (this.proxyType) {
 		case ELEMENT:
-			return this.existingElementType.getAttributes().stream().anyMatch(attrib -> attrib.getName().equals(name));
+			return this.existingElementReference
+				.getElement()
+				.getAttributes()
+				.stream()
+				.anyMatch(attrib -> attrib.getName().equals(name));
 		case ELEMENT_MODIFIER:
-			return this.elementModifier.getAttributes().stream().anyMatch(attrib -> attrib.getName().equals(name));
+			return this.elementModifier
+				.getAttributes()
+				.stream()
+				.anyMatch(attrib -> attrib.getName().equals(name));
 		default:
 			return false;
 		}
@@ -262,7 +314,7 @@ public final class SchemaElementProxy implements ISchemaElementProxy {
 	@Override
 	public int hashCode() {
 		return Objects.hash(this.attributeModifier, this.elementModifier, this.existingAttribute,
-				this.existingElementType, this.proxyType);
+				this.existingElementReference, this.proxyType);
 	}
 
 	@Override
@@ -277,7 +329,7 @@ public final class SchemaElementProxy implements ISchemaElementProxy {
 		return Objects.equals(this.attributeModifier, other.attributeModifier)
 				&& Objects.equals(this.elementModifier, other.elementModifier)
 				&& Objects.equals(this.existingAttribute, other.existingAttribute)
-				&& Objects.equals(this.existingElementType, other.existingElementType)
+				&& Objects.equals(this.existingElementReference, other.existingElementReference)
 				&& this.proxyType == other.proxyType;
 	}
 
@@ -287,7 +339,7 @@ public final class SchemaElementProxy implements ISchemaElementProxy {
 		case DOCUMENT:
 			return "SchemaElementProxy for document root";
 		case ELEMENT:
-			return "SchemaElementProxy for existing element " + this.existingElementType.getID();
+			return "SchemaElementProxy for existing element reference " + this.existingElementReference.getID();
 		case ELEMENT_MODIFIER:
 			return "SchemaElementProxy for modifier for element " + this.elementModifier.getTypeID();
 		case ATTRIBUTE:

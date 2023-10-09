@@ -4,6 +4,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.x2vc.schema.structure.IAttribute;
+import org.x2vc.schema.structure.IElementReference;
 import org.x2vc.schema.structure.IElementType;
 
 import com.google.common.collect.ImmutableList;
@@ -27,7 +28,7 @@ public interface ISchemaElementProxy {
 	 */
 	public enum ProxyType {
 		/**
-		 * Proxy for an existing {@link IElementType}
+		 * Proxy for an existing {@link IElementType} and {@link IElementReference}
 		 */
 		ELEMENT,
 		/**
@@ -54,7 +55,7 @@ public interface ISchemaElementProxy {
 	ProxyType getType();
 
 	/**
-	 * @return <code>true</code> if the proxy refers to an existing {@link IElementType}
+	 * @return <code>true</code> if the proxy refers to an existing {@link IElementType} and {@link IElementReference}
 	 */
 	boolean isElement();
 
@@ -85,14 +86,37 @@ public interface ISchemaElementProxy {
 	Optional<UUID> getElementTypeID();
 
 	/**
+	 * @return the element name for existing elements (with unique references) or element modifiers or an empty object
+	 *         for attributes or the document root node
+	 */
+	Optional<String> getElementName();
+
+	/**
 	 * @return the existing element type if the proxy type is ELEMENT
 	 */
 	Optional<IElementType> getElementType();
 
 	/**
+	 * @return the existing element type if the proxy type is ELEMENT
+	 */
+	Optional<IElementReference> getElementReference();
+
+	/**
 	 * @return the modifier to create an element type if the proxy type is ELEMENT_MODIFIER
 	 */
 	Optional<IAddElementModifier> getElementModifier();
+
+	/**
+	 * @return the ID of the attribute (either existing or to be generated) or an empty object for the non-element proxy
+	 *         types
+	 */
+	Optional<UUID> getAttributeID();
+
+	/**
+	 * @return the name of the attribute (either existing or to be generated) or an empty object for the non-element
+	 *         proxy types
+	 */
+	Optional<String> getAttributeName();
 
 	/**
 	 * @return the existing attribute if the proxy type is ATTRIBUTE

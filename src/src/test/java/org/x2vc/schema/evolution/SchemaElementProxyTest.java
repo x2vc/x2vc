@@ -34,7 +34,14 @@ class SchemaElementProxyTest {
 		final IElementType element = mock();
 		when(element.getID()).thenReturn(elementID);
 
-		final SchemaElementProxy proxy = new SchemaElementProxy(element);
+		final UUID referenceID = UUID.randomUUID();
+		final IElementReference reference = mock();
+		when(reference.getID()).thenReturn(referenceID);
+		when(reference.getElementID()).thenReturn(elementID);
+		when(reference.getElement()).thenReturn(element);
+		when(reference.getName()).thenReturn("fooBar");
+
+		final SchemaElementProxy proxy = new SchemaElementProxy(reference);
 
 		// check type information
 		assertEquals(ProxyType.ELEMENT, proxy.getType());
@@ -46,10 +53,14 @@ class SchemaElementProxyTest {
 
 		// check element info
 		assertEquals(Optional.of(elementID), proxy.getElementTypeID());
+		assertEquals(Optional.of("fooBar"), proxy.getElementName());
 		assertEquals(Optional.of(element), proxy.getElementType());
+		assertEquals(Optional.of(reference), proxy.getElementReference());
 		assertFalse(proxy.getElementModifier().isPresent());
 
 		// check attribute info
+		assertFalse(proxy.getAttributeID().isPresent());
+		assertFalse(proxy.getAttributeName().isPresent());
 		assertFalse(proxy.getAttribute().isPresent());
 		assertFalse(proxy.getAttributeModifier().isPresent());
 
@@ -69,6 +80,7 @@ class SchemaElementProxyTest {
 		when(modifier.getElementID()).thenReturn(Optional.of(elementID));
 		when(modifier.getSubElements()).thenReturn(ImmutableList.of());
 		when(modifier.getAttributes()).thenReturn(ImmutableSet.of());
+		when(modifier.getName()).thenReturn("fooBar");
 
 		final SchemaElementProxy proxy = new SchemaElementProxy(modifier);
 
@@ -82,10 +94,14 @@ class SchemaElementProxyTest {
 
 		// check element info
 		assertEquals(Optional.of(elementID), proxy.getElementTypeID());
+		assertEquals(Optional.of("fooBar"), proxy.getElementName());
 		assertFalse(proxy.getElementType().isPresent());
+		assertFalse(proxy.getElementReference().isPresent());
 		assertEquals(Optional.of(modifier), proxy.getElementModifier());
 
 		// check attribute info
+		assertFalse(proxy.getAttributeID().isPresent());
+		assertFalse(proxy.getAttributeName().isPresent());
 		assertFalse(proxy.getAttribute().isPresent());
 		assertFalse(proxy.getAttributeModifier().isPresent());
 
@@ -100,7 +116,10 @@ class SchemaElementProxyTest {
 	 */
 	@Test
 	void testSchemaElementProxy_IAttribute() {
+		final UUID attributeID = UUID.randomUUID();
 		final IAttribute attribute = mock();
+		when(attribute.getName()).thenReturn("fooBar");
+		when(attribute.getID()).thenReturn(attributeID);
 		final SchemaElementProxy proxy = new SchemaElementProxy(attribute);
 
 		// check type information
@@ -113,10 +132,14 @@ class SchemaElementProxyTest {
 
 		// check element info
 		assertFalse(proxy.getElementTypeID().isPresent());
+		assertFalse(proxy.getElementName().isPresent());
 		assertFalse(proxy.getElementType().isPresent());
+		assertFalse(proxy.getElementReference().isPresent());
 		assertFalse(proxy.getElementModifier().isPresent());
 
 		// check attribute info
+		assertEquals(Optional.of(attributeID), proxy.getAttributeID());
+		assertEquals(Optional.of("fooBar"), proxy.getAttributeName());
 		assertEquals(Optional.of(attribute), proxy.getAttribute());
 		assertFalse(proxy.getAttributeModifier().isPresent());
 
@@ -131,7 +154,10 @@ class SchemaElementProxyTest {
 	 */
 	@Test
 	void testSchemaElementProxy_IAddAttributeModifier() {
+		final UUID attributeID = UUID.randomUUID();
 		final IAddAttributeModifier modifier = mock();
+		when(modifier.getName()).thenReturn("fooBar");
+		when(modifier.getAttributeID()).thenReturn(attributeID);
 		final SchemaElementProxy proxy = new SchemaElementProxy(modifier);
 
 		// check type information
@@ -144,10 +170,14 @@ class SchemaElementProxyTest {
 
 		// check element info
 		assertFalse(proxy.getElementTypeID().isPresent());
+		assertFalse(proxy.getElementName().isPresent());
 		assertFalse(proxy.getElementType().isPresent());
+		assertFalse(proxy.getElementReference().isPresent());
 		assertFalse(proxy.getElementModifier().isPresent());
 
 		// check attribute info
+		assertEquals(Optional.of(attributeID), proxy.getAttributeID());
+		assertEquals(Optional.of("fooBar"), proxy.getAttributeName());
 		assertFalse(proxy.getAttribute().isPresent());
 		assertEquals(Optional.of(modifier), proxy.getAttributeModifier());
 
@@ -173,10 +203,14 @@ class SchemaElementProxyTest {
 
 		// check element info
 		assertFalse(proxy.getElementTypeID().isPresent());
+		assertFalse(proxy.getElementName().isPresent());
 		assertFalse(proxy.getElementType().isPresent());
+		assertFalse(proxy.getElementReference().isPresent());
 		assertFalse(proxy.getElementModifier().isPresent());
 
 		// check attribute info
+		assertFalse(proxy.getAttributeID().isPresent());
+		assertFalse(proxy.getAttributeName().isPresent());
 		assertFalse(proxy.getAttribute().isPresent());
 		assertFalse(proxy.getAttributeModifier().isPresent());
 
@@ -208,7 +242,10 @@ class SchemaElementProxyTest {
 		final IElementType element = mock();
 		when(element.getElements()).thenReturn(List.of(ref1, ref2, ref3));
 
-		final SchemaElementProxy proxy = new SchemaElementProxy(element);
+		final IElementReference reference = mock();
+		when(reference.getElement()).thenReturn(element);
+
+		final SchemaElementProxy proxy = new SchemaElementProxy(reference);
 
 		final ImmutableList<ISchemaElementProxy> subElements = proxy.getSubElements();
 		assertEquals(3, subElements.size());
@@ -284,7 +321,10 @@ class SchemaElementProxyTest {
 		final IElementType element = mock();
 		when(element.getAttributes()).thenReturn(List.of(att1, att2, att3));
 
-		final SchemaElementProxy proxy = new SchemaElementProxy(element);
+		final IElementReference reference = mock();
+		when(reference.getElement()).thenReturn(element);
+
+		final SchemaElementProxy proxy = new SchemaElementProxy(reference);
 
 		final ImmutableSet<ISchemaElementProxy> subAttributes = proxy.getSubAttributes();
 		assertEquals(3, subAttributes.size());

@@ -84,12 +84,12 @@ public class ModifierCreationCoordinator implements IModifierCreationCoordinator
 				logger.warn("root element creation not supported yet (name {})", localName);
 				break;
 			case 1:
-				newSchemaElement = new SchemaElementProxy(matchingRootReferences.get(0).getElement());
+				newSchemaElement = new SchemaElementProxy(matchingRootReferences.get(0));
 				break;
 			default:
 				logger.warn("Multiple root references matching \"{}\", randomly choosing the first one.",
 						localName);
-				newSchemaElement = new SchemaElementProxy(matchingRootReferences.get(0).getElement());
+				newSchemaElement = new SchemaElementProxy(matchingRootReferences.get(0));
 				break;
 			}
 		} else {
