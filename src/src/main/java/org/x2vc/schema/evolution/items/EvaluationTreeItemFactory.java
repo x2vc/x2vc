@@ -14,7 +14,7 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
 import net.sf.saxon.expr.*;
-import net.sf.saxon.pattern.NodeTest;
+import net.sf.saxon.pattern.*;
 
 /**
  * Standard implementation of {@link IEvaluationTreeItemFactory}.
@@ -38,6 +38,7 @@ public class EvaluationTreeItemFactory implements IEvaluationTreeItemFactory {
 
 	@Override
 	public IEvaluationTreeItem createItemForExpression(Expression expression) {
+		checkNotNull(expression);
 		logger.traceEntry("for {} {}", expression.getClass().getSimpleName(), expression);
 		IEvaluationTreeItem newItem = null;
 //		// TODO support Expression subclass net.sf.saxon.expr.Expression (abstract)
@@ -283,10 +284,6 @@ public class EvaluationTreeItemFactory implements IEvaluationTreeItemFactory {
 //		// TODO support Expression subclass ..net.sf.saxon.functions.hof.UserFunctionReference
 //		// TODO support Expression subclass ..net.sf.saxon.ma.arrays.SquareArrayConstructor
 //		// TODO support Expression subclass ..net.sf.saxon.xpath.JAXPVariableReference
-//		else {
-//			logger.warn("Unsupported expression type {}: {}", expression.getClass().getSimpleName(), expression);
-//		}
-
 		else {
 			newItem = new UnsupportedExpressionItem(this.schema, this.coordinator, expression);
 		}
@@ -296,41 +293,31 @@ public class EvaluationTreeItemFactory implements IEvaluationTreeItemFactory {
 
 	@Override
 	public INodeTestTreeItem createItemForNodeTest(NodeTest nodeTest) {
+		checkNotNull(nodeTest);
 		logger.traceEntry("for {} {}", nodeTest.getClass().getSimpleName(), nodeTest);
 		INodeTestTreeItem newItem = null;
-		// TODO add type switch here
-
-//		if ((nodeTest == null) || (nodeTest instanceof AnyNodeTest)) {
-//			// NodeTest subclass AnyNodeTest (or null, which means the same thing
-//			// ignore this test for now
-//		} else if (nodeTest instanceof final CombinedNodeTest combinedNodeTest) {
-//			// NodeTest subclass CombinedNodeTest
-//			Arrays.stream(combinedNodeTest.getComponentNodeTests())
-//				.forEach(subTest -> processNodeTest(schemaElement, subTest, isAttribute));
-//		}
-//		// TODO support NodeTest subclass DocumentNodeTest
-//		// TODO support NodeTest subclass ErrorType
-//		// TODO support NodeTest subclass LocalNameTest
-//		// TODO support NodeTest subclass MultipleNodeKindTest
-//		// TODO support NodeTest subclass NamespaceTest
-//		else if (nodeTest instanceof final NameTest nameTest) {
-//			// NodeTest subclass NameTest
-//			if (isAttribute) {
-//				newSchemaElement = processAttributeAccess(schemaElement, nameTest.getMatchingNodeName());
-//			} else {
-//				newSchemaElement = processElementAccess(schemaElement, nameTest.getMatchingNodeName());
-//			}
-//		} else if (nodeTest instanceof NodeKindTest) {
-//			// NodeTest subclass NodeKindTest
-//			// ignore this test for now
-//		}
-//		// TODO support NodeTest subclass NodeSelector
-//		// TODO support NodeTest subclass SameNameTest
-//		else {
-//			logger.warn("Unsupported node test {}: {}", nodeTest.getClass().getSimpleName(), nodeTest);
-//		}
-
-		if (newItem == null) {
+		if (nodeTest instanceof final AnyNodeTest anyNodeTest) {
+			// NodeTest subclass AnyNodeTest
+			newItem = new AnyNodeTestItem(this.schema, this.coordinator, anyNodeTest);
+		} else if (nodeTest instanceof final CombinedNodeTest combinedNodeTest) {
+			// NodeTest subclass CombinedNodeTest
+			newItem = new CombinedNodeTestItem(this.schema, this.coordinator, combinedNodeTest);
+		}
+		// TODO support NodeTest subclass DocumentNodeTest
+		// TODO support NodeTest subclass ErrorType
+		// TODO support NodeTest subclass LocalNameTest
+		// TODO support NodeTest subclass MultipleNodeKindTest
+		// TODO support NodeTest subclass NamespaceTest
+		else if (nodeTest instanceof final NameTest nameTest) {
+			// NodeTest subclass NameTest
+			newItem = new NameTestItem(this.schema, this.coordinator, nameTest);
+		} else if (nodeTest instanceof final NodeKindTest nodeKindTest) {
+			// NodeTest subclass NodeKindTest
+			newItem = new NodeKindTestItem(this.schema, this.coordinator, nodeKindTest);
+		}
+		// TODO support NodeTest subclass NodeSelector
+		// TODO support NodeTest subclass SameNameTest
+		else {
 			newItem = new UnsupportedNodeTestItem(this.schema, this.coordinator, nodeTest);
 		}
 		logger.trace("created item of type {}", newItem.getClass().getSimpleName());
