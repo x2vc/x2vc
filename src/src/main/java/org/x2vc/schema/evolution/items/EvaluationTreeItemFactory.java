@@ -15,6 +15,7 @@ import com.google.inject.assistedinject.Assisted;
 
 import net.sf.saxon.expr.*;
 import net.sf.saxon.expr.compat.GeneralComparison10;
+import net.sf.saxon.expr.instruct.Block;
 import net.sf.saxon.pattern.*;
 
 /**
@@ -237,12 +238,10 @@ public class EvaluationTreeItemFactory implements IEvaluationTreeItemFactory {
 //		// TODO support Expression subclass ......net.sf.saxon.expr.instruct.ApplyImports
 //		// TODO support Expression subclass ......net.sf.saxon.expr.instruct.NextMatch
 //		// TODO support Expression subclass ....net.sf.saxon.expr.instruct.ApplyTemplates
-//		else if (expression instanceof final Block block) {
-//			// FIXME Expression subclass ....net.sf.saxon.expr.instruct.Block
-//			// check the sub-expressions of the block
-//			Arrays.stream(block.getOperanda())
-//				.forEach(op -> processExpression(schemaElement, op.getChildExpression()));
-//		}
+		else if (expression instanceof final Block block) {
+			// Expression subclass ....net.sf.saxon.expr.instruct.Block
+			newItem = new BlockItem(this.schema, this.coordinator, block);
+		}
 //		// TODO support Expression subclass ....net.sf.saxon.expr.instruct.BreakInstr
 //		// TODO support Expression subclass ....net.sf.saxon.expr.instruct.CallTemplate
 //		// TODO support Expression subclass ....net.sf.saxon.expr.instruct.Choose
