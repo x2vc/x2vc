@@ -25,7 +25,7 @@ public interface IEvaluationTreeItemFactory {
 	 * @param nodeTest
 	 * @return the item
 	 */
-	IEvaluationTreeItem createItemForNodeTest(NodeTest nodeTest);
+	INodeTestTreeItem createItemForNodeTest(NodeTest nodeTest);
 
 	/**
 	 * Calls {@link IEvaluationTreeItem#initialize(IEvaluationTreeItemFactory)} for all items this factory has created

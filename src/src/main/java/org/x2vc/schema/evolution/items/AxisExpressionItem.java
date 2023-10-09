@@ -23,7 +23,7 @@ import net.sf.saxon.pattern.NodeTest;
 public class AxisExpressionItem extends AbstractEvaluationTreeItem<AxisExpression> {
 
 	private static final Logger logger = LogManager.getLogger();
-	private IEvaluationTreeItem nodeTest;
+	private INodeTestTreeItem nodeTest;
 
 	AxisExpressionItem(IXMLSchema schema, IModifierCreationCoordinator coordinator, AxisExpression target) {
 		super(schema, coordinator, target);
@@ -46,11 +46,8 @@ public class AxisExpressionItem extends AbstractEvaluationTreeItem<AxisExpressio
 			// "no node test" means "match any node"
 			return ImmutableSet.copyOf(candidateItems);
 		} else {
-			final Set<ISchemaElementProxy> result = Sets.newHashSet();
-			for (final ISchemaElementProxy candidate : candidateItems) {
-				result.addAll(this.nodeTest.evaluate(candidate));
-			}
-			return ImmutableSet.copyOf(result);
+			this.nodeTest.evaluate(contextItem);
+			return this.nodeTest.filter(candidateItems);
 		}
 	}
 

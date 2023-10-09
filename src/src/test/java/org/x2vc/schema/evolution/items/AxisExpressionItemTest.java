@@ -6,6 +6,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
+import java.util.Set;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -106,7 +108,7 @@ class AxisExpressionItemTest {
 	@Test
 	void testEvaluation_AxisAttribute_WithNodeTest() {
 		final NodeTest nodeTest = mock();
-		final IEvaluationTreeItem nodeTestItem = mock();
+		final INodeTestTreeItem nodeTestItem = mock();
 		when(this.itemFactory.createItemForNodeTest(nodeTest)).thenReturn(nodeTestItem);
 
 		when(this.expression.getAxis()).thenReturn(AxisInfo.ATTRIBUTE);
@@ -119,17 +121,13 @@ class AxisExpressionItemTest {
 		when(contextItem.getSubAttributes()).thenReturn(ImmutableSet.of(att1, att2, att3));
 
 		// setup the node test to only let one of the attributes pass
-		when(nodeTestItem.evaluate(att1)).thenReturn(ImmutableList.of());
-		when(nodeTestItem.evaluate(att2)).thenReturn(ImmutableList.of(att2));
-		when(nodeTestItem.evaluate(att3)).thenReturn(ImmutableList.of());
+		when(nodeTestItem.filter(Set.of(att1, att2, att3))).thenReturn(ImmutableList.of(att2));
 
 		this.treeItem.initialize(this.itemFactory);
 		final ImmutableCollection<ISchemaElementProxy> result = this.treeItem.evaluate(contextItem);
 
 		// ensure that the node test was called
-		verify(nodeTestItem, times(1)).evaluate(att1);
-		verify(nodeTestItem, times(1)).evaluate(att2);
-		verify(nodeTestItem, times(1)).evaluate(att3);
+		verify(nodeTestItem, times(1)).evaluate(contextItem);
 
 		// the axis expression itself does not record any access, this is done by the node test
 		verify(this.coordinator, never()).handleAttributeAccess(any(), any());
@@ -170,7 +168,7 @@ class AxisExpressionItemTest {
 	@Test
 	void testEvaluation_AxisChild_WithNodeTest() {
 		final NodeTest nodeTest = mock();
-		final IEvaluationTreeItem nodeTestItem = mock();
+		final INodeTestTreeItem nodeTestItem = mock();
 		when(this.itemFactory.createItemForNodeTest(nodeTest)).thenReturn(nodeTestItem);
 
 		when(this.expression.getAxis()).thenReturn(AxisInfo.CHILD);
@@ -183,17 +181,13 @@ class AxisExpressionItemTest {
 		when(contextItem.getSubElements()).thenReturn(ImmutableList.of(elem1, elem2, elem3));
 
 		// setup the node test to only let one of the elements pass
-		when(nodeTestItem.evaluate(elem1)).thenReturn(ImmutableList.of());
-		when(nodeTestItem.evaluate(elem2)).thenReturn(ImmutableList.of(elem2));
-		when(nodeTestItem.evaluate(elem3)).thenReturn(ImmutableList.of());
+		when(nodeTestItem.filter(Set.of(elem1, elem2, elem3))).thenReturn(ImmutableList.of(elem2));
 
 		this.treeItem.initialize(this.itemFactory);
 		final ImmutableCollection<ISchemaElementProxy> result = this.treeItem.evaluate(contextItem);
 
 		// ensure that the node test was called
-		verify(nodeTestItem, times(1)).evaluate(elem1);
-		verify(nodeTestItem, times(1)).evaluate(elem2);
-		verify(nodeTestItem, times(1)).evaluate(elem3);
+		verify(nodeTestItem, times(1)).evaluate(contextItem);
 
 		// the axis expression itself does not record any access, this is done by the node test
 		verify(this.coordinator, never()).handleAttributeAccess(any(), any());
@@ -228,7 +222,7 @@ class AxisExpressionItemTest {
 	@Test
 	void testEvaluation_AxisSelf_WithNodeTest() {
 		final NodeTest nodeTest = mock();
-		final IEvaluationTreeItem nodeTestItem = mock();
+		final INodeTestTreeItem nodeTestItem = mock();
 		when(this.itemFactory.createItemForNodeTest(nodeTest)).thenReturn(nodeTestItem);
 
 		when(this.expression.getAxis()).thenReturn(AxisInfo.SELF);
@@ -237,7 +231,7 @@ class AxisExpressionItemTest {
 		final ISchemaElementProxy contextItem = mock();
 
 		// setup the node test to let the node pass
-		when(nodeTestItem.evaluate(contextItem)).thenReturn(ImmutableList.of(contextItem));
+		when(nodeTestItem.filter(Set.of(contextItem))).thenReturn(ImmutableList.of(contextItem));
 
 		this.treeItem.initialize(this.itemFactory);
 		final ImmutableCollection<ISchemaElementProxy> result = this.treeItem.evaluate(contextItem);

@@ -295,9 +295,9 @@ public class EvaluationTreeItemFactory implements IEvaluationTreeItemFactory {
 	}
 
 	@Override
-	public IEvaluationTreeItem createItemForNodeTest(NodeTest nodeTest) {
+	public INodeTestTreeItem createItemForNodeTest(NodeTest nodeTest) {
 		logger.traceEntry("for {} {}", nodeTest.getClass().getSimpleName(), nodeTest);
-		IEvaluationTreeItem newItem = null;
+		INodeTestTreeItem newItem = null;
 		// TODO add type switch here
 
 //		if ((nodeTest == null) || (nodeTest instanceof AnyNodeTest)) {

@@ -1,5 +1,7 @@
 package org.x2vc.schema.evolution.items;
 
+import java.util.Collection;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.x2vc.schema.evolution.IModifierCreationCoordinator;
@@ -14,7 +16,7 @@ import net.sf.saxon.pattern.NodeTest;
 /**
  * {@link IEvaluationTreeItem} to represent a {@link NodeTest} for which no specialized implementation is available yet.
  */
-public class UnsupportedNodeTestItem extends AbstractEvaluationTreeItem<NodeTest> {
+public class UnsupportedNodeTestItem extends AbstractNodeTestTreeItem<NodeTest> {
 
 	private static final Logger logger = LogManager.getLogger();
 
@@ -32,6 +34,13 @@ public class UnsupportedNodeTestItem extends AbstractEvaluationTreeItem<NodeTest
 	protected ImmutableCollection<ISchemaElementProxy> evaluate(ISchemaElementProxy contextItem, NodeTest target) {
 		// return the context item unchanged
 		return ImmutableSet.of(contextItem);
+	}
+
+	@Override
+	protected ImmutableCollection<ISchemaElementProxy> filter(Collection<ISchemaElementProxy> candidateItems,
+			NodeTest target) {
+		// return the nodes without filtering
+		return ImmutableSet.copyOf(candidateItems);
 	}
 
 }
