@@ -14,6 +14,7 @@ import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
 import net.sf.saxon.expr.*;
+import net.sf.saxon.expr.compat.GeneralComparison10;
 import net.sf.saxon.pattern.*;
 
 /**
@@ -41,7 +42,7 @@ public class EvaluationTreeItemFactory implements IEvaluationTreeItemFactory {
 		checkNotNull(expression);
 		logger.traceEntry("for {} {}", expression.getClass().getSimpleName(), expression);
 		IEvaluationTreeItem newItem = null;
-//		// TODO support Expression subclass net.sf.saxon.expr.Expression (abstract)
+		// ===== Expression subclass net.sf.saxon.expr.Expression (abstract) =====
 //		// TODO support Expression subclass ..net.sf.saxon.expr.Assignation (abstract)
 //		// TODO support Expression subclass ....net.sf.saxon.expr.ForExpression
 //		// TODO support Expression subclass ......net.sf.saxon.expr.flwor.OuterForExpression
@@ -55,57 +56,66 @@ public class EvaluationTreeItemFactory implements IEvaluationTreeItemFactory {
 			// Expression subclass ..net.sf.saxon.expr.AxisExpression
 			newItem = new AxisExpressionItem(this.schema, this.coordinator, axisExpression);
 		}
-//		// TODO support Expression subclass ..net.sf.saxon.expr.BinaryExpression (abstract)
-//		// TODO support Expression subclass ....net.sf.saxon.expr.ArithmeticExpression
-//		// TODO support Expression subclass ......net.sf.saxon.expr.compat.ArithmeticExpression10
-//		// TODO support Expression subclass ....net.sf.saxon.expr.BooleanExpression (abstract)
-//		// TODO support Expression subclass ......net.sf.saxon.expr.AndExpression
-//		// TODO support Expression subclass ......net.sf.saxon.expr.OrExpression
+		// ----- Expression subclass ..net.sf.saxon.expr.BinaryExpression (abstract) -----
+		else if (expression instanceof final ArithmeticExpression arithmeticExpression) {
+			// Expression subclass ....net.sf.saxon.expr.ArithmeticExpression
+			// Expression subclass ......net.sf.saxon.expr.compat.ArithmeticExpression10
+			newItem = new IndependentBinaryExpressionItem<ArithmeticExpression>(this.schema, this.coordinator,
+					arithmeticExpression);
+		} else if (expression instanceof final BooleanExpression booleanExpression) {
+			// Expression subclass ....net.sf.saxon.expr.BooleanExpression (abstract)
+			// Expression subclass ......net.sf.saxon.expr.AndExpression
+			// Expression subclass ......net.sf.saxon.expr.OrExpression
+			newItem = new IndependentBinaryExpressionItem<BooleanExpression>(this.schema, this.coordinator,
+					booleanExpression);
 //		else if (expression instanceof final FilterExpression filterExpression) {
-//			// Expression subclass ....net.sf.saxon.expr.FilterExpression
+//			// FIXME Expression subclass ....net.sf.saxon.expr.FilterExpression
 //			final ISchemaElementProxy baseSchemaElement = processExpression(schemaElement,
 //					filterExpression.getBase());
 //			processExpression(baseSchemaElement, filterExpression.getFilter());
 //
-//		} else if (expression instanceof final GeneralComparison generalComparison) {
-//			// Expression subclass ....net.sf.saxon.expr.GeneralComparison (abstract)
+		} else if (expression instanceof final GeneralComparison generalComparison) {
+			// Expression subclass ....net.sf.saxon.expr.GeneralComparison (abstract)
 //			// Expression subclass ......net.sf.saxon.expr.GeneralComparison20
-//			processExpression(schemaElement, generalComparison.getLhsExpression());
-//			processExpression(schemaElement, generalComparison.getRhsExpression());
+			newItem = new IndependentBinaryExpressionItem<GeneralComparison>(this.schema, this.coordinator,
+					generalComparison);
 //		}
 //		// TODO support Expression subclass ....net.sf.saxon.expr.IdentityComparison
 //		// TODO support Expression subclass ....net.sf.saxon.expr.LookupExpression
-		else if (expression instanceof final SlashExpression slashExpression) {
+		} else if (expression instanceof final SlashExpression slashExpression) {
 			// Expression subclass ....net.sf.saxon.expr.SlashExpression
 			// Expression subclass ......net.sf.saxon.expr.SimpleStepExpression
 			newItem = new SlashExpressionItem(this.schema, this.coordinator, slashExpression);
 		}
 //		// TODO support Expression subclass ....net.sf.saxon.expr.SwitchCaseComparison
-//		else if (expression instanceof final ValueComparison valueComparison) {
-//			// Expression subclass ....net.sf.saxon.expr.ValueComparison
-//			// The comparison itself does not constitute a value access, but check the contained expressions.
-//			newSchemaElement = processExpression(schemaElement, valueComparison.getLhsExpression());
-//			newSchemaElement = processExpression(newSchemaElement, valueComparison.getRhsExpression());
-//		}
-//		// TODO support Expression subclass ....net.sf.saxon.expr.VennExpression
-//		// TODO support Expression subclass ......net.sf.saxon.expr.SingletonIntersectExpression
-//		else if (expression instanceof final GeneralComparison10 generalComparison10) {
-//			// Expression subclass ....net.sf.saxon.expr.compat.GeneralComparison10
-//			processExpression(schemaElement, generalComparison10.getLhsExpression());
-//			processExpression(schemaElement, generalComparison10.getRhsExpression());
-//		} else if (expression instanceof ContextItemExpression) {
+		else if (expression instanceof final ValueComparison valueComparison) {
+			// Expression subclass ....net.sf.saxon.expr.ValueComparison
+			newItem = new IndependentBinaryExpressionItem<ValueComparison>(this.schema, this.coordinator,
+					valueComparison);
+		} else if (expression instanceof final VennExpression vennExpression) {
+			// Expression subclass ....net.sf.saxon.expr.VennExpression
+			// Expression subclass ......net.sf.saxon.expr.SingletonIntersectExpression
+			newItem = new IndependentBinaryExpressionItem<VennExpression>(this.schema, this.coordinator,
+					vennExpression);
+		} else if (expression instanceof final GeneralComparison10 generalComparison10) {
+			// Expression subclass ....net.sf.saxon.expr.compat.GeneralComparison10
+			newItem = new IndependentBinaryExpressionItem<GeneralComparison10>(this.schema, this.coordinator,
+					generalComparison10);
+		} else if (expression instanceof final ContextItemExpression contextItemExpression) {
 //			// Expression subclass ..net.sf.saxon.expr.ContextItemExpression
 //			// Expression subclass ....net.sf.saxon.expr.CurrentItemExpression
 //			// Although technically a value access, we can't learn anything new from a "this" (.) access...
-//		}
+			newItem = new NoOperationItem<ContextItemExpression>(this.schema, this.coordinator, contextItemExpression);
+
+		}
 //		// TODO support Expression subclass ..net.sf.saxon.expr.DynamicFunctionCall
 //		// TODO support Expression subclass ..net.sf.saxon.expr.ErrorExpression
 //		// TODO support Expression subclass ..net.sf.saxon.expr.FunctionCall (abstract)
 //		// TODO support Expression subclass ....net.sf.saxon.expr.StaticFunctionCall
 //		else if (expression instanceof final SystemFunctionCall systemFunctionCall) {
-//			newSchemaElement = processSystemFunctionCall(schemaElement, systemFunctionCall);
-//			// Expression subclass ......net.sf.saxon.expr.SystemFunctionCall
+//			// FIXME Expression subclass ......net.sf.saxon.expr.SystemFunctionCall
 //			// Expression subclass ........net.sf.saxon.expr.SystemFunctionCall.Optimized (abstract)
+//			newSchemaElement = processSystemFunctionCall(schemaElement, systemFunctionCall);
 //		}
 //		// TODO support Expression subclass ....net.sf.saxon.expr.UserFunctionCall
 //		// TODO support Expression subclass ....net.sf.saxon.functions.IntegratedFunctionCall
@@ -228,7 +238,7 @@ public class EvaluationTreeItemFactory implements IEvaluationTreeItemFactory {
 //		// TODO support Expression subclass ......net.sf.saxon.expr.instruct.NextMatch
 //		// TODO support Expression subclass ....net.sf.saxon.expr.instruct.ApplyTemplates
 //		else if (expression instanceof final Block block) {
-//			// Expression subclass ....net.sf.saxon.expr.instruct.Block
+//			// FIXME Expression subclass ....net.sf.saxon.expr.instruct.Block
 //			// check the sub-expressions of the block
 //			Arrays.stream(block.getOperanda())
 //				.forEach(op -> processExpression(schemaElement, op.getChildExpression()));
@@ -263,13 +273,13 @@ public class EvaluationTreeItemFactory implements IEvaluationTreeItemFactory {
 //		// TODO support Expression subclass ......net.sf.saxon.expr.instruct.NamespaceConstructor
 //		// TODO support Expression subclass ......net.sf.saxon.expr.instruct.ProcessingInstruction
 //		else if (expression instanceof final ValueOf valueOf) {
-//			// Expression subclass ......net.sf.saxon.expr.instruct.ValueOf
+//			// FIXME Expression subclass ......net.sf.saxon.expr.instruct.ValueOf
 //			// Check the select expression
 //			newSchemaElement = processExpression(schemaElement, valueOf.getSelect());
 //		}
 //		// TODO support Expression subclass ....net.sf.saxon.expr.instruct.SourceDocument
 //		else if (expression instanceof final TraceExpression traceExpression) {
-//			// Expression subclass ....net.sf.saxon.expr.instruct.TraceExpression
+//			// FIXME Expression subclass ....net.sf.saxon.expr.instruct.TraceExpression
 //			// We don't care for the trace expression, but have to examine its sub-expression
 //			newSchemaElement = processExpression(schemaElement, traceExpression.getBody());
 //		}
