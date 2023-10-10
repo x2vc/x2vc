@@ -41,7 +41,7 @@ public class AxisExpressionItem extends AbstractEvaluationTreeItem<AxisExpressio
 	@SuppressWarnings("java:S4738") // suggestion is nonsense, java type does not fit
 	protected ImmutableCollection<ISchemaElementProxy> evaluate(ISchemaElementProxy contextItem,
 			AxisExpression target) {
-		final Collection<ISchemaElementProxy> candidateItems = selectCandidates(contextItem, target.getAxis());
+		final Collection<ISchemaElementProxy> candidateItems = selectCandidates(contextItem, target);
 		if (this.nodeTest == null) {
 			// "no node test" means "match any node"
 			return ImmutableSet.copyOf(candidateItems);
@@ -55,12 +55,13 @@ public class AxisExpressionItem extends AbstractEvaluationTreeItem<AxisExpressio
 	 * Selects the nodes to be evaluated by the node test according to the axis.
 	 *
 	 * @param contextItem
-	 * @param axis
+	 * @param target
 	 * @return
 	 */
-	private Collection<ISchemaElementProxy> selectCandidates(ISchemaElementProxy contextItem, int axis) {
+	private Collection<ISchemaElementProxy> selectCandidates(ISchemaElementProxy contextItem, AxisExpression target) {
 		logger.traceEntry();
 		final Set<ISchemaElementProxy> result = Sets.newHashSet();
+		final int axis = target.getAxis();
 		switch (axis) {
 		// TODO support axis ANCESTOR
 		// TODO support axis ANCESTOR_OR_SELF
@@ -83,7 +84,7 @@ public class AxisExpressionItem extends AbstractEvaluationTreeItem<AxisExpressio
 			break;
 		// TODO support axis PRECEDING_OR_ANCESTOR
 		default:
-			logger.warn("Unsupported axis {}", AxisInfo.axisName[axis]);
+			logger.warn("Unsupported axis {}: {}", AxisInfo.axisName[axis], target);
 		}
 		return logger.traceExit(result);
 	}
