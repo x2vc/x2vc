@@ -109,17 +109,16 @@ public class EvaluationTreeItemFactory implements IEvaluationTreeItemFactory {
 //			// Expression subclass ....net.sf.saxon.expr.CurrentItemExpression
 //			// Although technically a value access, we can't learn anything new from a "this" (.) access...
 			newItem = new NoOperationItem<ContextItemExpression>(this.schema, this.coordinator, contextItemExpression);
-
 		}
 //		// TODO support Expression subclass ..net.sf.saxon.expr.DynamicFunctionCall
 //		// TODO support Expression subclass ..net.sf.saxon.expr.ErrorExpression
 //		// TODO support Expression subclass ..net.sf.saxon.expr.FunctionCall (abstract)
 //		// TODO support Expression subclass ....net.sf.saxon.expr.StaticFunctionCall
-//		else if (expression instanceof final SystemFunctionCall systemFunctionCall) {
-//			// FIXME Expression subclass ......net.sf.saxon.expr.SystemFunctionCall
-//			// Expression subclass ........net.sf.saxon.expr.SystemFunctionCall.Optimized (abstract)
-//			newSchemaElement = processSystemFunctionCall(schemaElement, systemFunctionCall);
-//		}
+		else if (expression instanceof final SystemFunctionCall systemFunctionCall) {
+			// Expression subclass ......net.sf.saxon.expr.SystemFunctionCall
+			// Expression subclass ........net.sf.saxon.expr.SystemFunctionCall.Optimized (abstract)
+			newItem = new SystemFunctionCallItem(this.schema, this.coordinator, systemFunctionCall);
+		}
 //		// TODO support Expression subclass ....net.sf.saxon.expr.UserFunctionCall
 //		// TODO support Expression subclass ....net.sf.saxon.functions.IntegratedFunctionCall
 //		// TODO support Expression subclass ....net.sf.saxon.xpath.XPathFunctionCall
