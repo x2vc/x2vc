@@ -311,7 +311,10 @@ public class EvaluationTreeItemFactory implements IEvaluationTreeItemFactory {
 		// TODO support NodeTest subclass DocumentNodeTest
 		// TODO support NodeTest subclass ErrorType
 		// TODO support NodeTest subclass LocalNameTest
-		// TODO support NodeTest subclass MultipleNodeKindTest
+		else if (nodeTest instanceof final MultipleNodeKindTest multipleNodeKindTest) {
+			// NodeTest subclass MultipleNodeKindTest
+			newItem = new MultipleNodeKindTestItem(this.schema, this.coordinator, multipleNodeKindTest);
+		}
 		// TODO support NodeTest subclass NamespaceTest
 		else if (nodeTest instanceof final NameTest nameTest) {
 			// NodeTest subclass NameTest
