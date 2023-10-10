@@ -248,4 +248,164 @@ class AxisExpressionItemTest {
 		assertTrue(result.contains(contextItem));
 	}
 
+	@Test
+	void testEvaluation_AxisDescendant_WithoutNodeTest() {
+		when(this.expression.getAxis()).thenReturn(AxisInfo.DESCENDANT);
+		when(this.expression.getNodeTest()).thenReturn(null);
+
+		final ISchemaElementProxy subItem1 = mock("sub 1");
+		final ISchemaElementProxy subItem1a = mock("sub 1a");
+		final ISchemaElementProxy subItem1b = mock("sub 1b");
+		final ISchemaElementProxy subItem2 = mock("sub 2");
+		final ISchemaElementProxy subItem2a = mock("sub 2a");
+		final ISchemaElementProxy subItem2b = mock("sub 2b");
+		final ISchemaElementProxy contextItem = mock("context");
+		when(subItem1a.getSubElements()).thenReturn(ImmutableList.of());
+		when(subItem1b.getSubElements()).thenReturn(ImmutableList.of());
+		when(subItem2a.getSubElements()).thenReturn(ImmutableList.of());
+		when(subItem2b.getSubElements()).thenReturn(ImmutableList.of());
+		when(subItem1.getSubElements()).thenReturn(ImmutableList.of(subItem1a, subItem1b));
+		when(subItem2.getSubElements()).thenReturn(ImmutableList.of(subItem2a, subItem2b));
+		when(contextItem.getSubElements()).thenReturn(ImmutableList.of(subItem1, subItem2));
+
+		this.treeItem.initialize(this.itemFactory);
+		final ImmutableCollection<ISchemaElementProxy> result = this.treeItem.evaluate(contextItem);
+
+		// the axis expression itself does not record any access, this is done by the node test
+		verify(this.coordinator, never()).handleAttributeAccess(any(), any());
+		verify(this.coordinator, never()).handleElementAccess(any(), any());
+
+		// the result set should contain all of the sub nodes
+		assertEquals(6, result.size());
+		assertTrue(result.contains(subItem1));
+		assertTrue(result.contains(subItem1a));
+		assertTrue(result.contains(subItem1b));
+		assertTrue(result.contains(subItem2));
+		assertTrue(result.contains(subItem2a));
+		assertTrue(result.contains(subItem2b));
+	}
+
+	@Test
+	void testEvaluation_AxisDescendant_WithNodeTest() {
+		final NodeTest nodeTest = mock();
+		final INodeTestTreeItem nodeTestItem = mock();
+		when(this.itemFactory.createItemForNodeTest(nodeTest)).thenReturn(nodeTestItem);
+
+		when(this.expression.getAxis()).thenReturn(AxisInfo.DESCENDANT);
+		when(this.expression.getNodeTest()).thenReturn(nodeTest);
+
+		final ISchemaElementProxy subItem1 = mock("sub 1");
+		final ISchemaElementProxy subItem1a = mock("sub 1a");
+		final ISchemaElementProxy subItem1b = mock("sub 1b");
+		final ISchemaElementProxy subItem2 = mock("sub 2");
+		final ISchemaElementProxy subItem2a = mock("sub 2a");
+		final ISchemaElementProxy subItem2b = mock("sub 2b");
+		final ISchemaElementProxy contextItem = mock("context");
+		when(subItem1a.getSubElements()).thenReturn(ImmutableList.of());
+		when(subItem1b.getSubElements()).thenReturn(ImmutableList.of());
+		when(subItem2a.getSubElements()).thenReturn(ImmutableList.of());
+		when(subItem2b.getSubElements()).thenReturn(ImmutableList.of());
+		when(subItem1.getSubElements()).thenReturn(ImmutableList.of(subItem1a, subItem1b));
+		when(subItem2.getSubElements()).thenReturn(ImmutableList.of(subItem2a, subItem2b));
+		when(contextItem.getSubElements()).thenReturn(ImmutableList.of(subItem1, subItem2));
+
+		// setup the node test to some of the nodes pass
+		when(nodeTestItem.filter(Set.of(subItem1, subItem2, subItem1a, subItem1b, subItem2a, subItem2b)))
+			.thenReturn(ImmutableList.of(subItem1, subItem1a, subItem2b));
+
+		this.treeItem.initialize(this.itemFactory);
+		final ImmutableCollection<ISchemaElementProxy> result = this.treeItem.evaluate(contextItem);
+
+		// the axis expression itself does not record any access, this is done by the node test
+		verify(this.coordinator, never()).handleAttributeAccess(any(), any());
+		verify(this.coordinator, never()).handleElementAccess(any(), any());
+
+		// the result set should contain the selected nodes
+		assertEquals(3, result.size());
+		assertTrue(result.contains(subItem1));
+		assertTrue(result.contains(subItem1a));
+		assertTrue(result.contains(subItem2b));
+	}
+
+	@Test
+	void testEvaluation_AxisDescendantOrSelf_WithoutNodeTest() {
+		when(this.expression.getAxis()).thenReturn(AxisInfo.DESCENDANT_OR_SELF);
+		when(this.expression.getNodeTest()).thenReturn(null);
+
+		final ISchemaElementProxy subItem1 = mock("sub 1");
+		final ISchemaElementProxy subItem1a = mock("sub 1a");
+		final ISchemaElementProxy subItem1b = mock("sub 1b");
+		final ISchemaElementProxy subItem2 = mock("sub 2");
+		final ISchemaElementProxy subItem2a = mock("sub 2a");
+		final ISchemaElementProxy subItem2b = mock("sub 2b");
+		final ISchemaElementProxy contextItem = mock("context");
+		when(subItem1a.getSubElements()).thenReturn(ImmutableList.of());
+		when(subItem1b.getSubElements()).thenReturn(ImmutableList.of());
+		when(subItem2a.getSubElements()).thenReturn(ImmutableList.of());
+		when(subItem2b.getSubElements()).thenReturn(ImmutableList.of());
+		when(subItem1.getSubElements()).thenReturn(ImmutableList.of(subItem1a, subItem1b));
+		when(subItem2.getSubElements()).thenReturn(ImmutableList.of(subItem2a, subItem2b));
+		when(contextItem.getSubElements()).thenReturn(ImmutableList.of(subItem1, subItem2));
+
+		this.treeItem.initialize(this.itemFactory);
+		final ImmutableCollection<ISchemaElementProxy> result = this.treeItem.evaluate(contextItem);
+
+		// the axis expression itself does not record any access, this is done by the node test
+		verify(this.coordinator, never()).handleAttributeAccess(any(), any());
+		verify(this.coordinator, never()).handleElementAccess(any(), any());
+
+		// the result set should contain all of the sub nodes
+		assertEquals(7, result.size());
+		assertTrue(result.contains(subItem1));
+		assertTrue(result.contains(subItem1a));
+		assertTrue(result.contains(subItem1b));
+		assertTrue(result.contains(subItem2));
+		assertTrue(result.contains(subItem2a));
+		assertTrue(result.contains(subItem2b));
+		assertTrue(result.contains(contextItem));
+	}
+
+	@Test
+	void testEvaluation_AxisDescendantOrSelf_WithNodeTest() {
+		final NodeTest nodeTest = mock();
+		final INodeTestTreeItem nodeTestItem = mock();
+		when(this.itemFactory.createItemForNodeTest(nodeTest)).thenReturn(nodeTestItem);
+
+		when(this.expression.getAxis()).thenReturn(AxisInfo.DESCENDANT_OR_SELF);
+		when(this.expression.getNodeTest()).thenReturn(nodeTest);
+
+		final ISchemaElementProxy subItem1 = mock("sub 1");
+		final ISchemaElementProxy subItem1a = mock("sub 1a");
+		final ISchemaElementProxy subItem1b = mock("sub 1b");
+		final ISchemaElementProxy subItem2 = mock("sub 2");
+		final ISchemaElementProxy subItem2a = mock("sub 2a");
+		final ISchemaElementProxy subItem2b = mock("sub 2b");
+		final ISchemaElementProxy contextItem = mock("context");
+		when(subItem1a.getSubElements()).thenReturn(ImmutableList.of());
+		when(subItem1b.getSubElements()).thenReturn(ImmutableList.of());
+		when(subItem2a.getSubElements()).thenReturn(ImmutableList.of());
+		when(subItem2b.getSubElements()).thenReturn(ImmutableList.of());
+		when(subItem1.getSubElements()).thenReturn(ImmutableList.of(subItem1a, subItem1b));
+		when(subItem2.getSubElements()).thenReturn(ImmutableList.of(subItem2a, subItem2b));
+		when(contextItem.getSubElements()).thenReturn(ImmutableList.of(subItem1, subItem2));
+
+		// setup the node test to some of the nodes pass
+		when(nodeTestItem.filter(Set.of(contextItem, subItem1, subItem2, subItem1a, subItem1b, subItem2a, subItem2b)))
+			.thenReturn(ImmutableList.of(contextItem, subItem1, subItem1a, subItem2b));
+
+		this.treeItem.initialize(this.itemFactory);
+		final ImmutableCollection<ISchemaElementProxy> result = this.treeItem.evaluate(contextItem);
+
+		// the axis expression itself does not record any access, this is done by the node test
+		verify(this.coordinator, never()).handleAttributeAccess(any(), any());
+		verify(this.coordinator, never()).handleElementAccess(any(), any());
+
+		// the result set should contain the selected nodes
+		assertEquals(4, result.size());
+		assertTrue(result.contains(contextItem));
+		assertTrue(result.contains(subItem1));
+		assertTrue(result.contains(subItem1a));
+		assertTrue(result.contains(subItem2b));
+	}
+
 }

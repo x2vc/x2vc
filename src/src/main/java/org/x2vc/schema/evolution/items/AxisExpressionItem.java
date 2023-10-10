@@ -1,6 +1,7 @@
 package org.x2vc.schema.evolution.items;
 
 import java.util.Collection;
+import java.util.Deque;
 import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
@@ -11,6 +12,7 @@ import org.x2vc.schema.structure.IXMLSchema;
 
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 import net.sf.saxon.expr.AxisExpression;
@@ -71,8 +73,13 @@ public class AxisExpressionItem extends AbstractEvaluationTreeItem<AxisExpressio
 		case AxisInfo.CHILD:
 			result.addAll(contextItem.getSubElements());
 			break;
-		// TODO support axis DESCENDANT
-		// TODO support axis DESCENDANT_OR_SELF
+		case AxisInfo.DESCENDANT:
+			result.addAll(collectDescendants(contextItem));
+			break;
+		case AxisInfo.DESCENDANT_OR_SELF:
+			result.addAll(collectDescendants(contextItem));
+			result.add(contextItem);
+			break;
 		// TODO support axis FOLLOWING
 		// TODO support axis FOLLOWING_SIBLING
 		// TODO support axis NAMESPACE
@@ -87,6 +94,22 @@ public class AxisExpressionItem extends AbstractEvaluationTreeItem<AxisExpressio
 			logger.warn("Unsupported axis {}: {}", AxisInfo.axisName[axis], target);
 		}
 		return logger.traceExit(result);
+	}
+
+	/**
+	 * @param contextItem
+	 * @return
+	 */
+	private Collection<? extends ISchemaElementProxy> collectDescendants(ISchemaElementProxy contextItem) {
+		final Set<ISchemaElementProxy> result = Sets.newHashSet();
+		final Deque<ISchemaElementProxy> remainingItems = Lists.newLinkedList();
+		remainingItems.addAll(contextItem.getSubElements());
+		while (!remainingItems.isEmpty()) {
+			final ISchemaElementProxy nextItem = remainingItems.removeFirst();
+			result.add(nextItem);
+			remainingItems.addAll(nextItem.getSubElements());
+		}
+		return result;
 	}
 
 }
