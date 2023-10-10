@@ -16,6 +16,7 @@ import org.x2vc.schema.evolution.ISchemaElementProxy.ProxyType;
 import org.x2vc.schema.structure.IAttribute;
 import org.x2vc.schema.structure.IElementReference;
 import org.x2vc.schema.structure.IElementType;
+import org.x2vc.schema.structure.IXMLSchema;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
@@ -64,6 +65,9 @@ class SchemaElementProxyTest {
 		assertFalse(proxy.getAttribute().isPresent());
 		assertFalse(proxy.getAttributeModifier().isPresent());
 
+		// check document info
+		assertFalse(proxy.getSchema().isPresent());
+
 		// check sub-elements
 		assertEquals(0, proxy.getSubElements().size());
 		assertEquals(0, proxy.getSubAttributes().size());
@@ -105,6 +109,9 @@ class SchemaElementProxyTest {
 		assertFalse(proxy.getAttribute().isPresent());
 		assertFalse(proxy.getAttributeModifier().isPresent());
 
+		// check document info
+		assertFalse(proxy.getSchema().isPresent());
+
 		// check sub-elements
 		assertEquals(0, proxy.getSubElements().size());
 		assertEquals(0, proxy.getSubAttributes().size());
@@ -142,6 +149,9 @@ class SchemaElementProxyTest {
 		assertEquals(Optional.of("fooBar"), proxy.getAttributeName());
 		assertEquals(Optional.of(attribute), proxy.getAttribute());
 		assertFalse(proxy.getAttributeModifier().isPresent());
+
+		// check document info
+		assertFalse(proxy.getSchema().isPresent());
 
 		// check sub-elements
 		assertEquals(0, proxy.getSubElements().size());
@@ -181,6 +191,9 @@ class SchemaElementProxyTest {
 		assertFalse(proxy.getAttribute().isPresent());
 		assertEquals(Optional.of(modifier), proxy.getAttributeModifier());
 
+		// check document info
+		assertFalse(proxy.getSchema().isPresent());
+
 		// check sub-elements
 		assertEquals(0, proxy.getSubElements().size());
 		assertEquals(0, proxy.getSubAttributes().size());
@@ -191,7 +204,10 @@ class SchemaElementProxyTest {
 	 */
 	@Test
 	void testSchemaElementProxy_DocumentRoot() {
-		final SchemaElementProxy proxy = new SchemaElementProxy();
+		final IXMLSchema schema = mock();
+		when(schema.getRootElements()).thenReturn(ImmutableSet.of());
+
+		final SchemaElementProxy proxy = new SchemaElementProxy(schema);
 
 		// check type information
 		assertEquals(ProxyType.DOCUMENT, proxy.getType());
@@ -213,6 +229,9 @@ class SchemaElementProxyTest {
 		assertFalse(proxy.getAttributeName().isPresent());
 		assertFalse(proxy.getAttribute().isPresent());
 		assertFalse(proxy.getAttributeModifier().isPresent());
+
+		// check document info
+		assertEquals(Optional.of(schema), proxy.getSchema());
 
 		// check sub-elements
 		assertEquals(0, proxy.getSubElements().size());
@@ -302,6 +321,49 @@ class SchemaElementProxyTest {
 		assertEquals(Optional.of(mod1), proxy1.getElementModifier());
 		assertEquals(Optional.of(mod2), proxy2.getElementModifier());
 		assertEquals(Optional.of(mod3), proxy3.getElementModifier());
+	}
+
+	/**
+	 * Test method for {@link org.x2vc.schema.evolution.SchemaElementProxy#getSubElements()},
+	 * {@link org.x2vc.schema.evolution.SchemaElementProxy#getSubElement(java.lang.String)} and
+	 * {@link org.x2vc.schema.evolution.SchemaElementProxy#hasSubElement(java.lang.String)}.
+	 */
+	@Test
+	void testSubElement_DocumentRoot() {
+		final IXMLSchema schema = mock();
+		final IElementType elem1 = mock();
+		final IElementType elem2 = mock();
+		final IElementType elem3 = mock();
+		final IElementReference ref1 = mock();
+		final IElementReference ref2 = mock();
+		final IElementReference ref3 = mock();
+		when(ref1.getName()).thenReturn("ref1");
+		when(ref2.getName()).thenReturn("ref2");
+		when(ref3.getName()).thenReturn("ref3");
+		when(ref1.getElement()).thenReturn(elem1);
+		when(ref2.getElement()).thenReturn(elem2);
+		when(ref3.getElement()).thenReturn(elem3);
+		when(schema.getRootElements()).thenReturn(ImmutableSet.of(ref1, ref2, ref3));
+
+		final SchemaElementProxy proxy = new SchemaElementProxy(schema);
+
+		final ImmutableList<ISchemaElementProxy> subElements = proxy.getSubElements();
+		assertEquals(3, subElements.size());
+		assertEquals(Optional.of(elem1), subElements.get(0).getElementType());
+		assertEquals(Optional.of(elem2), subElements.get(1).getElementType());
+		assertEquals(Optional.of(elem3), subElements.get(2).getElementType());
+
+		assertTrue(proxy.hasSubElement("ref1"));
+		assertTrue(proxy.hasSubElement("ref2"));
+		assertTrue(proxy.hasSubElement("ref3"));
+		assertFalse(proxy.hasSubElement("ref42"));
+
+		final ISchemaElementProxy proxy1 = proxy.getSubElement("ref1").orElseThrow();
+		final ISchemaElementProxy proxy2 = proxy.getSubElement("ref2").orElseThrow();
+		final ISchemaElementProxy proxy3 = proxy.getSubElement("ref3").orElseThrow();
+		assertEquals(Optional.of(elem1), proxy1.getElementType());
+		assertEquals(Optional.of(elem2), proxy2.getElementType());
+		assertEquals(Optional.of(elem3), proxy3.getElementType());
 	}
 
 	/**

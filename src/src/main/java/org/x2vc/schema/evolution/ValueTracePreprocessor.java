@@ -103,7 +103,7 @@ public final class ValueTracePreprocessor implements IValueTracePreprocessor {
 			this.result = MultimapBuilder.hashKeys().hashSetValues().build();
 			this.traceIDToRuleIDMap = this.source.getDocumentDescriptor().getTraceIDToRuleIDMap();
 			this.request = this.source.getRequest();
-			this.documentProxy = new SchemaElementProxy();
+			this.documentProxy = new SchemaElementProxy(schema);
 
 		}
 

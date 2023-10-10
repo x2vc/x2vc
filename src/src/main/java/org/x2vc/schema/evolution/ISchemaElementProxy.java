@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.x2vc.schema.structure.IAttribute;
 import org.x2vc.schema.structure.IElementReference;
 import org.x2vc.schema.structure.IElementType;
+import org.x2vc.schema.structure.IXMLSchema;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
@@ -127,6 +128,11 @@ public interface ISchemaElementProxy {
 	 * @return the modifier to create an attribute if the proxy type is ATTRIBUTE_MODIFIER
 	 */
 	Optional<IAddAttributeModifier> getAttributeModifier();
+
+	/**
+	 * @return the IXMLSchema for document proxies or an empty element for other types
+	 */
+	Optional<IXMLSchema> getSchema();
 
 	/**
 	 * Returns the proxy representing the sub-element of the given name if present. Will always return an empty object

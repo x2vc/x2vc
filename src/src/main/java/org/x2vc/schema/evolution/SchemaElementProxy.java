@@ -1,5 +1,6 @@
 package org.x2vc.schema.evolution;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
@@ -7,9 +8,13 @@ import java.util.UUID;
 import org.x2vc.schema.structure.IAttribute;
 import org.x2vc.schema.structure.IElementReference;
 import org.x2vc.schema.structure.IElementType;
+import org.x2vc.schema.structure.IXMLSchema;
 
+import com.google.common.base.Supplier;
+import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 
 /**
  * Standard implementation of {@link ISchemaElementProxy}.
@@ -21,6 +26,7 @@ public final class SchemaElementProxy implements ISchemaElementProxy {
 	private final IAddElementModifier elementModifier;
 	private final IAttribute existingAttribute;
 	private final IAddAttributeModifier attributeModifier;
+	private final IXMLSchema schema;
 
 	/**
 	 * Creates a new proxy referring to an actual element type.
@@ -33,6 +39,7 @@ public final class SchemaElementProxy implements ISchemaElementProxy {
 		this.elementModifier = null;
 		this.existingAttribute = null;
 		this.attributeModifier = null;
+		this.schema = null;
 
 	}
 
@@ -47,6 +54,7 @@ public final class SchemaElementProxy implements ISchemaElementProxy {
 		this.elementModifier = elementModifier;
 		this.existingAttribute = null;
 		this.attributeModifier = null;
+		this.schema = null;
 	}
 
 	/**
@@ -60,6 +68,7 @@ public final class SchemaElementProxy implements ISchemaElementProxy {
 		this.elementModifier = null;
 		this.existingAttribute = existingAttribute;
 		this.attributeModifier = null;
+		this.schema = null;
 	}
 
 	/**
@@ -73,17 +82,21 @@ public final class SchemaElementProxy implements ISchemaElementProxy {
 		this.elementModifier = null;
 		this.existingAttribute = null;
 		this.attributeModifier = attributeModifier;
+		this.schema = null;
 	}
 
 	/**
 	 * Creates a new proxy referring to the document root node.
+	 *
+	 * @param schema
 	 */
-	public SchemaElementProxy() {
+	public SchemaElementProxy(IXMLSchema schema) {
 		this.proxyType = ProxyType.DOCUMENT;
 		this.existingElementReference = null;
 		this.elementModifier = null;
 		this.existingAttribute = null;
 		this.attributeModifier = null;
+		this.schema = schema;
 	}
 
 	@Override
@@ -193,51 +206,47 @@ public final class SchemaElementProxy implements ISchemaElementProxy {
 		return Optional.ofNullable(this.attributeModifier);
 	}
 
+	@SuppressWarnings("java:S4738") // Java supplier does not support memoization
+	private transient Supplier<List<ISchemaElementProxy>> subElementSupplier = Suppliers.memoize(() -> {
+		if (isElement()) {
+			return getElementType().orElseThrow().getElements()
+				.stream()
+				.map(SchemaElementProxy::new)
+				.map(ISchemaElementProxy.class::cast)
+				.toList();
+		} else if (isElementModifier()) {
+			return this.getElementModifier().orElseThrow().getSubElements()
+				.stream()
+				.map(SchemaElementProxy::new)
+				.map(ISchemaElementProxy.class::cast)
+				.toList();
+		} else if (isDocument()) {
+			return this.getSchema().orElseThrow().getRootElements()
+				.stream()
+				.map(SchemaElementProxy::new)
+				.map(ISchemaElementProxy.class::cast)
+				.toList();
+		}
+		return Lists.newArrayList();
+	});
+
+	@Override
+	public Optional<IXMLSchema> getSchema() {
+		return Optional.ofNullable(this.schema);
+	}
+
 	@Override
 	public Optional<ISchemaElementProxy> getSubElement(String name) {
-		switch (this.proxyType) {
-		case ELEMENT:
-			final Optional<IElementReference> oElement = this.existingElementReference.getElement().getElements()
-				.stream()
-				.filter(elem -> elem.getName().equals(name))
-				.findAny();
-			if (oElement.isPresent()) {
-				return Optional.of(new SchemaElementProxy(oElement.get()));
-			} else {
-				return Optional.empty();
-			}
-		case ELEMENT_MODIFIER:
-			final Optional<IAddElementModifier> oModElement = this.elementModifier.getSubElements()
-				.stream()
-				.filter(elem -> elem.getName().equals(name))
-				.findAny();
-			if (oModElement.isPresent()) {
-				return Optional.of(new SchemaElementProxy(oModElement.get()));
-			} else {
-				return Optional.empty();
-			}
-		default:
-			return Optional.empty();
-		}
+		return this.subElementSupplier.get()
+			.stream()
+			.filter(elem -> elem.getElementName().orElse("").equals(name))
+			.findAny();
 	}
 
 	@Override
 	@SuppressWarnings("java:S4738") // suggestion is nonsense, java type does not fit
 	public ImmutableList<ISchemaElementProxy> getSubElements() {
-		switch (this.proxyType) {
-		case ELEMENT:
-			return ImmutableList.copyOf(this.existingElementReference.getElement().getElements()
-				.stream()
-				.map(SchemaElementProxy::new)
-				.toList());
-		case ELEMENT_MODIFIER:
-			return ImmutableList.copyOf(this.elementModifier.getSubElements()
-				.stream()
-				.map(SchemaElementProxy::new)
-				.toList());
-		default:
-			return ImmutableList.of();
-		}
+		return ImmutableList.copyOf(this.subElementSupplier.get());
 	}
 
 	@Override
@@ -314,7 +323,8 @@ public final class SchemaElementProxy implements ISchemaElementProxy {
 	@Override
 	public int hashCode() {
 		return Objects.hash(this.attributeModifier, this.elementModifier, this.existingAttribute,
-				this.existingElementReference, this.proxyType);
+				this.existingElementReference, this.proxyType,
+				this.schema);
 	}
 
 	@Override
@@ -330,7 +340,7 @@ public final class SchemaElementProxy implements ISchemaElementProxy {
 				&& Objects.equals(this.elementModifier, other.elementModifier)
 				&& Objects.equals(this.existingAttribute, other.existingAttribute)
 				&& Objects.equals(this.existingElementReference, other.existingElementReference)
-				&& this.proxyType == other.proxyType;
+				&& this.proxyType == other.proxyType && Objects.equals(this.schema, other.schema);
 	}
 
 	@Override
