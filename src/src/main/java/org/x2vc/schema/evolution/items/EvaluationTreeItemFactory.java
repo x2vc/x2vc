@@ -17,6 +17,7 @@ import net.sf.saxon.expr.*;
 import net.sf.saxon.expr.compat.GeneralComparison10;
 import net.sf.saxon.expr.instruct.Block;
 import net.sf.saxon.expr.instruct.TraceExpression;
+import net.sf.saxon.expr.instruct.ValueOf;
 import net.sf.saxon.pattern.*;
 
 /**
@@ -272,11 +273,10 @@ public class EvaluationTreeItemFactory implements IEvaluationTreeItemFactory {
 //		// TODO support Expression subclass ......net.sf.saxon.expr.instruct.Comment
 //		// TODO support Expression subclass ......net.sf.saxon.expr.instruct.NamespaceConstructor
 //		// TODO support Expression subclass ......net.sf.saxon.expr.instruct.ProcessingInstruction
-//		else if (expression instanceof final ValueOf valueOf) {
-//			// FIXME Expression subclass ......net.sf.saxon.expr.instruct.ValueOf
-//			// Check the select expression
-//			newSchemaElement = processExpression(schemaElement, valueOf.getSelect());
-//		}
+		else if (expression instanceof final ValueOf valueOf) {
+			// Expression subclass ......net.sf.saxon.expr.instruct.ValueOf
+			newItem = new ValueOfItem(this.schema, this.coordinator, valueOf);
+		}
 //		// TODO support Expression subclass ....net.sf.saxon.expr.instruct.SourceDocument
 		else if (expression instanceof final TraceExpression traceExpression) {
 			// Expression subclass ....net.sf.saxon.expr.instruct.TraceExpression
