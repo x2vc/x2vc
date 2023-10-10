@@ -71,18 +71,14 @@ public class EvaluationTreeItemFactory implements IEvaluationTreeItemFactory {
 			// Expression subclass ......net.sf.saxon.expr.OrExpression
 			newItem = new IndependentBinaryExpressionItem<BooleanExpression>(this.schema, this.coordinator,
 					booleanExpression);
-//		else if (expression instanceof final FilterExpression filterExpression) {
-//			// FIXME Expression subclass ....net.sf.saxon.expr.FilterExpression
-//			final ISchemaElementProxy baseSchemaElement = processExpression(schemaElement,
-//					filterExpression.getBase());
-//			processExpression(baseSchemaElement, filterExpression.getFilter());
-//
+		} else if (expression instanceof final FilterExpression filterExpression) {
+			// Expression subclass ....net.sf.saxon.expr.FilterExpression
+			newItem = new FilterExpressionItem(this.schema, this.coordinator, filterExpression);
 		} else if (expression instanceof final GeneralComparison generalComparison) {
 			// Expression subclass ....net.sf.saxon.expr.GeneralComparison (abstract)
-//			// Expression subclass ......net.sf.saxon.expr.GeneralComparison20
+			// Expression subclass ......net.sf.saxon.expr.GeneralComparison20
 			newItem = new IndependentBinaryExpressionItem<GeneralComparison>(this.schema, this.coordinator,
 					generalComparison);
-//		}
 //		// TODO support Expression subclass ....net.sf.saxon.expr.IdentityComparison
 //		// TODO support Expression subclass ....net.sf.saxon.expr.LookupExpression
 		} else if (expression instanceof final SlashExpression slashExpression) {
