@@ -16,6 +16,7 @@ import com.google.inject.assistedinject.Assisted;
 import net.sf.saxon.expr.*;
 import net.sf.saxon.expr.compat.GeneralComparison10;
 import net.sf.saxon.expr.instruct.Block;
+import net.sf.saxon.expr.instruct.TraceExpression;
 import net.sf.saxon.pattern.*;
 
 /**
@@ -277,11 +278,11 @@ public class EvaluationTreeItemFactory implements IEvaluationTreeItemFactory {
 //			newSchemaElement = processExpression(schemaElement, valueOf.getSelect());
 //		}
 //		// TODO support Expression subclass ....net.sf.saxon.expr.instruct.SourceDocument
-//		else if (expression instanceof final TraceExpression traceExpression) {
-//			// FIXME Expression subclass ....net.sf.saxon.expr.instruct.TraceExpression
-//			// We don't care for the trace expression, but have to examine its sub-expression
-//			newSchemaElement = processExpression(schemaElement, traceExpression.getBody());
-//		}
+		else if (expression instanceof final TraceExpression traceExpression) {
+			// Expression subclass ....net.sf.saxon.expr.instruct.TraceExpression
+			// We don't care for the trace expression, but have to examine its sub-expression
+			newItem = new TraceExpressionItem(this.schema, this.coordinator, traceExpression);
+		}
 //		// TODO support Expression subclass ....net.sf.saxon.expr.instruct.UseAttributeSet
 //		// TODO support Expression subclass ....net.sf.saxon.expr.sort.MergeInstr
 //		// TODO support Expression subclass ..net.sf.saxon.expr.instruct.NumberInstruction
