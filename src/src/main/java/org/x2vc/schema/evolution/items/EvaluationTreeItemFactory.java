@@ -132,8 +132,10 @@ public class EvaluationTreeItemFactory implements IEvaluationTreeItemFactory {
 			// Expression subclass ....net.sf.saxon.functions.hof.FunctionLiteral
 			// no value access to be extracted here
 			newItem = new NoOperationItem<Literal>(this.schema, this.coordinator, literal);
+		} else if (expression instanceof final NumberSequenceFormatter numberSequenceFormatter) {
+			// Expression subclass ..net.sf.saxon.expr.NumberSequenceFormatter
+			newItem = new NumberSequenceFormatterItem(this.schema, this.coordinator, numberSequenceFormatter);
 		}
-		// TODO support Expression subclass ..net.sf.saxon.expr.NumberSequenceFormatter
 		// TODO support Expression subclass ..net.sf.saxon.expr.PseudoExpression (abstract)
 		// TODO support Expression subclass ....net.sf.saxon.expr.DefaultedArgumentExpression
 		// TODO support Expression subclass
