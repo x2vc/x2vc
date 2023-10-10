@@ -153,7 +153,10 @@ public class EvaluationTreeItemFactory implements IEvaluationTreeItemFactory {
 //		// TODO support Expression subclass ........net.sf.saxon.pattern.IntersectPattern
 //		// TODO support Expression subclass ........net.sf.saxon.pattern.UnionPattern
 //		// TODO support Expression subclass ..net.sf.saxon.expr.RangeExpression
-//		// TODO support Expression subclass ..net.sf.saxon.expr.RootExpression
+		else if (expression instanceof final RootExpression rootExpression) {
+			// Expression subclass ..net.sf.saxon.expr.RootExpression
+			newItem = new RootExpressionItem(this.schema, this.coordinator, rootExpression);
+		}
 //		// TODO support Expression subclass ..net.sf.saxon.expr.SimpleExpression (abstract)
 //		// TODO support Expression subclass ..net.sf.saxon.expr.SuppliedParameterReference
 //		// TODO support Expression subclass ..net.sf.saxon.expr.TryCatch
