@@ -16,6 +16,7 @@ import com.google.inject.assistedinject.Assisted;
 import net.sf.saxon.expr.*;
 import net.sf.saxon.expr.compat.GeneralComparison10;
 import net.sf.saxon.expr.instruct.Block;
+import net.sf.saxon.expr.instruct.Choose;
 import net.sf.saxon.expr.instruct.TraceExpression;
 import net.sf.saxon.expr.instruct.ValueOf;
 import net.sf.saxon.functions.IntegratedFunctionCall;
@@ -248,7 +249,10 @@ public class EvaluationTreeItemFactory implements IEvaluationTreeItemFactory {
 		}
 //		// TODO support Expression subclass ....net.sf.saxon.expr.instruct.BreakInstr
 //		// TODO support Expression subclass ....net.sf.saxon.expr.instruct.CallTemplate
-//		// TODO support Expression subclass ....net.sf.saxon.expr.instruct.Choose
+		else if (expression instanceof final Choose choose) {
+			// Expression subclass ....net.sf.saxon.expr.instruct.Choose
+			newItem = new ChooseItem(this.schema, this.coordinator, choose);
+		}
 //		// TODO support Expression subclass ....net.sf.saxon.expr.instruct.ComponentTracer
 //		// TODO support Expression subclass ....net.sf.saxon.expr.instruct.ConditionalBlock
 //		// TODO support Expression subclass ....net.sf.saxon.expr.instruct.CopyOf
