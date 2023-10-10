@@ -18,6 +18,7 @@ import net.sf.saxon.expr.compat.GeneralComparison10;
 import net.sf.saxon.expr.instruct.Block;
 import net.sf.saxon.expr.instruct.TraceExpression;
 import net.sf.saxon.expr.instruct.ValueOf;
+import net.sf.saxon.functions.IntegratedFunctionCall;
 import net.sf.saxon.pattern.*;
 
 /**
@@ -116,7 +117,10 @@ public class EvaluationTreeItemFactory implements IEvaluationTreeItemFactory {
 			newItem = new SystemFunctionCallItem(this.schema, this.coordinator, systemFunctionCall);
 		}
 //		// TODO support Expression subclass ....net.sf.saxon.expr.UserFunctionCall
-//		// TODO support Expression subclass ....net.sf.saxon.functions.IntegratedFunctionCall
+		else if (expression instanceof final IntegratedFunctionCall integratedFunctionCall) {
+			// Expression subclass ....net.sf.saxon.functions.IntegratedFunctionCall
+			newItem = new IntegratedFunctionCallItem(this.schema, this.coordinator, integratedFunctionCall);
+		}
 //		// TODO support Expression subclass ....net.sf.saxon.xpath.XPathFunctionCall
 //		// TODO support Expression subclass ..net.sf.saxon.expr.IntegerRangeTest
 //		// TODO support Expression subclass ..net.sf.saxon.expr.IsLastExpression
