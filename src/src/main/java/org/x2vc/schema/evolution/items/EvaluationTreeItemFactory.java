@@ -102,13 +102,16 @@ public class EvaluationTreeItemFactory implements IEvaluationTreeItemFactory {
 			newItem = new IndependentBinaryExpressionItem<GeneralComparison10>(this.schema, this.coordinator,
 					generalComparison10);
 		} else if (expression instanceof final ContextItemExpression contextItemExpression) {
-//			// Expression subclass ..net.sf.saxon.expr.ContextItemExpression
-//			// Expression subclass ....net.sf.saxon.expr.CurrentItemExpression
-//			// Although technically a value access, we can't learn anything new from a "this" (.) access...
+			// Expression subclass ..net.sf.saxon.expr.ContextItemExpression
+			// Expression subclass ....net.sf.saxon.expr.CurrentItemExpression
+			// Although technically a value access, we can't learn anything new from a "this" (.) access...
 			newItem = new NoOperationItem<ContextItemExpression>(this.schema, this.coordinator, contextItemExpression);
 		}
 		// TODO support Expression subclass ..net.sf.saxon.expr.DynamicFunctionCall
-		// TODO support Expression subclass ..net.sf.saxon.expr.ErrorExpression
+		else if (expression instanceof final ErrorExpression errorExpression) {
+			// Expression subclass ..net.sf.saxon.expr.ErrorExpression
+			newItem = new NoOperationItem<ErrorExpression>(this.schema, this.coordinator, errorExpression);
+		}
 		// TODO support Expression subclass ..net.sf.saxon.expr.FunctionCall (abstract)
 		// TODO support Expression subclass ....net.sf.saxon.expr.StaticFunctionCall
 		else if (expression instanceof final SystemFunctionCall systemFunctionCall) {
@@ -298,7 +301,10 @@ public class EvaluationTreeItemFactory implements IEvaluationTreeItemFactory {
 		}
 		// TODO support Expression subclass ....net.sf.saxon.expr.instruct.UseAttributeSet
 		// TODO support Expression subclass ....net.sf.saxon.expr.sort.MergeInstr
-		// TODO support Expression subclass ..net.sf.saxon.expr.instruct.NumberInstruction
+		else if (expression instanceof final NumberInstruction numberInstruction) {
+			// Expression subclass ..net.sf.saxon.expr.instruct.NumberInstruction
+			newItem = new NumberInstructionItem(this.schema, this.coordinator, numberInstruction);
+		}
 		// TODO support Expression subclass ..net.sf.saxon.expr.sort.ConditionalSorter
 		else if (expression instanceof final SortExpression sortExpression) {
 			// Expression subclass ..net.sf.saxon.expr.sort.SortExpression
