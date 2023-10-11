@@ -1,13 +1,18 @@
 package org.x2vc.schema.evolution.items;
 
+import java.util.List;
+
 import org.x2vc.schema.evolution.IModifierCreationCoordinator;
 import org.x2vc.schema.evolution.ISchemaElementProxy;
 import org.x2vc.schema.structure.IXMLSchema;
 
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 
+import net.sf.saxon.expr.Operand;
 import net.sf.saxon.expr.sort.SortExpression;
+import net.sf.saxon.expr.sort.SortKeyDefinition;
 import net.sf.saxon.expr.sort.SortKeyDefinitionList;
 
 /**
@@ -16,7 +21,7 @@ import net.sf.saxon.expr.sort.SortKeyDefinitionList;
 public class SortExpressionItem extends AbstractEvaluationTreeItem<SortExpression> {
 
 	private IEvaluationTreeItem selectItem;
-	private IEvaluationTreeItem keyItems[];
+	private List<IEvaluationTreeItem> keyOperandChildItems;
 
 	SortExpressionItem(IXMLSchema schema, IModifierCreationCoordinator coordinator, SortExpression target) {
 		super(schema, coordinator, target);
@@ -26,9 +31,13 @@ public class SortExpressionItem extends AbstractEvaluationTreeItem<SortExpressio
 	protected void initialize(IEvaluationTreeItemFactory itemFactory, SortExpression target) {
 		this.selectItem = itemFactory.createItemForExpression(target.getSelect());
 		final SortKeyDefinitionList keyDefinitionList = target.getSortKeyDefinitionList();
-		this.keyItems = new IEvaluationTreeItem[keyDefinitionList.size()];
-		for (int i = 0; i < this.keyItems.length; i++) {
-			this.keyItems[i] = itemFactory.createItemForExpression(keyDefinitionList.getSortKeyDefinition(i));
+		this.keyOperandChildItems = Lists.newArrayList();
+		for (int i = 0; i < keyDefinitionList.size(); i++) {
+			final SortKeyDefinition sortKeyDefinition = keyDefinitionList.getSortKeyDefinition(i);
+			final Iterable<Operand> operands = sortKeyDefinition.operands();
+			for (final Operand operand : operands) {
+				this.keyOperandChildItems.add(itemFactory.createItemForExpression(operand.getChildExpression()));
+			}
 		}
 	}
 
@@ -38,8 +47,8 @@ public class SortExpressionItem extends AbstractEvaluationTreeItem<SortExpressio
 			SortExpression target) {
 		final ImmutableCollection<ISchemaElementProxy> sortContexts = this.selectItem.evaluate(contextItem);
 		for (final ISchemaElementProxy sortContext : sortContexts) {
-			for (int i = 0; i < this.keyItems.length; i++) {
-				this.keyItems[i].evaluate(sortContext);
+			for (final IEvaluationTreeItem keyItem : this.keyOperandChildItems) {
+				keyItem.evaluate(sortContext);
 			}
 		}
 		return ImmutableSet.of(contextItem);
