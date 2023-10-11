@@ -2,12 +2,14 @@ package org.x2vc.schema.evolution.items;
 
 import java.util.Collection;
 import java.util.Deque;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.x2vc.schema.evolution.IModifierCreationCoordinator;
 import org.x2vc.schema.evolution.ISchemaElementProxy;
+import org.x2vc.schema.evolution.SchemaElementProxy;
 import org.x2vc.schema.structure.IXMLSchema;
 
 import com.google.common.collect.ImmutableCollection;
@@ -83,7 +85,9 @@ public class AxisExpressionItem extends AbstractEvaluationTreeItem<AxisExpressio
 		// TODO support axis FOLLOWING
 		// TODO support axis FOLLOWING_SIBLING
 		// TODO support axis NAMESPACE
-		// TODO support axis PARENT
+		case AxisInfo.PARENT:
+			result.addAll(getParent(contextItem));
+			break;
 		// TODO support axis PRECEDING
 		// TODO support axis PRECEDING_SIBLING
 		case AxisInfo.SELF:
@@ -110,6 +114,32 @@ public class AxisExpressionItem extends AbstractEvaluationTreeItem<AxisExpressio
 			remainingItems.addAll(nextItem.getSubElements());
 		}
 		return result;
+	}
+
+	/**
+	 * @param contextItem
+	 * @return
+	 */
+	private Collection<ISchemaElementProxy> getParent(ISchemaElementProxy contextItem) {
+		logger.traceEntry();
+		List<ISchemaElementProxy> result = Lists.newArrayList();
+		if (contextItem.isElement()) {
+			// get the possible referring elements
+			final IXMLSchema schema = getSchema();
+			result = schema.getElementTypes().stream()
+				.filter(t -> t.getElements().stream()
+					.anyMatch(r -> r.equals(contextItem.getElementReference().orElseThrow())))
+				.flatMap(t -> schema.getReferencesUsing(t).stream())
+				.map(SchemaElementProxy::new)
+				.map(ISchemaElementProxy.class::cast)
+				.toList();
+		} else if (contextItem.isElementModifier()) {
+			// TODO support retrieving parent of modifier
+			logger.warn("Unsupported axis parent for element modifiers");
+		} else {
+			logger.warn("Unsupported axis parent for context item type {}", contextItem.getType());
+		}
+		return logger.traceExit(result);
 	}
 
 }
