@@ -47,13 +47,19 @@ public class EvaluationTreeItemFactory implements IEvaluationTreeItemFactory {
 		logger.traceEntry("for {} {}", expression.getClass().getSimpleName(), expression);
 		IEvaluationTreeItem newItem = null;
 		// ===== Expression subclass net.sf.saxon.expr.Expression (abstract) =====
-		// TODO support Expression subclass ..net.sf.saxon.expr.Assignation (abstract)
-		// TODO support Expression subclass ....net.sf.saxon.expr.ForExpression
-		// TODO support Expression subclass ......net.sf.saxon.expr.flwor.OuterForExpression
-		// TODO support Expression subclass ....net.sf.saxon.expr.LetExpression
-		// TODO support Expression subclass ......net.sf.saxon.expr.EagerLetExpression
-		// TODO support Expression subclass ....net.sf.saxon.expr.QuantifiedExpression
-		if (expression instanceof final AttributeGetter attributeGetter) {
+		// Expression subclass ..net.sf.saxon.expr.Assignation (abstract)
+		if (expression instanceof final ForExpression forExpression) {
+			// Expression subclass ....net.sf.saxon.expr.ForExpression
+			// Expression subclass ......net.sf.saxon.expr.flwor.OuterForExpression
+			newItem = new AssignationItem<ForExpression>(this.schema, this.coordinator, forExpression);
+		} else if (expression instanceof final LetExpression letExpression) {
+			// Expression subclass ....net.sf.saxon.expr.LetExpression
+			// Expression subclass ......net.sf.saxon.expr.EagerLetExpression
+			newItem = new AssignationItem<LetExpression>(this.schema, this.coordinator, letExpression);
+		} else if (expression instanceof final QuantifiedExpression quantifiedExpression) {
+			// Expression subclass ....net.sf.saxon.expr.QuantifiedExpression
+			newItem = new AssignationItem<QuantifiedExpression>(this.schema, this.coordinator, quantifiedExpression);
+		} else if (expression instanceof final AttributeGetter attributeGetter) {
 			// Expression subclass ..net.sf.saxon.expr.AttributeGetter
 			newItem = new AttributeGetterItem(this.schema, this.coordinator, attributeGetter);
 		} else if (expression instanceof final AxisExpression axisExpression) {
@@ -206,8 +212,11 @@ public class EvaluationTreeItemFactory implements IEvaluationTreeItemFactory {
 		// TODO support Expression subclass ....net.sf.saxon.expr.ConsumingOperand
 		// TODO support Expression subclass ....net.sf.saxon.expr.EmptyTextNodeRemover
 		// TODO support Expression subclass ....net.sf.saxon.expr.HomogeneityChecker
-		// TODO support Expression subclass ....net.sf.saxon.expr.InstanceOfExpression
-		else if (expression instanceof final ItemChecker itemChecker) {
+		else if (expression instanceof final InstanceOfExpression instanceOfExpression) {
+			// Expression subclass ....net.sf.saxon.expr.InstanceOfExpression
+			newItem = new UnaryExpressionItem<InstanceOfExpression>(this.schema, this.coordinator,
+					instanceOfExpression);
+		} else if (expression instanceof final ItemChecker itemChecker) {
 			// Expression subclass ....net.sf.saxon.expr.ItemChecker
 			// The check itself does not constitute a value access, but check the contained expression.
 			newItem = new UnaryExpressionItem<ItemChecker>(this.schema, this.coordinator, itemChecker);
@@ -221,8 +230,10 @@ public class EvaluationTreeItemFactory implements IEvaluationTreeItemFactory {
 			// Expression subclass ......net.sf.saxon.expr.SubscriptExpression
 			// The item selection itself does not constitute a value access, but check the contained expression.
 			newItem = new UnaryExpressionItem<SingleItemFilter>(this.schema, this.coordinator, singleItemFilter);
+		} else if (expression instanceof final SingletonAtomizer singletonAtomizer) {
+			// Expression subclass ....net.sf.saxon.expr.SingletonAtomizer
+			newItem = new UnaryExpressionItem<SingletonAtomizer>(this.schema, this.coordinator, singletonAtomizer);
 		}
-		// TODO support Expression subclass ....net.sf.saxon.expr.SingletonAtomizer
 		// TODO support Expression subclass ....net.sf.saxon.expr.TailCallLoop
 		// TODO support Expression subclass ....net.sf.saxon.expr.TailExpression
 		// TODO support Expression subclass ....net.sf.saxon.expr.instruct.OnEmptyExpr
