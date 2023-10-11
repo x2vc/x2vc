@@ -17,6 +17,7 @@ import net.sf.saxon.expr.*;
 import net.sf.saxon.expr.compat.GeneralComparison10;
 import net.sf.saxon.expr.instruct.*;
 import net.sf.saxon.expr.sort.DocumentSorter;
+import net.sf.saxon.expr.sort.SortExpression;
 import net.sf.saxon.functions.IntegratedFunctionCall;
 import net.sf.saxon.pattern.*;
 
@@ -299,7 +300,10 @@ public class EvaluationTreeItemFactory implements IEvaluationTreeItemFactory {
 		// TODO support Expression subclass ....net.sf.saxon.expr.sort.MergeInstr
 		// TODO support Expression subclass ..net.sf.saxon.expr.instruct.NumberInstruction
 		// TODO support Expression subclass ..net.sf.saxon.expr.sort.ConditionalSorter
-		// TODO support Expression subclass ..net.sf.saxon.expr.sort.SortExpression
+		else if (expression instanceof final SortExpression sortExpression) {
+			// Expression subclass ..net.sf.saxon.expr.sort.SortExpression
+			newItem = new SortExpressionItem(this.schema, this.coordinator, sortExpression);
+		}
 		// TODO support Expression subclass ..net.sf.saxon.functions.CurrentGroupCall
 		// TODO support Expression subclass ..net.sf.saxon.functions.CurrentGroupingKeyCall
 		// TODO support Expression subclass ..net.sf.saxon.functions.hof.PartialApply
