@@ -72,37 +72,45 @@ public class SchemaExplorationTask extends AbstractTask implements ISchemaExplor
 			final IStylesheetInformation stylesheetInfo = this.stylesheetManager.get(this.getXSLTFile().toURI());
 			final IXMLSchema schema = this.schemaManager.getSchema(stylesheetInfo.getURI());
 
-			logger.debug("generating new request to explore schema usage of stylesheet {}", stylesheetInfo.getURI());
-			final IDocumentRequest request = this.requestGenerator.generateNewRequest(schema,
-					MixedContentGenerationMode.RESTRICTED);
-			this.debugObjectWriter.writeRequest(this.getTaskID(), request);
-
-			logger.debug("generating XML document");
-			final IXMLDocumentContainer xmlDocument = this.documentGenerator.generateDocument(request);
-			this.debugObjectWriter.writeXMLDocument(this.getTaskID(), xmlDocument);
-
-			logger.debug("processing XML to HTML");
-			final IHTMLDocumentContainer htmlDocument = this.processor.processDocument(xmlDocument);
-			this.debugObjectWriter.writeHTMLDocument(this.getTaskID(), htmlDocument);
-
-			if (!htmlDocument.isFailed()) {
-				logger.debug("analyzing {} trace events produced by XSLT processor",
-						htmlDocument.getTraceEvents().map(ev -> ev.size()).orElse(0));
-				this.valueTraceAnalyzer.analyzeDocument(this.getTaskID(), htmlDocument, this.modifierCollector);
-				this.callback.accept(this.getTaskID(), true);
-			} else {
-				final Optional<SaxonApiException> compilationError = htmlDocument.getCompilationError();
-				final Optional<SaxonApiException> processingError = htmlDocument.getProcessingError();
-				if (compilationError.isPresent()) {
-					logger.warn("processing of XML to HMTL failed with compilation error: {}",
-							compilationError.get().getMessage());
-				} else if (processingError.isPresent()) {
-					logger.warn("processing of XML to HMTL failed with processing error: {}",
-							processingError.get().getMessage());
-				} else {
-					logger.warn("processing of XML to HMTL failed other unspecified error");
-				}
+			if (schema.getRootElements().isEmpty()) {
+				logger.error("Unable to generate XML document for a schema without root references");
 				this.callback.accept(this.getTaskID(), false);
+			} else {
+
+				logger.debug("generating new request to explore schema usage of stylesheet {}",
+						stylesheetInfo.getURI());
+				final IDocumentRequest request = this.requestGenerator.generateNewRequest(schema,
+						MixedContentGenerationMode.RESTRICTED);
+				this.debugObjectWriter.writeRequest(this.getTaskID(), request);
+
+				logger.debug("generating XML document");
+				final IXMLDocumentContainer xmlDocument = this.documentGenerator.generateDocument(request);
+				this.debugObjectWriter.writeXMLDocument(this.getTaskID(), xmlDocument);
+
+				logger.debug("processing XML to HTML");
+				final IHTMLDocumentContainer htmlDocument = this.processor.processDocument(xmlDocument);
+				this.debugObjectWriter.writeHTMLDocument(this.getTaskID(), htmlDocument);
+
+				if (!htmlDocument.isFailed()) {
+					logger.debug("analyzing {} trace events produced by XSLT processor",
+							htmlDocument.getTraceEvents().map(ev -> ev.size()).orElse(0));
+					this.valueTraceAnalyzer.analyzeDocument(this.getTaskID(), htmlDocument, this.modifierCollector);
+					this.callback.accept(this.getTaskID(), true);
+				} else {
+					final Optional<SaxonApiException> compilationError = htmlDocument.getCompilationError();
+					final Optional<SaxonApiException> processingError = htmlDocument.getProcessingError();
+					if (compilationError.isPresent()) {
+						logger.warn("processing of XML to HMTL failed with compilation error: {}",
+								compilationError.get().getMessage());
+					} else if (processingError.isPresent()) {
+						logger.warn("processing of XML to HMTL failed with processing error: {}",
+								processingError.get().getMessage());
+					} else {
+						logger.warn("processing of XML to HMTL failed other unspecified error");
+					}
+					this.callback.accept(this.getTaskID(), false);
+				}
+
 			}
 		} catch (final Exception ex) {
 			logger.error("unhandled exception in schema exploration task", ex);

@@ -150,7 +150,8 @@ public class InitialSchemaGenerator implements IInitialSchemaGenerator {
 				final Pattern pattern = net.sf.saxon.pattern.Pattern.make(match, context, packageData);
 				processPattern(pattern, targetNode, false);
 			} catch (final XPathException e) {
-				logger.error("Error compiling match expression", e);
+				logger.error("Error compiling match expression \"{}\": {}", match, e.getMessage());
+				logger.debug("Compilation error", e);
 			}
 			logger.traceExit();
 		}

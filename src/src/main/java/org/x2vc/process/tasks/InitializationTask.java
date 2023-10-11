@@ -42,27 +42,35 @@ public class InitializationTask extends AbstractTask implements IInitializationT
 	@Override
 	public void execute() {
 		logger.traceEntry();
+		// load the stylesheet
+		IStylesheetInformation stylesheetInfo = null;
 		try {
-
-			// load the stylesheet
 			logger.debug("preparing stylesheet from file {}", this.getXSLTFile());
-			final IStylesheetInformation stylesheetInfo = this.stylesheetManager.get(this.getXSLTFile().toURI());
-
-			// get the schema (generate new or load existing)
-			logger.debug("preparing schema for stylesheet {}", this.getXSLTFile());
-			if ((this.mode == ProcessingMode.XSS_ONLY) && (!this.schemaManager.schemaExists(stylesheetInfo.getURI()))) {
-				logger.error("Schema for stylesheet {} is missing and will not be generated in XSS-only mode.",
-						this.getXSLTFile());
-				this.callback.accept(false);
-			} else {
-				final IXMLSchema schema = this.schemaManager.getSchema(stylesheetInfo.getURI());
-				this.debugObjectWriter.writeSchema(this.getTaskID(), schema);
-				this.callback.accept(true);
-			}
-
-		} catch (final Exception ex) {
-			logger.error("unhandled exception in initialization task", ex);
+			stylesheetInfo = this.stylesheetManager.get(this.getXSLTFile().toURI());
+		} catch (final Exception e) {
+			logger.error("Unable to load stylesheet {}: {}", this.getXSLTFile(), e.getMessage());
+			logger.debug("Exception occurred while loading stylesheet", e);
 			this.callback.accept(false);
+		}
+		if (stylesheetInfo != null) {
+			try {
+				// get the schema (generate new or load existing)
+				logger.debug("preparing schema for stylesheet {}", this.getXSLTFile());
+				if ((this.mode == ProcessingMode.XSS_ONLY)
+						&& (!this.schemaManager.schemaExists(stylesheetInfo.getURI()))) {
+					logger.error("Schema for stylesheet {} is missing and will not be generated in XSS-only mode.",
+							this.getXSLTFile());
+					this.callback.accept(false);
+				} else {
+					final IXMLSchema schema = this.schemaManager.getSchema(stylesheetInfo.getURI());
+					this.debugObjectWriter.writeSchema(this.getTaskID(), schema);
+					this.callback.accept(true);
+				}
+
+			} catch (final Exception ex) {
+				logger.error("unhandled exception in initialization task", ex);
+				this.callback.accept(false);
+			}
 		}
 		logger.traceExit();
 	}

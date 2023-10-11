@@ -45,7 +45,7 @@ public class StylesheetPreprocessor implements IStylesheetPreprocessor {
 	public IStylesheetInformation prepareStylesheet(URI uri, String originalSource) {
 		checkNotNull(uri);
 		checkNotNull(originalSource);
-		checkStylesheet(originalSource);
+		checkStylesheet(uri, originalSource);
 
 		// pretty-print the stylesheet to make it easier to identify elements by
 		// position
@@ -69,15 +69,16 @@ public class StylesheetPreprocessor implements IStylesheetPreprocessor {
 	}
 
 	/**
-	 * Compile the original stylesheet to check for syntax errors or other
-	 * irregularities (the results of this compilation are then discarded). Also
-	 * check whether one of the unsupported features is used (version > 1.0,
+	 * Compile the original stylesheet to check for syntax errors or other irregularities (the results of this
+	 * compilation are then discarded). Also check whether one of the unsupported features is used (version > 1.0,
 	 * xsl:import, xsl:include, xsl:apply-imports, ...).
+	 *
+	 * @param uri
 	 *
 	 * @param originalSource
 	 * @throws throws IllegalArgumentException if the stylesheet is not usable
 	 */
-	private void checkStylesheet(String originalSource) throws IllegalArgumentException {
+	private void checkStylesheet(URI uri, String originalSource) throws IllegalArgumentException {
 		logger.traceEntry();
 		// try to try to compile the stylesheet to check the overall syntax and version
 		try {
@@ -91,7 +92,15 @@ public class StylesheetPreprocessor implements IStylesheetPreprocessor {
 					.throwing(new IllegalArgumentException("Stylesheet version not supported (only XSLT 1.0 allowed)"));
 			}
 		} catch (final SaxonApiException e) {
-			throw logger.throwing(new IllegalArgumentException("Stylesheet cannot be compiled", e));
+			final Throwable cause = e.getCause();
+			if (cause == null) {
+				logger.error("Stylesheet {} cannot be compiled: {}", uri, e.getMessage());
+			} else {
+				logger.error("Stylesheet {} cannot be compiled: {}, cause: {}", uri, e.getMessage(),
+						cause.getMessage());
+			}
+			logger.debug("Compilation error", e);
+			throw new IllegalArgumentException("Stylesheet cannot be compiled", e);
 		}
 
 		// TODO XSLT check: check stylesheet for unsupported features

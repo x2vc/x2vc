@@ -64,11 +64,17 @@ public class StylesheetManager implements IStylesheetManager {
 		} catch (final ExecutionException | UncheckedExecutionException e) {
 			final Throwable cause = e.getCause();
 			if (cause instanceof final RuntimeException rte) {
-				throw logger.throwing(rte);
+				logger.error("Error loading stylesheet {}: {}", uri, cause.getMessage());
+				logger.debug("Loading error", cause);
+				throw rte;
 			} else if (cause instanceof final IllegalArgumentException iae) {
-				throw logger.throwing(iae);
+				logger.error("Error loading stylesheet {}: {}", uri, cause.getMessage());
+				logger.debug("Loading error", cause);
+				throw iae;
 			} else {
-				throw logger.throwing(new RuntimeException("unknown exception occurred in cache loader", cause));
+				logger.error("Error loading stylesheet {}: {}", uri, cause.getMessage());
+				logger.debug("Loading error", cause);
+				throw new RuntimeException("unknown exception occurred in cache loader", cause);
 			}
 		}
 	}
