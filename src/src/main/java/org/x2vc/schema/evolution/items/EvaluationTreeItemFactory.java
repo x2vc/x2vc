@@ -15,10 +15,7 @@ import com.google.inject.assistedinject.Assisted;
 
 import net.sf.saxon.expr.*;
 import net.sf.saxon.expr.compat.GeneralComparison10;
-import net.sf.saxon.expr.instruct.Block;
-import net.sf.saxon.expr.instruct.Choose;
-import net.sf.saxon.expr.instruct.TraceExpression;
-import net.sf.saxon.expr.instruct.ValueOf;
+import net.sf.saxon.expr.instruct.*;
 import net.sf.saxon.expr.sort.DocumentSorter;
 import net.sf.saxon.functions.IntegratedFunctionCall;
 import net.sf.saxon.pattern.*;
@@ -272,7 +269,10 @@ public class EvaluationTreeItemFactory implements IEvaluationTreeItemFactory {
 		// TODO support Expression subclass ....net.sf.saxon.expr.instruct.MessageInstr
 		// TODO support Expression subclass ....net.sf.saxon.expr.instruct.NextIteration
 		// TODO support Expression subclass ....net.sf.saxon.expr.instruct.ParentNodeConstructor (abstract)
-		// TODO support Expression subclass ......net.sf.saxon.expr.instruct.DocumentInstr
+		else if (expression instanceof final DocumentInstr documentInstr) {
+			// Expression subclass ......net.sf.saxon.expr.instruct.DocumentInstr
+			newItem = new DocumentInstrItem(this.schema, this.coordinator, documentInstr);
+		}
 		// TODO support Expression subclass ......net.sf.saxon.expr.instruct.ElementCreator (abstract)
 		// TODO support Expression subclass ........net.sf.saxon.expr.instruct.ComputedElement
 		// TODO support Expression subclass ........net.sf.saxon.expr.instruct.Copy
