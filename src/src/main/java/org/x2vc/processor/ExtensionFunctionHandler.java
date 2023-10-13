@@ -92,7 +92,8 @@ public class ExtensionFunctionHandler implements IExtensionFunctionHandler {
 			logger.trace("argument {}: {}", i, arguments[i]);
 		}
 		if (!this.storedResults.containsKey(threadID)) {
-			throw new SaxonApiException("No extension function results were stored before processing");
+			throw new SaxonApiException(
+					String.format("No results were stored for extension function %s before processing", functionID));
 		}
 		final Map<UUID, IExtensionFunctionResult> results = this.storedResults.get(threadID);
 		if (!results.containsKey(functionID)) {
