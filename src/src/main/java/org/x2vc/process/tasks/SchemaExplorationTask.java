@@ -100,13 +100,13 @@ public class SchemaExplorationTask extends AbstractTask implements ISchemaExplor
 					final Optional<SaxonApiException> compilationError = htmlDocument.getCompilationError();
 					final Optional<SaxonApiException> processingError = htmlDocument.getProcessingError();
 					if (compilationError.isPresent()) {
-						logger.warn("processing of XML to HMTL failed with compilation error: {}",
+						logger.warn("processing of XML to HTML failed with compilation error: {}",
 								compilationError.get().getMessage());
 					} else if (processingError.isPresent()) {
-						logger.warn("processing of XML to HMTL failed with processing error: {}",
+						logger.warn("processing of XML to HTML failed with processing error: {}",
 								processingError.get().getMessage());
 					} else {
-						logger.warn("processing of XML to HMTL failed other unspecified error");
+						logger.warn("processing of XML to HTML failed other unspecified error");
 					}
 					this.callback.accept(this.getTaskID(), false);
 				}
