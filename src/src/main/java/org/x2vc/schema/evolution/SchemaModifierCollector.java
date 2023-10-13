@@ -321,7 +321,8 @@ public class SchemaModifierCollector implements ISchemaModifierCollector {
 
 	@Override
 	public boolean isEmpty() {
-		return this.attributeModifiers.isEmpty() && this.elementModifiers.isEmpty();
+		return this.attributeModifiers.isEmpty() && this.elementModifiers.isEmpty()
+				&& this.rootElementModifiers.isEmpty();
 	}
 
 }

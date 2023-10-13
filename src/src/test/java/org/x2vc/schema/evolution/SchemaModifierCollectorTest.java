@@ -1,6 +1,7 @@
 package org.x2vc.schema.evolution;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.fail;
 import static org.mockito.Mockito.lenient;
@@ -83,6 +84,7 @@ class SchemaModifierCollectorTest {
 
 		final ImmutableSet<ISchemaModifier> modifiers = this.collector.getConsolidatedModifiers();
 		assertEquals(2, modifiers.size());
+		assertFalse(this.collector.isEmpty());
 	}
 
 	@Test
@@ -98,6 +100,7 @@ class SchemaModifierCollectorTest {
 
 		final ImmutableSet<ISchemaModifier> modifiers = this.collector.getConsolidatedModifiers();
 		assertEquals(2, modifiers.size());
+		assertFalse(this.collector.isEmpty());
 	}
 
 	@Test
@@ -123,6 +126,7 @@ class SchemaModifierCollectorTest {
 
 		final ImmutableSet<ISchemaModifier> modifiers = this.collector.getConsolidatedModifiers();
 		assertEquals(2, modifiers.size());
+		assertFalse(this.collector.isEmpty());
 	}
 
 	@Test
@@ -140,6 +144,7 @@ class SchemaModifierCollectorTest {
 
 		final ImmutableSet<ISchemaModifier> modifiers = this.collector.getConsolidatedModifiers();
 		assertEquals(2, modifiers.size());
+		assertFalse(this.collector.isEmpty());
 	}
 
 	@Test
@@ -163,6 +168,7 @@ class SchemaModifierCollectorTest {
 
 		final ImmutableSet<ISchemaModifier> modifiers = this.collector.getConsolidatedModifiers();
 		assertEquals(2, modifiers.size());
+		assertFalse(this.collector.isEmpty());
 	}
 
 	@Test
@@ -178,6 +184,7 @@ class SchemaModifierCollectorTest {
 
 		final ImmutableSet<ISchemaModifier> modifiers = this.collector.getConsolidatedModifiers();
 		assertEquals(2, modifiers.size());
+		assertFalse(this.collector.isEmpty());
 	}
 
 	@Test
@@ -206,6 +213,7 @@ class SchemaModifierCollectorTest {
 
 		final ImmutableSet<ISchemaModifier> modifiers = this.collector.getConsolidatedModifiers();
 		assertEquals(1, modifiers.size());
+		assertFalse(this.collector.isEmpty());
 		final ISchemaModifier testTopModifier = modifiers.iterator().next();
 		if (testTopModifier instanceof final IAddElementModifier testAddElemMod) {
 			assertEquals(1, testAddElemMod.getAttributes().size());
@@ -244,6 +252,7 @@ class SchemaModifierCollectorTest {
 
 		final ImmutableSet<ISchemaModifier> modifiers = this.collector.getConsolidatedModifiers();
 		assertEquals(1, modifiers.size());
+		assertFalse(this.collector.isEmpty());
 
 		final ISchemaModifier testTopModifier = modifiers.iterator().next();
 		if (testTopModifier instanceof final IAddElementModifier testAddElemMod) {
