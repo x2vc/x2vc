@@ -12,6 +12,8 @@ import org.x2vc.utilities.PolymorphLocation;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
+import net.sf.saxon.om.NamespaceUri;
+
 /**
  * Standard implementation of {@link IXSLTDirectiveNode}.
  */
@@ -20,6 +22,7 @@ public class XSLTDirectiveNode extends AbstractStructureTreeNode implements IXSL
 	private String name;
 	private PolymorphLocation startLocation;
 	private PolymorphLocation endLocation;
+	private ImmutableMap<String, NamespaceUri> namespaces;
 	private ImmutableMap<String, String> xsltAttributes;
 	private ImmutableMap<QName, String> otherAttributes;
 	private ImmutableList<IStructureTreeNode> childElements;
@@ -33,6 +36,7 @@ public class XSLTDirectiveNode extends AbstractStructureTreeNode implements IXSL
 		this.name = builder.name;
 		this.startLocation = builder.startLocation;
 		this.endLocation = builder.endLocation;
+		this.namespaces = ImmutableMap.copyOf(builder.namespaces);
 		this.xsltAttributes = ImmutableMap.copyOf(builder.xsltAttributes);
 		this.otherAttributes = ImmutableMap.copyOf(builder.otherAttributes);
 		this.childElements = ImmutableList.copyOf(builder.childElements);
@@ -64,6 +68,11 @@ public class XSLTDirectiveNode extends AbstractStructureTreeNode implements IXSL
 	@Override
 	public Optional<PolymorphLocation> getEndLocation() {
 		return Optional.ofNullable(this.endLocation);
+	}
+
+	@Override
+	public ImmutableMap<String, NamespaceUri> getNamespaces() {
+		return this.namespaces;
 	}
 
 	@Override
@@ -133,6 +142,7 @@ public class XSLTDirectiveNode extends AbstractStructureTreeNode implements IXSL
 		private String name;
 		private PolymorphLocation startLocation;
 		private PolymorphLocation endLocation;
+		private Map<String, NamespaceUri> namespaces = new HashMap<>();
 		private Map<String, String> xsltAttributes = new HashMap<>();
 		private Map<QName, String> otherAttributes = new HashMap<>();
 		private List<IStructureTreeNode> childElements = new ArrayList<>();
@@ -216,6 +226,16 @@ public class XSLTDirectiveNode extends AbstractStructureTreeNode implements IXSL
 		 */
 		public Builder withEndLocation(javax.xml.transform.SourceLocator endLocation) {
 			this.endLocation = PolymorphLocation.from(endLocation);
+			return this;
+		}
+
+		/**
+		 * @param prefix
+		 * @param uri
+		 * @return builder
+		 */
+		public Builder withNamespace(String prefix, NamespaceUri uri) {
+			this.namespaces.put(prefix, uri);
 			return this;
 		}
 
@@ -307,6 +327,7 @@ public class XSLTDirectiveNode extends AbstractStructureTreeNode implements IXSL
 				return new XSLTDirectiveNode(this);
 			}
 		}
+
 	}
 
 	@Override

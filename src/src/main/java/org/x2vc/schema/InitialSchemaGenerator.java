@@ -64,12 +64,10 @@ public class InitialSchemaGenerator implements IInitialSchemaGenerator {
 			.withContentType(ContentType.MIXED);
 
 		// add attributes
-		constructionNode.attributes.forEach(atributeName -> {
-			XMLAttribute.builder(atributeName)
-				.withType(XMLDataType.STRING)
-				.withUserModifiable(true) // assume the worst
-				.addTo(elementBuilder);
-		});
+		constructionNode.attributes.forEach(atributeName -> XMLAttribute.builder(atributeName)
+			.withType(XMLDataType.STRING)
+			.withUserModifiable(true) // assume the worst
+			.addTo(elementBuilder));
 
 		// add sub-elements
 		constructionNode.children.values().forEach(rootChild -> {
@@ -146,6 +144,7 @@ public class InitialSchemaGenerator implements IInitialSchemaGenerator {
 			final String match = template.getXSLTAttributes().get("match");
 			final PackageData packageData = new PackageData(InitialSchemaGenerator.this.configuration);
 			final IndependentContext context = new IndependentContext(InitialSchemaGenerator.this.configuration);
+			template.getNamespaces().forEach(context::declareNamespace);
 			try {
 				final Pattern pattern = net.sf.saxon.pattern.Pattern.make(match, context, packageData);
 				processPattern(pattern, targetNode, false);

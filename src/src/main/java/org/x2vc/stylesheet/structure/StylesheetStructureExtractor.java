@@ -1,12 +1,10 @@
 package org.x2vc.stylesheet.structure;
 
 import java.io.StringReader;
-import java.util.ArrayDeque;
-import java.util.Deque;
-import java.util.Iterator;
-import java.util.Optional;
+import java.util.*;
 
 import javax.xml.XMLConstants;
+import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
 import javax.xml.stream.XMLEventReader;
 import javax.xml.stream.XMLInputFactory;
@@ -19,7 +17,10 @@ import org.apache.logging.log4j.Logger;
 import org.x2vc.stylesheet.XSLTConstants;
 
 import com.google.common.base.Strings;
+import com.google.common.collect.Sets;
 import com.google.inject.Inject;
+
+import net.sf.saxon.om.NamespaceUri;
 
 /**
  * Standard implementation of {@link IStylesheetStructureExtractor}.
@@ -63,6 +64,7 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 		private static final Logger logger = LogManager.getLogger();
 		private Deque<INodeBuilder> builderChain = new ArrayDeque<>();
 		private StylesheetStructure structure;
+		private Set<String> namespacePrefixes = Sets.newHashSet();
 
 		/**
 		 * Creates a new worker instance.
@@ -181,6 +183,10 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 		 */
 		private void processStartElement(StartElement element) {
 			logger.traceEntry();
+
+			// ensure all namespace prefixes are recorded
+			element.getNamespaces().forEachRemaining(ns -> this.namespacePrefixes.add(ns.getPrefix()));
+
 			// is this an XSLT element?
 			if (element.getName().getNamespaceURI().equals(XSLTConstants.NAMESPACE)) {
 				// yes - what kind of element?
@@ -201,6 +207,7 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 				// no - another XML element
 				processStartOfXMLNode(element);
 			}
+
 			logger.traceExit();
 		}
 
@@ -274,6 +281,16 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 			final XSLTDirectiveNode.Builder directiveBuilder = XSLTDirectiveNode.builder(this.structure,
 					elementName);
 			directiveBuilder.withStartLocation(element.getLocation());
+
+			// add the namespaces defined up to this element
+			final NamespaceContext namespaceContext = element.getNamespaceContext();
+			for (final String prefix : this.namespacePrefixes) {
+				final String namespaceUri = namespaceContext.getNamespaceURI(prefix);
+				if (!namespaceUri.equals(XMLConstants.NULL_NS_URI)) {
+					directiveBuilder.withNamespace(prefix, NamespaceUri.of(namespaceUri));
+				}
+			}
+
 			for (final Iterator<Attribute> iterator = element.getAttributes(); iterator.hasNext();) {
 				final Attribute attrib = iterator.next();
 				final String attribNamespace = attrib.getName().getNamespaceURI();

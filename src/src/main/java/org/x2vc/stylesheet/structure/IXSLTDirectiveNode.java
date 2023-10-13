@@ -9,6 +9,8 @@ import org.x2vc.utilities.PolymorphLocation;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
+import net.sf.saxon.om.NamespaceUri;
+
 /**
  * An XSLT element contained in an {@link IStylesheetStructure} tree. These structure elements can represent most of the
  * valid XSLT elements. Note that <code>xsl:param</code>, <code>xsl:sort</code> and <code>xsl:with-param</code> elements
@@ -31,6 +33,11 @@ public interface IXSLTDirectiveNode extends IStructureTreeNode {
 	 * @return the location the closing element was found
 	 */
 	Optional<PolymorphLocation> getEndLocation();
+
+	/**
+	 * @return the namespaces defined for the node, organized by prefix
+	 */
+	ImmutableMap<String, NamespaceUri> getNamespaces();
 
 	/**
 	 * @return the XSLT attributes of the element
