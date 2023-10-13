@@ -17,6 +17,7 @@ import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 import net.sf.saxon.Configuration;
+import net.sf.saxon.expr.Expression;
 import net.sf.saxon.expr.PackageData;
 import net.sf.saxon.om.StructuredQName;
 import net.sf.saxon.pattern.*;
@@ -164,16 +165,80 @@ public class InitialSchemaGenerator implements IInitialSchemaGenerator {
 				boolean isPrefix) {
 			logger.traceEntry("with pattern \"{}\"", pattern);
 			SchemaConstructionNode resultNode = targetNode;
-			if (pattern instanceof final NodeTestPattern nodeTestPattern) {
-				resultNode = processNodeTestPattern(nodeTestPattern, targetNode, isPrefix);
-			} else if (pattern instanceof final UnionPattern unionPattern) {
-				resultNode = processUnionPattern(unionPattern, targetNode, isPrefix);
-			} else if (pattern instanceof final AncestorQualifiedPattern ancestorQualifiedPattern) {
+			if (pattern instanceof final AncestorQualifiedPattern ancestorQualifiedPattern) {
 				resultNode = processAncestorQualifiedPattern(ancestorQualifiedPattern, targetNode, isPrefix);
+			}
+			// TODO Initial Schema Generator: support AnchorPattern
+			else if (pattern instanceof final BasePatternWithPredicate basePatternWithPredicate) {
+				resultNode = processBasePatternWithPredicate(basePatternWithPredicate, targetNode, isPrefix);
+			}
+			// TODO Initial Schema Generator: support BooleanExpressionPattern
+			// TODO Initial Schema Generator: support GeneralNodePattern
+			// TODO Initial Schema Generator: support GeneralPositionalPattern
+			// TODO Initial Schema Generator: support ItemTypePattern
+			// TODO Initial Schema Generator: support NodeSetPattern
+			else if (pattern instanceof final NodeTestPattern nodeTestPattern) {
+				resultNode = processNodeTestPattern(nodeTestPattern, targetNode, isPrefix);
+			}
+			// TODO Initial Schema Generator: support PatternThatSetsCurrent
+			// TODO Initial Schema Generator: support SimplePositionalPattern
+			// TODO Initial Schema Generator: support StreamingFunctionArgumentPattern
+			// TODO Initial Schema Generator: support UniversalPattern
+			// TODO Initial Schema Generator: support VennPattern > ExceptPattern
+			// TODO Initial Schema Generator: support VennPattern > IntersectPattern
+			else if (pattern instanceof final UnionPattern unionPattern) {
+				resultNode = processUnionPattern(unionPattern, targetNode, isPrefix);
 			} else {
 				logger.warn("Unknown pattern type {}: \"{}\"", pattern.getClass().getSimpleName(),
 						pattern);
 			}
+			return logger.traceExit(resultNode);
+		}
+
+		/**
+		 * @param pattern
+		 * @param targetNode
+		 * @param isPrefix
+		 * @return
+		 */
+		private SchemaConstructionNode processAncestorQualifiedPattern(AncestorQualifiedPattern pattern,
+				SchemaConstructionNode targetNode, boolean isPrefix) {
+			logger.traceEntry("with pattern \"{}\"", pattern);
+			// getBasePattern is the right-most element of the path, getUpperPattern the path prefix.
+			// This means we have to descend the getUpperPath hierarchy until we find something that is not an AQP, add
+			// that to the root node and then work our way back.
+
+			Pattern currentPattern = pattern;
+			final Deque<Pattern> patternQueue = new LinkedList<>();
+			while (currentPattern instanceof final AncestorQualifiedPattern aqPattern) {
+				patternQueue.add(aqPattern.getBasePattern());
+				currentPattern = aqPattern.getUpperPattern();
+			}
+			logger.trace("deconstructed AncestorQualifiedPattern into {} path elements", patternQueue.size() + 1);
+
+			// add root element for the last (now current) element, then add the remaining nodes
+			SchemaConstructionNode currentNode = processPattern(currentPattern, targetNode, true);
+			while (!patternQueue.isEmpty()) {
+				currentPattern = patternQueue.removeLast();
+				currentNode = processPattern(currentPattern, currentNode, true);
+			}
+			return logger.traceExit(currentNode);
+		}
+
+		/**
+		 * @param pattern
+		 * @param targetNode
+		 * @param isPrefix
+		 * @return
+		 */
+		private SchemaConstructionNode processBasePatternWithPredicate(BasePatternWithPredicate pattern,
+				SchemaConstructionNode targetNode, boolean isPrefix) {
+			logger.traceEntry("with pattern \"{}\"", pattern);
+			final SchemaConstructionNode resultNode = processPattern(pattern.getBasePattern(), targetNode, isPrefix);
+			final Expression predicate = pattern.getPredicate();
+			// TODO Initial Schema Generator: support patterns of BasePatternWithPredicate
+			logger.warn("Unable to add predicate \"{}\" to pattern selector {}, check generated schema!", predicate,
+					resultNode.toString());
 			return logger.traceExit(resultNode);
 		}
 
@@ -209,34 +274,6 @@ public class InitialSchemaGenerator implements IInitialSchemaGenerator {
 			processPattern(pattern.getLHS(), targetNode, isPrefix);
 			processPattern(pattern.getRHS(), targetNode, isPrefix);
 			return logger.traceExit(targetNode);
-		}
-
-		/**
-		 * @param ancestorQualifiedPattern
-		 * @return
-		 */
-		private SchemaConstructionNode processAncestorQualifiedPattern(AncestorQualifiedPattern pattern,
-				SchemaConstructionNode targetNode, boolean isPrefix) {
-			logger.traceEntry("with pattern \"{}\"", pattern);
-			// getBasePattern is the right-most element of the path, getUpperPattern the path prefix.
-			// This means we have to descend the getUpperPath hierarchy until we find something that is not an AQP, add
-			// that to the root node and then work our way back.
-
-			Pattern currentPattern = pattern;
-			final Deque<Pattern> patternQueue = new LinkedList<>();
-			while (currentPattern instanceof final AncestorQualifiedPattern aqPattern) {
-				patternQueue.add(aqPattern.getBasePattern());
-				currentPattern = aqPattern.getUpperPattern();
-			}
-			logger.trace("deconstructed AncestorQualifiedPattern into {} path elements", patternQueue.size() + 1);
-
-			// add root element for the last (now current) element, then add the remaining nodes
-			SchemaConstructionNode currentNode = processPattern(currentPattern, targetNode, true);
-			while (!patternQueue.isEmpty()) {
-				currentPattern = patternQueue.removeLast();
-				currentNode = processPattern(currentPattern, currentNode, true);
-			}
-			return logger.traceExit(currentNode);
 		}
 
 		/**
