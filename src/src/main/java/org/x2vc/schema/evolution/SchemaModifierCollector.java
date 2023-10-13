@@ -31,6 +31,7 @@ public class SchemaModifierCollector implements ISchemaModifierCollector {
 
 	private Multimap<ModifierKey, IAddAttributeModifier> attributeModifiers;
 	private Multimap<ModifierKey, IAddElementModifier> elementModifiers;
+	private Multimap<String, IAddElementModifier> rootElementModifiers;
 
 	@XmlTransient
 	int collectedModifierCount;
@@ -46,6 +47,7 @@ public class SchemaModifierCollector implements ISchemaModifierCollector {
 		this.schemaVersion = 0;
 		this.attributeModifiers = MultimapBuilder.hashKeys().arrayListValues().build();
 		this.elementModifiers = MultimapBuilder.hashKeys().arrayListValues().build();
+		this.rootElementModifiers = MultimapBuilder.hashKeys().arrayListValues().build();
 		this.collectedModifierCount = 0;
 		logger.traceExit();
 	}
@@ -58,7 +60,11 @@ public class SchemaModifierCollector implements ISchemaModifierCollector {
 		if (modifier instanceof final IAddAttributeModifier attributeModifier) {
 			addAttributeModifier(attributeModifier);
 		} else if (modifier instanceof final IAddElementModifier elementModifier) {
-			addElementModifier(elementModifier);
+			if (elementModifier.getElementID().isPresent()) {
+				addElementModifier(elementModifier);
+			} else {
+				addRootElementModifier(elementModifier);
+			}
 		} else {
 			throw new IllegalArgumentException(
 					String.format("Invalid schema modifier type %s", modifier.getClass().getSimpleName()));
@@ -116,7 +122,7 @@ public class SchemaModifierCollector implements ISchemaModifierCollector {
 	}
 
 	/**
-	 * Processes an incoming {@link IAddElementModifier}.
+	 * Processes an incoming {@link IAddElementModifier} for a non-root element.
 	 *
 	 * @param elementModifier
 	 */
@@ -147,6 +153,33 @@ public class SchemaModifierCollector implements ISchemaModifierCollector {
 	}
 
 	/**
+	 * Processes an incoming {@link IAddElementModifier} for a root element.
+	 *
+	 * @param elementModifier
+	 */
+	private void addRootElementModifier(IAddElementModifier elementModifier) {
+		logger.traceEntry();
+		final String elementName = elementModifier.getName();
+		if (!this.rootElementModifiers.containsKey(elementName)) {
+			logger.debug("Adding first modifier for root element {} ", elementName);
+			this.rootElementModifiers.put(elementName, elementModifier);
+		} else {
+			final Collection<IAddElementModifier> existingModifiers = this.rootElementModifiers.get(elementName);
+			final List<IAddElementModifier> matchingModifiers = existingModifiers.stream()
+				.filter(mod -> mod.equalsIgnoringIDs(elementModifier))
+				.toList();
+			if (!matchingModifiers.isEmpty()) {
+				logger.debug("Modifier for root element {} already exists", elementName);
+				mergeElementModifiers(matchingModifiers.get(0), elementModifier);
+			} else {
+				logger.debug("Adding additional modifier for root element {}", elementName);
+				this.rootElementModifiers.put(elementName, elementModifier);
+			}
+		}
+		logger.traceExit();
+	}
+
+	/**
 	 * Merges the attributes and sub-elements of two {@link IAddElementModifier}s.
 	 *
 	 * @param existingModifier the modifier to be kept
@@ -167,7 +200,13 @@ public class SchemaModifierCollector implements ISchemaModifierCollector {
 	 */
 	private void mergeElementModifierAttributes(IAddElementModifier existingModifier, IAddElementModifier newModifier) {
 		logger.traceEntry();
-		final UUID targetElementID = existingModifier.getElementID().orElseThrow();
+		final Optional<UUID> oTargetElementID = existingModifier.getElementID();
+		String targetDescription;
+		if (oTargetElementID.isPresent()) {
+			targetDescription = String.format("element ID %s", oTargetElementID.get());
+		} else {
+			targetDescription = String.format("root element %s", existingModifier.getName());
+		}
 		final Multimap<String, IAddAttributeModifier> existingAttributeModifiers = MultimapBuilder.hashKeys()
 			.arrayListValues().build();
 		existingModifier.getAttributes().forEach(attrib -> existingAttributeModifiers.put(attrib.getName(), attrib));
@@ -177,24 +216,29 @@ public class SchemaModifierCollector implements ISchemaModifierCollector {
 			if (existingAttributeModifiers.containsKey(attributeName)) {
 				if (existingAttributeModifiers.get(attributeName).stream()
 					.anyMatch(existingAttrib -> existingAttrib.equalsIgnoringIDs(newAttrib))) {
-					logger.debug("Modifier for attribute {} of element ID {} already exists", attributeName,
-							targetElementID);
+					logger.debug("Modifier for attribute {} of {} already exists", attributeName, targetDescription);
 				} else {
-					logger.debug("Transferring additional modifier for attribute {} to element ID {}", attributeName,
-							targetElementID);
+					logger.debug("Transferring additional modifier for attribute {} to {}", attributeName,
+							targetDescription);
 					transferAttribute = true;
 				}
 			} else {
-				logger.debug("Transferring first modifier for attribute {} to element ID {}", attributeName,
-						targetElementID);
+				logger.debug("Transferring first modifier for attribute {} to {}", attributeName,
+						targetDescription);
 				transferAttribute = true;
 			}
 			if (transferAttribute) {
 				// create new modifier to adjust the parent ID
-				existingModifier.addAttribute(
-						AddAttributeModifier.builderFrom(newAttrib)
-							.withElementID(targetElementID)
-							.build());
+				if (oTargetElementID.isPresent()) {
+					existingModifier.addAttribute(
+							AddAttributeModifier.builderFrom(newAttrib)
+								.withElementID(oTargetElementID.get())
+								.build());
+				} else {
+					existingModifier.addAttribute(
+							AddAttributeModifier.builderFrom(newAttrib)
+								.build());
+				}
 			}
 		});
 		logger.traceExit();
@@ -208,7 +252,13 @@ public class SchemaModifierCollector implements ISchemaModifierCollector {
 	 */
 	private void mergeElementModifierElements(IAddElementModifier existingModifier, IAddElementModifier newModifier) {
 		logger.traceEntry();
-		final UUID targetElementID = existingModifier.getElementID().orElseThrow();
+		final Optional<UUID> oTargetElementID = existingModifier.getElementID();
+		String targetDescription;
+		if (oTargetElementID.isPresent()) {
+			targetDescription = String.format("element ID %s", oTargetElementID.get());
+		} else {
+			targetDescription = String.format("root element %s", existingModifier.getName());
+		}
 		final Multimap<String, IAddElementModifier> existingElementModifiers = MultimapBuilder.hashKeys()
 			.arrayListValues().build();
 		existingModifier.getSubElements().forEach(elem -> existingElementModifiers.put(elem.getName(), elem));
@@ -220,26 +270,32 @@ public class SchemaModifierCollector implements ISchemaModifierCollector {
 					.stream()
 					.filter(existingAttrib -> existingAttrib.equalsIgnoringIDs(newElem)).toList();
 				if (!matchingElementModifiers.isEmpty()) {
-					logger.debug("Modifier for element {} of element ID {} already exists", elemName,
-							targetElementID);
+					logger.debug("Modifier for element {} of {} already exists", elemName,
+							targetDescription);
 					// merge element modifiers recursively
 					mergeElementModifiers(matchingElementModifiers.get(0), newElem);
 				} else {
-					logger.debug("Transferring element modifier for attribute {} to element ID {}", elemName,
-							targetElementID);
+					logger.debug("Transferring element modifier for attribute {} to {}", elemName,
+							targetDescription);
 					transferElementAsNew = true;
 				}
 			} else {
-				logger.debug("Transferring first modifier for attribute {} to element ID {}", elemName,
-						targetElementID);
+				logger.debug("Transferring first modifier for attribute {} to {}", elemName,
+						targetDescription);
 				transferElementAsNew = true;
 			}
 			if (transferElementAsNew) {
 				// create new modifier to adjust the parent ID
-				existingModifier.addSubElement(
-						AddElementModifier.builderFrom(newElem)
-							.withElementID(targetElementID)
-							.build());
+				if (oTargetElementID.isPresent()) {
+					existingModifier.addSubElement(
+							AddElementModifier.builderFrom(newElem)
+								.withElementID(oTargetElementID.get())
+								.build());
+				} else {
+					existingModifier.addSubElement(
+							AddElementModifier.builderFrom(newElem)
+								.build());
+				}
 			}
 		});
 		logger.traceExit();
@@ -256,6 +312,7 @@ public class SchemaModifierCollector implements ISchemaModifierCollector {
 		final Set<ISchemaModifier> result = new HashSet<>();
 		result.addAll(this.attributeModifiers.values());
 		result.addAll(this.elementModifiers.values());
+		result.addAll(this.rootElementModifiers.values());
 		final int consolidatedModifierCount = result.stream().mapToInt(ISchemaModifier::count).sum();
 		logger.debug("Consolidated {} schema modification requests to {} unique requests.", this.collectedModifierCount,
 				consolidatedModifierCount);

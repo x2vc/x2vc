@@ -143,6 +143,44 @@ class SchemaModifierCollectorTest {
 	}
 
 	@Test
+	void testConsolidateRootElementsSameType() {
+		final IAddElementModifier modifier1 = createAddElementMock("elem1");
+		this.collector.addModifier(modifier1);
+
+		final IAddElementModifier modifier2a = createAddElementMock("elem2");
+		when(modifier2a.getAttributes()).thenReturn(ImmutableSet.of());
+		when(modifier2a.getSubElements()).thenReturn(ImmutableList.of());
+
+		final IAddElementModifier modifier2b = createAddElementMock("elem2");
+		when(modifier2b.getAttributes()).thenReturn(ImmutableSet.of());
+		when(modifier2b.getSubElements()).thenReturn(ImmutableList.of());
+
+		lenient().when(modifier2a.equalsIgnoringIDs(modifier2b)).thenReturn(true);
+		lenient().when(modifier2b.equalsIgnoringIDs(modifier2a)).thenReturn(true);
+
+		this.collector.addModifier(modifier2a);
+		this.collector.addModifier(modifier2b);
+
+		final ImmutableSet<ISchemaModifier> modifiers = this.collector.getConsolidatedModifiers();
+		assertEquals(2, modifiers.size());
+	}
+
+	@Test
+	void testConsolidateRootElementsDifferentTypes() {
+		final IAddElementModifier modifier1a = createAddElementMock("elem1");
+		final IAddElementModifier modifier1b = createAddElementMock("elem1");
+
+		lenient().when(modifier1a.equalsIgnoringIDs(modifier1b)).thenReturn(false);
+		lenient().when(modifier1b.equalsIgnoringIDs(modifier1a)).thenReturn(false);
+
+		this.collector.addModifier(modifier1a);
+		this.collector.addModifier(modifier1b);
+
+		final ImmutableSet<ISchemaModifier> modifiers = this.collector.getConsolidatedModifiers();
+		assertEquals(2, modifiers.size());
+	}
+
+	@Test
 	void testConsolidateSubAttributes() {
 		final UUID elementID1 = UUID.randomUUID();
 
@@ -228,11 +266,33 @@ class SchemaModifierCollectorTest {
 		return modifier;
 	}
 
+	/**
+	 * Creates a modifier for a non-root level element.
+	 *
+	 * @param elementID
+	 * @param name
+	 * @return
+	 */
 	protected IAddElementModifier createAddElementMock(final UUID elementID, final String name) {
 		final IAddElementModifier modifier = mock();
 		lenient().when(modifier.getSchemaURI()).thenReturn(this.schemaURI);
 		lenient().when(modifier.getSchemaVersion()).thenReturn(1);
 		lenient().when(modifier.getElementID()).thenReturn(Optional.of(elementID));
+		lenient().when(modifier.getName()).thenReturn(name);
+		return modifier;
+	}
+
+	/**
+	 * Creates a modifier for a root level element.
+	 *
+	 * @param elementID
+	 * @param name
+	 * @return
+	 */
+	protected IAddElementModifier createAddElementMock(final String name) {
+		final IAddElementModifier modifier = mock();
+		lenient().when(modifier.getSchemaURI()).thenReturn(this.schemaURI);
+		lenient().when(modifier.getSchemaVersion()).thenReturn(1);
 		lenient().when(modifier.getName()).thenReturn(name);
 		return modifier;
 	}

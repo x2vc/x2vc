@@ -85,7 +85,7 @@ public final class AddElementModifier implements IAddElementModifier {
 
 	@Override
 	public Optional<UUID> getElementID() {
-		return Optional.of(this.elementID);
+		return Optional.ofNullable(this.elementID);
 	}
 
 	@Override

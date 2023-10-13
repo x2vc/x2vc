@@ -12,7 +12,6 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -218,10 +217,32 @@ class ModifierCreationCoordinatorTest {
 	 * {@link org.x2vc.schema.evolution.ModifierCreationCoordinator#handleElementAccess(org.x2vc.schema.evolution.ISchemaElementProxy, net.sf.saxon.om.StructuredQName)}.
 	 */
 	@Test
-	@Disabled("root element creation is not yet supported")
 	void testOnElementAccess_OfDocument_Absent() {
-		// TODO support root element creation
-		fail("Not yet implemented");
+		// prepare a document proxy
+		final ISchemaElementProxy targetElementProxy = createDocumentProxyMock();
+		lenient().when(targetElementProxy.getSubElement("elementName")).thenReturn(Optional.empty());
+		lenient().when(targetElementProxy.hasSubElement("elementName")).thenReturn(false);
+
+		// configure the schema not to return any existing root elements
+		when(this.schema.getRootElements()).thenReturn(ImmutableSet.of());
+
+		// record an attempt to access the element
+		final StructuredQName elementName = new StructuredQName("", NamespaceUri.NULL, "elementName");
+		final ISchemaElementProxy newProxy = this.coordinator.handleElementAccess(targetElementProxy, elementName);
+		this.coordinator.flush();
+
+		// check the modifier attributes
+		final IAddElementModifier modifier = getCapturedAddElementModifier();
+		assertFalse(modifier.getElementID().isPresent());
+		assertEquals("elementName", modifier.getName());
+		assertEquals(1, modifier.getMinOccurrence());
+		assertEquals(Optional.empty(), modifier.getMaxOccurrence());
+		assertEquals(ContentType.MIXED, modifier.getContentType());
+
+		// verify the properties of the proxy returned
+		assertNotNull(newProxy);
+		assertEquals(ProxyType.ELEMENT_MODIFIER, newProxy.getType());
+		assertEquals(Optional.of(modifier), newProxy.getElementModifier());
 	}
 
 	// ----- attribute access ---------------------------------------------------------------------------------------

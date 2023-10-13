@@ -10,6 +10,7 @@ import org.x2vc.schema.structure.XMLElementType.Builder;
 
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
+import com.google.common.collect.Sets;
 
 /**
  * Standard implementation of {@link ISchemaModificationProcessor}.
@@ -31,6 +32,7 @@ public class SchemaModificationProcessor implements ISchemaModificationProcessor
 
 		private Multimap<UUID, IAddAttributeModifier> attributeModifiers;
 		private Multimap<UUID, IAddElementModifier> elementModifiersByParentID;
+		private Set<IAddElementModifier> rootElementModifiers;
 		private Map<UUID, IAddElementModifier> elementModifiersByTypeID = new HashMap<>();
 
 		private IXMLSchema inputSchema;
@@ -49,12 +51,18 @@ public class SchemaModificationProcessor implements ISchemaModificationProcessor
 			// order the modifiers by target element ID and sort into attribute and element modifiers
 			this.attributeModifiers = MultimapBuilder.hashKeys().arrayListValues().build();
 			this.elementModifiersByParentID = MultimapBuilder.hashKeys().arrayListValues().build();
+			this.rootElementModifiers = Sets.newHashSet();
 			modifiers.stream().forEach(modifier -> {
+				final Optional<UUID> parentElementID = modifier.getElementID();
 				if (modifier instanceof final IAddAttributeModifier attributeModifier) {
-					this.attributeModifiers.put(modifier.getElementID().orElseThrow(), attributeModifier);
+					this.attributeModifiers.put(parentElementID.orElseThrow(), attributeModifier);
 				} else if (modifier instanceof final IAddElementModifier elementModifier) {
 					this.elementModifiersByTypeID.put(elementModifier.getTypeID(), elementModifier);
-					this.elementModifiersByParentID.put(modifier.getElementID().orElseThrow(), elementModifier);
+					if (parentElementID.isPresent()) {
+						this.elementModifiersByParentID.put(parentElementID.get(), elementModifier);
+					} else {
+						this.rootElementModifiers.add(elementModifier);
+					}
 				} else {
 					throw new IllegalArgumentException(
 							String.format("Unknown modifier type %s", modifier.getClass().getSimpleName()));
@@ -75,6 +83,7 @@ public class SchemaModificationProcessor implements ISchemaModificationProcessor
 			initializeSchemaBuilder();
 			initializeElementBuilders();
 			processAttributeModifiers();
+			processRootElementModifiers();
 			processElementModifiers();
 			createRemainingElements();
 			createRootReferences();
@@ -165,7 +174,7 @@ public class SchemaModificationProcessor implements ISchemaModificationProcessor
 		}
 
 		/**
-		 * Process the root-level element modifiers to create the new elements and contained stuff.
+		 * Process the top-level element modifiers to create the new elements and contained stuff.
 		 */
 		private void processElementModifiers() {
 			logger.traceEntry();
@@ -178,7 +187,7 @@ public class SchemaModificationProcessor implements ISchemaModificationProcessor
 						IElementType.class);
 				final XMLElementType.Builder elementBuilder = this.elementBuilders.get(parentElementID);
 
-				// use a set of existing element reference names to prevent the creation of duplicate attributes
+				// use a set of existing element reference names to prevent the creation of duplicate elements
 				final Set<String> referenceNames = new HashSet<>();
 				if (originalElement.hasElementContent()) {
 					originalElement.getElements().forEach(ref -> referenceNames.add(ref.getName()));
@@ -203,6 +212,35 @@ public class SchemaModificationProcessor implements ISchemaModificationProcessor
 					}
 				}
 				logger.debug("processing of element modifiers for element {} completed", parentElementID);
+			}
+			logger.traceExit();
+		}
+
+		/**
+		 * Process the document root element modifiers to create the new elements and contained stuff.
+		 */
+		private void processRootElementModifiers() {
+			logger.traceEntry();
+
+			// use a set of existing element reference names to prevent the creation of duplicate root elements
+			final Set<String> referenceNames = new HashSet<>();
+			this.inputSchema.getRootElements().forEach(ref -> referenceNames.add(ref.getName()));
+			if (referenceNames.isEmpty()) {
+				logger.debug("original schema does not contain any root element references");
+			} else {
+				final String referenceNameList = String.join(", ", referenceNames);
+				logger.debug("original schema already contains the following {} root element references: {}",
+						referenceNames.size(), referenceNameList);
+			}
+
+			for (final IAddElementModifier rootModifier : this.rootElementModifiers) {
+				final String referenceName = rootModifier.getName();
+				if (referenceNames.contains(referenceName)) {
+					logger.warn("attempt to add duplicate element \"{}\" to root references ignored", referenceName);
+				} else {
+					logger.debug("adding element \"{}\" to root references", referenceName);
+					this.newSchemaBuilder.addRootElement(buildElementReference(rootModifier));
+				}
 			}
 			logger.traceExit();
 		}

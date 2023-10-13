@@ -550,4 +550,68 @@ class SchemaModificationProcessorTest {
 		assertXMLEquals(expectedSchemaSource, actualSchemaSource);
 	}
 
+	@Test
+	void test_addElement_asNewRootElement() throws JAXBException {
+		// prepare original schema
+		//@formatter:off
+		final String originalSchemaSource
+			= """
+				<schema stylesheetURI="file://somewhere/SampleStylesheet.xslt" schemaURI="memory:schema/someSchema" version="1">
+				    <elementTypes>
+				        <elementType contentType="ELEMENT" elementArrangement="ALL" id="ca3d5550-8141-4138-a72c-34a4466e9427">
+				            <comment>root element</comment>
+				        </elementType>
+				    </elementTypes>
+				    <rootElements>
+				        <rootElement name="root" elementID="ca3d5550-8141-4138-a72c-34a4466e9427" minOccurrence="1" maxOccurrence="1" id="bd2e38bd-a523-4c6a-acc6-f12ff65488f0">
+				            <comment>reference to root element</comment>
+				        </rootElement>
+				    </rootElements>
+					<extensionFunctions/>
+				</schema>
+				""";
+		//@formatter:on
+		final XMLSchema originalSchema = (XMLSchema) this.unmarshaller
+			.unmarshal(new StringReader(originalSchemaSource));
+
+		// use a modifier to add an element
+		final IAddElementModifier modifier = AddElementModifier
+			.builder(URIUtilities.makeMemoryURI(ObjectType.SCHEMA, "someSchema"), 1)
+			.withName("elem1")
+			.withTypeID(UUID.fromString("cbe2ec0e-ffb7-4ac3-b7f6-b6d4078667ba"))
+			.withReferenceID(UUID.fromString("56073cb8-30de-4657-8f12-0eaa8b8c1a46"))
+			.withContentType(ContentType.MIXED)
+			.withMinOccurrence(1)
+			.withMaxOccurrence(42)
+			.build();
+		final IXMLSchema modifiedSchema = this.processor.modifySchema(originalSchema, Set.of(modifier));
+
+		// serialize the schema and compare with the expected version
+		//@formatter:off
+		final String expectedSchemaSource
+			= """
+				<schema stylesheetURI="file://somewhere/SampleStylesheet.xslt" schemaURI="memory:schema/someSchema" version="2">
+				    <elementTypes>
+				        <elementType contentType="ELEMENT" elementArrangement="ALL" id="ca3d5550-8141-4138-a72c-34a4466e9427">
+				            <comment>root element</comment>
+				        </elementType>
+				        <elementType contentType="MIXED" id="cbe2ec0e-ffb7-4ac3-b7f6-b6d4078667ba" />
+				    </elementTypes>
+				    <rootElements>
+				        <rootElement name="root" elementID="ca3d5550-8141-4138-a72c-34a4466e9427" minOccurrence="1" maxOccurrence="1" id="bd2e38bd-a523-4c6a-acc6-f12ff65488f0">
+				            <comment>reference to root element</comment>
+				        </rootElement>
+				        <rootElement name="elem1" elementID="cbe2ec0e-ffb7-4ac3-b7f6-b6d4078667ba" minOccurrence="1" maxOccurrence="42" id="56073cb8-30de-4657-8f12-0eaa8b8c1a46" />
+				    </rootElements>
+					<extensionFunctions/>
+				</schema>
+			""";
+		// @formatter:on
+		final StringWriter actualSchemaSourceWriter = new StringWriter();
+		this.marshaller.marshal(modifiedSchema, actualSchemaSourceWriter);
+		final String actualSchemaSource = actualSchemaSourceWriter.toString();
+
+		assertXMLEquals(expectedSchemaSource, actualSchemaSource);
+	}
+
 }

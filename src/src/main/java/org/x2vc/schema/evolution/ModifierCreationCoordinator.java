@@ -31,6 +31,7 @@ public class ModifierCreationCoordinator implements IModifierCreationCoordinator
 
 	private Map<ModifierKey, IAddAttributeModifier> attributeModifiers;
 	private Map<ModifierKey, IAddElementModifier> elementModifiers;
+	private Map<String, IAddElementModifier> rootElementModifiers;
 
 	@Inject
 	ModifierCreationCoordinator(@Assisted IXMLSchema schema, @Assisted Consumer<ISchemaModifier> modifierCollector) {
@@ -39,6 +40,7 @@ public class ModifierCreationCoordinator implements IModifierCreationCoordinator
 		this.modifierCollector = modifierCollector;
 		this.attributeModifiers = Maps.newHashMap();
 		this.elementModifiers = Maps.newHashMap();
+		this.rootElementModifiers = Maps.newHashMap();
 	}
 
 	@Override
@@ -80,8 +82,10 @@ public class ModifierCreationCoordinator implements IModifierCreationCoordinator
 				.toList();
 			switch (matchingRootReferences.size()) {
 			case 0:
-				// FIXME create new root element
-				logger.warn("root element creation not supported yet (name {})", localName);
+				// no matching elements exist in schema - check whether root element modifier has already been created
+				// and create if missing
+				newSchemaElement = new SchemaElementProxy(this.rootElementModifiers
+					.computeIfAbsent(localName, this::createRootElementModifier));
 				break;
 			case 1:
 				newSchemaElement = new SchemaElementProxy(matchingRootReferences.get(0));
@@ -190,6 +194,19 @@ public class ModifierCreationCoordinator implements IModifierCreationCoordinator
 	}
 
 	/**
+	 * @param elementName
+	 * @return
+	 */
+	private IAddElementModifier createRootElementModifier(String elementName) {
+		return AddElementModifier
+			.builder(this.schema.getURI(), this.schema.getVersion())
+			.withName(elementName)
+			.withMinOccurrence(1)
+			.withTypeComment(String.format("root element %s", elementName))
+			.build();
+	}
+
+	/**
 	 * @param contextItem
 	 * @param parentElementID
 	 * @param elementName
@@ -286,6 +303,8 @@ public class ModifierCreationCoordinator implements IModifierCreationCoordinator
 		this.attributeModifiers.clear();
 		this.elementModifiers.values().forEach(this.modifierCollector::accept);
 		this.elementModifiers.clear();
+		this.rootElementModifiers.values().forEach(this.modifierCollector::accept);
+		this.rootElementModifiers.clear();
 		logger.traceExit();
 	}
 
