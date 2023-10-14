@@ -63,6 +63,11 @@ public interface IDocumentRequest {
 	ImmutableCollection<IExtensionFunctionRule> getExtensionFunctionRules();
 
 	/**
+	 * @return the rules to provide the template parameters to the XSLT processor
+	 */
+	ImmutableCollection<ITemplateParameterRule> getTemplateParameterRules();
+
+	/**
 	 * Provides a view of the the specific values that have been requested for individual elements or attributes,
 	 * organized by model element ID. For some edge cases, an element can have more than one requested value (e.g. for
 	 * mixed content: a text node, an element, and another text node), hence the use of a {@link Multimap} here.

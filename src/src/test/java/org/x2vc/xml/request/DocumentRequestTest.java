@@ -68,6 +68,11 @@ class DocumentRequestTest {
 			.addExtensionFunctionRule(new ExtensionFunctionRule(UUID.fromString("b001c2b8-cae7-45e3-8634-ad51566af497"),
 					UUID.fromString("b63f6510-fd72-4b42-b0e6-ebfc3cca5d85"),
 					new RequestedValue("foobar")))
+			.addTemplateParameterRule(new TemplateParameterRule(UUID.fromString("dec5f22e-2462-4566-a648-d52c898f8ce1"),
+					UUID.fromString("4079c782-2ce0-43fe-b855-1e0a90e8d0c5")))
+			.addTemplateParameterRule(new TemplateParameterRule(UUID.fromString("1b2c1a03-605b-4374-b73c-aaf0e8c57428"),
+					UUID.fromString("6a7aac5e-98ca-4ecf-9bab-5148687c76d9"),
+					new RequestedValue("foobar")))
 			.build();
 
 		final JAXBContext context = JAXBContext.newInstance(DocumentRequest.class);
@@ -128,6 +133,14 @@ class DocumentRequestTest {
 								            </requestedValue>
 								        </function>
 								    </extensionFunctions>
+								    <templateParameters>
+								    	<parameter parameterID="4079c782-2ce0-43fe-b855-1e0a90e8d0c5" ruleID="dec5f22e-2462-4566-a648-d52c898f8ce1"/>
+								    	<parameter parameterID="6a7aac5e-98ca-4ecf-9bab-5148687c76d9" ruleID="1b2c1a03-605b-4374-b73c-aaf0e8c57428">
+								            <requestedValue>
+								                <value>foobar</value>
+								            </requestedValue>
+								    	</parameter>
+								    </templateParameters>
 								</request>
 								""";
 		assertXMLEquals(expected, writer.toString());
@@ -171,7 +184,19 @@ class DocumentRequestTest {
 
 		final URI stylesheetURI = URI.create("bar:foo");
 		final URI schemaURI = URI.create("foo:bar");
-		final IDocumentRequest request = DocumentRequest.builder(schemaURI, 1, stylesheetURI, rootRule).build();
+
+		final UUID functionID = UUID.randomUUID();
+		final RequestedValue functionValue = new RequestedValue("func");
+
+		final UUID parameterID = UUID.randomUUID();
+		final RequestedValue parameterValue = new RequestedValue("param");
+
+		final IDocumentRequest request = DocumentRequest
+			.builder(schemaURI, 1, stylesheetURI, rootRule)
+			.addExtensionFunctionRule(new ExtensionFunctionRule(functionID, functionValue))
+			.addTemplateParameterRule(new TemplateParameterRule(parameterID, parameterValue))
+			.build();
+
 		assertEquals(schemaURI, request.getSchemaURI());
 		assertEquals(1, request.getSchemaVersion());
 		assertEquals(stylesheetURI, request.getStylesheeURI());
@@ -193,6 +218,11 @@ class DocumentRequestTest {
 		final ImmutableCollection<IRequestedValue> subAttribValues = requestedValues.get(subAttribUUID);
 		assertTrue(subAttribValues.contains(subAttribValue));
 
+		final ImmutableCollection<IRequestedValue> functionValues = requestedValues.get(functionID);
+		assertTrue(functionValues.contains(functionValue));
+
+		final ImmutableCollection<IRequestedValue> parameterValues = requestedValues.get(parameterID);
+		assertTrue(parameterValues.contains(parameterValue));
 	}
 
 	/**
@@ -297,9 +327,22 @@ class DocumentRequestTest {
 		rootBuilder.addContentRule(subRule);
 		final AddElementRule rootRule = rootBuilder.build();
 
+		final UUID functionID = UUID.randomUUID();
+		final RequestedValue functionValue = new RequestedValue("func");
+		final ExtensionFunctionRule functionRule = new ExtensionFunctionRule(functionID, functionValue);
+
+		final UUID parameterID = UUID.randomUUID();
+		final RequestedValue parameterValue = new RequestedValue("param");
+		final TemplateParameterRule parameterRule = new TemplateParameterRule(parameterID, parameterValue);
+
 		final URI stylesheetURI = URI.create("bar:foo");
 		final URI schemaURI = URI.create("foo:bar");
-		final IDocumentRequest request = DocumentRequest.builder(schemaURI, 1, stylesheetURI, rootRule).build();
+
+		final IDocumentRequest request = DocumentRequest
+			.builder(schemaURI, 1, stylesheetURI, rootRule)
+			.addExtensionFunctionRule(functionRule)
+			.addTemplateParameterRule(parameterRule)
+			.build();
 
 		assertSame(rootAttribRule, request.getRuleByID(rootAttribRule.getID()));
 		assertSame(rootDataContentRule, request.getRuleByID(rootDataContentRule.getID()));
@@ -309,6 +352,8 @@ class DocumentRequestTest {
 		assertSame(subRawContentRule, request.getRuleByID(subRawContentRule.getID()));
 		assertSame(subRule, request.getRuleByID(subRule.getID()));
 		assertSame(rootRule, request.getRuleByID(rootRule.getID()));
+		assertSame(functionRule, request.getRuleByID(functionRule.getID()));
+		assertSame(parameterRule, request.getRuleByID(parameterRule.getID()));
 	}
 
 	/**

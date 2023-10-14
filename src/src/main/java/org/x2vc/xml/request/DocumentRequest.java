@@ -45,6 +45,10 @@ public final class DocumentRequest implements IDocumentRequest {
 	@XmlElement(name = "function", type = ExtensionFunctionRule.class)
 	private final List<IExtensionFunctionRule> extensionFunctionRules;
 
+	@XmlElementWrapper(name = "templateParameters")
+	@XmlElement(name = "parameter", type = TemplateParameterRule.class)
+	private final List<ITemplateParameterRule> templateParameterRules;
+
 	@XmlAttribute
 	private final MixedContentGenerationMode mixedContentGenerationMode;
 
@@ -57,6 +61,7 @@ public final class DocumentRequest implements IDocumentRequest {
 		this.modifier = null;
 		this.mixedContentGenerationMode = null;
 		this.extensionFunctionRules = null;
+		this.templateParameterRules = null;
 	}
 
 	private DocumentRequest(Builder builder) {
@@ -67,6 +72,7 @@ public final class DocumentRequest implements IDocumentRequest {
 		this.modifier = builder.modifier;
 		this.mixedContentGenerationMode = builder.mixedContentGenerationMode;
 		this.extensionFunctionRules = builder.extensionFunctionRules;
+		this.templateParameterRules = builder.templateParameterRules;
 	}
 
 	@Override
@@ -95,6 +101,11 @@ public final class DocumentRequest implements IDocumentRequest {
 	}
 
 	@Override
+	public ImmutableCollection<ITemplateParameterRule> getTemplateParameterRules() {
+		return ImmutableList.copyOf(this.templateParameterRules);
+	}
+
+	@Override
 	public MixedContentGenerationMode getMixedContentGenerationMode() {
 		return this.mixedContentGenerationMode;
 	}
@@ -115,6 +126,8 @@ public final class DocumentRequest implements IDocumentRequest {
 		logger.traceEntry();
 		final Map<UUID, IGenerationRule> newMap = new HashMap<>();
 		addRuleIDsToMapRecursively(getRootElementRule(), newMap);
+		getExtensionFunctionRules().forEach(r -> newMap.put(r.getID(), r));
+		getTemplateParameterRules().forEach(r -> newMap.put(r.getID(), r));
 		return logger.traceExit(ImmutableMap.copyOf(newMap));
 	});
 
@@ -145,6 +158,12 @@ public final class DocumentRequest implements IDocumentRequest {
 				final Optional<IRequestedValue> oRV = functionRule.getRequestedValue();
 				if (oRV.isPresent()) {
 					newMap.put(functionRule.getFunctionID(), oRV.get());
+				}
+			}
+			for (final ITemplateParameterRule parameterRule : getTemplateParameterRules()) {
+				final Optional<IRequestedValue> oRV = parameterRule.getRequestedValue();
+				if (oRV.isPresent()) {
+					newMap.put(parameterRule.getParameterID(), oRV.get());
 				}
 			}
 			return logger.traceExit(ImmutableMultimap.copyOf(newMap));
@@ -233,6 +252,7 @@ public final class DocumentRequest implements IDocumentRequest {
 		private IDocumentModifier modifier;
 		private MixedContentGenerationMode mixedContentGenerationMode = MixedContentGenerationMode.FULL;
 		private List<IExtensionFunctionRule> extensionFunctionRules = Lists.newArrayList();
+		private List<ITemplateParameterRule> templateParameterRules = Lists.newArrayList();
 
 		private Builder(URI schemaURI, int schemaVersion, URI stylesheetURI, IAddElementRule rootElementRule) {
 			this.schemaURI = schemaURI;
@@ -293,6 +313,28 @@ public final class DocumentRequest implements IDocumentRequest {
 		}
 
 		/**
+		 * Builder method for templateParameterRules parameter.
+		 *
+		 * @param templateParameterRule field to set
+		 * @return builder
+		 */
+		public Builder addTemplateParameterRule(ITemplateParameterRule templateParameterRule) {
+			this.templateParameterRules.add(templateParameterRule);
+			return this;
+		}
+
+		/**
+		 * Builder method for templateParameterRules parameter.
+		 *
+		 * @param templateParameterRules field to set
+		 * @return builder
+		 */
+		public Builder addTemplateParameterRules(Collection<ITemplateParameterRule> templateParameterRules) {
+			this.templateParameterRules.addAll(templateParameterRules);
+			return this;
+		}
+
+		/**
 		 * Builder method of the builder.
 		 *
 		 * @return built class
@@ -306,7 +348,7 @@ public final class DocumentRequest implements IDocumentRequest {
 	public int hashCode() {
 		return Objects.hash(this.extensionFunctionRules, this.mixedContentGenerationMode, this.modifier,
 				this.rootElementRule, this.schemaURI,
-				this.schemaVersion, this.stylesheetURI);
+				this.schemaVersion, this.stylesheetURI, this.templateParameterRules);
 	}
 
 	@Override
@@ -323,7 +365,8 @@ public final class DocumentRequest implements IDocumentRequest {
 				&& Objects.equals(this.modifier, other.modifier)
 				&& Objects.equals(this.rootElementRule, other.rootElementRule)
 				&& Objects.equals(this.schemaURI, other.schemaURI) && this.schemaVersion == other.schemaVersion
-				&& Objects.equals(this.stylesheetURI, other.stylesheetURI);
+				&& Objects.equals(this.stylesheetURI, other.stylesheetURI)
+				&& Objects.equals(this.templateParameterRules, other.templateParameterRules);
 	}
 
 }
