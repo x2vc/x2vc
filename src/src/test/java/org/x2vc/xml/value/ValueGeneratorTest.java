@@ -24,6 +24,7 @@ import org.x2vc.stylesheet.IStylesheetInformation;
 import org.x2vc.utilities.URIUtilities;
 import org.x2vc.utilities.URIUtilities.ObjectType;
 import org.x2vc.xml.document.IExtensionFunctionResult;
+import org.x2vc.xml.document.ITemplateParameterValue;
 import org.x2vc.xml.request.*;
 import org.x2vc.xml.value.IPrefixSelector.PrefixData;
 
@@ -69,6 +70,13 @@ class ValueGeneratorTest {
 	@Mock
 	IFunctionSignatureType functionResultType;
 
+	// parameter in schema
+	private UUID parameterID;
+	@Mock
+	ITemplateParameter parameter;
+	@Mock
+	IFunctionSignatureType parameterType;
+
 	// request
 	@Mock
 	private IDocumentRequest request;
@@ -89,6 +97,8 @@ class ValueGeneratorTest {
 	private IAddRawContentRule addRawContentRule;
 	@Mock
 	private IExtensionFunctionRule extensionFunctionRule;
+	@Mock
+	private ITemplateParameterRule templateParameterRule;
 
 	// requested value
 	@Mock
@@ -132,6 +142,13 @@ class ValueGeneratorTest {
 		lenient().when(this.function.getResultType()).thenReturn(this.functionResultType);
 		lenient().when(this.schema.getObjectByID(this.functionID)).thenReturn(this.function);
 		lenient().when(this.schema.getObjectByID(eq(this.functionID), any())).thenReturn(this.function);
+
+		// template parameter in schema
+		this.parameterID = UUID.randomUUID();
+		lenient().when(this.parameter.getID()).thenReturn(this.parameterID);
+		lenient().when(this.parameter.getType()).thenReturn(this.parameterType);
+		lenient().when(this.schema.getObjectByID(this.parameterID)).thenReturn(this.parameter);
+		lenient().when(this.schema.getObjectByID(eq(this.parameterID), any())).thenReturn(this.parameter);
 
 		// request
 		lenient().when(this.request.getStylesheeURI()).thenReturn(this.stylesheetURI);
@@ -187,6 +204,21 @@ class ValueGeneratorTest {
 			lenient().when(this.extensionFunctionRule.getRequestedValue()).thenReturn(Optional.of(this.requestedValue));
 		} else {
 			lenient().when(this.extensionFunctionRule.getRequestedValue()).thenReturn(Optional.empty());
+		}
+	}
+
+	/**
+	 * Prepares the {@link ITemplateParameterRule} mockup for use
+	 *
+	 * @param withRequestedValue
+	 */
+	void prepareTemplateParameterRule(boolean withRequestedValue) {
+		lenient().when(this.templateParameterRule.getID()).thenReturn(this.ruleID);
+		lenient().when(this.templateParameterRule.getParameterID()).thenReturn(this.parameterID);
+		if (withRequestedValue) {
+			lenient().when(this.templateParameterRule.getRequestedValue()).thenReturn(Optional.of(this.requestedValue));
+		} else {
+			lenient().when(this.templateParameterRule.getRequestedValue()).thenReturn(Optional.empty());
 		}
 	}
 
@@ -288,6 +320,41 @@ class ValueGeneratorTest {
 		lenient().when(this.functionResultType.getOccurrenceIndicator()).thenReturn(OccurrenceIndicator.ONE);
 		lenient().when(this.functionResultType.getSequenceItemType()).thenReturn(SequenceItemType.INTEGER);
 		lenient().when(this.functionResultType.getSequenceType())
+			.thenReturn(SequenceType.makeSequenceType(ItemType.INTEGER, OccurrenceIndicator.ONE));
+	}
+
+	/**
+	 * Prepares the {@link ITemplateParameter} mockup as string for use without discrete values
+	 *
+	 * @param maxLength
+	 */
+	void prepareParameterForString() {
+		lenient().when(this.parameterType.getItemType()).thenReturn(ItemType.STRING);
+		lenient().when(this.parameterType.getOccurrenceIndicator()).thenReturn(OccurrenceIndicator.ONE);
+		lenient().when(this.parameterType.getSequenceItemType()).thenReturn(SequenceItemType.STRING);
+		lenient().when(this.parameterType.getSequenceType())
+			.thenReturn(SequenceType.makeSequenceType(ItemType.STRING, OccurrenceIndicator.ONE));
+	}
+
+	/**
+	 * Prepares the {@link ITemplateParameter} mockup as boolean
+	 */
+	void prepareParameterForBoolean() {
+		lenient().when(this.parameterType.getItemType()).thenReturn(ItemType.BOOLEAN);
+		lenient().when(this.parameterType.getOccurrenceIndicator()).thenReturn(OccurrenceIndicator.ONE);
+		lenient().when(this.parameterType.getSequenceItemType()).thenReturn(SequenceItemType.BOOLEAN);
+		lenient().when(this.parameterType.getSequenceType())
+			.thenReturn(SequenceType.makeSequenceType(ItemType.BOOLEAN, OccurrenceIndicator.ONE));
+	}
+
+	/**
+	 * Prepares the {@link ITemplateParameter} mockup as integer for use without discrete values
+	 */
+	void prepareParameterForInteger() {
+		lenient().when(this.parameterType.getItemType()).thenReturn(ItemType.INTEGER);
+		lenient().when(this.parameterType.getOccurrenceIndicator()).thenReturn(OccurrenceIndicator.ONE);
+		lenient().when(this.parameterType.getSequenceItemType()).thenReturn(SequenceItemType.INTEGER);
+		lenient().when(this.parameterType.getSequenceType())
 			.thenReturn(SequenceType.makeSequenceType(ItemType.INTEGER, OccurrenceIndicator.ONE));
 	}
 
@@ -1451,6 +1518,125 @@ class ValueGeneratorTest {
 		assertFalse(xdmValue.isEmpty());
 		assertEquals(value, xdmValue.toString());
 		assertValueDescriptorPresent(this.functionID, value, true);
+	}
+
+	/**
+	 * Test method for
+	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ITemplateParameterRule)} and
+	 * {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
+	 */
+	@Test
+	void testGenerateValue_TemplateParameterRule_String() {
+		prepareTemplateParameterRule(false);
+		prepareParameterForString();
+
+		final ITemplateParameterValue generatedValue = this.valueGenerator.generateValue(this.templateParameterRule);
+		assertEquals(this.parameterID, generatedValue.getParameterID());
+		final XdmValue xdmValue = generatedValue.getXDMValue();
+		assertFalse(xdmValue.isEmpty());
+		assertTrue(xdmValue.toString().startsWith(TEST_PREFIX), "generated value does not start with prefix");
+		assertValueDescriptorPresent(this.parameterID, xdmValue.toString(), false);
+	}
+
+	/**
+	 * Test method for
+	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ITemplateParameterRule)} and
+	 * {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
+	 */
+	@Test
+	void testGenerateValue_TemplateParameterRule_StringRequestedValue() {
+		final String value = "foobar42";
+		when(this.requestedValue.getValue()).thenReturn(value);
+
+		prepareTemplateParameterRule(true);
+		prepareParameterForString();
+
+		final ITemplateParameterValue generatedValue = this.valueGenerator.generateValue(this.templateParameterRule);
+		assertEquals(this.parameterID, generatedValue.getParameterID());
+		final XdmValue xdmValue = generatedValue.getXDMValue();
+		assertFalse(xdmValue.isEmpty());
+		assertEquals(value, xdmValue.toString());
+		assertValueDescriptorPresent(this.parameterID, value, true);
+	}
+
+	/**
+	 * Test method for
+	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ITemplateParameterRule)} and
+	 * {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
+	 */
+	@Test
+	void testGenerateValue_TemplateParameterRule_Integer() {
+		prepareTemplateParameterRule(false);
+		prepareParameterForInteger();
+
+		final ITemplateParameterValue generatedValue = this.valueGenerator.generateValue(this.templateParameterRule);
+		assertEquals(this.parameterID, generatedValue.getParameterID());
+		final XdmValue xdmValue = generatedValue.getXDMValue();
+		assertFalse(xdmValue.isEmpty());
+		final Integer generatedInteger = Integer.parseInt(xdmValue.toString());
+		assertNotNull(generatedInteger);
+		assertValueDescriptorPresent(this.parameterID, xdmValue.toString(), false);
+	}
+
+	/**
+	 * Test method for
+	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ITemplateParameterRule)} and
+	 * {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
+	 */
+	@Test
+	void testGenerateValue_TemplateParameterRule_IntegerRequestedValue() {
+		final String value = "42";
+		when(this.requestedValue.getValue()).thenReturn(value);
+
+		prepareTemplateParameterRule(true);
+		prepareParameterForString();
+
+		final ITemplateParameterValue generatedValue = this.valueGenerator.generateValue(this.templateParameterRule);
+		assertEquals(this.parameterID, generatedValue.getParameterID());
+		final XdmValue xdmValue = generatedValue.getXDMValue();
+		assertFalse(xdmValue.isEmpty());
+		final Integer generatedInteger = Integer.parseInt(xdmValue.toString());
+		assertEquals(42, generatedInteger);
+		assertValueDescriptorPresent(this.parameterID, value, true);
+	}
+
+	/**
+	 * Test method for
+	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ITemplateParameterRule)} and
+	 * {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
+	 */
+	@Test
+	void testGenerateValue_TemplateParameterRule_Boolean() {
+		prepareTemplateParameterRule(false);
+		prepareParameterForBoolean();
+
+		final ITemplateParameterValue generatedValue = this.valueGenerator.generateValue(this.templateParameterRule);
+		assertEquals(this.parameterID, generatedValue.getParameterID());
+		final XdmValue xdmValue = generatedValue.getXDMValue();
+		assertFalse(xdmValue.isEmpty());
+		assertTrue(xdmValue.toString().equals("true") || xdmValue.toString().equals("false"));
+		assertValueDescriptorPresent(this.parameterID, xdmValue.toString(), false);
+	}
+
+	/**
+	 * Test method for
+	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ITemplateParameterRule)} and
+	 * {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
+	 */
+	@Test
+	void testGenerateValue_TemplateParameterRule_BooleanRequestedValue() {
+		final String value = "true";
+		when(this.requestedValue.getValue()).thenReturn(value);
+
+		prepareTemplateParameterRule(true);
+		prepareParameterForBoolean();
+
+		final ITemplateParameterValue generatedValue = this.valueGenerator.generateValue(this.templateParameterRule);
+		assertEquals(this.parameterID, generatedValue.getParameterID());
+		final XdmValue xdmValue = generatedValue.getXDMValue();
+		assertFalse(xdmValue.isEmpty());
+		assertEquals(value, xdmValue.toString());
+		assertValueDescriptorPresent(this.parameterID, value, true);
 	}
 
 	/**

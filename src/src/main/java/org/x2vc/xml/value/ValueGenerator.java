@@ -9,10 +9,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.x2vc.schema.ISchemaManager;
 import org.x2vc.schema.structure.*;
-import org.x2vc.xml.document.BooleanExtensionFunctionResult;
-import org.x2vc.xml.document.IExtensionFunctionResult;
-import org.x2vc.xml.document.IntegerExtensionFunctionResult;
-import org.x2vc.xml.document.StringExtensionFunctionResult;
+import org.x2vc.xml.document.*;
 import org.x2vc.xml.request.*;
 import org.x2vc.xml.value.IPrefixSelector.PrefixData;
 
@@ -492,6 +489,110 @@ public class ValueGenerator implements IValueGenerator {
 			break;
 		default:
 			// TODO Extension Functions: support other return type data types
+			throw logger.throwing(new UnsupportedOperationException(
+					String.format("Generating a value with an item tyoe of %s is not yet supported",
+							resultType.getSequenceItemType())));
+		}
+		return logger.traceExit(result);
+	}
+
+	@Override
+	public ITemplateParameterValue generateValue(ITemplateParameterRule rule) {
+		logger.traceEntry("for parameter {}", rule.getParameterID());
+		loadSchema();
+		final ITemplateParameter parameter = this.schema.getObjectByID(rule.getParameterID(), ITemplateParameter.class);
+		final Optional<IRequestedValue> oRequestedValue = rule.getRequestedValue();
+		ITemplateParameterValue result = null;
+		if (oRequestedValue.isPresent()) {
+			result = generateRequestedParameterResult(parameter, oRequestedValue.get());
+		} else {
+			result = generateParameterResult(parameter);
+		}
+		this.valueDescriptors
+			.add(new ValueDescriptor(rule.getParameterID(), rule.getID(), result.getXDMValue().toString(),
+					oRequestedValue.isPresent()));
+		return logger.traceExit("with generated result \"{}\"", result);
+	}
+
+	/**
+	 * @param parameter
+	 * @return
+	 */
+	private ITemplateParameterValue generateParameterResult(ITemplateParameter parameter) {
+		logger.traceEntry();
+		ITemplateParameterValue result = null;
+
+		final IFunctionSignatureType resultType = parameter.getType();
+		if (resultType.getOccurrenceIndicator() != OccurrenceIndicator.ONE) {
+			// TODO Extension Parameters: support other return type occurrence indicators
+			throw logger.throwing(new UnsupportedOperationException(
+					String.format("Generating a value with an occurrence of %s is not yet supported",
+							resultType.getOccurrenceIndicator())));
+		}
+
+		switch (resultType.getSequenceItemType()) {
+		case BOOLEAN:
+			result = new BooleanTemplateParameterValue(parameter.getID(),
+					ThreadLocalRandom.current().nextBoolean());
+			break;
+		case INT:
+			result = new IntegerTemplateParameterValue(parameter.getID(),
+					ThreadLocalRandom.current().nextInt());
+			break;
+		case INTEGER:
+			result = new IntegerTemplateParameterValue(parameter.getID(),
+					ThreadLocalRandom.current().nextInt());
+			break;
+		case STRING:
+			result = new StringTemplateParameterValue(parameter.getID(),
+					generateRandomStringWithPrefix(Optional.empty()));
+			break;
+		default:
+			// TODO Extension Parameters: support other return type data types
+			throw logger.throwing(new UnsupportedOperationException(
+					String.format("Generating a value with an item tyoe of %s is not yet supported",
+							resultType.getSequenceItemType())));
+		}
+		return logger.traceExit(result);
+	}
+
+	/**
+	 * @param parameter
+	 * @param requestedValue
+	 * @return
+	 */
+	private ITemplateParameterValue generateRequestedParameterResult(ITemplateParameter parameter,
+			IRequestedValue requestedValue) {
+		logger.traceEntry();
+		ITemplateParameterValue result = null;
+
+		final IFunctionSignatureType resultType = parameter.getType();
+		if (resultType.getOccurrenceIndicator() != OccurrenceIndicator.ONE) {
+			// TODO Extension Parameters: support other return type occurrence indicators
+			throw logger.throwing(new UnsupportedOperationException(
+					String.format("Generating a value with an occurrence of %s is not yet supported",
+							resultType.getOccurrenceIndicator())));
+		}
+
+		switch (resultType.getSequenceItemType()) {
+		case BOOLEAN:
+			result = new BooleanTemplateParameterValue(parameter.getID(),
+					Boolean.parseBoolean(requestedValue.getValue()));
+			break;
+		case INT:
+			result = new IntegerTemplateParameterValue(parameter.getID(),
+					Integer.parseInt(requestedValue.getValue()));
+			break;
+		case INTEGER:
+			result = new IntegerTemplateParameterValue(parameter.getID(),
+					Integer.parseInt(requestedValue.getValue()));
+			break;
+		case STRING:
+			result = new StringTemplateParameterValue(parameter.getID(),
+					requestedValue.getValue());
+			break;
+		default:
+			// TODO Extension Parameters: support other return type data types
 			throw logger.throwing(new UnsupportedOperationException(
 					String.format("Generating a value with an item tyoe of %s is not yet supported",
 							resultType.getSequenceItemType())));

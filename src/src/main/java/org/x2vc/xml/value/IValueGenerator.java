@@ -1,6 +1,7 @@
 package org.x2vc.xml.value;
 
 import org.x2vc.xml.document.IExtensionFunctionResult;
+import org.x2vc.xml.document.ITemplateParameterValue;
 import org.x2vc.xml.request.*;
 
 import com.google.common.collect.ImmutableSet;
@@ -36,6 +37,12 @@ public interface IValueGenerator {
 	 * @return the result of the function invocation
 	 */
 	IExtensionFunctionResult generateValue(IExtensionFunctionRule rule);
+
+	/**
+	 * @param rule a rule to add a return value for a template parameter
+	 * @return the value of the parameter
+	 */
+	ITemplateParameterValue generateValue(ITemplateParameterRule rule);
 
 	/**
 	 * @return the common prefix of all generated string values
