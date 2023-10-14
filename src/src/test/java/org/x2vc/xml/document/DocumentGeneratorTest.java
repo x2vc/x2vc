@@ -76,6 +76,7 @@ class DocumentGeneratorTest {
 	private IDocumentRequest request;
 	private IAddElementRule rootElementRule;
 	private List<IExtensionFunctionRule> extensionFunctionRules;
+	private List<ITemplateParameterRule> templateParameterRules;
 	@Mock
 	private IRequestedValue requestedValue;
 
@@ -114,6 +115,9 @@ class DocumentGeneratorTest {
 		this.extensionFunctionRules = Lists.newArrayList();
 		lenient().when(this.request.getExtensionFunctionRules())
 			.thenAnswer(a -> ImmutableList.copyOf(this.extensionFunctionRules));
+		this.templateParameterRules = Lists.newArrayList();
+		lenient().when(this.request.getTemplateParameterRules())
+			.thenAnswer(a -> ImmutableList.copyOf(this.templateParameterRules));
 
 		// document generator under test
 		this.documentGenerator = new DocumentGenerator(this.schemaManager, this.stylesheetManager,
@@ -354,6 +358,42 @@ class DocumentGeneratorTest {
 		final IValueDescriptor valDesc = valDescSet.get().iterator().next();
 		assertEquals(extensionFunction.getID(), valDesc.getSchemaObjectID());
 		assertEquals(extensionFunctionRule.getID(), valDesc.getGenerationRuleID());
+	}
+
+	@Test
+	void testGenerateDocument_EmptyElementWithParameter() throws FileNotFoundException, JAXBException {
+		// load schema and extract relevant objects
+		this.schema = loadSchema("EmptyElementWithParameter.x2vc_schema");
+		final IElementReference rootElementReference = this.schema.getRootElements().iterator().next();
+		final ITemplateParameter templateParameter = this.schema.getTemplateParameters().iterator().next();
+
+		// prepare generation rules and request
+		this.rootElementRule = AddElementRule.builder(rootElementReference).build();
+		final TemplateParameterRule templateParameterRule = new TemplateParameterRule(templateParameter.getID());
+		this.templateParameterRules.add(templateParameterRule);
+
+		// prepare value generator
+		final ITemplateParameterValue parameterValue = mock(ITemplateParameterValue.class);
+		// when(functionResult.getXDMValue()).thenReturn(XdmValue.makeValue("foobar"));
+		when(this.valueGenerator.generateValue(templateParameterRule)).thenReturn(parameterValue);
+		this.valueDescriptors
+			.add(new ValueDescriptor(templateParameter.getID(), templateParameterRule.getID(), "foobar", false));
+
+		final IXMLDocumentContainer document = this.documentGenerator.generateDocument(this.request);
+		final IXMLDocumentDescriptor descriptor = document.getDocumentDescriptor();
+		assertEquals(VALUE_PREFIX, descriptor.getValuePrefix());
+		assertEquals(VALUE_LENGTH, descriptor.getValueLength());
+
+		final ImmutableCollection<ITemplateParameterValue> parameterValues = descriptor.getTemplateParameterValues();
+		assertEquals(1, parameterValues.size());
+		assertSame(parameterValue, parameterValues.iterator().next());
+
+		final Optional<ImmutableSet<IValueDescriptor>> valDescSet = descriptor.getValueDescriptors("foobar");
+		assertTrue(valDescSet.isPresent());
+		assertEquals(1, valDescSet.get().size());
+		final IValueDescriptor valDesc = valDescSet.get().iterator().next();
+		assertEquals(templateParameter.getID(), valDesc.getSchemaObjectID());
+		assertEquals(templateParameterRule.getID(), valDesc.getGenerationRuleID());
 	}
 
 	private IXMLSchema loadSchema(String schemaFileName) throws FileNotFoundException, JAXBException {

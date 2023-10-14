@@ -64,8 +64,9 @@ public class DocumentGenerator implements IDocumentGenerator {
 		final Worker worker = new Worker(request, valueGenerator, schema, stylesheetInformation);
 		final String document = worker.generateXMLDocument();
 		final Collection<IExtensionFunctionResult> functionResults = worker.generateFunctionResults();
+		final Collection<ITemplateParameterValue> parameterValues = worker.generateParameterValues();
 		final IXMLDocumentDescriptor descriptor = generateDescriptor(request, valueGenerator,
-				functionResults, worker.getTraceIDToRuleIDMap());
+				functionResults, parameterValues, worker.getTraceIDToRuleIDMap());
 		final XMLDocumentContainer container = new XMLDocumentContainer(request, descriptor, document);
 		return logger.traceExit(container);
 	}
@@ -77,14 +78,17 @@ public class DocumentGenerator implements IDocumentGenerator {
 	 * @param valueGenerator
 	 * @param traceIDToRuleIDMap
 	 * @param functionResults
+	 * @param parameterValues
 	 * @return
 	 */
 	private IXMLDocumentDescriptor generateDescriptor(IDocumentRequest request, IValueGenerator valueGenerator,
-			Collection<IExtensionFunctionResult> functionResults, Map<UUID, UUID> traceIDToRuleIDMap) {
+			Collection<IExtensionFunctionResult> functionResults, Collection<ITemplateParameterValue> parameterValues,
+			Map<UUID, UUID> traceIDToRuleIDMap) {
 		logger.traceEntry();
 		final Builder builder = XMLDocumentDescriptor
 			.builder(valueGenerator.getValuePrefix(), valueGenerator.getValueLength())
 			.withExtensionFunctionResults(functionResults)
+			.withTemplateParameterValues(parameterValues)
 			.withTraceIDToRuleIDMap(traceIDToRuleIDMap);
 		valueGenerator.getValueDescriptors().forEach(builder::addValueDescriptor);
 		final Optional<IDocumentModifier> modifier = request.getModifier();
@@ -167,6 +171,23 @@ public class DocumentGenerator implements IDocumentGenerator {
 			final List<IExtensionFunctionResult> results = Lists.newArrayList();
 			for (final IExtensionFunctionRule rule : this.request.getExtensionFunctionRules()) {
 				logger.debug("generating return value for function {} as requested by rule {}", rule.getFunctionID(),
+						rule.getID());
+				results.add(this.valueGenerator.generateValue(rule));
+			}
+			return logger.traceExit(results);
+		}
+
+		/**
+		 * Generates the template parameter values.
+		 *
+		 * @return the template parameter values
+		 */
+		public Collection<ITemplateParameterValue> generateParameterValues() {
+			logger.traceEntry();
+			final List<ITemplateParameterValue> results = Lists.newArrayList();
+			for (final ITemplateParameterRule rule : this.request.getTemplateParameterRules()) {
+				logger.debug("generating value for template parameter {} as requested by rule {}",
+						rule.getParameterID(),
 						rule.getID());
 				results.add(this.valueGenerator.generateValue(rule));
 			}
