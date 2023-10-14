@@ -74,7 +74,6 @@ class ExtensionFunctionTest {
 		final Optional<String> oNamespace = function.getNamespaceURI();
 		assertTrue(oNamespace.isPresent());
 		assertEquals("http://foo.bar", oNamespace.get());
-
 	}
 
 	/**
@@ -158,6 +157,42 @@ class ExtensionFunctionTest {
 			.withArgumentType(type4)
 			.build();
 		assertEquals(List.of(type1, type2, type3, type4), function.getArgumentTypes());
+	}
+
+	/**
+	 * Test method for
+	 * {@link org.x2vc.schema.structure.ExtensionFunction#builderFrom(org.x2vc.schema.structure.IExtensionFunction)}.
+	 */
+	@Test
+	void testBuilderFrom() {
+		final UUID id = UUID.randomUUID();
+		final IFunctionSignatureType resultType = mock(IFunctionSignatureType.class);
+		final IFunctionSignatureType argumentType1 = mock(IFunctionSignatureType.class);
+		final IFunctionSignatureType argumentType2 = mock(IFunctionSignatureType.class);
+		final IFunctionSignatureType argumentType3 = mock(IFunctionSignatureType.class);
+		final ExtensionFunction originalFunction = ExtensionFunction.builder(id, "myFunc")
+			.withComment("foobar")
+			.withNamespaceURI("http://foo.bar")
+			.withResultType(resultType)
+			.withArgumentTypes(List.of(argumentType1, argumentType2, argumentType3))
+			.build();
+
+		final ExtensionFunction functionCopy = ExtensionFunction.builderFrom(originalFunction).build();
+
+		assertEquals(id, functionCopy.getID());
+
+		final Optional<String> oComment = functionCopy.getComment();
+		assertTrue(oComment.isPresent());
+		assertEquals("foobar", oComment.get());
+
+		final Optional<String> oNamespace = functionCopy.getNamespaceURI();
+		assertTrue(oNamespace.isPresent());
+		assertEquals("http://foo.bar", oNamespace.get());
+
+		assertEquals("myFunc", functionCopy.getLocalName());
+
+		assertEquals(resultType, functionCopy.getResultType());
+		assertEquals(List.of(argumentType1, argumentType2, argumentType3), functionCopy.getArgumentTypes());
 	}
 
 	/**

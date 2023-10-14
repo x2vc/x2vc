@@ -162,6 +162,17 @@ public final class ExtensionFunction implements IExtensionFunction {
 	}
 
 	/**
+	 * Creates builder to build {@link ExtensionFunction}.
+	 *
+	 * @param function
+	 *
+	 * @return created builder
+	 */
+	public static Builder builderFrom(IExtensionFunction function) {
+		return new Builder(function);
+	}
+
+	/**
 	 * Builder to build {@link ExtensionFunction}.
 	 */
 	public static final class Builder {
@@ -180,6 +191,15 @@ public final class ExtensionFunction implements IExtensionFunction {
 		private Builder(UUID id, String localName) {
 			this.id = id;
 			this.localName = localName;
+		}
+
+		private Builder(IExtensionFunction function) {
+			this.id = function.getID();
+			this.comment = function.getComment().orElse(null);
+			this.namespaceURI = function.getNamespaceURI().orElse(null);
+			this.localName = function.getLocalName();
+			this.resultType = function.getResultType();
+			this.argumentTypes.addAll(function.getArgumentTypes());
 		}
 
 		/**
