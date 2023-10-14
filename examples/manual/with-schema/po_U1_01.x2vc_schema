@@ -5,14 +5,14 @@
 			<attribute name="orderNumber" dataType="STRING" optional="false" fixedValueset="false" userModifiable="false"
 				id="be9032d5-da44-47b7-b8d8-8a2da23f3fda" />
 			<attribute name="system" dataType="STRING" optional="false" fixedValueset="false" userModifiable="true"
-				id="b59d6e81-03ec-441d-9b21-410adeea0754" >
+				id="b59d6e81-03ec-441d-9b21-410adeea0754">
 				<comment>system environment</comment>
 				<discreteValue dataType="STRING" stringValue="dev" id="1e1535b3-69c1-4fa9-a8fa-646e83f589d4" />
 				<discreteValue dataType="STRING" stringValue="test" id="0e0a9f5c-db39-4ac6-aa02-4903d9f896c5" />
 				<discreteValue dataType="STRING" stringValue="prod" id="c74256c6-3919-4f27-bb4c-74bcefb6239" />
 			</attribute>
 			<attribute name="background" dataType="STRING" optional="false" fixedValueset="false" userModifiable="true"
-				id="e7ba1e88-1526-46bd-872a-eb70936116cb" >
+				id="e7ba1e88-1526-46bd-872a-eb70936116cb">
 				<comment>background color</comment>
 				<discreteValue dataType="STRING" stringValue="white" id="6332862f-faf1-4050-833a-eae674cbdcf5" />
 				<discreteValue dataType="STRING" stringValue="ivory" id="e5a6cff6-bd6c-45ec-88ad-cd8ba07780f1" />
@@ -259,7 +259,8 @@
 				id="84a50759-e4a8-4e6d-8a3b-b443eb78b946" />
 		</elementType>
 
-		<elementType contentType="DATA" dataType="STRING" fixedValueset="false" userModifiable="true" id="f0aae478-247f-459b-a618-643d26e5915e">
+		<elementType contentType="DATA" dataType="STRING" fixedValueset="false" userModifiable="true"
+			id="f0aae478-247f-459b-a618-643d26e5915e">
 			<comment>listType used in item list</comment>
 			<discreteValue dataType="STRING" stringValue="table" id="92bb37b8-cfd3-4100-a074-d0a23df9777e" />
 			<discreteValue dataType="STRING" stringValue="ul" id="913ebb97-be56-49eb-84f1-844a58e58bb4" />
@@ -341,10 +342,14 @@
 		</elementType>
 
 	</elementTypes>
+
 	<rootElements>
 		<rootElement name="purchaseOrder" elementID="a95c10f3-2a83-421e-b0f4-5f5d50152210" minOccurrence="1" maxOccurrence="1"
 			id="a7417fad-c155-4ad9-84fe-d901457cebcc">
 			<comment>root element purchaseOrder</comment>
 		</rootElement>
 	</rootElements>
+
+	<extensionFunctions />
+	<templateParameters />
 </schema>

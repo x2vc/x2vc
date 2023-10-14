@@ -199,7 +199,7 @@
 		</tr>
 		<xsl:apply-templates select="comment" mode="list"/>
 	</xsl:template>
-	<xsl:template match="item" mode="table">
+	<xsl:template match="item" mode="list">
 		<xsl:comment>item number
 			<xsl:value-of select="position()"/>:
 			<xsl:value-of select="product/productName"/>
@@ -209,6 +209,12 @@
 			<xsl:value-of select="product/productName"/>
 			(<xsl:value-of select="quantity"/>x)
 		</li>
+	</xsl:template>
+	<xsl:template match="comment" mode="po">
+		<div>
+			<!-- exclude @* because we don't want to inject attributes into surrounding td -->
+			<xsl:apply-templates select="text()|b|i|br|span" mode="xss-filter"/>
+		</div>
 	</xsl:template>
 	<xsl:template match="comment" mode="item">
 		<tr>

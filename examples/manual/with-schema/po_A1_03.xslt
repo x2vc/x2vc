@@ -205,6 +205,12 @@
 		</tr>
 		<xsl:apply-templates select="comment" mode="item"/>
 	</xsl:template>
+	<xsl:template match="comment" mode="po">
+		<div>
+			<!-- exclude @* because we don't want to inject attributes into surrounding td -->
+			<xsl:apply-templates select="text()|b|i|br|span" mode="xss-filter"/>
+		</div>
+	</xsl:template>
 	<xsl:template match="comment" mode="item">
 		<tr>
 			<td/>

@@ -1,7 +1,8 @@
+/alt-application.conf
 /alt-log4j2.xml
+/.x2vc/
 /debugOutput/
 /*_report.html
 /*_report.xml
-/.x2vc/
 /*.cmd
 /*.log
