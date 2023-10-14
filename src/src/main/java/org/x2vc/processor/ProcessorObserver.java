@@ -1,9 +1,6 @@
 package org.x2vc.processor;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Consumer;
 
 import javax.xml.transform.ErrorListener;
@@ -369,7 +366,16 @@ class ProcessorObserver implements Consumer<Message>, ErrorListener, TraceListen
 		}
 		logger.traceEntry("with expression {} out of instruction {}", expression, instruction);
 		// make a deep copy of the expression because it might be altered during the processing
-		final Expression expCopy = expression.copy(this.noRebindingMap);
+		Expression expCopy;
+		try {
+			expCopy = expression.copy(this.noRebindingMap);
+		} catch (final ConcurrentModificationException e) {
+			// TODO Check what to do with CMEs during Expression.copy() - report bug?
+			// see also https://saxonica.plan.io/issues/4363
+			logger.warn(
+					"Encountered what is (probably) a bug in Saxon. Will use original expression instead of copy - beware of side effects");
+			expCopy = expression;
+		}
 
 		final Builder builder = ValueAccessTraceEvent.builder()
 			.withExpression(expCopy)
