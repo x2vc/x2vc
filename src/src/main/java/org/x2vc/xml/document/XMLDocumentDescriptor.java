@@ -47,6 +47,14 @@ public final class XMLDocumentDescriptor implements IXMLDocumentDescriptor {
 	})
 	private final List<IExtensionFunctionResult> extensionFunctionResults;
 
+	@XmlElementWrapper(name = "parameterValues")
+	@XmlElements({
+			@XmlElement(name = "stringValue", type = StringTemplateParameterValue.class),
+			@XmlElement(name = "integerValue", type = IntegerTemplateParameterValue.class),
+			@XmlElement(name = "booleanValue", type = BooleanTemplateParameterValue.class)
+	})
+	private final List<ITemplateParameterValue> templateParameterValues;
+
 	private XMLDocumentDescriptor() {
 		// used for marshalling/unmarshalling only
 		this.valuePrefix = null;
@@ -55,6 +63,7 @@ public final class XMLDocumentDescriptor implements IXMLDocumentDescriptor {
 		this.modifier = null;
 		this.traceIDToRuleIDMap = null;
 		this.extensionFunctionResults = null;
+		this.templateParameterValues = null;
 	}
 
 	private XMLDocumentDescriptor(Builder builder) {
@@ -64,6 +73,7 @@ public final class XMLDocumentDescriptor implements IXMLDocumentDescriptor {
 		this.modifier = builder.modifier;
 		this.traceIDToRuleIDMap = builder.traceIDToRuleIDMap;
 		this.extensionFunctionResults = builder.extensionFunctionResults;
+		this.templateParameterValues = builder.templateParameterValues;
 	}
 
 	@XmlAttribute
@@ -149,6 +159,11 @@ public final class XMLDocumentDescriptor implements IXMLDocumentDescriptor {
 		return ImmutableList.copyOf(this.extensionFunctionResults);
 	}
 
+	@Override
+	public ImmutableCollection<ITemplateParameterValue> getTemplateParameterValues() {
+		return ImmutableList.copyOf(this.templateParameterValues);
+	}
+
 	/**
 	 * Creates a new builder
 	 *
@@ -170,6 +185,7 @@ public final class XMLDocumentDescriptor implements IXMLDocumentDescriptor {
 		private IDocumentModifier modifier;
 		private Map<UUID, UUID> traceIDToRuleIDMap;
 		private List<IExtensionFunctionResult> extensionFunctionResults = Lists.newArrayList();
+		private List<ITemplateParameterValue> templateParameterValues = Lists.newArrayList();
 
 		/**
 		 * Creates a new builder
@@ -234,6 +250,28 @@ public final class XMLDocumentDescriptor implements IXMLDocumentDescriptor {
 		 */
 		public Builder withExtensionFunctionResults(Collection<IExtensionFunctionResult> results) {
 			this.extensionFunctionResults.addAll(results);
+			return this;
+		}
+
+		/**
+		 * Builder method for templateParameterValues parameter.
+		 *
+		 * @param value field to set
+		 * @return builder
+		 */
+		public Builder withTemplateParameterValue(final ITemplateParameterValue value) {
+			this.templateParameterValues.add(value);
+			return this;
+		}
+
+		/**
+		 * Builder method for templateParameterValues parameter.
+		 *
+		 * @param values field to set
+		 * @return builder
+		 */
+		public Builder withTemplateParameterValues(Collection<ITemplateParameterValue> values) {
+			this.templateParameterValues.addAll(values);
 			return this;
 		}
 

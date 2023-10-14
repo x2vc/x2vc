@@ -54,4 +54,11 @@ public interface IXMLDocumentDescriptor {
 	 */
 	ImmutableCollection<IExtensionFunctionResult> getExtensionFunctionResults();
 
+	/**
+	 * Provides the generated values that are passed as template parameters.
+	 *
+	 * @return a list of template parameter values
+	 */
+	ImmutableCollection<ITemplateParameterValue> getTemplateParameterValues();
+
 }
