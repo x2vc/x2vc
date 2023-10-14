@@ -16,6 +16,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.x2vc.stylesheet.XSLTConstants;
 
+import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
 import com.google.inject.Inject;
@@ -218,15 +219,35 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 		 */
 		private void processStartOfParameter(StartElement element) {
 			logger.traceEntry();
-			final Optional<String> attribName = getAttributeValue(element, "name");
-			if (attribName.isEmpty()) {
+			final Optional<String> oAttribName = getAttributeValue(element, "name");
+			if (oAttribName.isEmpty()) {
 				throw logger
 					.throwing(new IllegalArgumentException("Parameter element without name attribute encountered."));
 			}
+			final String attribName = oAttribName.get();
+
+			// the attribute name may be a QName - let's see whether we have to pick this apart
+			String localName = null;
+			String namespaceURI = null;
+			final List<String> nameParts = Splitter.on(":").splitToList(attribName);
+			if (nameParts.size() == 1) {
+				localName = nameParts.get(0);
+			} else {
+				localName = nameParts.get(1);
+				namespaceURI = element.getNamespaceURI(nameParts.get(0));
+				if (namespaceURI == null) {
+					// no namespace found - revert to old behaviour
+					localName = attribName;
+				}
+			}
+
 			final Optional<String> attribSelect = getAttributeValue(element, "select");
-			logger.trace("start of parameter ({}) {}", element.getName().getLocalPart(), attribName.get());
+			logger.trace("start of parameter ({}) {}", element.getName().getLocalPart(), localName);
 			final XSLTParameterNode.Builder paramBuilder = XSLTParameterNode.builder(this.structure,
-					attribName.get());
+					localName);
+			if (namespaceURI != null) {
+				paramBuilder.withNamespaceURI(namespaceURI);
+			}
 			paramBuilder.withStartLocation(element.getLocation());
 			if (attribSelect.isPresent()) {
 				paramBuilder.withSelection(attribSelect.get());
@@ -286,7 +307,7 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 			final NamespaceContext namespaceContext = element.getNamespaceContext();
 			for (final String prefix : this.namespacePrefixes) {
 				final String namespaceUri = namespaceContext.getNamespaceURI(prefix);
-				if (!namespaceUri.equals(XMLConstants.NULL_NS_URI)) {
+				if ((namespaceUri != null) && !namespaceUri.equals(XMLConstants.NULL_NS_URI)) {
 					directiveBuilder.withNamespace(prefix, NamespaceUri.of(namespaceUri));
 				}
 			}
@@ -362,7 +383,7 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 			final XSLTParameterNode.Builder paramBuilder = (XSLTParameterNode.Builder) this.builderChain.removeLast();
 			paramBuilder.withEndLocation(element.getLocation());
 			final XSLTParameterNode paramNode = paramBuilder.build();
-			logger.trace("end of parameter {}", paramNode.getName());
+			logger.trace("end of parameter {}", paramNode.getQualifiedName());
 
 			final INodeBuilder parentBuilder = this.builderChain.getLast();
 			// parameters may only occur directly beneath an XSLT element

@@ -13,7 +13,7 @@ import org.apache.logging.log4j.Logger;
 public abstract class AbstractStructureTreeNode implements IStructureTreeNode {
 
 	private static final Logger logger = LogManager.getLogger();
-	private IStylesheetStructure parentStructure;
+	private final IStylesheetStructure parentStructure;
 
 	/**
 	 * Constructor for a tree node.

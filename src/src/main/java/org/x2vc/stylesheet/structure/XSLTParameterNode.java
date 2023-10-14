@@ -7,20 +7,27 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 
+import javax.xml.bind.annotation.XmlTransient;
+
 import org.x2vc.utilities.PolymorphLocation;
 
+import com.google.common.base.Supplier;
+import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableList;
+
+import net.sf.saxon.s9api.QName;
 
 /**
  * Standard implementation of {@link IXSLTParameterNode}.
  */
-public class XSLTParameterNode extends AbstractStructureTreeNode implements IXSLTParameterNode {
+public final class XSLTParameterNode extends AbstractStructureTreeNode implements IXSLTParameterNode {
 
-	private String name;
-	private PolymorphLocation startLocation;
-	private PolymorphLocation endLocation;
-	private String selection;
-	private ImmutableList<IStructureTreeNode> childElements;
+	private final String namespaceURI;
+	private final String localName;
+	private final PolymorphLocation startLocation;
+	private final PolymorphLocation endLocation;
+	private final String selection;
+	private final ImmutableList<IStructureTreeNode> childElements;
 
 	/**
 	 * Private constructor to be used with the builder.
@@ -29,7 +36,9 @@ public class XSLTParameterNode extends AbstractStructureTreeNode implements IXSL
 	 */
 	private XSLTParameterNode(Builder builder) {
 		super(builder.parentStructure);
-		this.name = builder.name;
+		checkNotNull(builder.localName);
+		this.namespaceURI = builder.namespaceURI;
+		this.localName = builder.localName;
 		this.startLocation = builder.startLocation;
 		this.endLocation = builder.endLocation;
 		this.selection = builder.selection;
@@ -47,8 +56,30 @@ public class XSLTParameterNode extends AbstractStructureTreeNode implements IXSL
 	}
 
 	@Override
-	public String getName() {
-		return this.name;
+	public Optional<String> getNamespaceURI() {
+		return Optional.ofNullable(this.namespaceURI);
+	}
+
+	@Override
+	public String getLocalName() {
+		return this.localName;
+	}
+
+	@SuppressWarnings("java:S4738") // Java supplier does not support memoization
+	private transient Supplier<QName> qualifiedNameSupplier = Suppliers
+		.memoize(() -> {
+			final Optional<String> oNamespace = getNamespaceURI();
+			if (oNamespace.isPresent()) {
+				return new QName(oNamespace.get(), getLocalName());
+			} else {
+				return new QName(getLocalName());
+			}
+		});
+
+	@XmlTransient
+	@Override
+	public QName getQualifiedName() {
+		return this.qualifiedNameSupplier.get();
 	}
 
 	@Override
@@ -75,11 +106,11 @@ public class XSLTParameterNode extends AbstractStructureTreeNode implements IXSL
 	 * Creates a new builder
 	 *
 	 * @param parentStructure the {@link IStylesheetStructure} the node belongs to
-	 * @param name            the name of the element
+	 * @param localName       the name of the element
 	 * @return the builder
 	 */
-	public static Builder builder(IStylesheetStructure parentStructure, String name) {
-		return new Builder(parentStructure, name);
+	public static Builder builder(IStylesheetStructure parentStructure, String localName) {
+		return new Builder(parentStructure, localName);
 	}
 
 	/**
@@ -87,7 +118,8 @@ public class XSLTParameterNode extends AbstractStructureTreeNode implements IXSL
 	 */
 	public static final class Builder implements INodeBuilder {
 		private IStylesheetStructure parentStructure;
-		private String name;
+		private String namespaceURI;
+		private String localName;
 		private PolymorphLocation startLocation;
 		private PolymorphLocation endLocation;
 		private String selection;
@@ -99,11 +131,22 @@ public class XSLTParameterNode extends AbstractStructureTreeNode implements IXSL
 		 * @param parentStructure the {@link IStylesheetStructure} the node belongs to
 		 * @param name            the name of the element
 		 */
-		private Builder(IStylesheetStructure parentStructure, String name) {
+		private Builder(IStylesheetStructure parentStructure, String localName) {
 			checkNotNull(parentStructure);
-			checkNotNull(name);
+			checkNotNull(localName);
 			this.parentStructure = parentStructure;
-			this.name = name;
+			this.localName = localName;
+		}
+
+		/**
+		 * Builder method for namespaceURI parameter.
+		 *
+		 * @param namespaceURI field to set
+		 * @return builder
+		 */
+		public Builder withNamespaceURI(String namespaceURI) {
+			this.namespaceURI = namespaceURI;
+			return this;
 		}
 
 		/**
@@ -211,7 +254,8 @@ public class XSLTParameterNode extends AbstractStructureTreeNode implements IXSL
 		final int prime = 31;
 		int result = super.hashCode();
 		result = prime * result
-				+ Objects.hash(this.childElements, this.endLocation, this.name, this.selection, this.startLocation);
+				+ Objects.hash(this.childElements, this.endLocation, this.localName, this.namespaceURI, this.selection,
+						this.startLocation);
 		return result;
 	}
 
@@ -223,13 +267,15 @@ public class XSLTParameterNode extends AbstractStructureTreeNode implements IXSL
 		if (!super.equals(obj)) {
 			return false;
 		}
-		if (getClass() != obj.getClass()) {
+		if (!(obj instanceof XSLTParameterNode)) {
 			return false;
 		}
 		final XSLTParameterNode other = (XSLTParameterNode) obj;
 		return Objects.equals(this.childElements, other.childElements)
 				&& Objects.equals(this.endLocation, other.endLocation)
-				&& Objects.equals(this.name, other.name) && Objects.equals(this.selection, other.selection)
+				&& Objects.equals(this.localName, other.localName)
+				&& Objects.equals(this.namespaceURI, other.namespaceURI)
+				&& Objects.equals(this.selection, other.selection)
 				&& Objects.equals(this.startLocation, other.startLocation);
 	}
 

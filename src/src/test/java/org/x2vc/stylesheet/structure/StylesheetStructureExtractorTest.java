@@ -61,7 +61,7 @@ class StylesheetStructureExtractorTest {
 	 * {@link org.x2vc.stylesheet.structure.StylesheetStructureExtractor#extractStructure(java.lang.String)}.
 	 */
 	@Test
-	void test_TopLevelParameters() {
+	void test_TopLevelParameters_LocalNameOnly() {
 		final String in = """
 							<?xml version="1.0"?>
 							<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
@@ -83,7 +83,76 @@ class StylesheetStructureExtractorTest {
 		final ImmutableList<IXSLTParameterNode> params = rootNode.getFormalParameters();
 		assertEquals(1, params.size());
 		final IXSLTParameterNode param = params.get(0);
-		assertEquals("foo", param.getName());
+		assertEquals("foo", param.getLocalName());
+		assertFalse(param.getNamespaceURI().isPresent());
+		assertEquals(3, param.asParameter().getStartLocation().orElseThrow().getLineNumber());
+		assertEquals(3, param.asParameter().getEndLocation().orElseThrow().getLineNumber());
+	}
+
+	/**
+	 * Test method for
+	 * {@link org.x2vc.stylesheet.structure.StylesheetStructureExtractor#extractStructure(java.lang.String)}.
+	 */
+	@Test
+	void test_TopLevelParameters_WithNamespaceLocally() {
+		final String in = """
+							<?xml version="1.0"?>
+							<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+							<xsl:param name="foo:bar" select="baz" xmlns:foo="http://foo.bar.baz"/>
+							<xsl:template name="bar">
+							<p>foobar&apos;<![CDATA[Some<>Content]]></p>
+							</xsl:template>
+							</xsl:stylesheet>
+							""";
+		final IXSLTDirectiveNode rootNode = this.extractor.extractStructure(in).getRootNode();
+
+		assertEquals("stylesheet", rootNode.getName());
+		assertEquals(1, rootNode.getChildElements().size());
+		assertEquals(2, rootNode.getStartLocation().orElseThrow().getLineNumber());
+		assertEquals(7, rootNode.getEndLocation().orElseThrow().getLineNumber());
+		assertEquals(80, rootNode.getStartLocation().orElseThrow().getColumnNumber());
+		assertEquals(18, rootNode.getEndLocation().orElseThrow().getColumnNumber());
+
+		final ImmutableList<IXSLTParameterNode> params = rootNode.getFormalParameters();
+		assertEquals(1, params.size());
+		final IXSLTParameterNode param = params.get(0);
+		assertEquals("bar", param.getLocalName());
+		assertTrue(param.getNamespaceURI().isPresent());
+		assertEquals("http://foo.bar.baz", param.getNamespaceURI().orElseThrow());
+		assertEquals(3, param.asParameter().getStartLocation().orElseThrow().getLineNumber());
+		assertEquals(3, param.asParameter().getEndLocation().orElseThrow().getLineNumber());
+	}
+
+	/**
+	 * Test method for
+	 * {@link org.x2vc.stylesheet.structure.StylesheetStructureExtractor#extractStructure(java.lang.String)}.
+	 */
+	@Test
+	void test_TopLevelParameters_WithNamespaceParent() {
+		final String in = """
+							<?xml version="1.0"?>
+							<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:foo="http://foo.bar.baz">
+							<xsl:param name="foo:bar" select="baz"/>
+							<xsl:template name="bar">
+							<p>foobar&apos;<![CDATA[Some<>Content]]></p>
+							</xsl:template>
+							</xsl:stylesheet>
+							""";
+		final IXSLTDirectiveNode rootNode = this.extractor.extractStructure(in).getRootNode();
+
+		assertEquals("stylesheet", rootNode.getName());
+		assertEquals(1, rootNode.getChildElements().size());
+		assertEquals(2, rootNode.getStartLocation().orElseThrow().getLineNumber());
+		assertEquals(7, rootNode.getEndLocation().orElseThrow().getLineNumber());
+		assertEquals(111, rootNode.getStartLocation().orElseThrow().getColumnNumber());
+		assertEquals(18, rootNode.getEndLocation().orElseThrow().getColumnNumber());
+
+		final ImmutableList<IXSLTParameterNode> params = rootNode.getFormalParameters();
+		assertEquals(1, params.size());
+		final IXSLTParameterNode param = params.get(0);
+		assertEquals("bar", param.getLocalName());
+		assertTrue(param.getNamespaceURI().isPresent());
+		assertEquals("http://foo.bar.baz", param.getNamespaceURI().orElseThrow());
 		assertEquals(3, param.asParameter().getStartLocation().orElseThrow().getLineNumber());
 		assertEquals(3, param.asParameter().getEndLocation().orElseThrow().getLineNumber());
 	}
@@ -121,7 +190,7 @@ class StylesheetStructureExtractorTest {
 		final ImmutableList<IXSLTParameterNode> params = child1.asDirective().getFormalParameters();
 		assertEquals(1, params.size());
 		final IXSLTParameterNode param = params.get(0);
-		assertEquals("foo", param.getName());
+		assertEquals("foo", param.getLocalName());
 		assertEquals(4, param.asParameter().getStartLocation().orElseThrow().getLineNumber());
 		assertEquals(4, param.asParameter().getEndLocation().orElseThrow().getLineNumber());
 	}
@@ -167,7 +236,7 @@ class StylesheetStructureExtractorTest {
 		final ImmutableList<IXSLTParameterNode> params = child1_1.asDirective().getActualParameters();
 		assertEquals(1, params.size());
 		final IXSLTParameterNode param = params.get(0);
-		assertEquals("foo", param.getName());
+		assertEquals("foo", param.getLocalName());
 		assertTrue(param.getSelection().isPresent());
 		assertEquals("baz", param.getSelection().get());
 		assertEquals(6, param.asParameter().getStartLocation().orElseThrow().getLineNumber());
@@ -215,7 +284,7 @@ class StylesheetStructureExtractorTest {
 		final ImmutableList<IXSLTParameterNode> params = child1_1.asDirective().getActualParameters();
 		assertEquals(1, params.size());
 		final IXSLTParameterNode param = params.get(0);
-		assertEquals("foo", param.getName());
+		assertEquals("foo", param.getLocalName());
 		assertFalse(param.getSelection().isPresent());
 		assertEquals(1, param.getChildElements().size());
 		assertTrue(param.getChildElements().get(0).isText());

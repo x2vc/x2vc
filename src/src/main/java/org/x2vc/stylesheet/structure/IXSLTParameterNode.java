@@ -6,16 +6,28 @@ import org.x2vc.utilities.PolymorphLocation;
 
 import com.google.common.collect.ImmutableList;
 
+import net.sf.saxon.s9api.QName;
+
 /**
- * This object is used to represent both formal parameters (xsl:param) and
- * actual parameters (xsl:with-param).
+ * This object is used to represent both formal parameters (xsl:param) and actual parameters (xsl:with-param).
  */
 public interface IXSLTParameterNode extends IStructureTreeNode {
 
 	/**
-	 * @return the name of the parameter
+	 * @return the URI of the namespace for which the parameter name is defined.
 	 */
-	String getName();
+	Optional<String> getNamespaceURI();
+
+	/**
+	 * @return the parameter name within the namespace
+	 */
+	String getLocalName();
+
+	/**
+	 * @return the qualified name, consisting of the {@link #getNamespaceURI()} and the {@link #getLocalName()}
+	 *
+	 */
+	QName getQualifiedName();
 
 	/**
 	 * @return the location the starting element was found
@@ -33,8 +45,7 @@ public interface IXSLTParameterNode extends IStructureTreeNode {
 	Optional<String> getSelection();
 
 	/**
-	 * @return the template elements, i.e. the contents of the parameter element.
-	 *         This list may be empty.
+	 * @return the template elements, i.e. the contents of the parameter element. This list may be empty.
 	 */
 	ImmutableList<IStructureTreeNode> getChildElements();
 
