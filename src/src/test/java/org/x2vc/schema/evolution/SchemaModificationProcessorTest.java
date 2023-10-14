@@ -57,6 +57,7 @@ class SchemaModificationProcessorTest {
 			"MultipleRootElements.x2vc_schema",
 			"SingleDataElement.x2vc_schema",
 			"SingleDataElement_WithFunction.x2vc_schema",
+			"SingleDataElement_WithParameter.x2vc_schema",
 			"SingleEmptyElement_WithMultipleAttributes.x2vc_schema",
 			"SingleEmptyElement_WithOptionalAttribute.x2vc_schema",
 			"SingleEmptyElement_WithRequiredAttribute.x2vc_schema",
@@ -98,6 +99,7 @@ class SchemaModificationProcessorTest {
 				        </rootElement>
 					</rootElements>
 					<extensionFunctions/>
+					<templateParameters/>
 				</schema>
 				""";
 		//@formatter:on
@@ -131,6 +133,7 @@ class SchemaModificationProcessorTest {
 				        </rootElement>
 				    </rootElements>
 					<extensionFunctions/>
+					<templateParameters/>
 				</schema>
 			""";
 		// @formatter:on
@@ -160,6 +163,7 @@ class SchemaModificationProcessorTest {
 				        </rootElement>
 				    </rootElements>
 					<extensionFunctions/>
+					<templateParameters/>
 				</schema>
 				""";
 		//@formatter:on
@@ -194,6 +198,7 @@ class SchemaModificationProcessorTest {
 				        </rootElement>
 				    </rootElements>
 					<extensionFunctions/>
+					<templateParameters/>
 				</schema>
 			""";
 		// @formatter:on
@@ -223,6 +228,7 @@ class SchemaModificationProcessorTest {
 				        </rootElement>
 				    </rootElements>
 					<extensionFunctions/>
+					<templateParameters/>
 				</schema>
 				""";
 		//@formatter:on
@@ -256,6 +262,7 @@ class SchemaModificationProcessorTest {
 				        </rootElement>
 				    </rootElements>
 					<extensionFunctions/>
+					<templateParameters/>
 				</schema>
 			""";
 		// @formatter:on
@@ -284,6 +291,7 @@ class SchemaModificationProcessorTest {
 				        </rootElement>
 				    </rootElements>
 					<extensionFunctions/>
+					<templateParameters/>
 				</schema>
 				""";
 		//@formatter:on
@@ -321,6 +329,7 @@ class SchemaModificationProcessorTest {
 				        </rootElement>
 				    </rootElements>
 					<extensionFunctions/>
+					<templateParameters/>
 				</schema>
 			""";
 		// @formatter:on
@@ -353,6 +362,7 @@ class SchemaModificationProcessorTest {
 				        </rootElement>
 				    </rootElements>
 					<extensionFunctions/>
+					<templateParameters/>
 				</schema>
 				""";
 		//@formatter:on
@@ -394,6 +404,7 @@ class SchemaModificationProcessorTest {
 				        </rootElement>
 				    </rootElements>
 					<extensionFunctions/>
+					<templateParameters/>
 				</schema>
 			""";
 		// @formatter:on
@@ -426,6 +437,7 @@ class SchemaModificationProcessorTest {
 				        </rootElement>
 				    </rootElements>
 					<extensionFunctions/>
+					<templateParameters/>
 				</schema>
 				""";
 		//@formatter:on
@@ -465,6 +477,7 @@ class SchemaModificationProcessorTest {
 				        </rootElement>
 				    </rootElements>
 					<extensionFunctions/>
+					<templateParameters/>
 				</schema>
 			""";
 		// @formatter:on
@@ -493,6 +506,7 @@ class SchemaModificationProcessorTest {
 				        </rootElement>
 				    </rootElements>
 					<extensionFunctions/>
+					<templateParameters/>
 				</schema>
 				""";
 		//@formatter:on
@@ -540,6 +554,7 @@ class SchemaModificationProcessorTest {
 				        </rootElement>
 				    </rootElements>
 					<extensionFunctions/>
+					<templateParameters/>
 				</schema>
 			""";
 		// @formatter:on
@@ -568,6 +583,7 @@ class SchemaModificationProcessorTest {
 				        </rootElement>
 				    </rootElements>
 					<extensionFunctions/>
+					<templateParameters/>
 				</schema>
 				""";
 		//@formatter:on
@@ -604,6 +620,7 @@ class SchemaModificationProcessorTest {
 				        <rootElement name="elem1" elementID="cbe2ec0e-ffb7-4ac3-b7f6-b6d4078667ba" minOccurrence="1" maxOccurrence="42" id="56073cb8-30de-4657-8f12-0eaa8b8c1a46" />
 				    </rootElements>
 					<extensionFunctions/>
+					<templateParameters/>
 				</schema>
 			""";
 		// @formatter:on

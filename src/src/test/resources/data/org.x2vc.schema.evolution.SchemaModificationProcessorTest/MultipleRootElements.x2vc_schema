@@ -1,20 +1,23 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <schema stylesheetURI="file://somewhere/SampleStylesheet.xslt" schemaURI="memory:schema/bar" version="1">
-    <elementTypes>
-        <elementType contentType="EMPTY" id="b773b4bd-1c03-4e9e-bf96-f17b51fbd801">
-            <comment>root element A</comment>
-        </elementType>
-        <elementType contentType="EMPTY" id="c3ee9d15-8aa1-43a5-8e00-2543d379ed6f">
-            <comment>root element B</comment>
-        </elementType>
-    </elementTypes>
-    <rootElements>
-        <rootElement name="root" elementID="b773b4bd-1c03-4e9e-bf96-f17b51fbd801" minOccurrence="0" id="9bf54a0d-f72c-4d6e-a58b-3f7e0c6476f5">
-            <comment>reference to root element A</comment>
-        </rootElement>
-        <rootElement name="root" elementID="c3ee9d15-8aa1-43a5-8e00-2543d379ed6f" minOccurrence="0" id="5a10a2f6-a5c4-42b1-8008-d0a6f8e10775">
-            <comment>reference to root element B</comment>
-        </rootElement>
-    </rootElements>
-    <extensionFunctions/>
+	<elementTypes>
+		<elementType contentType="EMPTY" id="b773b4bd-1c03-4e9e-bf96-f17b51fbd801">
+			<comment>root element A</comment>
+		</elementType>
+		<elementType contentType="EMPTY" id="c3ee9d15-8aa1-43a5-8e00-2543d379ed6f">
+			<comment>root element B</comment>
+		</elementType>
+	</elementTypes>
+	<rootElements>
+		<rootElement name="root" elementID="b773b4bd-1c03-4e9e-bf96-f17b51fbd801" minOccurrence="0"
+			id="9bf54a0d-f72c-4d6e-a58b-3f7e0c6476f5">
+			<comment>reference to root element A</comment>
+		</rootElement>
+		<rootElement name="root" elementID="c3ee9d15-8aa1-43a5-8e00-2543d379ed6f" minOccurrence="0"
+			id="5a10a2f6-a5c4-42b1-8008-d0a6f8e10775">
+			<comment>reference to root element B</comment>
+		</rootElement>
+	</rootElements>
+	<extensionFunctions />
+	<templateParameters />
 </schema>

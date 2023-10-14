@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <schema stylesheetURI="file://somewhere/SampleStylesheet.xslt" schemaURI="memory:schema/bar" version="1">
 	<elementTypes>
-		<elementType contentType="EMPTY" id="45023ac4-9c79-4247-bbe5-36f893bd7eaa">
+		<elementType contentType="DATA" dataType="STRING" fixedValueset="false" id="45023ac4-9c79-4247-bbe5-36f893bd7eaa">
 			<comment>root element</comment>
 		</elementType>
 	</elementTypes>
@@ -12,5 +12,9 @@
 		</rootElement>
 	</rootElements>
 	<extensionFunctions />
-	<templateParameters />
+	<templateParameters>
+		<parameter id="530e6ab1-2cc1-44d2-9eea-3b87f61d01e3" namespaceURI="http://foo.bar" localName="myParam">
+			<type occurrence="ONE" type="STRING" />
+		</parameter>
+	</templateParameters>
 </schema>

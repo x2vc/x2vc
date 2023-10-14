@@ -54,6 +54,11 @@ public interface IXMLSchema {
 	ImmutableCollection<IExtensionFunction> getExtensionFunctions();
 
 	/**
+	 * @return the top-level parameters defined by the stylesheet
+	 */
+	ImmutableCollection<ITemplateParameter> getTemplateParameters();
+
+	/**
 	 * @param id the ID of a schema object
 	 * @return the object with the ID
 	 * @throws IllegalArgumentException if the object is not part of the schema

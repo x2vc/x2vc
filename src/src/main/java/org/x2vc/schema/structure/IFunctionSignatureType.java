@@ -6,6 +6,7 @@ import net.sf.saxon.s9api.SequenceType;
 
 /**
  * A data type used in an {@link IExtensionFunction} descriptor, either as the return / result type or an argument type.
+ * This data type is also used to specify template parameters.
  */
 public interface IFunctionSignatureType {
 

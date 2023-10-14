@@ -41,6 +41,7 @@ public class SchemaModificationProcessor implements ISchemaModificationProcessor
 		private Multimap<UUID, UUID> elementDependencies = MultimapBuilder.hashKeys().arrayListValues().build();
 		private Map<UUID, XMLElementType> elementTypesByID = new HashMap<>();
 		private Map<UUID, ExtensionFunction.Builder> functionBuilders = new HashMap<>();
+		private Map<UUID, TemplateParameter.Builder> parameterBuilders = new HashMap<>();
 
 		/**
 		 * Prepares a worker with the modifiers.
@@ -91,12 +92,14 @@ public class SchemaModificationProcessor implements ISchemaModificationProcessor
 			initializeSchemaBuilder();
 			initializeElementBuilders();
 			initializeFunctionBuilders();
+			initializeParameterBuilders();
 			processAttributeModifiers();
 			processRootElementModifiers();
 			processElementModifiers();
 			createRemainingElements();
 			createRootReferences();
 			createFunctions();
+			createParameters();
 			return logger.traceExit(this.newSchemaBuilder.build());
 		}
 
@@ -145,6 +148,18 @@ public class SchemaModificationProcessor implements ISchemaModificationProcessor
 			for (final IExtensionFunction originalFunction : this.inputSchema.getExtensionFunctions()) {
 				logger.debug("initializing builder for function {}", originalFunction.getID());
 				this.functionBuilders.put(originalFunction.getID(), ExtensionFunction.builderFrom(originalFunction));
+			}
+			logger.traceExit();
+		}
+
+		/**
+		 * Initializes a builder for every parameter present in the original schema.
+		 */
+		private void initializeParameterBuilders() {
+			logger.traceEntry();
+			for (final ITemplateParameter originalParameter : this.inputSchema.getTemplateParameters()) {
+				logger.debug("initializing builder for parameter {}", originalParameter.getID());
+				this.parameterBuilders.put(originalParameter.getID(), TemplateParameter.builderFrom(originalParameter));
 			}
 			logger.traceExit();
 		}
@@ -395,7 +410,7 @@ public class SchemaModificationProcessor implements ISchemaModificationProcessor
 		}
 
 		/**
-		 * Creates the functions i the target schema
+		 * Creates the functions in the target schema
 		 */
 		private void createFunctions() {
 			logger.traceEntry();
@@ -403,6 +418,19 @@ public class SchemaModificationProcessor implements ISchemaModificationProcessor
 				final ExtensionFunction newFunction = functionBuilder.build();
 				logger.debug("adding extension function {} ({})", newFunction.getID(), newFunction.getQualifiedName());
 				this.newSchemaBuilder.addExtensionFunction(newFunction);
+			}
+			logger.traceExit();
+		}
+
+		/**
+		 * Creates the parameters in the target schema
+		 */
+		private void createParameters() {
+			logger.traceEntry();
+			for (final TemplateParameter.Builder parameterBuilder : this.parameterBuilders.values()) {
+				final TemplateParameter newParam = parameterBuilder.build();
+				logger.debug("adding template parameter {} ({})", newParam.getID(), newParam.getQualifiedName());
+				this.newSchemaBuilder.addTemplateParameter(newParam);
 			}
 			logger.traceExit();
 		}

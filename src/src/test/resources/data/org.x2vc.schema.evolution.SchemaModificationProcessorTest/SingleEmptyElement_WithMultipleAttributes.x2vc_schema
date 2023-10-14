@@ -1,26 +1,32 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <schema stylesheetURI="file://somewhere/SampleStylesheet.xslt" schemaURI="memory:schema/bar" version="1">
-    <elementTypes>
-        <elementType contentType="EMPTY" id="45023ac4-9c79-4247-bbe5-36f893bd7eaa">
-            <comment>root element</comment>
-            <attribute name="intAttribute" dataType="INTEGER" optional="false" minValue="1" maxValue="42" fixedValueset="false" userModifiable="true" id="73a9b784-7a61-48c4-8110-9855cef81cef">
-                <comment>required int attribute of root element</comment>
-            </attribute>
-            <attribute name="intAttributeOptional" dataType="INTEGER" optional="true" minValue="1" maxValue="42" fixedValueset="false" userModifiable="true" id="431c772d-4cc9-4074-a35d-509f2af92f07">
-                <comment>optional int attribute of root element</comment>
-            </attribute>
-            <attribute name="stringAttribute" dataType="STRING" optional="false" maxLength="42" fixedValueset="false" userModifiable="true" id="68a174ff-ef1d-48ae-aa09-accf2566f390">
-                <comment>required string attribute of root element</comment>
-            </attribute>
-            <attribute name="stringAttributeOptional" dataType="STRING" optional="true" maxLength="42" fixedValueset="false" userModifiable="true" id="141c4641-47a7-4ff1-9b2c-859033fffd34">
-                <comment>optional string attribute of root element</comment>
-            </attribute>
-        </elementType>
-    </elementTypes>
-    <rootElements>
-        <rootElement name="root" elementID="45023ac4-9c79-4247-bbe5-36f893bd7eaa" minOccurrence="1" maxOccurrence="1" id="fe3fa767-685a-4c5a-8531-ca717a7cb72b">
-            <comment>reference to root element</comment>
-        </rootElement>
-    </rootElements>
-    <extensionFunctions/>
+	<elementTypes>
+		<elementType contentType="EMPTY" id="45023ac4-9c79-4247-bbe5-36f893bd7eaa">
+			<comment>root element</comment>
+			<attribute name="intAttribute" dataType="INTEGER" optional="false" minValue="1" maxValue="42" fixedValueset="false"
+				userModifiable="true" id="73a9b784-7a61-48c4-8110-9855cef81cef">
+				<comment>required int attribute of root element</comment>
+			</attribute>
+			<attribute name="intAttributeOptional" dataType="INTEGER" optional="true" minValue="1" maxValue="42" fixedValueset="false"
+				userModifiable="true" id="431c772d-4cc9-4074-a35d-509f2af92f07">
+				<comment>optional int attribute of root element</comment>
+			</attribute>
+			<attribute name="stringAttribute" dataType="STRING" optional="false" maxLength="42" fixedValueset="false" userModifiable="true"
+				id="68a174ff-ef1d-48ae-aa09-accf2566f390">
+				<comment>required string attribute of root element</comment>
+			</attribute>
+			<attribute name="stringAttributeOptional" dataType="STRING" optional="true" maxLength="42" fixedValueset="false"
+				userModifiable="true" id="141c4641-47a7-4ff1-9b2c-859033fffd34">
+				<comment>optional string attribute of root element</comment>
+			</attribute>
+		</elementType>
+	</elementTypes>
+	<rootElements>
+		<rootElement name="root" elementID="45023ac4-9c79-4247-bbe5-36f893bd7eaa" minOccurrence="1" maxOccurrence="1"
+			id="fe3fa767-685a-4c5a-8531-ca717a7cb72b">
+			<comment>reference to root element</comment>
+		</rootElement>
+	</rootElements>
+	<extensionFunctions />
+	<templateParameters />
 </schema>

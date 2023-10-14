@@ -1,83 +1,96 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <schema stylesheetURI="file://somewhere/SampleStylesheet.xslt" schemaURI="memory:schema/bar" version="1">
-    <elementTypes>
-    	<elementType contentType="DATA" dataType="STRING" maxLength="42" fixedValueset="false" id="bc25c48f-b7ff-4ee9-9d8d-a1ef8e106be1">
-            <comment>sequence element with string type</comment>
-        </elementType>
-        <elementType contentType="ELEMENT" elementArrangement="ALL" id="c9fdfe14-1c10-4f9f-b42e-5e72b157b262">
-            <comment>choice element with int value</comment>
-            <attribute name="intAttribute" optional="false" userModifiable="true" dataType="INTEGER" minValue="1" maxValue="42" fixedValueset="false" id="73a9b784-7a61-48c4-8110-9855cef81cef">
-                <comment>int attribute of choice element</comment>
-            </attribute>
-        </elementType>
-        <elementType contentType="ELEMENT" elementArrangement="CHOICE" id="d1f41d8c-71d1-4745-aa08-293ab2d5ac92">
-            <comment>root choice</comment>
-            <subElement name="string" elementID="f222aa20-1b8a-438a-a2f6-5e573320b66f" minOccurrence="0" id="094b7c2e-56d5-4cdf-8a14-1b69b498abaa">
-                <comment>reference to choice element with string value</comment>
-            </subElement>
-            <subElement name="int" elementID="c9fdfe14-1c10-4f9f-b42e-5e72b157b262" minOccurrence="0" id="0be87bf1-7f57-403f-9528-62a74652e109">
-                <comment>reference to choice element with int value</comment>
-            </subElement>
-            <subElement name="bool" elementID="3b5123d0-ea2c-4066-a29c-cd179dd2159b" minOccurrence="0" id="977235ff-36f7-427c-97e3-efaa0f5be7f7">
-                <comment>reference to choice element with bool value</comment>
-            </subElement>
-        </elementType>
-        <elementType contentType="ELEMENT" elementArrangement="ALL" id="f222aa20-1b8a-438a-a2f6-5e573320b66f">
-            <comment>choice element with string value</comment>
-            <attribute name="stringAttribute" optional="false" userModifiable="true" dataType="STRING" maxLength="42" fixedValueset="true" id="68a174ff-ef1d-48ae-aa09-accf2566f390">
-                <comment>string attribute of choice element</comment>
-                <discreteValue dataType="STRING" stringValue="foo" id="2c756514-c092-43da-91dc-493a62db88bd">
-                    <comment>first choice</comment>
-                </discreteValue>
-            </attribute>
-        </elementType>
-        <elementType contentType="MIXED" userModifiable="true" id="00771113-ee28-4cfe-b348-f55cb8861f62">
-            <comment>all element with mixed content</comment>
-        </elementType>
-        <elementType contentType="DATA" dataType="BOOLEAN" fixedValueset="false" id="027c06b3-63e0-40ab-9861-91cbeb78796c">
-            <comment>sequence element with boolean type</comment>
-        </elementType>
-        <elementType contentType="ELEMENT" elementArrangement="SEQUENCE" id="270055b5-074a-4e84-b3b2-3184839e9090">
-            <comment>root sequence</comment>
-            <subElement name="stringChild" elementID="bc25c48f-b7ff-4ee9-9d8d-a1ef8e106be1" minOccurrence="0" id="13e0dfb0-3a38-4b09-bd04-a1ffd43293c9">
-                <comment>reference to sequence element with string type</comment>
-            </subElement>
-            <subElement name="boolChild" elementID="027c06b3-63e0-40ab-9861-91cbeb78796c" minOccurrence="1" id="af8a1be6-e60c-4bfd-8bf1-d4cbe67665a2">
-                <comment>reference to sequence element with boolean type</comment>
-            </subElement>
-            <subElement name="intChild" elementID="5233330c-1ff2-44ff-a6e5-347482ed14a2" minOccurrence="0" maxOccurrence="42" id="a60445b6-8c8f-4b73-9a79-1d33a92c777b">
-                <comment>reference to sequence element with integer type</comment>
-            </subElement>
-        </elementType>
-        <elementType contentType="ELEMENT" elementArrangement="ALL" id="3b5123d0-ea2c-4066-a29c-cd179dd2159b">
-            <comment>choice element with bool value</comment>
-            <attribute name="boolAttribute" optional="false" userModifiable="false" dataType="BOOLEAN" fixedValueset="false" id="2e43dd5e-48a2-483d-a14f-805cbdb7a996">
-                <comment>bool attribute of choice element</comment>
-            </attribute>
-        </elementType>
-        <elementType contentType="ELEMENT" elementArrangement="ALL" id="45023ac4-9c79-4247-bbe5-36f893bd7eaa">
-            <comment>root all</comment>
-            <subElement name="data" elementID="027c06b3-63e0-40ab-9861-91cbeb78796c" minOccurrence="0" id="c90f6614-362f-4c50-a040-ebeb8f9eb113">
-                <comment>reference to all element with data content</comment>
-            </subElement>
-            <subElement name="mixed" elementID="00771113-ee28-4cfe-b348-f55cb8861f62" minOccurrence="0" id="dd7fa303-9fe6-49fb-8257-66608a7e434f">
-                <comment>reference to all element with mixed content</comment>
-            </subElement>
-        </elementType>
-        <elementType contentType="DATA" userModifiable="true" dataType="INTEGER" minValue="1" maxValue="42" fixedValueset="false" id="5233330c-1ff2-44ff-a6e5-347482ed14a2">
-            <comment>sequence element with integer type</comment>
-        </elementType>
-    </elementTypes>
-    <rootElements>
-        <rootElement name="b" elementID="45023ac4-9c79-4247-bbe5-36f893bd7eaa" minOccurrence="0" id="b613e9e1-1b3a-4c3a-b715-a4a9f57311cf">
-            <comment>reference to root element B</comment>
-        </rootElement>
-        <rootElement name="a" elementID="270055b5-074a-4e84-b3b2-3184839e9090" minOccurrence="0" id="fe3fa767-685a-4c5a-8531-ca717a7cb72b">
-            <comment>reference to root element A</comment>
-        </rootElement>
-        <rootElement name="c" elementID="d1f41d8c-71d1-4745-aa08-293ab2d5ac92" minOccurrence="0" id="3a76139c-f642-46e5-b646-e701d871968d">
-            <comment>reference to root element C</comment>
-        </rootElement>
-    </rootElements>
-    <extensionFunctions/>
+	<elementTypes>
+		<elementType contentType="DATA" dataType="STRING" maxLength="42" fixedValueset="false" id="bc25c48f-b7ff-4ee9-9d8d-a1ef8e106be1">
+			<comment>sequence element with string type</comment>
+		</elementType>
+		<elementType contentType="ELEMENT" elementArrangement="ALL" id="c9fdfe14-1c10-4f9f-b42e-5e72b157b262">
+			<comment>choice element with int value</comment>
+			<attribute name="intAttribute" optional="false" userModifiable="true" dataType="INTEGER" minValue="1" maxValue="42"
+				fixedValueset="false" id="73a9b784-7a61-48c4-8110-9855cef81cef">
+				<comment>int attribute of choice element</comment>
+			</attribute>
+		</elementType>
+		<elementType contentType="ELEMENT" elementArrangement="CHOICE" id="d1f41d8c-71d1-4745-aa08-293ab2d5ac92">
+			<comment>root choice</comment>
+			<subElement name="string" elementID="f222aa20-1b8a-438a-a2f6-5e573320b66f" minOccurrence="0"
+				id="094b7c2e-56d5-4cdf-8a14-1b69b498abaa">
+				<comment>reference to choice element with string value</comment>
+			</subElement>
+			<subElement name="int" elementID="c9fdfe14-1c10-4f9f-b42e-5e72b157b262" minOccurrence="0"
+				id="0be87bf1-7f57-403f-9528-62a74652e109">
+				<comment>reference to choice element with int value</comment>
+			</subElement>
+			<subElement name="bool" elementID="3b5123d0-ea2c-4066-a29c-cd179dd2159b" minOccurrence="0"
+				id="977235ff-36f7-427c-97e3-efaa0f5be7f7">
+				<comment>reference to choice element with bool value</comment>
+			</subElement>
+		</elementType>
+		<elementType contentType="ELEMENT" elementArrangement="ALL" id="f222aa20-1b8a-438a-a2f6-5e573320b66f">
+			<comment>choice element with string value</comment>
+			<attribute name="stringAttribute" optional="false" userModifiable="true" dataType="STRING" maxLength="42" fixedValueset="true"
+				id="68a174ff-ef1d-48ae-aa09-accf2566f390">
+				<comment>string attribute of choice element</comment>
+				<discreteValue dataType="STRING" stringValue="foo" id="2c756514-c092-43da-91dc-493a62db88bd">
+					<comment>first choice</comment>
+				</discreteValue>
+			</attribute>
+		</elementType>
+		<elementType contentType="MIXED" userModifiable="true" id="00771113-ee28-4cfe-b348-f55cb8861f62">
+			<comment>all element with mixed content</comment>
+		</elementType>
+		<elementType contentType="DATA" dataType="BOOLEAN" fixedValueset="false" id="027c06b3-63e0-40ab-9861-91cbeb78796c">
+			<comment>sequence element with boolean type</comment>
+		</elementType>
+		<elementType contentType="ELEMENT" elementArrangement="SEQUENCE" id="270055b5-074a-4e84-b3b2-3184839e9090">
+			<comment>root sequence</comment>
+			<subElement name="stringChild" elementID="bc25c48f-b7ff-4ee9-9d8d-a1ef8e106be1" minOccurrence="0"
+				id="13e0dfb0-3a38-4b09-bd04-a1ffd43293c9">
+				<comment>reference to sequence element with string type</comment>
+			</subElement>
+			<subElement name="boolChild" elementID="027c06b3-63e0-40ab-9861-91cbeb78796c" minOccurrence="1"
+				id="af8a1be6-e60c-4bfd-8bf1-d4cbe67665a2">
+				<comment>reference to sequence element with boolean type</comment>
+			</subElement>
+			<subElement name="intChild" elementID="5233330c-1ff2-44ff-a6e5-347482ed14a2" minOccurrence="0" maxOccurrence="42"
+				id="a60445b6-8c8f-4b73-9a79-1d33a92c777b">
+				<comment>reference to sequence element with integer type</comment>
+			</subElement>
+		</elementType>
+		<elementType contentType="ELEMENT" elementArrangement="ALL" id="3b5123d0-ea2c-4066-a29c-cd179dd2159b">
+			<comment>choice element with bool value</comment>
+			<attribute name="boolAttribute" optional="false" userModifiable="false" dataType="BOOLEAN" fixedValueset="false"
+				id="2e43dd5e-48a2-483d-a14f-805cbdb7a996">
+				<comment>bool attribute of choice element</comment>
+			</attribute>
+		</elementType>
+		<elementType contentType="ELEMENT" elementArrangement="ALL" id="45023ac4-9c79-4247-bbe5-36f893bd7eaa">
+			<comment>root all</comment>
+			<subElement name="data" elementID="027c06b3-63e0-40ab-9861-91cbeb78796c" minOccurrence="0"
+				id="c90f6614-362f-4c50-a040-ebeb8f9eb113">
+				<comment>reference to all element with data content</comment>
+			</subElement>
+			<subElement name="mixed" elementID="00771113-ee28-4cfe-b348-f55cb8861f62" minOccurrence="0"
+				id="dd7fa303-9fe6-49fb-8257-66608a7e434f">
+				<comment>reference to all element with mixed content</comment>
+			</subElement>
+		</elementType>
+		<elementType contentType="DATA" userModifiable="true" dataType="INTEGER" minValue="1" maxValue="42" fixedValueset="false"
+			id="5233330c-1ff2-44ff-a6e5-347482ed14a2">
+			<comment>sequence element with integer type</comment>
+		</elementType>
+	</elementTypes>
+	<rootElements>
+		<rootElement name="b" elementID="45023ac4-9c79-4247-bbe5-36f893bd7eaa" minOccurrence="0" id="b613e9e1-1b3a-4c3a-b715-a4a9f57311cf">
+			<comment>reference to root element B</comment>
+		</rootElement>
+		<rootElement name="a" elementID="270055b5-074a-4e84-b3b2-3184839e9090" minOccurrence="0" id="fe3fa767-685a-4c5a-8531-ca717a7cb72b">
+			<comment>reference to root element A</comment>
+		</rootElement>
+		<rootElement name="c" elementID="d1f41d8c-71d1-4745-aa08-293ab2d5ac92" minOccurrence="0" id="3a76139c-f642-46e5-b646-e701d871968d">
+			<comment>reference to root element C</comment>
+		</rootElement>
+	</rootElements>
+	<extensionFunctions />
+	<templateParameters />
 </schema>
