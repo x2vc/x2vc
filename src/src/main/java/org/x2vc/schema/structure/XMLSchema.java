@@ -198,6 +198,7 @@ public final class XMLSchema implements IXMLSchema {
 	 *      "https://docs.oracle.com/javase/8/docs/api/javax/xml/bind/Unmarshaller.html#unmarshalEventCallback">Unmarshal
 	 *      Event Callbacks</a>
 	 */
+	@SuppressWarnings("S1172") // signature is imposed by JAXB
 	public void afterUnmarshal(Unmarshaller unmarshaller, Object parent) {
 		fixElementReferences();
 	}
