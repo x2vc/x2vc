@@ -53,10 +53,10 @@ class SchemaModificationProcessorTest {
 
 	@ParameterizedTest
 	@CsvSource({
-			"MixedContent_WithoutSubElements.x2vc_schema",
 			"MixedContent_WithSubElements.x2vc_schema",
 			"MultipleRootElements.x2vc_schema",
 			"SingleDataElement.x2vc_schema",
+			"SingleDataElement_WithFunction.x2vc_schema",
 			"SingleEmptyElement_WithMultipleAttributes.x2vc_schema",
 			"SingleEmptyElement_WithOptionalAttribute.x2vc_schema",
 			"SingleEmptyElement_WithRequiredAttribute.x2vc_schema",

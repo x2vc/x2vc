@@ -40,6 +40,7 @@ public class SchemaModificationProcessor implements ISchemaModificationProcessor
 		private Map<UUID, XMLElementType.Builder> elementBuilders = new HashMap<>();
 		private Multimap<UUID, UUID> elementDependencies = MultimapBuilder.hashKeys().arrayListValues().build();
 		private Map<UUID, XMLElementType> elementTypesByID = new HashMap<>();
+		private Map<UUID, ExtensionFunction.Builder> functionBuilders = new HashMap<>();
 
 		/**
 		 * Prepares a worker with the modifiers.
@@ -52,6 +53,14 @@ public class SchemaModificationProcessor implements ISchemaModificationProcessor
 			this.attributeModifiers = MultimapBuilder.hashKeys().arrayListValues().build();
 			this.elementModifiersByParentID = MultimapBuilder.hashKeys().arrayListValues().build();
 			this.rootElementModifiers = Sets.newHashSet();
+			sortModifiersByType(modifiers);
+			logger.traceExit();
+		}
+
+		/**
+		 * @param modifiers
+		 */
+		protected void sortModifiersByType(Collection<ISchemaModifier> modifiers) {
 			modifiers.stream().forEach(modifier -> {
 				final Optional<UUID> parentElementID = modifier.getElementID();
 				if (modifier instanceof final IAddAttributeModifier attributeModifier) {
@@ -68,7 +77,6 @@ public class SchemaModificationProcessor implements ISchemaModificationProcessor
 							String.format("Unknown modifier type %s", modifier.getClass().getSimpleName()));
 				}
 			});
-			logger.traceExit();
 		}
 
 		/**
@@ -82,11 +90,13 @@ public class SchemaModificationProcessor implements ISchemaModificationProcessor
 			this.inputSchema = inputSchema;
 			initializeSchemaBuilder();
 			initializeElementBuilders();
+			initializeFunctionBuilders();
 			processAttributeModifiers();
 			processRootElementModifiers();
 			processElementModifiers();
 			createRemainingElements();
 			createRootReferences();
+			createFunctions();
 			return logger.traceExit(this.newSchemaBuilder.build());
 		}
 
@@ -123,6 +133,18 @@ public class SchemaModificationProcessor implements ISchemaModificationProcessor
 						this.elementDependencies.put(originalElement.getID(), subElement.getElementID());
 					}
 				}
+			}
+			logger.traceExit();
+		}
+
+		/**
+		 * Initializes a builder for every function present in the original schema.
+		 */
+		private void initializeFunctionBuilders() {
+			logger.traceEntry();
+			for (final IExtensionFunction originalFunction : this.inputSchema.getExtensionFunctions()) {
+				logger.debug("initializing builder for function {}", originalFunction.getID());
+				this.functionBuilders.put(originalFunction.getID(), ExtensionFunction.builderFrom(originalFunction));
 			}
 			logger.traceExit();
 		}
@@ -368,6 +390,19 @@ public class SchemaModificationProcessor implements ISchemaModificationProcessor
 					.withMinOccurrence(originalReference.getMinOccurrence())
 					.withMaxOccurrence(originalReference.getMaxOccurrence())
 					.addTo(this.newSchemaBuilder);
+			}
+			logger.traceExit();
+		}
+
+		/**
+		 * Creates the functions i the target schema
+		 */
+		private void createFunctions() {
+			logger.traceEntry();
+			for (final ExtensionFunction.Builder functionBuilder : this.functionBuilders.values()) {
+				final ExtensionFunction newFunction = functionBuilder.build();
+				logger.debug("adding extension function {} ({})", newFunction.getID(), newFunction.getQualifiedName());
+				this.newSchemaBuilder.addExtensionFunction(newFunction);
 			}
 			logger.traceExit();
 		}
