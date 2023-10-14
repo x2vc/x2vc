@@ -80,6 +80,9 @@ public class DirectAttributeCheckRule extends AbstractAttributeRule {
 			for (final IValueDescriptor valueDescriptor : valueDescriptors.get()) {
 				final String currentValue = valueDescriptor.getValue();
 
+				logger.debug("will try to manipulate element {} to introduce attribute",
+						valueDescriptor.getSchemaObjectID());
+
 				// try to replace the entire attribute with style attribute
 				final AnalyzerRulePayload stylePayload = AnalyzerRulePayload.builder()
 					.withSchemaElementID(valueDescriptor.getSchemaObjectID())
