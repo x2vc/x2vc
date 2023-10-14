@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<schema stylesheetURI="file://somewhere/SampleStylesheet.xslt" schemaURI="memory:schema/bar" version="1">
+	<elementTypes>
+		<elementType contentType="EMPTY" elementArrangement="ALL" id="08a190e1-1f2b-4d67-b7e0-09baabc0fbf8">
+			<comment>root element</comment>
+		</elementType>
+	</elementTypes>
+	<rootElements>
+		<rootElement name="root" elementID="08a190e1-1f2b-4d67-b7e0-09baabc0fbf8" minOccurrence="1" maxOccurrence="1"
+			id="9f84ded9-51db-420d-9679-929eb26a8cc2">
+			<comment>reference to root element</comment>
+		</rootElement>
+	</rootElements>
+	<extensionFunctions />
+	<templateParameters>
+		<parameter id="bf4f5fc6-572b-4634-a692-9b546e182dc9" />
+	</templateParameters>
+</schema>

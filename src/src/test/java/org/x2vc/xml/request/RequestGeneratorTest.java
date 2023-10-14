@@ -393,6 +393,21 @@ class RequestGeneratorTest {
 	}
 
 	@Test
+	void testGenerateNewRequest_SingleEmptyElement_WithTemplateParameters()
+			throws URISyntaxException, FileNotFoundException, JAXBException {
+		final IXMLSchema schema = loadSchema("SingleEmptyElement_WithTemplateParameters.x2vc_schema");
+
+		final IDocumentRequest request = this.requestGenerator.generateNewRequest(schema,
+				MixedContentGenerationMode.FULL);
+
+		final ImmutableCollection<ITemplateParameterRule> parameterResults = request.getTemplateParameterRules();
+		assertEquals(1, parameterResults.size());
+		final ITemplateParameterRule result = parameterResults.iterator().next();
+		assertEquals(UUID.fromString("bf4f5fc6-572b-4634-a692-9b546e182dc9"), result.getParameterID());
+		assertFalse(result.getRequestedValue().isPresent());
+	}
+
+	@Test
 	void testModifyRequest_ForAttributeValue() throws FileNotFoundException, JAXBException {
 
 		final IXMLSchema schema = loadSchema("SingleEmptyElement_WithRequiredAttribute.x2vc_schema");
@@ -521,6 +536,50 @@ class RequestGeneratorTest {
 		final ImmutableMultimap<UUID, IRequestedValue> rvMap = modifiedRequest.getRequestedValues();
 		assertTrue(rvMap.containsKey(modifiedFunctionID));
 		final ImmutableCollection<IRequestedValue> valuesFromMap = rvMap.get(modifiedFunctionID);
+		assertEquals(1, valuesFromMap.size());
+		assertSame(requestedValue, valuesFromMap.iterator().next());
+
+		assertTrue(modifiedRequest.getModifier().isPresent());
+		assertSame(this.valueModifier, modifiedRequest.getModifier().get());
+	}
+
+	@Test
+	void testModifyRequest_ForTemplateParameters() throws FileNotFoundException, JAXBException {
+
+		final IXMLSchema schema = loadSchema("SingleEmptyElement_WithTemplateParameters.x2vc_schema");
+		// shortcut to provide schema for request construction
+		lenient().when(this.schemaManager.getSchema(URI.create("file://somewhere/SampleStylesheet.xslt"), 1))
+			.thenReturn(schema);
+
+		final IDocumentRequest originalRequest = this.requestGenerator.generateNewRequest(schema,
+				MixedContentGenerationMode.FULL);
+		final ITemplateParameterRule originalParameterRule = originalRequest.getTemplateParameterRules().iterator()
+			.next();
+		final UUID modifiedParameterID = UUID.fromString("bf4f5fc6-572b-4634-a692-9b546e182dc9");
+		assertEquals(modifiedParameterID, originalParameterRule.getParameterID());
+
+		lenient().when(this.valueModifier.getGenerationRuleID()).thenReturn(originalParameterRule.getID());
+		lenient().when(this.valueModifier.getSchemaObjectID()).thenReturn(modifiedParameterID);
+		lenient().when(this.valueModifier.getReplacementValue()).thenReturn("foobar");
+
+		final IDocumentRequest modifiedRequest = this.requestGenerator.modifyRequest(originalRequest,
+				this.valueModifier, MixedContentGenerationMode.FULL);
+
+		final ITemplateParameterRule modifiedParameterRule = modifiedRequest.getTemplateParameterRules().iterator()
+			.next();
+
+		final Optional<IRequestedValue> rv = modifiedParameterRule.getRequestedValue();
+		assertTrue(rv.isPresent());
+		final IRequestedValue requestedValue = rv.get();
+		final Optional<IDocumentModifier> mod = requestedValue.getModifier();
+		assertTrue(mod.isPresent());
+		final IDocumentModifier modifier = mod.get();
+		assertSame(this.valueModifier, modifier);
+		assertEquals("foobar", requestedValue.getValue());
+
+		final ImmutableMultimap<UUID, IRequestedValue> rvMap = modifiedRequest.getRequestedValues();
+		assertTrue(rvMap.containsKey(modifiedParameterID));
+		final ImmutableCollection<IRequestedValue> valuesFromMap = rvMap.get(modifiedParameterID);
 		assertEquals(1, valuesFromMap.size());
 		assertSame(requestedValue, valuesFromMap.iterator().next());
 
