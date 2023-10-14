@@ -289,6 +289,7 @@ public final class XMLSchema implements IXMLSchema {
 		logger.traceEntry();
 		final Multimap<UUID, String> map = MultimapBuilder.hashKeys().arrayListValues().build();
 		this.rootElements.forEach(elem -> addToPathMap(map, elem, "/"));
+		this.templateParameters.forEach((param -> map.put(param.getID(), "$" + param.getQualifiedName())));
 		return logger.traceExit(map);
 	});
 

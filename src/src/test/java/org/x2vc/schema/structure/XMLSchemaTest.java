@@ -418,6 +418,8 @@ class XMLSchemaTest {
 		assertEquals(Set.of("/c/int/@intAttribute"), this.schema.getObjectPaths(this.attrIntChoice.getID()));
 		assertEquals(Set.of("/c/bool"), this.schema.getObjectPaths(this.elemChildBoolChoice.getID()));
 		assertEquals(Set.of("/c/bool/@boolAttribute"), this.schema.getObjectPaths(this.attrBoolChoice.getID()));
+		assertEquals(Set.of("$myParamZ"), this.schema.getObjectPaths(this.parameterZ.getID()));
+
 	}
 
 	/**
