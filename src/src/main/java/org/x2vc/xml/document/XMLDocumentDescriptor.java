@@ -287,9 +287,9 @@ public final class XMLDocumentDescriptor implements IXMLDocumentDescriptor {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(this.extensionFunctionResults, this.modifier, this.traceIDToRuleIDMap,
-				this.valueDescriptors, this.valueLength,
-				this.valuePrefix);
+		return Objects.hash(this.extensionFunctionResults, this.modifier, this.templateParameterValues,
+				this.traceIDToRuleIDMap,
+				this.valueDescriptors, this.valueLength, this.valuePrefix);
 	}
 
 	@Override
@@ -303,6 +303,7 @@ public final class XMLDocumentDescriptor implements IXMLDocumentDescriptor {
 		final XMLDocumentDescriptor other = (XMLDocumentDescriptor) obj;
 		return Objects.equals(this.extensionFunctionResults, other.extensionFunctionResults)
 				&& Objects.equals(this.modifier, other.modifier)
+				&& Objects.equals(this.templateParameterValues, other.templateParameterValues)
 				&& Objects.equals(this.traceIDToRuleIDMap, other.traceIDToRuleIDMap)
 				&& Objects.equals(this.valueDescriptors, other.valueDescriptors)
 				&& this.valueLength == other.valueLength

@@ -136,6 +136,18 @@ class XMLDocumentDescriptorTest {
 				UUID.fromString("e1d72795-4bf9-409e-a9d6-80d7e68286fa"), // functionID
 				false // result
 		);
+		final ITemplateParameterValue realStringParameterValue = new StringTemplateParameterValue(
+				UUID.fromString("adbe63f0-1a6e-46e1-86da-cb1ae1bb9d6f"), // parameterID
+				"parameterValue01" // value
+		);
+		final ITemplateParameterValue realIntegerParameterValue = new IntegerTemplateParameterValue(
+				UUID.fromString("bc59fdb1-9fce-47e9-9132-98412890f3ae"), // parameterID
+				42 // value
+		);
+		final ITemplateParameterValue realBooleanParameterValue = new BooleanTemplateParameterValue(
+				UUID.fromString("c2b3d1b9-556c-421d-9414-89a484d6f45f"), // parameterID
+				false // value
+		);
 		final IModifierPayload realPayload = AnalyzerRulePayload.builder()
 			.withAttributeName("attributeName01")
 			.withElementName("elementName01")
@@ -163,6 +175,9 @@ class XMLDocumentDescriptorTest {
 			.withExtensionFunctionResult(realStringFunctionResult)
 			.withExtensionFunctionResult(realIntegerFunctionResult)
 			.withExtensionFunctionResult(realBooleanFunctionResult)
+			.withTemplateParameterValue(realStringParameterValue)
+			.withTemplateParameterValue(realIntegerParameterValue)
+			.withTemplateParameterValue(realBooleanParameterValue)
 			.withModifier(realModifier)
 			.withTraceIDToRuleIDMap(realTraceIDToRuleIDMap)
 			.build();
@@ -203,6 +218,17 @@ class XMLDocumentDescriptorTest {
 								            <result>false</result>
 								        </booleanResult>
 								    </functionResults>
+								    <parameterValues>
+								        <stringValue parameterID="adbe63f0-1a6e-46e1-86da-cb1ae1bb9d6f">
+								            <result>parameterValue01</result>
+								        </stringValue>
+								        <integerValue parameterID="bc59fdb1-9fce-47e9-9132-98412890f3ae">
+								            <result>42</result>
+								        </integerValue>
+								        <booleanValue parameterID="c2b3d1b9-556c-421d-9414-89a484d6f45f">
+								            <result>false</result>
+								        </booleanValue>
+								    </parameterValues>
 								</descriptor>
 								""";
 		assertXMLEquals(expected, writer.toString());
