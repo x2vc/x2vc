@@ -16,6 +16,7 @@ import org.x2vc.schema.structure.ITemplateParameter;
 import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.stylesheet.IStylesheetInformation;
 import org.x2vc.stylesheet.IStylesheetManager;
+import org.x2vc.utilities.SaxonLoggerAdapter;
 import org.x2vc.xml.document.ITemplateParameterValue;
 import org.x2vc.xml.document.IXMLDocumentContainer;
 
@@ -105,6 +106,7 @@ public class XSLTProcessor implements IXSLTProcessor {
 				final Xslt30Transformer transformer = cacheEntry.executable.load30();
 				transformer.setMessageHandler(observer);
 				transformer.setErrorListener(observer);
+				transformer.setErrorReporter(SaxonLoggerAdapter.makeReporter());
 				transformer.setTraceListener(observer);
 				cacheEntry.functionHandler.storeFunctionResults(xmlDocument.getDocumentDescriptor());
 				transferStylesheetParameters(xmlDocument, cacheEntry.schema, transformer);
@@ -190,6 +192,7 @@ public class XSLTProcessor implements IXSLTProcessor {
 			// create compiler in trace mode
 			final XsltCompiler compiler = processor.newXsltCompiler();
 			compiler.setCompileWithTracing(true);
+			compiler.setErrorReporter(SaxonLoggerAdapter.makeReporter());
 
 			logger.debug("Compiling stylesheet");
 

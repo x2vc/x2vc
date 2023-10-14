@@ -67,19 +67,19 @@ class ProcessorObserver implements Consumer<Message>, ErrorListener, TraceListen
 	@Override
 	public void warning(TransformerException exception) throws TransformerException {
 		logger.warn("Received transformer warning: {}", exception.getMessage());
-		logger.trace("transformer exception", exception);
+		logger.trace("transformer warning details:", exception);
 	}
 
 	@Override
 	public void error(TransformerException exception) throws TransformerException {
 		logger.warn("Received transformer error: {}", exception.getMessage());
-		logger.trace("transformer exception", exception);
+		logger.trace("transformer error details:", exception);
 	}
 
 	@Override
 	public void fatalError(TransformerException exception) throws TransformerException {
 		logger.warn("Received transformer fatal error: {}", exception.getMessage());
-		logger.trace("transformer exception", exception);
+		logger.trace("transformer fatal error details:", exception);
 	}
 
 	@Override

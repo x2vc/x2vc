@@ -11,6 +11,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.x2vc.stylesheet.structure.IStylesheetStructure;
 import org.x2vc.stylesheet.structure.IStylesheetStructureExtractor;
+import org.x2vc.utilities.SaxonLoggerAdapter;
 import org.x2vc.utilities.XMLUtilities;
 
 import com.google.common.collect.Multimap;
@@ -18,6 +19,7 @@ import com.google.inject.Inject;
 
 import net.sf.saxon.s9api.Processor;
 import net.sf.saxon.s9api.SaxonApiException;
+import net.sf.saxon.s9api.XsltCompiler;
 import net.sf.saxon.s9api.XsltExecutable;
 
 /**
@@ -82,8 +84,9 @@ public class StylesheetPreprocessor implements IStylesheetPreprocessor {
 		logger.traceEntry();
 		// try to try to compile the stylesheet to check the overall syntax and version
 		try {
-			final XsltExecutable executable = this.processor.newXsltCompiler()
-				.compile(new StreamSource(new StringReader(originalSource)));
+			final XsltCompiler compiler = this.processor.newXsltCompiler();
+			compiler.setErrorReporter(SaxonLoggerAdapter.makeReporter());
+			final XsltExecutable executable = compiler.compile(new StreamSource(new StringReader(originalSource)));
 			final String stylesheetVersion = executable.getUnderlyingCompiledStylesheet()
 				.getPrimarySerializationProperties().getProperty("{http://saxon.sf.net/}stylesheet-version");
 			// currently only XSLT 1.0 is supported

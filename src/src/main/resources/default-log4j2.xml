@@ -17,7 +17,7 @@
 				<Route>
 					<RollingFile name="Rolling-${ctx:stylesheet}" fileName="${ctx:stylesheet}.log" filePattern="${ctx:stylesheet}.%i.log">
 						<PatternLayout>
-							<Pattern>%date{HH:mm:ss.SSS} %level{length=1} [%tn] %30.30logger{1.1.*}#%-30.30M: %msg%n%throwable</Pattern>
+							<Pattern>%date{HH:mm:ss.SSS} %level{length=1} [%tn] %30.30logger{1.1.*}#%-20.20M: %msg%n%throwable</Pattern>
 						</PatternLayout>
 						<Policies>
 							<OnStartupTriggeringPolicy />
