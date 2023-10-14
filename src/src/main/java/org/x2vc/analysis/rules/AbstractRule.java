@@ -339,6 +339,22 @@ public abstract class AbstractRule implements IAnalyzerRule {
 		} else if (schemaObject instanceof final IElementType element) {
 			requestElementModification(element, valueDescriptor, originalValue, replacementValue,
 					payload, collector);
+		} else if (schemaObject instanceof IExtensionFunction) {
+			DocumentValueModifier.builder(valueDescriptor)
+				.withAnalyzerRuleID(getRuleID())
+				.withOriginalValue(originalValue)
+				.withReplacementValue(replacementValue)
+				.withPayload(payload)
+				.build()
+				.sendTo(collector);
+		} else if (schemaObject instanceof ITemplateParameter) {
+			DocumentValueModifier.builder(valueDescriptor)
+				.withAnalyzerRuleID(getRuleID())
+				.withOriginalValue(originalValue)
+				.withReplacementValue(replacementValue)
+				.withPayload(payload)
+				.build()
+				.sendTo(collector);
 		} else {
 			throw logger
 				.throwing(new IllegalArgumentException(
@@ -403,8 +419,13 @@ public abstract class AbstractRule implements IAnalyzerRule {
 						collector);
 				break;
 			case MIXED:
-				requestMixedElementModification(valueDescriptor, originalValue, replacementValue, payload,
-						collector);
+				DocumentValueModifier.builder(valueDescriptor)
+					.withAnalyzerRuleID(getRuleID())
+					.withOriginalValue(originalValue)
+					.withReplacementValue(replacementValue)
+					.withPayload(payload)
+					.build()
+					.sendTo(collector);
 				break;
 			default:
 				final String message = String.format("Modification requests are not implemented for element type %s",
@@ -484,25 +505,4 @@ public abstract class AbstractRule implements IAnalyzerRule {
 
 	}
 
-	/**
-	 * @param valueDescriptor
-	 * @param originalValue
-	 * @param replacementValue
-	 * @param payload
-	 * @param collector
-	 */
-	protected void requestMixedElementModification(IValueDescriptor valueDescriptor,
-			String originalValue, String replacementValue, IModifierPayload payload,
-			Consumer<IDocumentModifier> collector) {
-		logger.traceEntry();
-		DocumentValueModifier.builder(valueDescriptor)
-			.withAnalyzerRuleID(getRuleID())
-			.withOriginalValue(originalValue)
-			.withReplacementValue(replacementValue)
-			.withPayload(payload)
-			.build()
-			.sendTo(collector);
-		logger.traceExit();
-
-	}
 }
