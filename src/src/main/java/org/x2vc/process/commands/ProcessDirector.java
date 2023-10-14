@@ -2,6 +2,7 @@ package org.x2vc.process.commands;
 
 import java.io.File;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -11,6 +12,7 @@ import org.apache.logging.log4j.Logger;
 import org.x2vc.process.IWorkerProcessManager;
 import org.x2vc.process.tasks.*;
 import org.x2vc.schema.evolution.ISchemaModifierCollector;
+import org.x2vc.xml.document.IDocumentModifier;
 import org.x2vc.xml.request.IDocumentRequest;
 
 import com.github.racc.tscg.TypesafeConfig;
@@ -262,6 +264,12 @@ public class ProcessDirector implements IProcessDirector {
 	private synchronized void collectFollowupRequest(IDocumentRequest request) {
 		try (final CloseableThreadContext.Instance ctc = getThreadContext()) {
 			logger.traceEntry();
+			String ruleName = "(no modifier)";
+			final Optional<IDocumentModifier> oModifier = request.getModifier();
+			if (oModifier.isPresent()) {
+				ruleName = oModifier.get().getAnalyzerRuleID().orElse("(unknown)");
+			}
+			logger.debug("received follow-up request for rule {}", ruleName);
 			final IFollowUpVulnerabilityCheckTask checkTask = this.followUpVulnerabilityCheckTaskFactory
 				.create(this.xsltFile, request, this::collectFollowupRequest, this::handleVulnerabilityCheckComplete);
 			this.vulnerabilityCheckTasks.add(checkTask.getTaskID());
@@ -280,7 +288,8 @@ public class ProcessDirector implements IProcessDirector {
 		try (final CloseableThreadContext.Instance ctc = getThreadContext()) {
 			logger.traceEntry();
 			this.vulnerabilityCheckTasks.remove(taskID);
-			logger.trace("{} vulnerability check tasks remaining", this.vulnerabilityCheckTasks.size());
+			logger.debug("vulnerability check tasks completed, {} tasks remaining",
+					this.vulnerabilityCheckTasks.size());
 			if (this.vulnerabilityCheckTasks.isEmpty()) {
 				// when the last task has completed, move to the report compilation phase
 				startReportCompilation();
