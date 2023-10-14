@@ -5,14 +5,14 @@ import java.util.UUID;
 import javax.xml.bind.annotation.XmlAttribute;
 
 /**
- * Base implementation of {@link ITemplateParameterValue}.
+ * Base implementation of {@link IStylesheetParameterValue}.
  */
-public abstract class AbstractTemplateParameterValue implements ITemplateParameterValue {
+public abstract class AbstractStylesheetParameterValue implements IStylesheetParameterValue {
 
 	@XmlAttribute
 	private final UUID parameterID;
 
-	protected AbstractTemplateParameterValue(UUID parameterID) {
+	protected AbstractStylesheetParameterValue(UUID parameterID) {
 		super();
 		this.parameterID = parameterID;
 	}

@@ -49,11 +49,11 @@ public final class XMLDocumentDescriptor implements IXMLDocumentDescriptor {
 
 	@XmlElementWrapper(name = "parameterValues")
 	@XmlElements({
-			@XmlElement(name = "stringValue", type = StringTemplateParameterValue.class),
-			@XmlElement(name = "integerValue", type = IntegerTemplateParameterValue.class),
-			@XmlElement(name = "booleanValue", type = BooleanTemplateParameterValue.class)
+			@XmlElement(name = "stringValue", type = StringStylesheetParameterValue.class),
+			@XmlElement(name = "integerValue", type = IntegerStylesheetParameterValue.class),
+			@XmlElement(name = "booleanValue", type = BooleanStylesheetParameterValue.class)
 	})
-	private final List<ITemplateParameterValue> templateParameterValues;
+	private final List<IStylesheetParameterValue> StylesheetParameterValues;
 
 	private XMLDocumentDescriptor() {
 		// used for marshalling/unmarshalling only
@@ -63,7 +63,7 @@ public final class XMLDocumentDescriptor implements IXMLDocumentDescriptor {
 		this.modifier = null;
 		this.traceIDToRuleIDMap = null;
 		this.extensionFunctionResults = null;
-		this.templateParameterValues = null;
+		this.StylesheetParameterValues = null;
 	}
 
 	private XMLDocumentDescriptor(Builder builder) {
@@ -73,7 +73,7 @@ public final class XMLDocumentDescriptor implements IXMLDocumentDescriptor {
 		this.modifier = builder.modifier;
 		this.traceIDToRuleIDMap = builder.traceIDToRuleIDMap;
 		this.extensionFunctionResults = builder.extensionFunctionResults;
-		this.templateParameterValues = builder.templateParameterValues;
+		this.StylesheetParameterValues = builder.StylesheetParameterValues;
 	}
 
 	@XmlAttribute
@@ -160,8 +160,8 @@ public final class XMLDocumentDescriptor implements IXMLDocumentDescriptor {
 	}
 
 	@Override
-	public ImmutableCollection<ITemplateParameterValue> getTemplateParameterValues() {
-		return ImmutableList.copyOf(this.templateParameterValues);
+	public ImmutableCollection<IStylesheetParameterValue> getStylesheetParameterValues() {
+		return ImmutableList.copyOf(this.StylesheetParameterValues);
 	}
 
 	/**
@@ -185,7 +185,7 @@ public final class XMLDocumentDescriptor implements IXMLDocumentDescriptor {
 		private IDocumentModifier modifier;
 		private Map<UUID, UUID> traceIDToRuleIDMap;
 		private List<IExtensionFunctionResult> extensionFunctionResults = Lists.newArrayList();
-		private List<ITemplateParameterValue> templateParameterValues = Lists.newArrayList();
+		private List<IStylesheetParameterValue> StylesheetParameterValues = Lists.newArrayList();
 
 		/**
 		 * Creates a new builder
@@ -254,24 +254,24 @@ public final class XMLDocumentDescriptor implements IXMLDocumentDescriptor {
 		}
 
 		/**
-		 * Builder method for templateParameterValues parameter.
+		 * Builder method for StylesheetParameterValues parameter.
 		 *
 		 * @param value field to set
 		 * @return builder
 		 */
-		public Builder withTemplateParameterValue(final ITemplateParameterValue value) {
-			this.templateParameterValues.add(value);
+		public Builder withStylesheetParameterValue(final IStylesheetParameterValue value) {
+			this.StylesheetParameterValues.add(value);
 			return this;
 		}
 
 		/**
-		 * Builder method for templateParameterValues parameter.
+		 * Builder method for StylesheetParameterValues parameter.
 		 *
 		 * @param values field to set
 		 * @return builder
 		 */
-		public Builder withTemplateParameterValues(Collection<ITemplateParameterValue> values) {
-			this.templateParameterValues.addAll(values);
+		public Builder withStylesheetParameterValues(Collection<IStylesheetParameterValue> values) {
+			this.StylesheetParameterValues.addAll(values);
 			return this;
 		}
 
@@ -287,7 +287,7 @@ public final class XMLDocumentDescriptor implements IXMLDocumentDescriptor {
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(this.extensionFunctionResults, this.modifier, this.templateParameterValues,
+		return Objects.hash(this.extensionFunctionResults, this.modifier, this.StylesheetParameterValues,
 				this.traceIDToRuleIDMap,
 				this.valueDescriptors, this.valueLength, this.valuePrefix);
 	}
@@ -303,7 +303,7 @@ public final class XMLDocumentDescriptor implements IXMLDocumentDescriptor {
 		final XMLDocumentDescriptor other = (XMLDocumentDescriptor) obj;
 		return Objects.equals(this.extensionFunctionResults, other.extensionFunctionResults)
 				&& Objects.equals(this.modifier, other.modifier)
-				&& Objects.equals(this.templateParameterValues, other.templateParameterValues)
+				&& Objects.equals(this.StylesheetParameterValues, other.StylesheetParameterValues)
 				&& Objects.equals(this.traceIDToRuleIDMap, other.traceIDToRuleIDMap)
 				&& Objects.equals(this.valueDescriptors, other.valueDescriptors)
 				&& this.valueLength == other.valueLength

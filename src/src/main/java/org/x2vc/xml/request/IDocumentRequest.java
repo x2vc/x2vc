@@ -65,7 +65,7 @@ public interface IDocumentRequest {
 	/**
 	 * @return the rules to provide the template parameters to the XSLT processor
 	 */
-	ImmutableCollection<ITemplateParameterRule> getTemplateParameterRules();
+	ImmutableCollection<IStylesheetParameterRule> getStylesheetParameterRules();
 
 	/**
 	 * Provides a view of the the specific values that have been requested for individual elements or attributes,

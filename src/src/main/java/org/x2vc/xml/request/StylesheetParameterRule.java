@@ -8,9 +8,9 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Standard implementation of {@link ITemplateParameterRule}.
+ * Standard implementation of {@link IStylesheetParameterRule}.
  */
-public final class TemplateParameterRule extends AbstractGenerationRule implements ITemplateParameterRule {
+public final class StylesheetParameterRule extends AbstractGenerationRule implements IStylesheetParameterRule {
 
 	@XmlAttribute
 	private final UUID parameterID;
@@ -19,50 +19,50 @@ public final class TemplateParameterRule extends AbstractGenerationRule implemen
 	private final IRequestedValue requestedValue;
 
 	/**
-	 * Creates a new {@link TemplateParameterRule} with a requested value.
+	 * Creates a new {@link StylesheetParameterRule} with a requested value.
 	 *
 	 * @param ruleID
 	 *
 	 * @param parameterID
 	 * @param requestedValue
 	 */
-	public TemplateParameterRule(UUID ruleID, UUID parameterID, IRequestedValue requestedValue) {
+	public StylesheetParameterRule(UUID ruleID, UUID parameterID, IRequestedValue requestedValue) {
 		super(ruleID);
 		this.parameterID = parameterID;
 		this.requestedValue = requestedValue;
 	}
 
 	/**
-	 * Creates a new {@link TemplateParameterRule} without a requested value.
+	 * Creates a new {@link StylesheetParameterRule} without a requested value.
 	 *
 	 * @param ruleID
 	 *
 	 * @param parameterID
 	 */
-	public TemplateParameterRule(UUID ruleID, UUID parameterID) {
+	public StylesheetParameterRule(UUID ruleID, UUID parameterID) {
 		super(ruleID);
 		this.parameterID = parameterID;
 		this.requestedValue = null;
 	}
 
 	/**
-	 * Creates a new {@link TemplateParameterRule} with a requested value.
+	 * Creates a new {@link StylesheetParameterRule} with a requested value.
 	 *
 	 * @param parameterID
 	 * @param requestedValue
 	 */
-	public TemplateParameterRule(UUID parameterID, IRequestedValue requestedValue) {
+	public StylesheetParameterRule(UUID parameterID, IRequestedValue requestedValue) {
 		super();
 		this.parameterID = parameterID;
 		this.requestedValue = requestedValue;
 	}
 
 	/**
-	 * Creates a new {@link TemplateParameterRule} without a requested value.
+	 * Creates a new {@link StylesheetParameterRule} without a requested value.
 	 *
 	 * @param parameterID
 	 */
-	public TemplateParameterRule(UUID parameterID) {
+	public StylesheetParameterRule(UUID parameterID) {
 		super();
 		this.parameterID = parameterID;
 		this.requestedValue = null;
@@ -85,7 +85,7 @@ public final class TemplateParameterRule extends AbstractGenerationRule implemen
 
 	@Override
 	public IGenerationRule normalize() {
-		return new TemplateParameterRule(this.parameterID, this.requestedValue);
+		return new StylesheetParameterRule(this.parameterID, this.requestedValue);
 	}
 
 	@Override
@@ -104,10 +104,10 @@ public final class TemplateParameterRule extends AbstractGenerationRule implemen
 		if (!super.equals(obj)) {
 			return false;
 		}
-		if (!(obj instanceof TemplateParameterRule)) {
+		if (!(obj instanceof StylesheetParameterRule)) {
 			return false;
 		}
-		final TemplateParameterRule other = (TemplateParameterRule) obj;
+		final StylesheetParameterRule other = (StylesheetParameterRule) obj;
 		return Objects.equals(this.parameterID, other.parameterID)
 				&& Objects.equals(this.requestedValue, other.requestedValue);
 	}

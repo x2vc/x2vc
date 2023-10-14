@@ -68,9 +68,9 @@ class DocumentRequestTest {
 			.addExtensionFunctionRule(new ExtensionFunctionRule(UUID.fromString("b001c2b8-cae7-45e3-8634-ad51566af497"),
 					UUID.fromString("b63f6510-fd72-4b42-b0e6-ebfc3cca5d85"),
 					new RequestedValue("foobar")))
-			.addTemplateParameterRule(new TemplateParameterRule(UUID.fromString("dec5f22e-2462-4566-a648-d52c898f8ce1"),
+			.addStylesheetParameterRule(new StylesheetParameterRule(UUID.fromString("dec5f22e-2462-4566-a648-d52c898f8ce1"),
 					UUID.fromString("4079c782-2ce0-43fe-b855-1e0a90e8d0c5")))
-			.addTemplateParameterRule(new TemplateParameterRule(UUID.fromString("1b2c1a03-605b-4374-b73c-aaf0e8c57428"),
+			.addStylesheetParameterRule(new StylesheetParameterRule(UUID.fromString("1b2c1a03-605b-4374-b73c-aaf0e8c57428"),
 					UUID.fromString("6a7aac5e-98ca-4ecf-9bab-5148687c76d9"),
 					new RequestedValue("foobar")))
 			.build();
@@ -133,14 +133,14 @@ class DocumentRequestTest {
 								            </requestedValue>
 								        </function>
 								    </extensionFunctions>
-								    <templateParameters>
+								    <StylesheetParameters>
 								    	<parameter parameterID="4079c782-2ce0-43fe-b855-1e0a90e8d0c5" ruleID="dec5f22e-2462-4566-a648-d52c898f8ce1"/>
 								    	<parameter parameterID="6a7aac5e-98ca-4ecf-9bab-5148687c76d9" ruleID="1b2c1a03-605b-4374-b73c-aaf0e8c57428">
 								            <requestedValue>
 								                <value>foobar</value>
 								            </requestedValue>
 								    	</parameter>
-								    </templateParameters>
+								    </StylesheetParameters>
 								</request>
 								""";
 		assertXMLEquals(expected, writer.toString());
@@ -194,7 +194,7 @@ class DocumentRequestTest {
 		final IDocumentRequest request = DocumentRequest
 			.builder(schemaURI, 1, stylesheetURI, rootRule)
 			.addExtensionFunctionRule(new ExtensionFunctionRule(functionID, functionValue))
-			.addTemplateParameterRule(new TemplateParameterRule(parameterID, parameterValue))
+			.addStylesheetParameterRule(new StylesheetParameterRule(parameterID, parameterValue))
 			.build();
 
 		assertEquals(schemaURI, request.getSchemaURI());
@@ -333,7 +333,7 @@ class DocumentRequestTest {
 
 		final UUID parameterID = UUID.randomUUID();
 		final RequestedValue parameterValue = new RequestedValue("param");
-		final TemplateParameterRule parameterRule = new TemplateParameterRule(parameterID, parameterValue);
+		final StylesheetParameterRule parameterRule = new StylesheetParameterRule(parameterID, parameterValue);
 
 		final URI stylesheetURI = URI.create("bar:foo");
 		final URI schemaURI = URI.create("foo:bar");
@@ -341,7 +341,7 @@ class DocumentRequestTest {
 		final IDocumentRequest request = DocumentRequest
 			.builder(schemaURI, 1, stylesheetURI, rootRule)
 			.addExtensionFunctionRule(functionRule)
-			.addTemplateParameterRule(parameterRule)
+			.addStylesheetParameterRule(parameterRule)
 			.build();
 
 		assertSame(rootAttribRule, request.getRuleByID(rootAttribRule.getID()));

@@ -10,7 +10,7 @@ import net.sf.saxon.s9api.QName;
  * @see <a href="https://www.saxonica.com/documentation10/index.html#!extensibility/integratedfunctions">Saxon
  *      documentation</a>
  */
-public interface ITemplateParameter extends ISchemaObject {
+public interface IStylesheetParameter extends ISchemaObject {
 
 	/**
 	 * @return the URI of the namespace for which the parameter name is defined.

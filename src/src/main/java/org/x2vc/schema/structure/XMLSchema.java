@@ -43,9 +43,9 @@ public final class XMLSchema implements IXMLSchema {
 	@XmlElement(type = ExtensionFunction.class, name = "function")
 	private List<IExtensionFunction> extensionFunctions;
 
-	@XmlElementWrapper(name = "templateParameters")
-	@XmlElement(type = TemplateParameter.class, name = "parameter")
-	private List<ITemplateParameter> templateParameters;
+	@XmlElementWrapper(name = "stylesheetParameters")
+	@XmlElement(type = StylesheetParameter.class, name = "parameter")
+	private List<IStylesheetParameter> stylesheetParameters;
 
 	/**
 	 * Parameterless constructor for deserialization only.
@@ -55,7 +55,7 @@ public final class XMLSchema implements IXMLSchema {
 		this.elementTypes = Lists.newArrayList();
 		this.rootElements = Lists.newArrayList();
 		this.extensionFunctions = Lists.newArrayList();
-		this.templateParameters = Lists.newArrayList();
+		this.stylesheetParameters = Lists.newArrayList();
 	}
 
 	private XMLSchema(Builder builder) {
@@ -73,7 +73,7 @@ public final class XMLSchema implements IXMLSchema {
 		this.extensionFunctions = builder.extensionFunctions.stream()
 			.sorted((e1, e2) -> e1.getID().compareTo(e2.getID()))
 			.toList();
-		this.templateParameters = builder.templateParameters.stream()
+		this.stylesheetParameters = builder.StylesheetParameters.stream()
 			.sorted((e1, e2) -> e1.getID().compareTo(e2.getID()))
 			.toList();
 	}
@@ -137,8 +137,8 @@ public final class XMLSchema implements IXMLSchema {
 	}
 
 	@Override
-	public ImmutableCollection<ITemplateParameter> getTemplateParameters() {
-		return ImmutableList.copyOf(this.templateParameters);
+	public ImmutableCollection<IStylesheetParameter> getStylesheetParameters() {
+		return ImmutableList.copyOf(this.stylesheetParameters);
 	}
 
 	@SuppressWarnings("java:S4738") // Java supplier does not support memoization
@@ -154,7 +154,7 @@ public final class XMLSchema implements IXMLSchema {
 		for (final IExtensionFunction function : this.extensionFunctions) {
 			addToMap(function, map);
 		}
-		for (final ITemplateParameter param : this.templateParameters) {
+		for (final IStylesheetParameter param : this.stylesheetParameters) {
 			addToMap(param, map);
 		}
 		return logger.traceExit(Map.copyOf(map));
@@ -259,7 +259,7 @@ public final class XMLSchema implements IXMLSchema {
 	 * @param param
 	 * @param map
 	 */
-	private void addToMap(ITemplateParameter param, HashMap<UUID, ISchemaObject> map) {
+	private void addToMap(IStylesheetParameter param, HashMap<UUID, ISchemaObject> map) {
 		map.put(param.getID(), param);
 	}
 
@@ -289,7 +289,7 @@ public final class XMLSchema implements IXMLSchema {
 		logger.traceEntry();
 		final Multimap<UUID, String> map = MultimapBuilder.hashKeys().arrayListValues().build();
 		this.rootElements.forEach(elem -> addToPathMap(map, elem, "/"));
-		this.templateParameters.forEach((param -> map.put(param.getID(), "$" + param.getQualifiedName())));
+		this.stylesheetParameters.forEach((param -> map.put(param.getID(), "$" + param.getQualifiedName())));
 		return logger.traceExit(map);
 	});
 
@@ -374,7 +374,7 @@ public final class XMLSchema implements IXMLSchema {
 		private List<IElementType> elementTypes = new ArrayList<>();
 		private List<IElementReference> rootElements = new ArrayList<>();
 		private List<IExtensionFunction> extensionFunctions = new ArrayList<>();
-		private List<ITemplateParameter> templateParameters = new ArrayList<>();
+		private List<IStylesheetParameter> StylesheetParameters = new ArrayList<>();
 
 		/**
 		 * Creates a new builder.
@@ -425,8 +425,8 @@ public final class XMLSchema implements IXMLSchema {
 		 * @param parameter
 		 * @return builder
 		 */
-		public Builder addTemplateParameter(ITemplateParameter parameter) {
-			this.templateParameters.add(parameter);
+		public Builder addStylesheetParameter(IStylesheetParameter parameter) {
+			this.StylesheetParameters.add(parameter);
 			return this;
 
 		}
@@ -446,7 +446,7 @@ public final class XMLSchema implements IXMLSchema {
 	public int hashCode() {
 		return Objects.hash(this.elementTypes, this.extensionFunctions, this.rootElements, this.schemaURI,
 				this.stylesheetURI,
-				this.templateParameters, this.version);
+				this.stylesheetParameters, this.version);
 	}
 
 	@Override
@@ -463,7 +463,8 @@ public final class XMLSchema implements IXMLSchema {
 				&& Objects.equals(this.rootElements, other.rootElements)
 				&& Objects.equals(this.schemaURI, other.schemaURI)
 				&& Objects.equals(this.stylesheetURI, other.stylesheetURI)
-				&& Objects.equals(this.templateParameters, other.templateParameters) && this.version == other.version;
+				&& Objects.equals(this.stylesheetParameters, other.stylesheetParameters)
+				&& this.version == other.version;
 	}
 
 }

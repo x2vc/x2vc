@@ -10,9 +10,9 @@
             <comment>reference to root element</comment>
         </rootElement>
     </rootElements>
-    <templateParameters>
+    <stylesheetParameters>
         <parameter id="101045fe-a4ef-4ede-914b-e97f4d78f38b" namespaceURI="http://foo.bar" localName="myParamZ">
             <result occurrence="ONE" type="STRING"/>
         </parameter>
-    </templateParameters>
+    </stylesheetParameters>
 </schema>

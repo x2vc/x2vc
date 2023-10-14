@@ -56,7 +56,7 @@ public interface IXMLSchema {
 	/**
 	 * @return the top-level parameters defined by the stylesheet
 	 */
-	ImmutableCollection<ITemplateParameter> getTemplateParameters();
+	ImmutableCollection<IStylesheetParameter> getStylesheetParameters();
 
 	/**
 	 * @param id the ID of a schema object

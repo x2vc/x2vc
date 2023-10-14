@@ -6,7 +6,7 @@ import java.util.UUID;
 /**
  * An {@link IGenerationRule} to register an value for a template parameter to pass to the XSLT processor.
  */
-public interface ITemplateParameterRule extends IGenerationRule {
+public interface IStylesheetParameterRule extends IGenerationRule {
 
 	/**
 	 * @return the ID of the parameter as registered in the schema

@@ -7,9 +7,9 @@ import javax.xml.bind.annotation.XmlElement;
 import net.sf.saxon.s9api.XdmValue;
 
 /**
- * Implementation of {@link ITemplateParameterValue} that contains a boolean value.
+ * Implementation of {@link IStylesheetParameterValue} that contains a boolean value.
  */
-public final class BooleanTemplateParameterValue extends AbstractTemplateParameterValue {
+public final class BooleanStylesheetParameterValue extends AbstractStylesheetParameterValue {
 
 	@XmlElement
 	private final Boolean result;
@@ -20,7 +20,7 @@ public final class BooleanTemplateParameterValue extends AbstractTemplateParamet
 	 * @param parameterID
 	 * @param result
 	 */
-	public BooleanTemplateParameterValue(UUID parameterID, Boolean result) {
+	public BooleanStylesheetParameterValue(UUID parameterID, Boolean result) {
 		super(parameterID);
 		this.result = result;
 	}

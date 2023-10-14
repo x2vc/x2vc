@@ -12,12 +12,12 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.x2vc.processor.IHTMLDocumentFactory.Builder;
 import org.x2vc.schema.ISchemaManager;
-import org.x2vc.schema.structure.ITemplateParameter;
+import org.x2vc.schema.structure.IStylesheetParameter;
 import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.stylesheet.IStylesheetInformation;
 import org.x2vc.stylesheet.IStylesheetManager;
 import org.x2vc.utilities.SaxonLoggerAdapter;
-import org.x2vc.xml.document.ITemplateParameterValue;
+import org.x2vc.xml.document.IStylesheetParameterValue;
 import org.x2vc.xml.document.IXMLDocumentContainer;
 
 import com.github.racc.tscg.TypesafeConfig;
@@ -138,12 +138,12 @@ public class XSLTProcessor implements IXSLTProcessor {
 	private void transferStylesheetParameters(IXMLDocumentContainer xmlDocument, IXMLSchema schema,
 			Xslt30Transformer transformer) throws SaxonApiException {
 		logger.traceEntry();
-		final ImmutableCollection<ITemplateParameterValue> valuesFromGenerator = xmlDocument.getDocumentDescriptor()
-			.getTemplateParameterValues();
+		final ImmutableCollection<IStylesheetParameterValue> valuesFromGenerator = xmlDocument.getDocumentDescriptor()
+			.getStylesheetParameterValues();
 		final Map<QName, XdmValue> valuesForProcessor = Maps.newHashMap();
-		for (final ITemplateParameterValue valueFromGenerator : valuesFromGenerator) {
-			final ITemplateParameter parameterDefinition = schema.getObjectByID(valueFromGenerator.getParameterID(),
-					ITemplateParameter.class);
+		for (final IStylesheetParameterValue valueFromGenerator : valuesFromGenerator) {
+			final IStylesheetParameter parameterDefinition = schema.getObjectByID(valueFromGenerator.getParameterID(),
+					IStylesheetParameter.class);
 			final QName parameterName = parameterDefinition.getQualifiedName();
 			final XdmValue parameterValue = valueFromGenerator.getXDMValue();
 			logger.debug("setting stylesheet parameter {} to value {}", parameterName, parameterValue);

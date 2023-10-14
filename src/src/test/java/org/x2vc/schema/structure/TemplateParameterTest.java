@@ -15,35 +15,35 @@ import org.junit.jupiter.api.Test;
 import net.sf.saxon.s9api.QName;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
-class TemplateParameterTest {
+class StylesheetParameterTest {
 
 	/**
-	 * Test method for {@link org.x2vc.schema.structure.TemplateParameter#getID()}.
+	 * Test method for {@link org.x2vc.schema.structure.StylesheetParameter#getID()}.
 	 */
 	@Test
 	void testGetID() {
 		final UUID id = UUID.randomUUID();
-		final TemplateParameter param = TemplateParameter.builder(id, "myParam")
+		final StylesheetParameter param = StylesheetParameter.builder(id, "myParam")
 			.build();
 		assertEquals(id, param.getID());
 	}
 
 	/**
-	 * Test method for {@link org.x2vc.schema.structure.TemplateParameter#getID()}.
+	 * Test method for {@link org.x2vc.schema.structure.StylesheetParameter#getID()}.
 	 */
 	@Test
 	void testGetDefaultID() {
-		final TemplateParameter param = TemplateParameter.builder("myParam")
+		final StylesheetParameter param = StylesheetParameter.builder("myParam")
 			.build();
 		assertNotNull(param.getID());
 	}
 
 	/**
-	 * Test method for {@link org.x2vc.schema.structure.TemplateParameter#getComment()}.
+	 * Test method for {@link org.x2vc.schema.structure.StylesheetParameter#getComment()}.
 	 */
 	@Test
 	void testGetComment() {
-		final TemplateParameter param = TemplateParameter.builder("myParam")
+		final StylesheetParameter param = StylesheetParameter.builder("myParam")
 			.withComment("foobar")
 			.build();
 		final Optional<String> oComment = param.getComment();
@@ -52,22 +52,22 @@ class TemplateParameterTest {
 	}
 
 	/**
-	 * Test method for {@link org.x2vc.schema.structure.TemplateParameter#getComment()}.
+	 * Test method for {@link org.x2vc.schema.structure.StylesheetParameter#getComment()}.
 	 */
 	@Test
 	void testGetCommentInitial() {
-		final TemplateParameter param = TemplateParameter.builder("myParam")
+		final StylesheetParameter param = StylesheetParameter.builder("myParam")
 			.build();
 		final Optional<String> oComment = param.getComment();
 		assertFalse(oComment.isPresent());
 	}
 
 	/**
-	 * Test method for {@link org.x2vc.schema.structure.TemplateParameter#getNamespaceURI()}.
+	 * Test method for {@link org.x2vc.schema.structure.StylesheetParameter#getNamespaceURI()}.
 	 */
 	@Test
 	void testGetNamespaceURI() {
-		final TemplateParameter param = TemplateParameter.builder("myParam")
+		final StylesheetParameter param = StylesheetParameter.builder("myParam")
 			.withNamespaceURI("http://foo.bar")
 			.build();
 		final Optional<String> oNamespace = param.getNamespaceURI();
@@ -76,32 +76,32 @@ class TemplateParameterTest {
 	}
 
 	/**
-	 * Test method for {@link org.x2vc.schema.structure.TemplateParameter#getNamespaceURI()}.
+	 * Test method for {@link org.x2vc.schema.structure.StylesheetParameter#getNamespaceURI()}.
 	 */
 	@Test
 	void testGetNamespaceURIInitial() {
-		final TemplateParameter param = TemplateParameter.builder("myParam")
+		final StylesheetParameter param = StylesheetParameter.builder("myParam")
 			.build();
 		final Optional<String> oNamespace = param.getNamespaceURI();
 		assertFalse(oNamespace.isPresent());
 	}
 
 	/**
-	 * Test method for {@link org.x2vc.schema.structure.TemplateParameter#getLocalName()}.
+	 * Test method for {@link org.x2vc.schema.structure.StylesheetParameter#getLocalName()}.
 	 */
 	@Test
 	void testGetLocalName() {
-		final TemplateParameter param = TemplateParameter.builder("myParam")
+		final StylesheetParameter param = StylesheetParameter.builder("myParam")
 			.build();
 		assertEquals("myParam", param.getLocalName());
 	}
 
 	/**
-	 * Test method for {@link org.x2vc.schema.structure.TemplateParameter#getQualifiedName()}.
+	 * Test method for {@link org.x2vc.schema.structure.StylesheetParameter#getQualifiedName()}.
 	 */
 	@Test
 	void testGetQualifiedName() {
-		final TemplateParameter param = TemplateParameter.builder("myParam")
+		final StylesheetParameter param = StylesheetParameter.builder("myParam")
 			.withNamespaceURI("http://foo.bar")
 			.build();
 		final QName qName = param.getQualifiedName();
@@ -109,23 +109,23 @@ class TemplateParameterTest {
 	}
 
 	/**
-	 * Test method for {@link org.x2vc.schema.structure.TemplateParameter#getQualifiedName()}.
+	 * Test method for {@link org.x2vc.schema.structure.StylesheetParameter#getQualifiedName()}.
 	 */
 	@Test
 	void testGetQualifiedNameLocalOnly() {
-		final TemplateParameter param = TemplateParameter.builder("myParam")
+		final StylesheetParameter param = StylesheetParameter.builder("myParam")
 			.build();
 		final QName qName = param.getQualifiedName();
 		assertEquals("myParam", qName.getClarkName());
 	}
 
 	/**
-	 * Test method for {@link org.x2vc.schema.structure.TemplateParameter#getResultType()}.
+	 * Test method for {@link org.x2vc.schema.structure.StylesheetParameter#getResultType()}.
 	 */
 	@Test
 	void testGetType() {
 		final IFunctionSignatureType type = mock(IFunctionSignatureType.class);
-		final TemplateParameter param = TemplateParameter.builder("myParam")
+		final StylesheetParameter param = StylesheetParameter.builder("myParam")
 			.withType(type)
 			.build();
 		assertEquals(type, param.getType());
@@ -133,19 +133,19 @@ class TemplateParameterTest {
 
 	/**
 	 * Test method for
-	 * {@link org.x2vc.schema.structure.TemplateParameter#builderFrom(org.x2vc.schema.structure.ITemplateParameter)}.
+	 * {@link org.x2vc.schema.structure.StylesheetParameter#builderFrom(org.x2vc.schema.structure.IStylesheetParameter)}.
 	 */
 	@Test
 	void testBuilderFrom() {
 		final UUID id = UUID.randomUUID();
 		final IFunctionSignatureType type = mock(IFunctionSignatureType.class);
-		final TemplateParameter originalFunction = TemplateParameter.builder(id, "myParam")
+		final StylesheetParameter originalFunction = StylesheetParameter.builder(id, "myParam")
 			.withComment("foobar")
 			.withNamespaceURI("http://foo.bar")
 			.withType(type)
 			.build();
 
-		final TemplateParameter paramCopy = TemplateParameter.builderFrom(originalFunction).build();
+		final StylesheetParameter paramCopy = StylesheetParameter.builderFrom(originalFunction).build();
 
 		assertEquals(id, paramCopy.getID());
 
@@ -163,22 +163,22 @@ class TemplateParameterTest {
 	}
 
 	/**
-	 * Test method for {@link org.x2vc.schema.structure.TemplateParameter#equals(java.lang.Object)}.
+	 * Test method for {@link org.x2vc.schema.structure.StylesheetParameter#equals(java.lang.Object)}.
 	 */
 	@Test
 	void testEqualsObject() {
-		EqualsVerifier.forClass(TemplateParameter.class)
+		EqualsVerifier.forClass(StylesheetParameter.class)
 			.verify();
 	}
 
 	/**
-	 * Test method for {@link org.x2vc.schema.structure.TemplateParameter#toString()}.
+	 * Test method for {@link org.x2vc.schema.structure.StylesheetParameter#toString()}.
 	 */
 	@Test
 	void testToString() {
 		final IFunctionSignatureType paramType = mock(IFunctionSignatureType.class);
 		when(paramType.toString()).thenReturn("PTY");
-		final TemplateParameter param = TemplateParameter.builder("myParam")
+		final StylesheetParameter param = StylesheetParameter.builder("myParam")
 			.withNamespaceURI("http://foo.bar")
 			.withType(paramType)
 			.build();

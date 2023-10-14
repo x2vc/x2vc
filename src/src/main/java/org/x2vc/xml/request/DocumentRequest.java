@@ -45,9 +45,9 @@ public final class DocumentRequest implements IDocumentRequest {
 	@XmlElement(name = "function", type = ExtensionFunctionRule.class)
 	private final List<IExtensionFunctionRule> extensionFunctionRules;
 
-	@XmlElementWrapper(name = "templateParameters")
-	@XmlElement(name = "parameter", type = TemplateParameterRule.class)
-	private final List<ITemplateParameterRule> templateParameterRules;
+	@XmlElementWrapper(name = "StylesheetParameters")
+	@XmlElement(name = "parameter", type = StylesheetParameterRule.class)
+	private final List<IStylesheetParameterRule> StylesheetParameterRules;
 
 	@XmlAttribute
 	private final MixedContentGenerationMode mixedContentGenerationMode;
@@ -61,7 +61,7 @@ public final class DocumentRequest implements IDocumentRequest {
 		this.modifier = null;
 		this.mixedContentGenerationMode = null;
 		this.extensionFunctionRules = null;
-		this.templateParameterRules = null;
+		this.StylesheetParameterRules = null;
 	}
 
 	private DocumentRequest(Builder builder) {
@@ -72,7 +72,7 @@ public final class DocumentRequest implements IDocumentRequest {
 		this.modifier = builder.modifier;
 		this.mixedContentGenerationMode = builder.mixedContentGenerationMode;
 		this.extensionFunctionRules = builder.extensionFunctionRules;
-		this.templateParameterRules = builder.templateParameterRules;
+		this.StylesheetParameterRules = builder.StylesheetParameterRules;
 	}
 
 	@Override
@@ -101,8 +101,8 @@ public final class DocumentRequest implements IDocumentRequest {
 	}
 
 	@Override
-	public ImmutableCollection<ITemplateParameterRule> getTemplateParameterRules() {
-		return ImmutableList.copyOf(this.templateParameterRules);
+	public ImmutableCollection<IStylesheetParameterRule> getStylesheetParameterRules() {
+		return ImmutableList.copyOf(this.StylesheetParameterRules);
 	}
 
 	@Override
@@ -127,7 +127,7 @@ public final class DocumentRequest implements IDocumentRequest {
 		final Map<UUID, IGenerationRule> newMap = new HashMap<>();
 		addRuleIDsToMapRecursively(getRootElementRule(), newMap);
 		getExtensionFunctionRules().forEach(r -> newMap.put(r.getID(), r));
-		getTemplateParameterRules().forEach(r -> newMap.put(r.getID(), r));
+		getStylesheetParameterRules().forEach(r -> newMap.put(r.getID(), r));
 		return logger.traceExit(ImmutableMap.copyOf(newMap));
 	});
 
@@ -160,7 +160,7 @@ public final class DocumentRequest implements IDocumentRequest {
 					newMap.put(functionRule.getFunctionID(), oRV.get());
 				}
 			}
-			for (final ITemplateParameterRule parameterRule : getTemplateParameterRules()) {
+			for (final IStylesheetParameterRule parameterRule : getStylesheetParameterRules()) {
 				final Optional<IRequestedValue> oRV = parameterRule.getRequestedValue();
 				if (oRV.isPresent()) {
 					newMap.put(parameterRule.getParameterID(), oRV.get());
@@ -252,7 +252,7 @@ public final class DocumentRequest implements IDocumentRequest {
 		private IDocumentModifier modifier;
 		private MixedContentGenerationMode mixedContentGenerationMode = MixedContentGenerationMode.FULL;
 		private List<IExtensionFunctionRule> extensionFunctionRules = Lists.newArrayList();
-		private List<ITemplateParameterRule> templateParameterRules = Lists.newArrayList();
+		private List<IStylesheetParameterRule> StylesheetParameterRules = Lists.newArrayList();
 
 		private Builder(URI schemaURI, int schemaVersion, URI stylesheetURI, IAddElementRule rootElementRule) {
 			this.schemaURI = schemaURI;
@@ -313,24 +313,24 @@ public final class DocumentRequest implements IDocumentRequest {
 		}
 
 		/**
-		 * Builder method for templateParameterRules parameter.
+		 * Builder method for StylesheetParameterRules parameter.
 		 *
-		 * @param templateParameterRule field to set
+		 * @param StylesheetParameterRule field to set
 		 * @return builder
 		 */
-		public Builder addTemplateParameterRule(ITemplateParameterRule templateParameterRule) {
-			this.templateParameterRules.add(templateParameterRule);
+		public Builder addStylesheetParameterRule(IStylesheetParameterRule StylesheetParameterRule) {
+			this.StylesheetParameterRules.add(StylesheetParameterRule);
 			return this;
 		}
 
 		/**
-		 * Builder method for templateParameterRules parameter.
+		 * Builder method for StylesheetParameterRules parameter.
 		 *
-		 * @param templateParameterRules field to set
+		 * @param StylesheetParameterRules field to set
 		 * @return builder
 		 */
-		public Builder addTemplateParameterRules(Collection<ITemplateParameterRule> templateParameterRules) {
-			this.templateParameterRules.addAll(templateParameterRules);
+		public Builder addStylesheetParameterRules(Collection<IStylesheetParameterRule> StylesheetParameterRules) {
+			this.StylesheetParameterRules.addAll(StylesheetParameterRules);
 			return this;
 		}
 
@@ -348,7 +348,7 @@ public final class DocumentRequest implements IDocumentRequest {
 	public int hashCode() {
 		return Objects.hash(this.extensionFunctionRules, this.mixedContentGenerationMode, this.modifier,
 				this.rootElementRule, this.schemaURI,
-				this.schemaVersion, this.stylesheetURI, this.templateParameterRules);
+				this.schemaVersion, this.stylesheetURI, this.StylesheetParameterRules);
 	}
 
 	@Override
@@ -366,7 +366,7 @@ public final class DocumentRequest implements IDocumentRequest {
 				&& Objects.equals(this.rootElementRule, other.rootElementRule)
 				&& Objects.equals(this.schemaURI, other.schemaURI) && this.schemaVersion == other.schemaVersion
 				&& Objects.equals(this.stylesheetURI, other.stylesheetURI)
-				&& Objects.equals(this.templateParameterRules, other.templateParameterRules);
+				&& Objects.equals(this.StylesheetParameterRules, other.StylesheetParameterRules);
 	}
 
 }

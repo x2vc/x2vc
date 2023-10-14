@@ -59,6 +59,6 @@ public interface IXMLDocumentDescriptor {
 	 *
 	 * @return a list of template parameter values
 	 */
-	ImmutableCollection<ITemplateParameterValue> getTemplateParameterValues();
+	ImmutableCollection<IStylesheetParameterValue> getStylesheetParameterValues();
 
 }

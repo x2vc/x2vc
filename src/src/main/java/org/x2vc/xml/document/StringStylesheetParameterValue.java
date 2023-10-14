@@ -7,12 +7,12 @@ import javax.xml.bind.annotation.XmlElement;
 import net.sf.saxon.s9api.XdmValue;
 
 /**
- * Implementation of {@link ITemplateParameterValue} that contains an integer value.
+ * Implementation of {@link IStylesheetParameterValue} that contains a string value.
  */
-public final class IntegerTemplateParameterValue extends AbstractTemplateParameterValue {
+public final class StringStylesheetParameterValue extends AbstractStylesheetParameterValue {
 
 	@XmlElement
-	private final Integer result;
+	private final String result;
 
 	/**
 	 * Creates a new parameter value.
@@ -20,7 +20,7 @@ public final class IntegerTemplateParameterValue extends AbstractTemplateParamet
 	 * @param parameterID
 	 * @param result
 	 */
-	public IntegerTemplateParameterValue(UUID parameterID, Integer result) {
+	public StringStylesheetParameterValue(UUID parameterID, String result) {
 		super(parameterID);
 		this.result = result;
 	}

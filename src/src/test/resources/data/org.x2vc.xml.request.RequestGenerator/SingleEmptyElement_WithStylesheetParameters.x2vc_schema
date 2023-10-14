@@ -12,7 +12,7 @@
 		</rootElement>
 	</rootElements>
 	<extensionFunctions />
-	<templateParameters>
+	<stylesheetParameters>
 		<parameter id="bf4f5fc6-572b-4634-a692-9b546e182dc9" />
-	</templateParameters>
+	</stylesheetParameters>
 </schema>

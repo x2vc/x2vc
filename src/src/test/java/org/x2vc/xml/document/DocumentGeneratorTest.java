@@ -76,7 +76,7 @@ class DocumentGeneratorTest {
 	private IDocumentRequest request;
 	private IAddElementRule rootElementRule;
 	private List<IExtensionFunctionRule> extensionFunctionRules;
-	private List<ITemplateParameterRule> templateParameterRules;
+	private List<IStylesheetParameterRule> StylesheetParameterRules;
 	@Mock
 	private IRequestedValue requestedValue;
 
@@ -115,9 +115,9 @@ class DocumentGeneratorTest {
 		this.extensionFunctionRules = Lists.newArrayList();
 		lenient().when(this.request.getExtensionFunctionRules())
 			.thenAnswer(a -> ImmutableList.copyOf(this.extensionFunctionRules));
-		this.templateParameterRules = Lists.newArrayList();
-		lenient().when(this.request.getTemplateParameterRules())
-			.thenAnswer(a -> ImmutableList.copyOf(this.templateParameterRules));
+		this.StylesheetParameterRules = Lists.newArrayList();
+		lenient().when(this.request.getStylesheetParameterRules())
+			.thenAnswer(a -> ImmutableList.copyOf(this.StylesheetParameterRules));
 
 		// document generator under test
 		this.documentGenerator = new DocumentGenerator(this.schemaManager, this.stylesheetManager,
@@ -365,26 +365,26 @@ class DocumentGeneratorTest {
 		// load schema and extract relevant objects
 		this.schema = loadSchema("EmptyElementWithParameter.x2vc_schema");
 		final IElementReference rootElementReference = this.schema.getRootElements().iterator().next();
-		final ITemplateParameter templateParameter = this.schema.getTemplateParameters().iterator().next();
+		final IStylesheetParameter StylesheetParameter = this.schema.getStylesheetParameters().iterator().next();
 
 		// prepare generation rules and request
 		this.rootElementRule = AddElementRule.builder(rootElementReference).build();
-		final TemplateParameterRule templateParameterRule = new TemplateParameterRule(templateParameter.getID());
-		this.templateParameterRules.add(templateParameterRule);
+		final StylesheetParameterRule StylesheetParameterRule = new StylesheetParameterRule(StylesheetParameter.getID());
+		this.StylesheetParameterRules.add(StylesheetParameterRule);
 
 		// prepare value generator
-		final ITemplateParameterValue parameterValue = mock(ITemplateParameterValue.class);
+		final IStylesheetParameterValue parameterValue = mock(IStylesheetParameterValue.class);
 		// when(functionResult.getXDMValue()).thenReturn(XdmValue.makeValue("foobar"));
-		when(this.valueGenerator.generateValue(templateParameterRule)).thenReturn(parameterValue);
+		when(this.valueGenerator.generateValue(StylesheetParameterRule)).thenReturn(parameterValue);
 		this.valueDescriptors
-			.add(new ValueDescriptor(templateParameter.getID(), templateParameterRule.getID(), "foobar", false));
+			.add(new ValueDescriptor(StylesheetParameter.getID(), StylesheetParameterRule.getID(), "foobar", false));
 
 		final IXMLDocumentContainer document = this.documentGenerator.generateDocument(this.request);
 		final IXMLDocumentDescriptor descriptor = document.getDocumentDescriptor();
 		assertEquals(VALUE_PREFIX, descriptor.getValuePrefix());
 		assertEquals(VALUE_LENGTH, descriptor.getValueLength());
 
-		final ImmutableCollection<ITemplateParameterValue> parameterValues = descriptor.getTemplateParameterValues();
+		final ImmutableCollection<IStylesheetParameterValue> parameterValues = descriptor.getStylesheetParameterValues();
 		assertEquals(1, parameterValues.size());
 		assertSame(parameterValue, parameterValues.iterator().next());
 
@@ -392,8 +392,8 @@ class DocumentGeneratorTest {
 		assertTrue(valDescSet.isPresent());
 		assertEquals(1, valDescSet.get().size());
 		final IValueDescriptor valDesc = valDescSet.get().iterator().next();
-		assertEquals(templateParameter.getID(), valDesc.getSchemaObjectID());
-		assertEquals(templateParameterRule.getID(), valDesc.getGenerationRuleID());
+		assertEquals(StylesheetParameter.getID(), valDesc.getSchemaObjectID());
+		assertEquals(StylesheetParameterRule.getID(), valDesc.getGenerationRuleID());
 	}
 
 	private IXMLSchema loadSchema(String schemaFileName) throws FileNotFoundException, JAXBException {

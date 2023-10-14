@@ -41,7 +41,7 @@ public class SchemaModificationProcessor implements ISchemaModificationProcessor
 		private Multimap<UUID, UUID> elementDependencies = MultimapBuilder.hashKeys().arrayListValues().build();
 		private Map<UUID, XMLElementType> elementTypesByID = new HashMap<>();
 		private Map<UUID, ExtensionFunction.Builder> functionBuilders = new HashMap<>();
-		private Map<UUID, TemplateParameter.Builder> parameterBuilders = new HashMap<>();
+		private Map<UUID, StylesheetParameter.Builder> parameterBuilders = new HashMap<>();
 
 		/**
 		 * Prepares a worker with the modifiers.
@@ -157,9 +157,9 @@ public class SchemaModificationProcessor implements ISchemaModificationProcessor
 		 */
 		private void initializeParameterBuilders() {
 			logger.traceEntry();
-			for (final ITemplateParameter originalParameter : this.inputSchema.getTemplateParameters()) {
+			for (final IStylesheetParameter originalParameter : this.inputSchema.getStylesheetParameters()) {
 				logger.debug("initializing builder for parameter {}", originalParameter.getID());
-				this.parameterBuilders.put(originalParameter.getID(), TemplateParameter.builderFrom(originalParameter));
+				this.parameterBuilders.put(originalParameter.getID(), StylesheetParameter.builderFrom(originalParameter));
 			}
 			logger.traceExit();
 		}
@@ -427,10 +427,10 @@ public class SchemaModificationProcessor implements ISchemaModificationProcessor
 		 */
 		private void createParameters() {
 			logger.traceEntry();
-			for (final TemplateParameter.Builder parameterBuilder : this.parameterBuilders.values()) {
-				final TemplateParameter newParam = parameterBuilder.build();
+			for (final StylesheetParameter.Builder parameterBuilder : this.parameterBuilders.values()) {
+				final StylesheetParameter newParam = parameterBuilder.build();
 				logger.debug("adding template parameter {} ({})", newParam.getID(), newParam.getQualifiedName());
-				this.newSchemaBuilder.addTemplateParameter(newParam);
+				this.newSchemaBuilder.addStylesheetParameter(newParam);
 			}
 			logger.traceExit();
 		}

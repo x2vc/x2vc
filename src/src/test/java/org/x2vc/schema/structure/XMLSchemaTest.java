@@ -65,7 +65,7 @@ class XMLSchemaTest {
 	private XMLElementReference elemRootB;
 	private XMLElementReference elemRootC;
 	private ExtensionFunction functionX;
-	private TemplateParameter parameterZ;
+	private StylesheetParameter parameterZ;
 	private XMLSchema schema;
 
 	@BeforeEach
@@ -239,12 +239,12 @@ class XMLSchemaTest {
 			.build();
 		schemaBuilder.addExtensionFunction(this.functionX);
 
-		this.parameterZ = TemplateParameter
+		this.parameterZ = StylesheetParameter
 			.builder(UUID.fromString("50584bd2-5260-43ca-9609-55090cf5fc3c"), "myParamZ")
 			.withNamespaceURI("http://foo.bar")
 			.withType(new FunctionSignatureType(SequenceItemType.STRING, OccurrenceIndicator.ONE))
 			.build();
-		schemaBuilder.addTemplateParameter(this.parameterZ);
+		schemaBuilder.addStylesheetParameter(this.parameterZ);
 
 		this.schema = schemaBuilder.build();
 	}
@@ -381,11 +381,11 @@ class XMLSchemaTest {
 										            </arguments>
 										        </function>
 										    </extensionFunctions>
-										    <templateParameters>
+										    <stylesheetParameters>
 										        <parameter id="50584bd2-5260-43ca-9609-55090cf5fc3c" namespaceURI="http://foo.bar" localName="myParamZ">
 										            <type occurrence="ONE" type="STRING"/>
 										        </parameter>
-										    </templateParameters>
+										    </stylesheetParameters>
 										</schema>
 										""";
 		assertXMLEquals(expectedModel, serializedModel);

@@ -24,7 +24,7 @@ import org.x2vc.stylesheet.IStylesheetInformation;
 import org.x2vc.utilities.URIUtilities;
 import org.x2vc.utilities.URIUtilities.ObjectType;
 import org.x2vc.xml.document.IExtensionFunctionResult;
-import org.x2vc.xml.document.ITemplateParameterValue;
+import org.x2vc.xml.document.IStylesheetParameterValue;
 import org.x2vc.xml.request.*;
 import org.x2vc.xml.value.IPrefixSelector.PrefixData;
 
@@ -73,7 +73,7 @@ class ValueGeneratorTest {
 	// parameter in schema
 	private UUID parameterID;
 	@Mock
-	ITemplateParameter parameter;
+	IStylesheetParameter parameter;
 	@Mock
 	IFunctionSignatureType parameterType;
 
@@ -98,7 +98,7 @@ class ValueGeneratorTest {
 	@Mock
 	private IExtensionFunctionRule extensionFunctionRule;
 	@Mock
-	private ITemplateParameterRule templateParameterRule;
+	private IStylesheetParameterRule StylesheetParameterRule;
 
 	// requested value
 	@Mock
@@ -208,17 +208,17 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Prepares the {@link ITemplateParameterRule} mockup for use
+	 * Prepares the {@link IStylesheetParameterRule} mockup for use
 	 *
 	 * @param withRequestedValue
 	 */
-	void prepareTemplateParameterRule(boolean withRequestedValue) {
-		lenient().when(this.templateParameterRule.getID()).thenReturn(this.ruleID);
-		lenient().when(this.templateParameterRule.getParameterID()).thenReturn(this.parameterID);
+	void prepareStylesheetParameterRule(boolean withRequestedValue) {
+		lenient().when(this.StylesheetParameterRule.getID()).thenReturn(this.ruleID);
+		lenient().when(this.StylesheetParameterRule.getParameterID()).thenReturn(this.parameterID);
 		if (withRequestedValue) {
-			lenient().when(this.templateParameterRule.getRequestedValue()).thenReturn(Optional.of(this.requestedValue));
+			lenient().when(this.StylesheetParameterRule.getRequestedValue()).thenReturn(Optional.of(this.requestedValue));
 		} else {
-			lenient().when(this.templateParameterRule.getRequestedValue()).thenReturn(Optional.empty());
+			lenient().when(this.StylesheetParameterRule.getRequestedValue()).thenReturn(Optional.empty());
 		}
 	}
 
@@ -324,7 +324,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Prepares the {@link ITemplateParameter} mockup as string for use without discrete values
+	 * Prepares the {@link IStylesheetParameter} mockup as string for use without discrete values
 	 *
 	 * @param maxLength
 	 */
@@ -337,7 +337,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Prepares the {@link ITemplateParameter} mockup as boolean
+	 * Prepares the {@link IStylesheetParameter} mockup as boolean
 	 */
 	void prepareParameterForBoolean() {
 		lenient().when(this.parameterType.getItemType()).thenReturn(ItemType.BOOLEAN);
@@ -348,7 +348,7 @@ class ValueGeneratorTest {
 	}
 
 	/**
-	 * Prepares the {@link ITemplateParameter} mockup as integer for use without discrete values
+	 * Prepares the {@link IStylesheetParameter} mockup as integer for use without discrete values
 	 */
 	void prepareParameterForInteger() {
 		lenient().when(this.parameterType.getItemType()).thenReturn(ItemType.INTEGER);
@@ -1522,15 +1522,15 @@ class ValueGeneratorTest {
 
 	/**
 	 * Test method for
-	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ITemplateParameterRule)} and
+	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IStylesheetParameterRule)} and
 	 * {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
 	@Test
-	void testGenerateValue_TemplateParameterRule_String() {
-		prepareTemplateParameterRule(false);
+	void testGenerateValue_StylesheetParameterRule_String() {
+		prepareStylesheetParameterRule(false);
 		prepareParameterForString();
 
-		final ITemplateParameterValue generatedValue = this.valueGenerator.generateValue(this.templateParameterRule);
+		final IStylesheetParameterValue generatedValue = this.valueGenerator.generateValue(this.StylesheetParameterRule);
 		assertEquals(this.parameterID, generatedValue.getParameterID());
 		final XdmValue xdmValue = generatedValue.getXDMValue();
 		assertFalse(xdmValue.isEmpty());
@@ -1540,18 +1540,18 @@ class ValueGeneratorTest {
 
 	/**
 	 * Test method for
-	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ITemplateParameterRule)} and
+	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IStylesheetParameterRule)} and
 	 * {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
 	@Test
-	void testGenerateValue_TemplateParameterRule_StringRequestedValue() {
+	void testGenerateValue_StylesheetParameterRule_StringRequestedValue() {
 		final String value = "foobar42";
 		when(this.requestedValue.getValue()).thenReturn(value);
 
-		prepareTemplateParameterRule(true);
+		prepareStylesheetParameterRule(true);
 		prepareParameterForString();
 
-		final ITemplateParameterValue generatedValue = this.valueGenerator.generateValue(this.templateParameterRule);
+		final IStylesheetParameterValue generatedValue = this.valueGenerator.generateValue(this.StylesheetParameterRule);
 		assertEquals(this.parameterID, generatedValue.getParameterID());
 		final XdmValue xdmValue = generatedValue.getXDMValue();
 		assertFalse(xdmValue.isEmpty());
@@ -1561,15 +1561,15 @@ class ValueGeneratorTest {
 
 	/**
 	 * Test method for
-	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ITemplateParameterRule)} and
+	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IStylesheetParameterRule)} and
 	 * {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
 	@Test
-	void testGenerateValue_TemplateParameterRule_Integer() {
-		prepareTemplateParameterRule(false);
+	void testGenerateValue_StylesheetParameterRule_Integer() {
+		prepareStylesheetParameterRule(false);
 		prepareParameterForInteger();
 
-		final ITemplateParameterValue generatedValue = this.valueGenerator.generateValue(this.templateParameterRule);
+		final IStylesheetParameterValue generatedValue = this.valueGenerator.generateValue(this.StylesheetParameterRule);
 		assertEquals(this.parameterID, generatedValue.getParameterID());
 		final XdmValue xdmValue = generatedValue.getXDMValue();
 		assertFalse(xdmValue.isEmpty());
@@ -1580,18 +1580,18 @@ class ValueGeneratorTest {
 
 	/**
 	 * Test method for
-	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ITemplateParameterRule)} and
+	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IStylesheetParameterRule)} and
 	 * {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
 	@Test
-	void testGenerateValue_TemplateParameterRule_IntegerRequestedValue() {
+	void testGenerateValue_StylesheetParameterRule_IntegerRequestedValue() {
 		final String value = "42";
 		when(this.requestedValue.getValue()).thenReturn(value);
 
-		prepareTemplateParameterRule(true);
+		prepareStylesheetParameterRule(true);
 		prepareParameterForString();
 
-		final ITemplateParameterValue generatedValue = this.valueGenerator.generateValue(this.templateParameterRule);
+		final IStylesheetParameterValue generatedValue = this.valueGenerator.generateValue(this.StylesheetParameterRule);
 		assertEquals(this.parameterID, generatedValue.getParameterID());
 		final XdmValue xdmValue = generatedValue.getXDMValue();
 		assertFalse(xdmValue.isEmpty());
@@ -1602,15 +1602,15 @@ class ValueGeneratorTest {
 
 	/**
 	 * Test method for
-	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ITemplateParameterRule)} and
+	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IStylesheetParameterRule)} and
 	 * {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
 	@Test
-	void testGenerateValue_TemplateParameterRule_Boolean() {
-		prepareTemplateParameterRule(false);
+	void testGenerateValue_StylesheetParameterRule_Boolean() {
+		prepareStylesheetParameterRule(false);
 		prepareParameterForBoolean();
 
-		final ITemplateParameterValue generatedValue = this.valueGenerator.generateValue(this.templateParameterRule);
+		final IStylesheetParameterValue generatedValue = this.valueGenerator.generateValue(this.StylesheetParameterRule);
 		assertEquals(this.parameterID, generatedValue.getParameterID());
 		final XdmValue xdmValue = generatedValue.getXDMValue();
 		assertFalse(xdmValue.isEmpty());
@@ -1620,18 +1620,18 @@ class ValueGeneratorTest {
 
 	/**
 	 * Test method for
-	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ITemplateParameterRule)} and
+	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IStylesheetParameterRule)} and
 	 * {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
 	@Test
-	void testGenerateValue_TemplateParameterRule_BooleanRequestedValue() {
+	void testGenerateValue_StylesheetParameterRule_BooleanRequestedValue() {
 		final String value = "true";
 		when(this.requestedValue.getValue()).thenReturn(value);
 
-		prepareTemplateParameterRule(true);
+		prepareStylesheetParameterRule(true);
 		prepareParameterForBoolean();
 
-		final ITemplateParameterValue generatedValue = this.valueGenerator.generateValue(this.templateParameterRule);
+		final IStylesheetParameterValue generatedValue = this.valueGenerator.generateValue(this.StylesheetParameterRule);
 		assertEquals(this.parameterID, generatedValue.getParameterID());
 		final XdmValue xdmValue = generatedValue.getXDMValue();
 		assertFalse(xdmValue.isEmpty());

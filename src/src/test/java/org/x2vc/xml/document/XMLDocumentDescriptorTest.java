@@ -136,15 +136,15 @@ class XMLDocumentDescriptorTest {
 				UUID.fromString("e1d72795-4bf9-409e-a9d6-80d7e68286fa"), // functionID
 				false // result
 		);
-		final ITemplateParameterValue realStringParameterValue = new StringTemplateParameterValue(
+		final IStylesheetParameterValue realStringParameterValue = new StringStylesheetParameterValue(
 				UUID.fromString("adbe63f0-1a6e-46e1-86da-cb1ae1bb9d6f"), // parameterID
 				"parameterValue01" // value
 		);
-		final ITemplateParameterValue realIntegerParameterValue = new IntegerTemplateParameterValue(
+		final IStylesheetParameterValue realIntegerParameterValue = new IntegerStylesheetParameterValue(
 				UUID.fromString("bc59fdb1-9fce-47e9-9132-98412890f3ae"), // parameterID
 				42 // value
 		);
-		final ITemplateParameterValue realBooleanParameterValue = new BooleanTemplateParameterValue(
+		final IStylesheetParameterValue realBooleanParameterValue = new BooleanStylesheetParameterValue(
 				UUID.fromString("c2b3d1b9-556c-421d-9414-89a484d6f45f"), // parameterID
 				false // value
 		);
@@ -175,9 +175,9 @@ class XMLDocumentDescriptorTest {
 			.withExtensionFunctionResult(realStringFunctionResult)
 			.withExtensionFunctionResult(realIntegerFunctionResult)
 			.withExtensionFunctionResult(realBooleanFunctionResult)
-			.withTemplateParameterValue(realStringParameterValue)
-			.withTemplateParameterValue(realIntegerParameterValue)
-			.withTemplateParameterValue(realBooleanParameterValue)
+			.withStylesheetParameterValue(realStringParameterValue)
+			.withStylesheetParameterValue(realIntegerParameterValue)
+			.withStylesheetParameterValue(realBooleanParameterValue)
 			.withModifier(realModifier)
 			.withTraceIDToRuleIDMap(realTraceIDToRuleIDMap)
 			.build();

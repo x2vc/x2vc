@@ -12,9 +12,9 @@
 		</rootElement>
 	</rootElements>
 	<extensionFunctions />
-	<templateParameters>
+	<stylesheetParameters>
 		<parameter id="530e6ab1-2cc1-44d2-9eea-3b87f61d01e3" namespaceURI="http://foo.bar" localName="myParam">
 			<type occurrence="ONE" type="STRING" />
 		</parameter>
-	</templateParameters>
+	</stylesheetParameters>
 </schema>

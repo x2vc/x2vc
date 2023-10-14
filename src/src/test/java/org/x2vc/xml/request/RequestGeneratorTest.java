@@ -393,16 +393,16 @@ class RequestGeneratorTest {
 	}
 
 	@Test
-	void testGenerateNewRequest_SingleEmptyElement_WithTemplateParameters()
+	void testGenerateNewRequest_SingleEmptyElement_WithStylesheetParameters()
 			throws URISyntaxException, FileNotFoundException, JAXBException {
-		final IXMLSchema schema = loadSchema("SingleEmptyElement_WithTemplateParameters.x2vc_schema");
+		final IXMLSchema schema = loadSchema("SingleEmptyElement_WithStylesheetParameters.x2vc_schema");
 
 		final IDocumentRequest request = this.requestGenerator.generateNewRequest(schema,
 				MixedContentGenerationMode.FULL);
 
-		final ImmutableCollection<ITemplateParameterRule> parameterResults = request.getTemplateParameterRules();
+		final ImmutableCollection<IStylesheetParameterRule> parameterResults = request.getStylesheetParameterRules();
 		assertEquals(1, parameterResults.size());
-		final ITemplateParameterRule result = parameterResults.iterator().next();
+		final IStylesheetParameterRule result = parameterResults.iterator().next();
 		assertEquals(UUID.fromString("bf4f5fc6-572b-4634-a692-9b546e182dc9"), result.getParameterID());
 		assertFalse(result.getRequestedValue().isPresent());
 	}
@@ -544,16 +544,16 @@ class RequestGeneratorTest {
 	}
 
 	@Test
-	void testModifyRequest_ForTemplateParameters() throws FileNotFoundException, JAXBException {
+	void testModifyRequest_ForStylesheetParameters() throws FileNotFoundException, JAXBException {
 
-		final IXMLSchema schema = loadSchema("SingleEmptyElement_WithTemplateParameters.x2vc_schema");
+		final IXMLSchema schema = loadSchema("SingleEmptyElement_WithStylesheetParameters.x2vc_schema");
 		// shortcut to provide schema for request construction
 		lenient().when(this.schemaManager.getSchema(URI.create("file://somewhere/SampleStylesheet.xslt"), 1))
 			.thenReturn(schema);
 
 		final IDocumentRequest originalRequest = this.requestGenerator.generateNewRequest(schema,
 				MixedContentGenerationMode.FULL);
-		final ITemplateParameterRule originalParameterRule = originalRequest.getTemplateParameterRules().iterator()
+		final IStylesheetParameterRule originalParameterRule = originalRequest.getStylesheetParameterRules().iterator()
 			.next();
 		final UUID modifiedParameterID = UUID.fromString("bf4f5fc6-572b-4634-a692-9b546e182dc9");
 		assertEquals(modifiedParameterID, originalParameterRule.getParameterID());
@@ -565,7 +565,7 @@ class RequestGeneratorTest {
 		final IDocumentRequest modifiedRequest = this.requestGenerator.modifyRequest(originalRequest,
 				this.valueModifier, MixedContentGenerationMode.FULL);
 
-		final ITemplateParameterRule modifiedParameterRule = modifiedRequest.getTemplateParameterRules().iterator()
+		final IStylesheetParameterRule modifiedParameterRule = modifiedRequest.getStylesheetParameterRules().iterator()
 			.next();
 
 		final Optional<IRequestedValue> rv = modifiedParameterRule.getRequestedValue();

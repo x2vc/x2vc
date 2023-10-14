@@ -497,12 +497,12 @@ public class ValueGenerator implements IValueGenerator {
 	}
 
 	@Override
-	public ITemplateParameterValue generateValue(ITemplateParameterRule rule) {
+	public IStylesheetParameterValue generateValue(IStylesheetParameterRule rule) {
 		logger.traceEntry("for parameter {}", rule.getParameterID());
 		loadSchema();
-		final ITemplateParameter parameter = this.schema.getObjectByID(rule.getParameterID(), ITemplateParameter.class);
+		final IStylesheetParameter parameter = this.schema.getObjectByID(rule.getParameterID(), IStylesheetParameter.class);
 		final Optional<IRequestedValue> oRequestedValue = rule.getRequestedValue();
-		ITemplateParameterValue result = null;
+		IStylesheetParameterValue result = null;
 		if (oRequestedValue.isPresent()) {
 			result = generateRequestedParameterResult(parameter, oRequestedValue.get());
 		} else {
@@ -518,9 +518,9 @@ public class ValueGenerator implements IValueGenerator {
 	 * @param parameter
 	 * @return
 	 */
-	private ITemplateParameterValue generateParameterResult(ITemplateParameter parameter) {
+	private IStylesheetParameterValue generateParameterResult(IStylesheetParameter parameter) {
 		logger.traceEntry();
-		ITemplateParameterValue result = null;
+		IStylesheetParameterValue result = null;
 
 		final IFunctionSignatureType resultType = parameter.getType();
 		if (resultType.getOccurrenceIndicator() != OccurrenceIndicator.ONE) {
@@ -532,19 +532,19 @@ public class ValueGenerator implements IValueGenerator {
 
 		switch (resultType.getSequenceItemType()) {
 		case BOOLEAN:
-			result = new BooleanTemplateParameterValue(parameter.getID(),
+			result = new BooleanStylesheetParameterValue(parameter.getID(),
 					ThreadLocalRandom.current().nextBoolean());
 			break;
 		case INT:
-			result = new IntegerTemplateParameterValue(parameter.getID(),
+			result = new IntegerStylesheetParameterValue(parameter.getID(),
 					ThreadLocalRandom.current().nextInt());
 			break;
 		case INTEGER:
-			result = new IntegerTemplateParameterValue(parameter.getID(),
+			result = new IntegerStylesheetParameterValue(parameter.getID(),
 					ThreadLocalRandom.current().nextInt());
 			break;
 		case STRING:
-			result = new StringTemplateParameterValue(parameter.getID(),
+			result = new StringStylesheetParameterValue(parameter.getID(),
 					generateRandomStringWithPrefix(Optional.empty()));
 			break;
 		default:
@@ -561,10 +561,10 @@ public class ValueGenerator implements IValueGenerator {
 	 * @param requestedValue
 	 * @return
 	 */
-	private ITemplateParameterValue generateRequestedParameterResult(ITemplateParameter parameter,
+	private IStylesheetParameterValue generateRequestedParameterResult(IStylesheetParameter parameter,
 			IRequestedValue requestedValue) {
 		logger.traceEntry();
-		ITemplateParameterValue result = null;
+		IStylesheetParameterValue result = null;
 
 		final IFunctionSignatureType resultType = parameter.getType();
 		if (resultType.getOccurrenceIndicator() != OccurrenceIndicator.ONE) {
@@ -576,19 +576,19 @@ public class ValueGenerator implements IValueGenerator {
 
 		switch (resultType.getSequenceItemType()) {
 		case BOOLEAN:
-			result = new BooleanTemplateParameterValue(parameter.getID(),
+			result = new BooleanStylesheetParameterValue(parameter.getID(),
 					Boolean.parseBoolean(requestedValue.getValue()));
 			break;
 		case INT:
-			result = new IntegerTemplateParameterValue(parameter.getID(),
+			result = new IntegerStylesheetParameterValue(parameter.getID(),
 					Integer.parseInt(requestedValue.getValue()));
 			break;
 		case INTEGER:
-			result = new IntegerTemplateParameterValue(parameter.getID(),
+			result = new IntegerStylesheetParameterValue(parameter.getID(),
 					Integer.parseInt(requestedValue.getValue()));
 			break;
 		case STRING:
-			result = new StringTemplateParameterValue(parameter.getID(),
+			result = new StringStylesheetParameterValue(parameter.getID(),
 					requestedValue.getValue());
 			break;
 		default:

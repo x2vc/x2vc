@@ -16,13 +16,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.x2vc.schema.ISchemaManager;
-import org.x2vc.schema.structure.ITemplateParameter;
+import org.x2vc.schema.structure.IStylesheetParameter;
 import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.stylesheet.IStylesheetInformation;
 import org.x2vc.stylesheet.IStylesheetManager;
 import org.x2vc.utilities.URIUtilities;
 import org.x2vc.utilities.URIUtilities.ObjectType;
-import org.x2vc.xml.document.ITemplateParameterValue;
+import org.x2vc.xml.document.IStylesheetParameterValue;
 import org.x2vc.xml.document.IXMLDocumentContainer;
 import org.x2vc.xml.document.IXMLDocumentDescriptor;
 
@@ -55,7 +55,7 @@ class XSLTProcessorTest {
 	@Mock
 	private IXMLDocumentDescriptor xmlDescriptor;
 
-	private List<ITemplateParameterValue> parameterValues;
+	private List<IStylesheetParameterValue> parameterValues;
 
 	private URI stylesheetURI;
 	private URI schemaURI;
@@ -84,7 +84,7 @@ class XSLTProcessorTest {
 		lenient().when(this.xmlDescriptor.getExtensionFunctionResults()).thenReturn(ImmutableList.of());
 
 		this.parameterValues = Lists.newArrayList();
-		lenient().when(this.xmlDescriptor.getTemplateParameterValues())
+		lenient().when(this.xmlDescriptor.getStylesheetParameterValues())
 			.thenAnswer(a -> ImmutableSet.copyOf(this.parameterValues));
 
 		lenient().when(this.schemaManager.getSchema(this.stylesheetURI)).thenReturn(this.schema);
@@ -223,14 +223,14 @@ class XSLTProcessorTest {
 		when(this.xmlDocument.getDocument()).thenReturn(input);
 
 		final UUID parameterID = UUID.randomUUID();
-		final ITemplateParameterValue paramValue = mock(ITemplateParameterValue.class);
+		final IStylesheetParameterValue paramValue = mock(IStylesheetParameterValue.class);
 		when(paramValue.getParameterID()).thenReturn(parameterID);
 		when(paramValue.getXDMValue()).thenReturn(XdmValue.makeValue("FooBarBaz"));
 		this.parameterValues.add(paramValue);
 
-		final ITemplateParameter parameterDefinition = mock(ITemplateParameter.class);
+		final IStylesheetParameter parameterDefinition = mock(IStylesheetParameter.class);
 		when(parameterDefinition.getQualifiedName()).thenReturn(new QName("myParam"));
-		when(this.schema.getObjectByID(parameterID, ITemplateParameter.class)).thenReturn(parameterDefinition);
+		when(this.schema.getObjectByID(parameterID, IStylesheetParameter.class)).thenReturn(parameterDefinition);
 
 		final IHTMLDocumentContainer htmlDocument = this.wrapper.processDocument(this.xmlDocument);
 

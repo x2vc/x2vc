@@ -16,9 +16,9 @@ import com.google.common.base.Suppliers;
 import net.sf.saxon.s9api.QName;
 
 /**
- * Standard implementation of {@link ITemplateParameter}.
+ * Standard implementation of {@link IStylesheetParameter}.
  */
-public final class TemplateParameter implements ITemplateParameter {
+public final class StylesheetParameter implements IStylesheetParameter {
 
 	@XmlAttribute(name = "id")
 	private final UUID id;
@@ -35,7 +35,7 @@ public final class TemplateParameter implements ITemplateParameter {
 	@XmlElement(name = "type", type = FunctionSignatureType.class)
 	private final IFunctionSignatureType type;
 
-	protected TemplateParameter() {
+	protected StylesheetParameter() {
 		// required for marshalling/unmarshalling
 		this.id = UUID.randomUUID();
 		this.comment = null;
@@ -44,7 +44,7 @@ public final class TemplateParameter implements ITemplateParameter {
 		this.type = null;
 	}
 
-	protected TemplateParameter(Builder builder) {
+	protected StylesheetParameter(Builder builder) {
 		checkNotNull(builder.id);
 		checkNotNull(builder.localName);
 		this.id = builder.id;
@@ -106,10 +106,10 @@ public final class TemplateParameter implements ITemplateParameter {
 		if (this == obj) {
 			return true;
 		}
-		if (!(obj instanceof TemplateParameter)) {
+		if (!(obj instanceof StylesheetParameter)) {
 			return false;
 		}
-		final TemplateParameter other = (TemplateParameter) obj;
+		final StylesheetParameter other = (StylesheetParameter) obj;
 		return Objects.equals(this.comment, other.comment) && Objects.equals(this.id, other.id)
 				&& Objects.equals(this.localName, other.localName)
 				&& Objects.equals(this.namespaceURI, other.namespaceURI)
@@ -124,7 +124,7 @@ public final class TemplateParameter implements ITemplateParameter {
 	}
 
 	/**
-	 * Creates builder to build {@link TemplateParameter}.
+	 * Creates builder to build {@link StylesheetParameter}.
 	 *
 	 * @param localName
 	 * @return created builder
@@ -134,7 +134,7 @@ public final class TemplateParameter implements ITemplateParameter {
 	}
 
 	/**
-	 * Creates builder to build {@link TemplateParameter}.
+	 * Creates builder to build {@link StylesheetParameter}.
 	 *
 	 * @param functionID
 	 * @param localName
@@ -145,18 +145,18 @@ public final class TemplateParameter implements ITemplateParameter {
 	}
 
 	/**
-	 * Creates builder to build {@link TemplateParameter}.
+	 * Creates builder to build {@link StylesheetParameter}.
 	 *
 	 * @param parameter
 	 *
 	 * @return created builder
 	 */
-	public static Builder builderFrom(ITemplateParameter parameter) {
+	public static Builder builderFrom(IStylesheetParameter parameter) {
 		return new Builder(parameter);
 	}
 
 	/**
-	 * Builder to build {@link TemplateParameter}.
+	 * Builder to build {@link StylesheetParameter}.
 	 */
 	public static final class Builder {
 		private UUID id;
@@ -175,7 +175,7 @@ public final class TemplateParameter implements ITemplateParameter {
 			this.localName = localName;
 		}
 
-		private Builder(ITemplateParameter parameter) {
+		private Builder(IStylesheetParameter parameter) {
 			this.id = parameter.getID();
 			this.comment = parameter.getComment().orElse(null);
 			this.namespaceURI = parameter.getNamespaceURI().orElse(null);
@@ -221,8 +221,8 @@ public final class TemplateParameter implements ITemplateParameter {
 		 *
 		 * @return built class
 		 */
-		public TemplateParameter build() {
-			return new TemplateParameter(this);
+		public StylesheetParameter build() {
+			return new StylesheetParameter(this);
 		}
 	}
 

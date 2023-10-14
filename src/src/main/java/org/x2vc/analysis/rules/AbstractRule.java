@@ -347,7 +347,7 @@ public abstract class AbstractRule implements IAnalyzerRule {
 				.withPayload(payload)
 				.build()
 				.sendTo(collector);
-		} else if (schemaObject instanceof ITemplateParameter) {
+		} else if (schemaObject instanceof IStylesheetParameter) {
 			DocumentValueModifier.builder(valueDescriptor)
 				.withAnalyzerRuleID(getRuleID())
 				.withOriginalValue(originalValue)

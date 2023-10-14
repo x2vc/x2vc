@@ -54,12 +54,12 @@ public class RequestGenerator implements IRequestGenerator {
 		logger.traceEntry();
 		final IAddElementRule rootElementRule = generateRootElementRule(schema);
 		final Collection<IExtensionFunctionRule> extensionFunctionRules = generateExtensionFunctionRules(schema);
-		final Collection<ITemplateParameterRule> templateParameterRules = generateTemplateParameterRules(schema);
+		final Collection<IStylesheetParameterRule> StylesheetParameterRules = generateStylesheetParameterRules(schema);
 		final DocumentRequest request = DocumentRequest
 			.builder(schema, rootElementRule)
 			.withMixedContentGenerationMode(mixedContentGenerationMode)
 			.addExtensionFunctionRules(extensionFunctionRules)
-			.addTemplateParameterRules(templateParameterRules)
+			.addStylesheetParameterRules(StylesheetParameterRules)
 			.build();
 		return logger.traceExit(request);
 	}
@@ -258,10 +258,10 @@ public class RequestGenerator implements IRequestGenerator {
 	 * @param schema
 	 * @return
 	 */
-	private Collection<ITemplateParameterRule> generateTemplateParameterRules(IXMLSchema schema) {
+	private Collection<IStylesheetParameterRule> generateStylesheetParameterRules(IXMLSchema schema) {
 		logger.traceEntry();
-		final List<ITemplateParameterRule> newRules = schema.getTemplateParameters().stream()
-			.map(p -> (ITemplateParameterRule) new TemplateParameterRule(p.getID()))
+		final List<IStylesheetParameterRule> newRules = schema.getStylesheetParameters().stream()
+			.map(p -> (IStylesheetParameterRule) new StylesheetParameterRule(p.getID()))
 			.toList();
 		return logger.traceExit(newRules);
 	}
@@ -276,14 +276,14 @@ public class RequestGenerator implements IRequestGenerator {
 				originalRequest.getSchemaVersion());
 		IAddElementRule rootElementRule = null;
 		Collection<IExtensionFunctionRule> extensionFunctionRules = null;
-		Collection<ITemplateParameterRule> templateParameterRules = null;
+		Collection<IStylesheetParameterRule> StylesheetParameterRules = null;
 
 		// dispatch according to modifier type
 		if (modifier instanceof final IDocumentValueModifier valueModifier) {
 			rootElementRule = copyAndModifyAddElementRule(originalRequest.getRootElementRule(), valueModifier);
 			extensionFunctionRules = copyAndModifyExtensionFunctionRules(originalRequest.getExtensionFunctionRules(),
 					valueModifier);
-			templateParameterRules = copyAndModifyTemplateParameterRules(originalRequest.getTemplateParameterRules(),
+			StylesheetParameterRules = copyAndModifyStylesheetParameterRules(originalRequest.getStylesheetParameterRules(),
 					valueModifier);
 		} else {
 			throw logger.throwing(new IllegalArgumentException(
@@ -294,7 +294,7 @@ public class RequestGenerator implements IRequestGenerator {
 			.builder(schema, rootElementRule)
 			.withModifier(modifier)
 			.addExtensionFunctionRules(extensionFunctionRules)
-			.addTemplateParameterRules(templateParameterRules)
+			.addStylesheetParameterRules(StylesheetParameterRules)
 			.withMixedContentGenerationMode(mixedContentGenerationMode)
 			.build();
 		return logger.traceExit(request);
@@ -427,26 +427,26 @@ public class RequestGenerator implements IRequestGenerator {
 	}
 
 	/**
-	 * Creates a copy of the {@link ITemplateParameterRule}s while applying the modification specified by a
+	 * Creates a copy of the {@link IStylesheetParameterRule}s while applying the modification specified by a
 	 * {@link IDocumentValueModifier}.
 	 *
 	 * @param originalRules
 	 * @param valueModifier
 	 * @return
 	 */
-	private Collection<ITemplateParameterRule> copyAndModifyTemplateParameterRules(
-			ImmutableCollection<ITemplateParameterRule> originalRules, IDocumentValueModifier valueModifier) {
+	private Collection<IStylesheetParameterRule> copyAndModifyStylesheetParameterRules(
+			ImmutableCollection<IStylesheetParameterRule> originalRules, IDocumentValueModifier valueModifier) {
 		logger.traceEntry();
-		final List<ITemplateParameterRule> newRules = Lists.newArrayList();
-		for (final ITemplateParameterRule originalRule : originalRules) {
+		final List<IStylesheetParameterRule> newRules = Lists.newArrayList();
+		for (final IStylesheetParameterRule originalRule : originalRules) {
 			if (originalRule.getID().equals(valueModifier.getGenerationRuleID())) {
 				logger.debug("Adding requested value to rule {} to generate template parameter {}",
 						originalRule.getID(),
 						originalRule.getParameterID());
-				newRules.add(new TemplateParameterRule(originalRule.getID(), originalRule.getParameterID(),
+				newRules.add(new StylesheetParameterRule(originalRule.getID(), originalRule.getParameterID(),
 						new RequestedValue(valueModifier)));
 			} else {
-				newRules.add(new TemplateParameterRule(originalRule.getID(), originalRule.getParameterID()));
+				newRules.add(new StylesheetParameterRule(originalRule.getID(), originalRule.getParameterID()));
 			}
 		}
 		return logger.traceExit(newRules);

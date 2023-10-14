@@ -4,14 +4,14 @@ import org.junit.jupiter.api.Test;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 
-class TemplateParameterRuleTest {
+class StylesheetParameterRuleTest {
 
 	/**
-	 * Test method for {@link org.x2vc.xml.request.TemplateParameterRule#equals(java.lang.Object)}.
+	 * Test method for {@link org.x2vc.xml.request.StylesheetParameterRule#equals(java.lang.Object)}.
 	 */
 	@Test
 	void testEqualsObject() {
-		EqualsVerifier.forClass(TemplateParameterRule.class)
+		EqualsVerifier.forClass(StylesheetParameterRule.class)
 			.withRedefinedSuperclass()
 			.usingGetClass()
 			.verify();

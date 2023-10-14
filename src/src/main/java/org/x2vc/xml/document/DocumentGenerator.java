@@ -64,7 +64,7 @@ public class DocumentGenerator implements IDocumentGenerator {
 		final Worker worker = new Worker(request, valueGenerator, schema, stylesheetInformation);
 		final String document = worker.generateXMLDocument();
 		final Collection<IExtensionFunctionResult> functionResults = worker.generateFunctionResults();
-		final Collection<ITemplateParameterValue> parameterValues = worker.generateParameterValues();
+		final Collection<IStylesheetParameterValue> parameterValues = worker.generateParameterValues();
 		final IXMLDocumentDescriptor descriptor = generateDescriptor(request, valueGenerator,
 				functionResults, parameterValues, worker.getTraceIDToRuleIDMap());
 		final XMLDocumentContainer container = new XMLDocumentContainer(request, descriptor, document);
@@ -82,13 +82,13 @@ public class DocumentGenerator implements IDocumentGenerator {
 	 * @return
 	 */
 	private IXMLDocumentDescriptor generateDescriptor(IDocumentRequest request, IValueGenerator valueGenerator,
-			Collection<IExtensionFunctionResult> functionResults, Collection<ITemplateParameterValue> parameterValues,
+			Collection<IExtensionFunctionResult> functionResults, Collection<IStylesheetParameterValue> parameterValues,
 			Map<UUID, UUID> traceIDToRuleIDMap) {
 		logger.traceEntry();
 		final Builder builder = XMLDocumentDescriptor
 			.builder(valueGenerator.getValuePrefix(), valueGenerator.getValueLength())
 			.withExtensionFunctionResults(functionResults)
-			.withTemplateParameterValues(parameterValues)
+			.withStylesheetParameterValues(parameterValues)
 			.withTraceIDToRuleIDMap(traceIDToRuleIDMap);
 		valueGenerator.getValueDescriptors().forEach(builder::addValueDescriptor);
 		final Optional<IDocumentModifier> modifier = request.getModifier();
@@ -182,10 +182,10 @@ public class DocumentGenerator implements IDocumentGenerator {
 		 *
 		 * @return the template parameter values
 		 */
-		public Collection<ITemplateParameterValue> generateParameterValues() {
+		public Collection<IStylesheetParameterValue> generateParameterValues() {
 			logger.traceEntry();
-			final List<ITemplateParameterValue> results = Lists.newArrayList();
-			for (final ITemplateParameterRule rule : this.request.getTemplateParameterRules()) {
+			final List<IStylesheetParameterValue> results = Lists.newArrayList();
+			for (final IStylesheetParameterRule rule : this.request.getStylesheetParameterRules()) {
 				logger.debug("generating value for template parameter {} as requested by rule {}",
 						rule.getParameterID(),
 						rule.getID());
