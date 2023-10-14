@@ -3,6 +3,7 @@ package org.x2vc.processor;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URI;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import javax.xml.transform.stream.StreamSource;
@@ -11,9 +12,11 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.x2vc.processor.IHTMLDocumentFactory.Builder;
 import org.x2vc.schema.ISchemaManager;
+import org.x2vc.schema.structure.ITemplateParameter;
 import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.stylesheet.IStylesheetInformation;
 import org.x2vc.stylesheet.IStylesheetManager;
+import org.x2vc.xml.document.ITemplateParameterValue;
 import org.x2vc.xml.document.IXMLDocumentContainer;
 
 import com.github.racc.tscg.TypesafeConfig;
@@ -22,6 +25,8 @@ import com.google.common.base.Suppliers;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
+import com.google.common.collect.ImmutableCollection;
+import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
@@ -39,6 +44,7 @@ public class XSLTProcessor implements IXSLTProcessor {
 	private record ProcessorCacheEntry(
 			Processor processor,
 			XsltCompiler compiler,
+			IXMLSchema schema,
 			IExtensionFunctionHandler functionHandler,
 			XsltExecutable executable) {
 	}
@@ -101,6 +107,7 @@ public class XSLTProcessor implements IXSLTProcessor {
 				transformer.setErrorListener(observer);
 				transformer.setTraceListener(observer);
 				cacheEntry.functionHandler.storeFunctionResults(xmlDocument.getDocumentDescriptor());
+				transferStylesheetParameters(xmlDocument, cacheEntry.schema, transformer);
 				logger.debug("preparations complete, launching transformer");
 				transformer.transform(new StreamSource(new StringReader(xmlDocument.getDocument())), out);
 				logger.debug("transformation complete, processing results");
@@ -117,6 +124,31 @@ public class XSLTProcessor implements IXSLTProcessor {
 		}
 		final IHTMLDocumentContainer container = builder.build();
 		return logger.traceExit(container);
+	}
+
+	/**
+	 *
+	 * @param xmlDocument
+	 * @param schema
+	 * @param transformer
+	 * @throws SaxonApiException
+	 */
+	private void transferStylesheetParameters(IXMLDocumentContainer xmlDocument, IXMLSchema schema,
+			Xslt30Transformer transformer) throws SaxonApiException {
+		logger.traceEntry();
+		final ImmutableCollection<ITemplateParameterValue> valuesFromGenerator = xmlDocument.getDocumentDescriptor()
+			.getTemplateParameterValues();
+		final Map<QName, XdmValue> valuesForProcessor = Maps.newHashMap();
+		for (final ITemplateParameterValue valueFromGenerator : valuesFromGenerator) {
+			final ITemplateParameter parameterDefinition = schema.getObjectByID(valueFromGenerator.getParameterID(),
+					ITemplateParameter.class);
+			final QName parameterName = parameterDefinition.getQualifiedName();
+			final XdmValue parameterValue = valueFromGenerator.getXDMValue();
+			logger.debug("setting stylesheet parameter {} to value {}", parameterName, parameterValue);
+			valuesForProcessor.put(parameterName, parameterValue);
+		}
+		transformer.setStylesheetParameters(valuesForProcessor);
+		logger.traceExit();
 	}
 
 	/**
@@ -168,7 +200,7 @@ public class XSLTProcessor implements IXSLTProcessor {
 			logger.debug("Stylesheet compiled successfully");
 
 			// bundle it all together...
-			final ProcessorCacheEntry result = new ProcessorCacheEntry(processor, compiler, functionHandler,
+			final ProcessorCacheEntry result = new ProcessorCacheEntry(processor, compiler, schema, functionHandler,
 					executable);
 
 			return logger.traceExit(result);

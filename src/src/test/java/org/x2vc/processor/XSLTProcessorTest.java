@@ -3,9 +3,12 @@ package org.x2vc.processor;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.net.URI;
+import java.util.List;
+import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -13,15 +16,22 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.x2vc.schema.ISchemaManager;
+import org.x2vc.schema.structure.ITemplateParameter;
 import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.stylesheet.IStylesheetInformation;
 import org.x2vc.stylesheet.IStylesheetManager;
 import org.x2vc.utilities.URIUtilities;
 import org.x2vc.utilities.URIUtilities.ObjectType;
+import org.x2vc.xml.document.ITemplateParameterValue;
 import org.x2vc.xml.document.IXMLDocumentContainer;
 import org.x2vc.xml.document.IXMLDocumentDescriptor;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
+
+import net.sf.saxon.s9api.QName;
+import net.sf.saxon.s9api.XdmValue;
 
 @ExtendWith(MockitoExtension.class)
 class XSLTProcessorTest {
@@ -44,6 +54,8 @@ class XSLTProcessorTest {
 
 	@Mock
 	private IXMLDocumentDescriptor xmlDescriptor;
+
+	private List<ITemplateParameterValue> parameterValues;
 
 	private URI stylesheetURI;
 	private URI schemaURI;
@@ -70,6 +82,10 @@ class XSLTProcessorTest {
 		lenient().when(this.xmlDocument.getSchemaVersion()).thenReturn(this.schemaVersion);
 		lenient().when(this.xmlDocument.getDocumentDescriptor()).thenReturn(this.xmlDescriptor);
 		lenient().when(this.xmlDescriptor.getExtensionFunctionResults()).thenReturn(ImmutableList.of());
+
+		this.parameterValues = Lists.newArrayList();
+		lenient().when(this.xmlDescriptor.getTemplateParameterValues())
+			.thenAnswer(a -> ImmutableSet.copyOf(this.parameterValues));
 
 		lenient().when(this.schemaManager.getSchema(this.stylesheetURI)).thenReturn(this.schema);
 		lenient().when(this.schemaManager.getSchema(this.stylesheetURI, this.schemaVersion)).thenReturn(this.schema);
@@ -180,6 +196,50 @@ class XSLTProcessorTest {
 		assertFalse(htmlDocument.getCompilationError().isPresent());
 		assertTrue(htmlDocument.getProcessingError().isPresent());
 		assertFalse(htmlDocument.getDocument().isPresent());
+	}
+
+	/**
+	 * Test method for
+	 * {@link org.x2vc.processor.XSLTProcessor#processDocument(org.x2vc.xml.document.IXMLDocumentContainer)}.
+	 */
+	@Test
+	void testParameterValue() {
+		final String xslt = """
+							<?xml version="1.0"?>
+							<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+							<xsl:param name="myParam" select="0"/>
+							<xsl:template match="root">
+							<div>
+							<xsl:value-of select="$myParam"/>
+							</div>
+							</xsl:template>
+							</xsl:stylesheet>
+							""";
+		when(this.stylesheet.getPreparedStylesheet()).thenReturn(xslt);
+		final String input = """
+								<?xml version="1.0"?>
+								<root />
+								""";
+		when(this.xmlDocument.getDocument()).thenReturn(input);
+
+		final UUID parameterID = UUID.randomUUID();
+		final ITemplateParameterValue paramValue = mock(ITemplateParameterValue.class);
+		when(paramValue.getParameterID()).thenReturn(parameterID);
+		when(paramValue.getXDMValue()).thenReturn(XdmValue.makeValue("FooBarBaz"));
+		this.parameterValues.add(paramValue);
+
+		final ITemplateParameter parameterDefinition = mock(ITemplateParameter.class);
+		when(parameterDefinition.getQualifiedName()).thenReturn(new QName("myParam"));
+		when(this.schema.getObjectByID(parameterID, ITemplateParameter.class)).thenReturn(parameterDefinition);
+
+		final IHTMLDocumentContainer htmlDocument = this.wrapper.processDocument(this.xmlDocument);
+
+		assertFalse(htmlDocument.getCompilationError().isPresent());
+		assertFalse(htmlDocument.getProcessingError().isPresent());
+		assertTrue(htmlDocument.getDocument().isPresent());
+
+		final String document = htmlDocument.getDocument().get();
+		assertTrue(document.contains("<div>FooBarBaz</div>"));
 	}
 
 }
