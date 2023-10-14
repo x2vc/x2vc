@@ -1,9 +1,6 @@
 package org.x2vc.schema.evolution;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -258,6 +255,18 @@ class SchemaModifierCollectorTest {
 		if (testTopModifier instanceof final IAddElementModifier testAddElemMod) {
 			assertEquals(1, testAddElemMod.getSubElements().size());
 		}
+	}
+
+	@Test
+	void testPassthroughAddParameterModifiers() {
+		// since these modifiers are (for the moment at least) only issued by a single thread, no consolidation is
+		// required
+		final IAddParameterModifier modifier = mock();
+		this.collector.addModifier(modifier);
+		final ImmutableSet<ISchemaModifier> modifiers = this.collector.getConsolidatedModifiers();
+		assertEquals(1, modifiers.size());
+		assertFalse(this.collector.isEmpty());
+		assertTrue(modifiers.contains(modifier));
 	}
 
 	/**

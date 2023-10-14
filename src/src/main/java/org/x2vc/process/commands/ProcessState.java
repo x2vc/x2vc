@@ -16,6 +16,17 @@ public enum ProcessState {
 	INITIALIZE,
 
 	/**
+	 * The structure of the stylesheet is being examined statically to determine whether the schema needs to be
+	 * adjusted.
+	 */
+	STATIC_CHECK,
+
+	/**
+	 * The results of the static analysis phase are being consolidated and the schema is being adjusted.
+	 */
+	STATIC_RESULT_PROCESSING,
+
+	/**
 	 * Sample documents are being processed in order to determine whether the stylesheet attempts to access document
 	 * elements that are not yet represented in the schema.
 	 */

@@ -12,6 +12,8 @@ import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
 import com.google.common.collect.Sets;
 
+import net.sf.saxon.s9api.QName;
+
 /**
  * Standard implementation of {@link ISchemaModificationProcessor}.
  */
@@ -33,6 +35,7 @@ public class SchemaModificationProcessor implements ISchemaModificationProcessor
 		private Multimap<UUID, IAddAttributeModifier> attributeModifiers;
 		private Multimap<UUID, IAddElementModifier> elementModifiersByParentID;
 		private Set<IAddElementModifier> rootElementModifiers;
+		private Set<IAddParameterModifier> parameterModifiers;
 		private Map<UUID, IAddElementModifier> elementModifiersByTypeID = new HashMap<>();
 
 		private IXMLSchema inputSchema;
@@ -41,7 +44,7 @@ public class SchemaModificationProcessor implements ISchemaModificationProcessor
 		private Multimap<UUID, UUID> elementDependencies = MultimapBuilder.hashKeys().arrayListValues().build();
 		private Map<UUID, XMLElementType> elementTypesByID = new HashMap<>();
 		private Map<UUID, ExtensionFunction.Builder> functionBuilders = new HashMap<>();
-		private Map<UUID, StylesheetParameter.Builder> parameterBuilders = new HashMap<>();
+		private Map<QName, StylesheetParameter.Builder> parameterBuilders = new HashMap<>();
 
 		/**
 		 * Prepares a worker with the modifiers.
@@ -54,6 +57,7 @@ public class SchemaModificationProcessor implements ISchemaModificationProcessor
 			this.attributeModifiers = MultimapBuilder.hashKeys().arrayListValues().build();
 			this.elementModifiersByParentID = MultimapBuilder.hashKeys().arrayListValues().build();
 			this.rootElementModifiers = Sets.newHashSet();
+			this.parameterModifiers = Sets.newHashSet();
 			sortModifiersByType(modifiers);
 			logger.traceExit();
 		}
@@ -73,6 +77,8 @@ public class SchemaModificationProcessor implements ISchemaModificationProcessor
 					} else {
 						this.rootElementModifiers.add(elementModifier);
 					}
+				} else if (modifier instanceof final IAddParameterModifier parameterModifier) {
+					this.parameterModifiers.add(parameterModifier);
 				} else {
 					throw new IllegalArgumentException(
 							String.format("Unknown modifier type %s", modifier.getClass().getSimpleName()));
@@ -96,6 +102,7 @@ public class SchemaModificationProcessor implements ISchemaModificationProcessor
 			processAttributeModifiers();
 			processRootElementModifiers();
 			processElementModifiers();
+			processParameterModifiers();
 			createRemainingElements();
 			createRootReferences();
 			createFunctions();
@@ -159,7 +166,8 @@ public class SchemaModificationProcessor implements ISchemaModificationProcessor
 			logger.traceEntry();
 			for (final IStylesheetParameter originalParameter : this.inputSchema.getStylesheetParameters()) {
 				logger.debug("initializing builder for parameter {}", originalParameter.getID());
-				this.parameterBuilders.put(originalParameter.getID(), StylesheetParameter.builderFrom(originalParameter));
+				this.parameterBuilders.put(originalParameter.getQualifiedName(),
+						StylesheetParameter.builderFrom(originalParameter));
 			}
 			logger.traceExit();
 		}
@@ -331,6 +339,27 @@ public class SchemaModificationProcessor implements ISchemaModificationProcessor
 		}
 
 		/**
+		 * Process the modifiers to create new stylesheet parameters.
+		 */
+		private void processParameterModifiers() {
+			logger.traceEntry();
+			for (final IAddParameterModifier parameterModifier : this.parameterModifiers) {
+				final QName parameterName = parameterModifier.getQualifiedName();
+				if (this.parameterBuilders.containsKey(parameterName)) {
+					logger.warn("attempt to add duplicate stylesheet parameter \"{}\" ignored", parameterName);
+				} else {
+					logger.debug("adding stylesheet parameter \"{}\"", parameterName);
+					final StylesheetParameter.Builder paramBuilder = StylesheetParameter
+						.builder(parameterModifier.getParameterID(), parameterModifier.getLocalName())
+						.withNamespaceURI(parameterModifier.getNamespaceURI().orElse(""))
+						.withType(parameterModifier.getType());
+					this.parameterBuilders.put(parameterName, paramBuilder);
+				}
+			}
+			logger.traceExit();
+		}
+
+		/**
 		 * Use the dependency map to create the elements and references in order.
 		 */
 		private void createRemainingElements() {
@@ -348,25 +377,7 @@ public class SchemaModificationProcessor implements ISchemaModificationProcessor
 					// only process elements that have no unmet dependencies
 					if (!this.elementDependencies.containsKey(elementID)) {
 						logger.debug("processing element {}", elementID);
-						final Builder builder = entry.getValue();
-						final IElementType originalElement = this.inputSchema.getObjectByID(elementID,
-								IElementType.class);
-						if (originalElement.hasElementContent()) {
-							for (final IElementReference originalReference : originalElement.getElements()) {
-								logger.debug("resolving reference to sub-element {} ({})", originalReference.getName(),
-										originalReference.getElementID());
-								final XMLElementType referredElement = this.elementTypesByID
-									.get(originalReference.getElementID());
-								XMLElementReference
-									.builder(originalReference.getID(), originalReference.getName(), referredElement)
-									.withComment(originalReference.getComment())
-									.withMinOccurrence(originalReference.getMinOccurrence())
-									.withMaxOccurrence(originalReference.getMaxOccurrence())
-									.addTo(builder);
-							}
-						}
-						final XMLElementType elementType = builder.addTo(this.newSchemaBuilder);
-						this.elementTypesByID.put(elementID, elementType);
+						createElement(elementID, entry.getValue());
 						completedElementIDs.add(elementID);
 					} else {
 						unmetDependencyCount++;
@@ -390,6 +401,32 @@ public class SchemaModificationProcessor implements ISchemaModificationProcessor
 				}
 			}
 			logger.traceExit();
+		}
+
+		/**
+		 * @param elementID
+		 * @param builder
+		 * @throws IllegalArgumentException
+		 */
+		private void createElement(final UUID elementID, final Builder builder) throws IllegalArgumentException {
+			final IElementType originalElement = this.inputSchema.getObjectByID(elementID,
+					IElementType.class);
+			if (originalElement.hasElementContent()) {
+				for (final IElementReference originalReference : originalElement.getElements()) {
+					logger.debug("resolving reference to sub-element {} ({})", originalReference.getName(),
+							originalReference.getElementID());
+					final XMLElementType referredElement = this.elementTypesByID
+						.get(originalReference.getElementID());
+					XMLElementReference
+						.builder(originalReference.getID(), originalReference.getName(), referredElement)
+						.withComment(originalReference.getComment())
+						.withMinOccurrence(originalReference.getMinOccurrence())
+						.withMaxOccurrence(originalReference.getMaxOccurrence())
+						.addTo(builder);
+				}
+			}
+			final XMLElementType elementType = builder.addTo(this.newSchemaBuilder);
+			this.elementTypesByID.put(elementID, elementType);
 		}
 
 		/**

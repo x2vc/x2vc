@@ -42,7 +42,7 @@ class StylesheetStructureTest {
 	 * Test method for {@link org.x2vc.stylesheet.structure.StylesheetStructure#getParameters()}.
 	 */
 	@Test
-	void testGetParameters() {
+	void testGetStylesheetParameters() {
 		final StylesheetStructure structure = new StylesheetStructure();
 		final XSLTParameterNode param1 = XSLTParameterNode.builder(structure, "param1").build();
 		final XSLTParameterNode param2 = XSLTParameterNode.builder(structure, "param2").build();
@@ -56,8 +56,8 @@ class StylesheetStructureTest {
 			.build();
 		final IXSLTDirectiveNode rootNode = XSLTDirectiveNode
 			.builder(structure, XSLTConstants.Elements.STYLESHEET)
-			.addChildElement(param1)
-			.addChildElement(param2)
+			.addFormalParameter(param1)
+			.addFormalParameter(param2)
 			.addChildElement(template1)
 			.addChildElement(template2)
 			.build();

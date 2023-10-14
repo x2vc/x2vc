@@ -100,22 +100,10 @@ public class StylesheetStructure implements IStylesheetStructure {
 		return this.templateSupplier.get();
 	}
 
-	@XmlTransient
-	@SuppressWarnings("java:S4738") // Java supplier does not support memoization
-	Supplier<ImmutableList<IXSLTParameterNode>> parameterSupplier = Suppliers.memoize(() -> {
-		logger.traceEntry();
-		final ImmutableList<IXSLTParameterNode> result = ImmutableList.copyOf(
-				this.rootNode.getChildElements().stream()
-					.filter(d -> d.isXSLTParameter())
-					.map(d -> d.asParameter())
-					.iterator());
-		return logger.traceExit(result);
-	});
-
 	@Override
 	public ImmutableList<IXSLTParameterNode> getParameters() {
 		checkInitializationComplete();
-		return this.parameterSupplier.get();
+		return this.rootNode.getFormalParameters();
 	}
 
 }

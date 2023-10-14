@@ -23,7 +23,12 @@ public final class FunctionSignatureType implements IFunctionSignatureType {
 	@XmlAttribute(name = "occurrence")
 	private final OccurrenceIndicator occurrenceIndicator;
 
-	protected FunctionSignatureType(SequenceItemType itemType, OccurrenceIndicator occurrenceIndicator) {
+	/**
+	 *
+	 * @param itemType
+	 * @param occurrenceIndicator
+	 */
+	public FunctionSignatureType(SequenceItemType itemType, OccurrenceIndicator occurrenceIndicator) {
 		this.itemType = itemType;
 		this.occurrenceIndicator = occurrenceIndicator;
 	}

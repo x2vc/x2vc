@@ -21,7 +21,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.x2vc.schema.structure.FunctionSignatureType;
 import org.x2vc.schema.structure.IElementType.ContentType;
+import org.x2vc.schema.structure.IFunctionSignatureType.SequenceItemType;
 import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.schema.structure.XMLDataType;
 import org.x2vc.schema.structure.XMLSchema;
@@ -29,6 +31,8 @@ import org.x2vc.utilities.URIUtilities;
 import org.x2vc.utilities.URIUtilities.ObjectType;
 
 import com.google.common.io.Files;
+
+import net.sf.saxon.s9api.OccurrenceIndicator;
 
 @ExtendWith(MockitoExtension.class)
 class SchemaModificationProcessorTest {
@@ -621,6 +625,72 @@ class SchemaModificationProcessorTest {
 				    </rootElements>
 					<extensionFunctions/>
 					<stylesheetParameters/>
+				</schema>
+			""";
+		// @formatter:on
+		final StringWriter actualSchemaSourceWriter = new StringWriter();
+		this.marshaller.marshal(modifiedSchema, actualSchemaSourceWriter);
+		final String actualSchemaSource = actualSchemaSourceWriter.toString();
+
+		assertXMLEquals(expectedSchemaSource, actualSchemaSource);
+	}
+
+	@Test
+	void test_addParameter_toEmptyParameterList() throws JAXBException {
+		// prepare original schema
+		//@formatter:off
+		final String originalSchemaSource
+			= """
+				<schema stylesheetURI="file://somewhere/SampleStylesheet.xslt" schemaURI="memory:schema/someSchema" version="1">
+				    <elementTypes>
+				        <elementType contentType="ELEMENT" elementArrangement="ALL" id="285a04e8-41cb-475a-be6c-d556155ff0b2">
+				            <comment>root element</comment>
+				        </elementType>
+				    </elementTypes>
+				    <rootElements>
+				        <rootElement name="root" elementID="285a04e8-41cb-475a-be6c-d556155ff0b2" minOccurrence="1" maxOccurrence="1" id="3f711fb0-249d-458e-9477-fbad012299b8">
+				            <comment>reference to root element</comment>
+				        </rootElement>
+					</rootElements>
+					<extensionFunctions/>
+					<stylesheetParameters/>
+				</schema>
+				""";
+		//@formatter:on
+		final XMLSchema originalSchema = (XMLSchema) this.unmarshaller
+			.unmarshal(new StringReader(originalSchemaSource));
+
+		// use a modifier to add an attribute
+		final IAddParameterModifier modifier = AddParameterModifier
+			.builder(URIUtilities.makeMemoryURI(ObjectType.SCHEMA, "someSchema"), 1)
+			.withLocalName("localPart")
+			.withNamespaceURI("http://name.space")
+			.withParameterID(UUID.fromString("b511e33b-e5fd-4a01-ad8c-5532dc4003bf"))
+			.withType(new FunctionSignatureType(SequenceItemType.ANY_ATOMIC_VALUE, OccurrenceIndicator.ZERO_OR_MORE))
+			.build();
+		final IXMLSchema modifiedSchema = this.processor.modifySchema(originalSchema, Set.of(modifier));
+
+		// serialize the schema and compare with the expected version
+		//@formatter:off
+		final String expectedSchemaSource
+			= """
+				<schema stylesheetURI="file://somewhere/SampleStylesheet.xslt" schemaURI="memory:schema/someSchema" version="2">
+				    <elementTypes>
+				        <elementType contentType="ELEMENT" elementArrangement="ALL" id="285a04e8-41cb-475a-be6c-d556155ff0b2">
+				            <comment>root element</comment>
+				        </elementType>
+				    </elementTypes>
+				    <rootElements>
+				        <rootElement name="root" elementID="285a04e8-41cb-475a-be6c-d556155ff0b2" minOccurrence="1" maxOccurrence="1" id="3f711fb0-249d-458e-9477-fbad012299b8">
+				            <comment>reference to root element</comment>
+				        </rootElement>
+				    </rootElements>
+					<extensionFunctions/>
+					<stylesheetParameters>
+						<parameter id="b511e33b-e5fd-4a01-ad8c-5532dc4003bf" namespaceURI="http://name.space" localName="localPart">
+							<type type="ANY_ATOMIC_VALUE" occurrence="ZERO_OR_MORE" />
+						</parameter>
+					</stylesheetParameters>
 				</schema>
 			""";
 		// @formatter:on

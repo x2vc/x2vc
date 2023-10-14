@@ -73,7 +73,7 @@ public final class XMLSchema implements IXMLSchema {
 		this.extensionFunctions = builder.extensionFunctions.stream()
 			.sorted((e1, e2) -> e1.getID().compareTo(e2.getID()))
 			.toList();
-		this.stylesheetParameters = builder.StylesheetParameters.stream()
+		this.stylesheetParameters = builder.stylesheetParameters.stream()
 			.sorted((e1, e2) -> e1.getID().compareTo(e2.getID()))
 			.toList();
 	}
@@ -374,7 +374,7 @@ public final class XMLSchema implements IXMLSchema {
 		private List<IElementType> elementTypes = new ArrayList<>();
 		private List<IElementReference> rootElements = new ArrayList<>();
 		private List<IExtensionFunction> extensionFunctions = new ArrayList<>();
-		private List<IStylesheetParameter> StylesheetParameters = new ArrayList<>();
+		private List<IStylesheetParameter> stylesheetParameters = new ArrayList<>();
 
 		/**
 		 * Creates a new builder.
@@ -426,7 +426,7 @@ public final class XMLSchema implements IXMLSchema {
 		 * @return builder
 		 */
 		public Builder addStylesheetParameter(IStylesheetParameter parameter) {
-			this.StylesheetParameters.add(parameter);
+			this.stylesheetParameters.add(parameter);
 			return this;
 
 		}

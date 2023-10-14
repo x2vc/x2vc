@@ -11,6 +11,7 @@ import org.apache.logging.log4j.Logger;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
+import com.google.common.collect.Sets;
 
 /**
  * Standard implementation of {@link ISchemaModifierCollector}.
@@ -32,6 +33,7 @@ public class SchemaModifierCollector implements ISchemaModifierCollector {
 	private Multimap<ModifierKey, IAddAttributeModifier> attributeModifiers;
 	private Multimap<ModifierKey, IAddElementModifier> elementModifiers;
 	private Multimap<String, IAddElementModifier> rootElementModifiers;
+	private Set<IAddParameterModifier> parameterModifiers;
 
 	@XmlTransient
 	int collectedModifierCount;
@@ -48,6 +50,7 @@ public class SchemaModifierCollector implements ISchemaModifierCollector {
 		this.attributeModifiers = MultimapBuilder.hashKeys().arrayListValues().build();
 		this.elementModifiers = MultimapBuilder.hashKeys().arrayListValues().build();
 		this.rootElementModifiers = MultimapBuilder.hashKeys().arrayListValues().build();
+		this.parameterModifiers = Sets.newHashSet();
 		this.collectedModifierCount = 0;
 		logger.traceExit();
 	}
@@ -65,6 +68,10 @@ public class SchemaModifierCollector implements ISchemaModifierCollector {
 			} else {
 				addRootElementModifier(elementModifier);
 			}
+		} else if (modifier instanceof final IAddParameterModifier parameterModifier) {
+			// since these modifiers are (for the moment at least) only issued by a single thread, no consolidation is
+			// required
+			this.parameterModifiers.add(parameterModifier);
 		} else {
 			throw new IllegalArgumentException(
 					String.format("Invalid schema modifier type %s", modifier.getClass().getSimpleName()));
@@ -313,6 +320,7 @@ public class SchemaModifierCollector implements ISchemaModifierCollector {
 		result.addAll(this.attributeModifiers.values());
 		result.addAll(this.elementModifiers.values());
 		result.addAll(this.rootElementModifiers.values());
+		result.addAll(this.parameterModifiers);
 		final int consolidatedModifierCount = result.stream().mapToInt(ISchemaModifier::count).sum();
 		logger.debug("Consolidated {} schema modification requests to {} unique requests.", this.collectedModifierCount,
 				consolidatedModifierCount);
@@ -322,7 +330,7 @@ public class SchemaModifierCollector implements ISchemaModifierCollector {
 	@Override
 	public boolean isEmpty() {
 		return this.attributeModifiers.isEmpty() && this.elementModifiers.isEmpty()
-				&& this.rootElementModifiers.isEmpty();
+				&& this.rootElementModifiers.isEmpty() && this.parameterModifiers.isEmpty();
 	}
 
 }

@@ -28,6 +28,7 @@ public class ProcessDirector implements IProcessDirector {
 	private static final Logger logger = LogManager.getLogger();
 
 	private IInitializationTaskFactory initializationTaskFactory;
+	private IStaticSchemaAnalysisTaskFactory staticSchemaAnalysisTaskFactory;
 	private ISchemaExplorationTaskFactory schemaExplorationTaskFactory;
 	private ISchemaEvolutionTaskFactory schemaEvolutionTaskFactory;
 	private IInitialVulnerabilityCheckTaskFactory initialVulnerabilityCheckTaskFactory;
@@ -51,6 +52,7 @@ public class ProcessDirector implements IProcessDirector {
 	@SuppressWarnings("java:S107") // large number of parameters due to dependency injection
 	@Inject
 	ProcessDirector(IInitializationTaskFactory initializationTaskFactory,
+			IStaticSchemaAnalysisTaskFactory staticSchemaAnalysisTaskFactory,
 			ISchemaExplorationTaskFactory schemaExplorationTaskFactory,
 			ISchemaEvolutionTaskFactory schemaEvolutionTaskFactory,
 			IInitialVulnerabilityCheckTaskFactory initialVulnerabilityCheckTaskFactory,
@@ -64,6 +66,7 @@ public class ProcessDirector implements IProcessDirector {
 			@Assisted File xsltFile,
 			@Assisted ProcessingMode mode) {
 		this.initializationTaskFactory = initializationTaskFactory;
+		this.staticSchemaAnalysisTaskFactory = staticSchemaAnalysisTaskFactory;
 		this.schemaExplorationTaskFactory = schemaExplorationTaskFactory;
 		this.schemaEvolutionTaskFactory = schemaEvolutionTaskFactory;
 		this.initialVulnerabilityCheckTaskFactory = initialVulnerabilityCheckTaskFactory;
@@ -120,7 +123,7 @@ public class ProcessDirector implements IProcessDirector {
 				logger.debug("processing of stylesheet {} initialized successfully", this.xsltFile);
 				if ((this.processingMode == ProcessingMode.FULL)
 						|| (this.processingMode == ProcessingMode.SCHEMA_ONLY)) {
-					startSchemaExploration();
+					startStaticSchemaAnalysis();
 				} else {
 					startVulnerabilityChecks();
 				}
@@ -129,6 +132,83 @@ public class ProcessDirector implements IProcessDirector {
 				// abort further processing
 				this.processState = ProcessState.DONE;
 			}
+			logger.traceExit();
+		}
+	}
+
+	/**
+	 * Starts the static analysis phase of the schema evolution.
+	 */
+	private synchronized void startStaticSchemaAnalysis() {
+		try (final CloseableThreadContext.Instance ctc = getThreadContext()) {
+			logger.traceEntry();
+			this.processState = ProcessState.STATIC_CHECK;
+			this.schemaModifierCollector.clear();
+			// this phase only consists of a single task
+			logger.debug("scheduling static analysis of stylesheet {}",
+					this.xsltFile);
+			final IStaticSchemaAnalysisTask analysisTask = this.staticSchemaAnalysisTaskFactory
+				.create(this.xsltFile, this.schemaModifierCollector::addModifier, this::handleStaticAnalysisComplete);
+			this.workerProcessManager.submit(analysisTask);
+			logger.traceExit();
+		}
+	}
+
+	/**
+	 * Called when an {@link ISchemaExplorationTask} completes.
+	 *
+	 * @param taskID
+	 * @param success
+	 */
+	private synchronized void handleStaticAnalysisComplete(UUID taskID, Boolean success) {
+		try (final CloseableThreadContext.Instance ctc = getThreadContext()) {
+			logger.traceEntry();
+			if (Boolean.FALSE.equals(success)) {
+				logger.error("processing of stylesheet {} aborted", this.xsltFile);
+				// abort further processing
+				this.processState = ProcessState.DONE;
+			} else {
+				logger.debug("static analysis of stylesheet {} completed", this.xsltFile);
+				if (this.schemaModifierCollector.isEmpty()) {
+					// skip directly to exploration phase
+					startSchemaExploration();
+				} else {
+					// incorporate the results in the schema first
+					startSchemaAnalysisResultProcessing();
+				}
+			}
+			logger.traceExit();
+		}
+	}
+
+	/**
+	 * Starts the processing phase of the static analysis.
+	 */
+	private synchronized void startSchemaAnalysisResultProcessing() {
+		try (final CloseableThreadContext.Instance ctc = getThreadContext()) {
+			logger.traceEntry();
+			logger.debug("processing results of static analysis of stylesheet {}", this.xsltFile);
+			this.processState = ProcessState.STATIC_RESULT_PROCESSING;
+			// we can re-use the evolution task for this - maybe some day find a better name for it
+			final ISchemaEvolutionTask evolutionTask = this.schemaEvolutionTaskFactory
+				.create(this.xsltFile, this.schemaModifierCollector, this::handleAnalysisResultProcessingComplete);
+			this.workerProcessManager.submit(evolutionTask);
+			logger.traceExit();
+		}
+	}
+
+	/**
+	 * Called when an {@link ISchemaEvolutionTask} submitted by {@link #startSchemaAnalysisResultProcessing()}
+	 * completes.
+	 *
+	 * @param result <code>true</code> if a new schema version was created, <code>false</code> otherwise
+	 */
+	private synchronized void handleAnalysisResultProcessingComplete(Boolean result) {
+		try (final CloseableThreadContext.Instance ctc = getThreadContext()) {
+			logger.traceEntry();
+			logger.debug("static analysis of stylesheet {} completed, schema changes: {}",
+					this.xsltFile, result);
+			startSchemaExploration();
 			logger.traceExit();
 		}
 	}
@@ -160,7 +240,7 @@ public class ProcessDirector implements IProcessDirector {
 	}
 
 	/**
-	 * Called when an {@link ISchemaExplorationTask} completes.
+	 * Called when an {@link ISchemaExplorationTask} submitted by {@link #startSchemaExploration()} completes.
 	 *
 	 * @param taskID
 	 * @param success

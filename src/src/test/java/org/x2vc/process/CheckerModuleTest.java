@@ -81,6 +81,8 @@ class CheckerModuleTest {
 	@Inject
 	private Provider<ISchemaExplorationTaskFactory> schemaExplorationTaskFactoryProvider;
 	@Inject
+	private Provider<IStaticSchemaAnalysisTaskFactory> staticSchemaAnalysisTaskFactoryProvider;
+	@Inject
 	private Provider<IHTMLDocumentFactory> htmlDocumentFactoryProvider;
 	@Inject
 	private Provider<IXSLTProcessor> xsltProcessorProvider;
@@ -98,6 +100,8 @@ class CheckerModuleTest {
 	private Provider<ISchemaModificationProcessor> schemaModificationProcessorProvider;
 	@Inject
 	private Provider<ISchemaModifierCollector> schemaModifierCollectorProvider;
+	@Inject
+	private Provider<IStaticStylesheetAnalyzer> staticStylesheetAnalyzerProvider;
 	@Inject
 	private Provider<IValueTraceAnalyzer> valueTraceAnalyzerProvider;
 	@Inject
@@ -233,6 +237,14 @@ class CheckerModuleTest {
 		assertNotNull(factory.create(mock(File.class), mock(Consumer.class), mock(BiConsumer.class)));
 	}
 
+	@SuppressWarnings("unchecked")
+	@Test
+	void testStaticSchemaAnalysisTaskFactory() {
+		final IStaticSchemaAnalysisTaskFactory factory = this.staticSchemaAnalysisTaskFactoryProvider.get();
+		assertNotNull(factory);
+		assertNotNull(factory.create(mock(File.class), mock(Consumer.class), mock(BiConsumer.class)));
+	}
+
 	@Test
 	void testHTMLDocumentFactory() {
 		assertNotNull(this.htmlDocumentFactoryProvider.get());
@@ -281,6 +293,11 @@ class CheckerModuleTest {
 	@Test
 	void testSchemaModifierCollector() {
 		assertNotNull(this.schemaModifierCollectorProvider.get());
+	}
+
+	@Test
+	void testStaticStylesheetAnalyzer() {
+		assertNotNull(this.staticStylesheetAnalyzerProvider.get());
 	}
 
 	@Test

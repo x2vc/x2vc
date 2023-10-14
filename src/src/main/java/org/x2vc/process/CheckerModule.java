@@ -94,6 +94,9 @@ public class CheckerModule extends AbstractModule {
 		install(new FactoryModuleBuilder()
 			.implement(ISchemaExplorationTask.class, SchemaExplorationTask.class)
 			.build(ISchemaExplorationTaskFactory.class));
+		install(new FactoryModuleBuilder()
+			.implement(IStaticSchemaAnalysisTask.class, StaticSchemaAnalysisTask.class)
+			.build(IStaticSchemaAnalysisTaskFactory.class));
 
 		// processor
 		bind(IHTMLDocumentFactory.class).to(HTMLDocumentFactory.class);
@@ -115,6 +118,7 @@ public class CheckerModule extends AbstractModule {
 			.build(IModifierCreationCoordinatorFactory.class));
 		bind(ISchemaModificationProcessor.class).to(SchemaModificationProcessor.class);
 		bind(ISchemaModifierCollector.class).to(SchemaModifierCollector.class);
+		bind(IStaticStylesheetAnalyzer.class).to(StaticStylesheetAnalyzer.class);
 		bind(IValueTraceAnalyzer.class).to(ValueTraceAnalyzer.class);
 		bind(IValueTracePreprocessor.class).to(ValueTracePreprocessor.class);
 

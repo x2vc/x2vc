@@ -446,7 +446,7 @@ public class ValueGenerator implements IValueGenerator {
 		default:
 			// TODO Extension Functions: support other return type data types
 			throw logger.throwing(new UnsupportedOperationException(
-					String.format("Generating a value with an item tyoe of %s is not yet supported",
+					String.format("Generating a value with an item type of %s is not yet supported",
 							resultType.getSequenceItemType())));
 		}
 		return logger.traceExit(result);
@@ -500,7 +500,8 @@ public class ValueGenerator implements IValueGenerator {
 	public IStylesheetParameterValue generateValue(IStylesheetParameterRule rule) {
 		logger.traceEntry("for parameter {}", rule.getParameterID());
 		loadSchema();
-		final IStylesheetParameter parameter = this.schema.getObjectByID(rule.getParameterID(), IStylesheetParameter.class);
+		final IStylesheetParameter parameter = this.schema.getObjectByID(rule.getParameterID(),
+				IStylesheetParameter.class);
 		final Optional<IRequestedValue> oRequestedValue = rule.getRequestedValue();
 		IStylesheetParameterValue result = null;
 		if (oRequestedValue.isPresent()) {

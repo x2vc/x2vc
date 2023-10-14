@@ -136,12 +136,12 @@ public final class StylesheetParameter implements IStylesheetParameter {
 	/**
 	 * Creates builder to build {@link StylesheetParameter}.
 	 *
-	 * @param functionID
+	 * @param parameterID
 	 * @param localName
 	 * @return created builder
 	 */
-	public static Builder builder(UUID functionID, String localName) {
-		return new Builder(functionID, localName);
+	public static Builder builder(UUID parameterID, String localName) {
+		return new Builder(parameterID, localName);
 	}
 
 	/**
