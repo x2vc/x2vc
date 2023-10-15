@@ -325,7 +325,8 @@ public class ProcessDirector implements IProcessDirector {
 			for (int i = 0; i < this.xssInitialDocumentCount; i++) {
 				final IVulnerabilityCheckTask checkTask = this.vulnerabilityCheckTaskFactory
 					.create(
-							this.xsltFile, this::collectFollowupRequest, this::handleVulnerabilityCheckComplete);
+							this.xsltFile, this::collectFollowupRequest,
+							this::handleVulnerabilityCheckComplete);
 				this.vulnerabilityCheckTasks.add(checkTask.getTaskID());
 				this.workerProcessManager.submit(checkTask);
 			}
@@ -348,7 +349,8 @@ public class ProcessDirector implements IProcessDirector {
 			}
 			logger.debug("received follow-up request for rule {}", ruleName);
 			final IVulnerabilityCheckTask checkTask = this.vulnerabilityCheckTaskFactory
-				.create(this.xsltFile, request, this::collectFollowupRequest, this::handleVulnerabilityCheckComplete);
+				.create(this.xsltFile, request, this::collectFollowupRequest,
+						this::handleVulnerabilityCheckComplete);
 			this.vulnerabilityCheckTasks.add(checkTask.getTaskID());
 			this.workerProcessManager.submit(checkTask);
 			logger.traceExit();

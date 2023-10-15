@@ -21,6 +21,8 @@ import org.x2vc.schema.evolution.items.EvaluationTreeItemFactory;
 import org.x2vc.schema.evolution.items.IEvaluationTreeItemFactory;
 import org.x2vc.schema.evolution.items.IEvaluationTreeItemFactoryFactory;
 import org.x2vc.stylesheet.*;
+import org.x2vc.stylesheet.coverage.CoverageTraceAnalyzer;
+import org.x2vc.stylesheet.coverage.ICoverageTraceAnalyzer;
 import org.x2vc.stylesheet.structure.IStylesheetStructureExtractor;
 import org.x2vc.stylesheet.structure.StylesheetStructureExtractor;
 import org.x2vc.utilities.DebugObjectWriter;
@@ -126,6 +128,7 @@ public class CheckerModule extends AbstractModule {
 		bind(INamespaceExtractor.class).to(NamespaceExtractor.class);
 
 		// stylesheet coverage
+		bind(ICoverageTraceAnalyzer.class).to(CoverageTraceAnalyzer.class);
 
 		// stylesheet structure
 		bind(IStylesheetStructureExtractor.class).to(StylesheetStructureExtractor.class);

@@ -32,6 +32,7 @@ import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.stylesheet.INamespaceExtractor;
 import org.x2vc.stylesheet.IStylesheetManager;
 import org.x2vc.stylesheet.IStylesheetPreprocessor;
+import org.x2vc.stylesheet.coverage.ICoverageTraceAnalyzer;
 import org.x2vc.stylesheet.structure.IStylesheetStructureExtractor;
 import org.x2vc.utilities.IDebugObjectWriter;
 import org.x2vc.xml.document.IDocumentGenerator;
@@ -111,6 +112,8 @@ class CheckerModuleTest {
 	private Provider<IStylesheetPreprocessor> stylesheetPreprocessorProvider;
 	@Inject
 	private Provider<INamespaceExtractor> namespaceExtractorProvider;
+	@Inject
+	private Provider<ICoverageTraceAnalyzer> coverageTraceAnalyzerProvider;
 	@Inject
 	private Provider<IStylesheetStructureExtractor> stylesheetStructureExtractorProvider;
 	@Inject
@@ -323,6 +326,11 @@ class CheckerModuleTest {
 	@Test
 	void testNamespaceExtractor() {
 		assertNotNull(this.namespaceExtractorProvider.get());
+	}
+
+	@Test
+	void testCoverageTraceAnalyzer() {
+		assertNotNull(this.coverageTraceAnalyzerProvider.get());
 	}
 
 	@Test
