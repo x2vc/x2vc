@@ -76,13 +76,7 @@ class CoverageTraceAnalyzerTest {
 		this.analyzer = new CoverageTraceAnalyzer(this.stylesheetManager);
 	}
 
-	/**
-	 * Test method for
-	 * {@link org.x2vc.stylesheet.coverage.CoverageTraceAnalyzer#analyzeDocument(java.util.UUID, org.x2vc.processor.IHTMLDocumentContainer)}
-	 * and {@link org.x2vc.stylesheet.coverage.CoverageTraceAnalyzer#getDirectiveCoverage()}.
-	 */
-	@Test
-	void testGetDirectiveCoverage() {
+	protected void prepareTestDocument() {
 		final String in = """
 							<?xml version="1.0"?>
 							<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
@@ -117,6 +111,16 @@ class CoverageTraceAnalyzerTest {
 				mockEvent(ExecutionEventType.LEAVE, 5, "choose"),
 				mockEvent(ExecutionEventType.LEAVE, 3, "template")));
 		when(this.htmlContainer.getTraceEvents()).thenReturn(traceEvents);
+	}
+
+	/**
+	 * Test method for
+	 * {@link org.x2vc.stylesheet.coverage.CoverageTraceAnalyzer#analyzeDocument(java.util.UUID, org.x2vc.processor.IHTMLDocumentContainer)}
+	 * and {@link org.x2vc.stylesheet.coverage.CoverageTraceAnalyzer#getDirectiveCoverage()}.
+	 */
+	@Test
+	void testGetDirectiveCoverage() {
+		prepareTestDocument();
 		this.analyzer.analyzeDocument(this.htmlContainer);
 
 		final ImmutableList<IDirectiveCoverage> coverage = this.analyzer.getDirectiveCoverage(this.stylesheetURI);
@@ -136,40 +140,7 @@ class CoverageTraceAnalyzerTest {
 	 */
 	@Test
 	void testGetLineCoverage() {
-		final String in = """
-							<?xml version="1.0"?>
-							<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-							<xsl:template name="foo">
-							<xsl:choose>
-							<xsl:when test="fooA">
-							<p>test A</p>
-							</xsl:when>
-							<xsl:when test="fooB">
-							<p>test B</p>
-							</xsl:when>
-							<xsl:otherwise>
-							<p>test O</p>
-							</xsl:otherwise>
-							</xsl:choose>
-							</xsl:template>
-							</xsl:stylesheet>
-							""";
-		this.stylesheetStructure = this.extractor.extractStructure(in);
-		// REMEMBER:
-		// ENTER and LEAVE elements both refer to the STARTING position of the directive.
-		// The choose-when elements always are reported with reference to the "when" location.
-		// See also ProcessorObserverExecutionTest.
-		final Optional<ImmutableList<ITraceEvent>> traceEvents = Optional.of(ImmutableList.of(
-				mockEvent(ExecutionEventType.ENTER, 3, "template"),
-				mockEvent(ExecutionEventType.ENTER, 5, "choose"),
-
-				mockEvent(ExecutionEventType.ENTER, 6, "element"),
-				mockEvent(ExecutionEventType.ENTER, 6, "text"),
-				mockEvent(ExecutionEventType.LEAVE, 6, "text"),
-				mockEvent(ExecutionEventType.LEAVE, 6, "element"),
-				mockEvent(ExecutionEventType.LEAVE, 5, "choose"),
-				mockEvent(ExecutionEventType.LEAVE, 3, "template")));
-		when(this.htmlContainer.getTraceEvents()).thenReturn(traceEvents);
+		prepareTestDocument();
 		this.analyzer.analyzeDocument(this.htmlContainer);
 
 		final CoverageStatus[] coverage = this.analyzer.getLineCoverage(this.stylesheetURI);
@@ -190,6 +161,27 @@ class CoverageTraceAnalyzerTest {
 		assertEquals(CoverageStatus.PARTIAL, coverage[13]); // </xsl:choose>
 		assertEquals(CoverageStatus.PARTIAL, coverage[14]); // </xsl:template>
 		assertEquals(CoverageStatus.PARTIAL, coverage[15]); // </xsl:stylesheet>
+	}
+
+	/**
+	 * Test method for {@link org.x2vc.stylesheet.coverage.CoverageTraceAnalyzer#getStatistics(URI)}.
+	 */
+	@Test
+	void testGetStatistics() {
+		prepareTestDocument();
+		this.analyzer.analyzeDocument(this.htmlContainer);
+		final ICoverageStatistics statistics = this.analyzer.getStatistics(this.stylesheetURI);
+
+		assertEquals(6, statistics.getTotalDirectiveCount());
+		assertEquals(1, statistics.getDirectiveCountWithFullCoverage());
+		assertEquals(3, statistics.getDirectiveCountWithPartialCoverage());
+		assertEquals(2, statistics.getDirectiveCountWithNoCoverage());
+
+		assertEquals(16, statistics.getTotalLineCount());
+		assertEquals(0, statistics.getLineCountEmpty());
+		assertEquals(3, statistics.getLineCountWithFullCoverage());
+		assertEquals(7, statistics.getLineCountWithPartialCoverage());
+		assertEquals(6, statistics.getLineCountWithNoCoverage());
 	}
 
 	private IExecutionTraceEvent mockEvent(ExecutionEventType type, int line, String element) {

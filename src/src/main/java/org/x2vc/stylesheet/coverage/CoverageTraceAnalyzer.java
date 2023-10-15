@@ -122,4 +122,50 @@ public class CoverageTraceAnalyzer implements ICoverageTraceAnalyzer {
 		return logger.traceExit(result);
 	}
 
+	@Override
+	public ICoverageStatistics getStatistics(URI stylesheetURI) {
+		logger.traceEntry();
+
+		final ImmutableList<IDirectiveCoverage> directiveCoverage = getDirectiveCoverage(stylesheetURI);
+
+		final CoverageStatus[] lineCoverage = getLineCoverage(stylesheetURI);
+		int emptyLines = 0;
+		int fullLines = 0;
+		int noneLines = 0;
+		int partialLines = 0;
+		for (int i = 0; i < lineCoverage.length; i++) {
+			switch (lineCoverage[i]) {
+			case EMPTY:
+				emptyLines++;
+				break;
+			case FULL:
+				fullLines++;
+				break;
+			case NONE:
+				noneLines++;
+				break;
+			case PARTIAL:
+				partialLines++;
+				break;
+			}
+		}
+
+		final CoverageStatistics result = CoverageStatistics.builder()
+			.withTotalDirectiveCount(directiveCoverage.size())
+			.withFullCoverageDirectiveCount(directiveCoverage.stream()
+				.filter(d -> d.getCoverage() == CoverageStatus.FULL).count())
+			.withPartialCoverageDirectiveCount(directiveCoverage.stream()
+				.filter(d -> d.getCoverage() == CoverageStatus.PARTIAL).count())
+			.withNoCoverageDirectiveCount(directiveCoverage.stream()
+				.filter(d -> d.getCoverage() == CoverageStatus.NONE).count())
+			.withTotalLineCount(lineCoverage.length)
+			.withEmptyLineCount(emptyLines)
+			.withFullCoverageLineCount(fullLines)
+			.withPartialCoverageLineCount(partialLines)
+			.withNoCoverageLineCount(noneLines)
+			.build();
+
+		return logger.traceExit(result);
+	}
+
 }

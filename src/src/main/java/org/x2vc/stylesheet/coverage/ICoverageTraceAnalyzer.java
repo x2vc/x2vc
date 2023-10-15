@@ -32,4 +32,10 @@ public interface ICoverageTraceAnalyzer {
 	 */
 	CoverageStatus[] getLineCoverage(URI stylesheetURI);
 
+	/**
+	 * @param stylesheetURI
+	 * @return the coverage statistics for the stylesheet
+	 */
+	ICoverageStatistics getStatistics(URI stylesheetURI);
+
 }
