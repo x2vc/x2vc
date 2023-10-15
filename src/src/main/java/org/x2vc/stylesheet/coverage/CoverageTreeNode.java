@@ -30,6 +30,8 @@ class CoverageTreeNode {
 		this.directiveNode = directiveNode;
 		this.area = Range.closed(directiveNode.getStartLocation().orElseThrow(),
 				directiveNode.getEndLocation().orElseThrow());
+		logger.trace("added node for {} at {}", directiveNode.getName(), this.area);
+
 		this.children = directiveNode.getChildDirectives()
 			.stream()
 			.map(CoverageTreeNode::new)
@@ -37,12 +39,21 @@ class CoverageTreeNode {
 	}
 
 	protected Optional<CoverageTreeNode> findNode(PolymorphLocation location) {
-		final List<CoverageTreeNode> matchingChildren = this.children
+		List<CoverageTreeNode> matchingChildren = this.children
 			.stream()
 			.map(c -> c.findNode(location))
 			.filter(Optional<CoverageTreeNode>::isPresent)
 			.map(Optional<CoverageTreeNode>::get)
 			.toList();
+		if (matchingChildren.isEmpty()) {
+			// temporary workaround for the issue that some elements are reported with a length of zero
+			// TODO remove workaround
+			matchingChildren = this.children
+				.stream()
+				.filter(c -> c.isZeroLength())
+				.filter(c -> c.getStartLine() == location.getLineNumber())
+				.toList();
+		}
 		if (matchingChildren.isEmpty()) {
 			if (this.area.contains(location)) {
 				return Optional.of(this);
@@ -119,11 +130,15 @@ class CoverageTreeNode {
 						"coverage tree node asked to report on line status outside of its own range - please investigate");
 			}
 		} else {
-			// select the child nodes that cover the line
-			final Set<CoverageStatus> childStatus = this.children
-				.stream()
+			// select the child nodes that cover the line. While it is possible to turn this into a continuous stream
+			// operation, this is hell to debug - so separate variables for now it is.
+			final List<CoverageTreeNode> childrenSpanningLine = this.children.stream()
 				.filter(c -> c.spansLine(lineNumber))
+				.toList();
+			final List<CoverageStatus> childrenCoverageStatus = childrenSpanningLine.stream()
 				.map(c -> c.getCoverageStatusAtLine(lineNumber))
+				.toList();
+			final Set<CoverageStatus> childStatus = childrenCoverageStatus.stream()
 				.filter(s -> s != CoverageStatus.EMPTY) // make it easier to handle the mapping
 				.collect(Collectors.toSet());
 			// possible states:
@@ -147,6 +162,18 @@ class CoverageTreeNode {
 
 		}
 		return logger.traceExit(result);
+	}
+
+	public boolean isZeroLength() {
+		return this.directiveNode.getStartLocation().orElseThrow()
+			.equals(this.directiveNode.getEndLocation().orElseThrow());
+	}
+
+	/**
+	 * @return the first line number
+	 */
+	public int getStartLine() {
+		return this.directiveNode.getStartLocation().orElseThrow().getLineNumber();
 	}
 
 	/**
