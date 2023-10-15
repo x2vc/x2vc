@@ -6,11 +6,16 @@ import java.util.*;
 
 import javax.xml.namespace.QName;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.x2vc.stylesheet.XSLTConstants;
 import org.x2vc.utilities.PolymorphLocation;
 
+import com.google.common.base.Supplier;
+import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
 
 import net.sf.saxon.om.NamespaceUri;
 
@@ -19,6 +24,8 @@ import net.sf.saxon.om.NamespaceUri;
  */
 public class XSLTDirectiveNode extends AbstractStructureTreeNode implements IXSLTDirectiveNode {
 
+	private static final Logger logger = LogManager.getLogger();
+
 	private String name;
 	private PolymorphLocation startLocation;
 	private PolymorphLocation endLocation;
@@ -26,7 +33,6 @@ public class XSLTDirectiveNode extends AbstractStructureTreeNode implements IXSL
 	private ImmutableMap<String, String> xsltAttributes;
 	private ImmutableMap<QName, String> otherAttributes;
 	private ImmutableList<IStructureTreeNode> childElements;
-	private ImmutableList<IXSLTDirectiveNode> childDirectives;
 	private ImmutableList<IXSLTParameterNode> formalParameters;
 	private ImmutableList<IXSLTParameterNode> actualParameters;
 	private ImmutableList<IXSLTSortNode> sorting;
@@ -89,16 +95,25 @@ public class XSLTDirectiveNode extends AbstractStructureTreeNode implements IXSL
 		return this.childElements;
 	}
 
+	@SuppressWarnings("java:S4738") // Java supplier does not support memoization
+	private transient Supplier<ImmutableList<IXSLTDirectiveNode>> childDirectivesSupplier = Suppliers.memoize(() -> {
+		logger.traceEntry();
+		final List<IXSLTDirectiveNode> childDirectives = Lists.newArrayList();
+		this.childElements.forEach(e -> collectChildDirectives(e, childDirectives));
+		return logger.traceExit(ImmutableList.copyOf(childDirectives));
+	});
+
 	@Override
 	public ImmutableList<IXSLTDirectiveNode> getChildDirectives() {
-		if (this.childDirectives == null) {
-			this.childDirectives = ImmutableList.copyOf(
-					this.childElements.stream()
-						.filter(IXSLTDirectiveNode.class::isInstance)
-						.map(IXSLTDirectiveNode.class::cast)
-						.iterator());
+		return this.childDirectivesSupplier.get();
+	}
+
+	private void collectChildDirectives(IStructureTreeNode node, List<IXSLTDirectiveNode> childDirectives) {
+		if (node instanceof final IXSLTDirectiveNode directive) {
+			childDirectives.add(directive);
+		} else if (node instanceof final IXMLNode xmlNode) {
+			xmlNode.getChildElements().forEach(e -> collectChildDirectives(e, childDirectives));
 		}
-		return this.childDirectives;
 	}
 
 	@Override
@@ -328,7 +343,7 @@ public class XSLTDirectiveNode extends AbstractStructureTreeNode implements IXSL
 		final int prime = 31;
 		int result = super.hashCode();
 		result = prime * result
-				+ Objects.hash(this.actualParameters, this.childDirectives, this.childElements, this.endLocation,
+				+ Objects.hash(this.actualParameters, this.childElements, this.endLocation,
 						this.formalParameters, this.name, this.otherAttributes, this.sorting, this.startLocation,
 						this.xsltAttributes);
 		return result;
@@ -347,7 +362,6 @@ public class XSLTDirectiveNode extends AbstractStructureTreeNode implements IXSL
 		}
 		final XSLTDirectiveNode other = (XSLTDirectiveNode) obj;
 		return Objects.equals(this.actualParameters, other.actualParameters)
-				&& Objects.equals(this.childDirectives, other.childDirectives)
 				&& Objects.equals(this.childElements, other.childElements)
 				&& Objects.equals(this.endLocation, other.endLocation)
 				&& Objects.equals(this.formalParameters, other.formalParameters)

@@ -29,7 +29,7 @@ class StylesheetStructureExtractorTest {
 							<?xml version="1.0"?>
 							<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
 							<xsl:template name="bar">
-							<p>foobar&apos;<![CDATA[Some<>Content]]></p>
+							<span>foobar&apos;<![CDATA[Some<>Content]]></span>
 							</xsl:template>
 							</xsl:stylesheet>
 							""";
@@ -42,21 +42,80 @@ class StylesheetStructureExtractorTest {
 		assertEquals(80, rootNode.getStartLocation().orElseThrow().getColumnNumber());
 		assertEquals(18, rootNode.getEndLocation().orElseThrow().getColumnNumber());
 
-		final IStructureTreeNode child1 = rootNode.getChildElements().get(0);
-		assertInstanceOf(IXSLTDirectiveNode.class, child1);
-		final IXSLTDirectiveNode child1d = (IXSLTDirectiveNode) child1;
-		assertEquals("template", child1d.getName());
-		assertEquals("bar", child1d.getXSLTAttributes().get("name"));
-		assertEquals(1, child1d.getChildElements().size());
-		assertEquals(3, child1d.getStartLocation().orElseThrow().getLineNumber());
-		assertEquals(5, child1d.getEndLocation().orElseThrow().getLineNumber());
+		final IStructureTreeNode templateNode = rootNode.getChildElements().get(0);
+		assertInstanceOf(IXSLTDirectiveNode.class, templateNode);
+		final IXSLTDirectiveNode templateNodeAsDirective = (IXSLTDirectiveNode) templateNode;
+		assertEquals("template", templateNodeAsDirective.getName());
+		assertEquals("bar", templateNodeAsDirective.getXSLTAttributes().get("name"));
+		assertEquals(1, templateNodeAsDirective.getChildElements().size());
+		assertEquals(3, templateNodeAsDirective.getStartLocation().orElseThrow().getLineNumber());
+		assertEquals(5, templateNodeAsDirective.getEndLocation().orElseThrow().getLineNumber());
 
-		final IStructureTreeNode child1_1 = child1d.getChildElements().get(0);
-		assertInstanceOf(IXMLNode.class, child1_1);
-		final IXMLNode child1_1x = (IXMLNode) child1_1;
-		assertEquals("p", child1_1x.getName().getLocalPart());
-		assertEquals(4, child1_1x.getStartLocation().orElseThrow().getLineNumber());
-		assertEquals(4, child1_1x.getEndLocation().orElseThrow().getLineNumber());
+		final IStructureTreeNode spanNode = templateNodeAsDirective.getChildElements().get(0);
+		assertInstanceOf(IXMLNode.class, spanNode);
+		final IXMLNode spanNodeAsXML = (IXMLNode) spanNode;
+		assertEquals("span", spanNodeAsXML.getName().getLocalPart());
+		assertEquals(4, spanNodeAsXML.getStartLocation().orElseThrow().getLineNumber());
+		assertEquals(4, spanNodeAsXML.getEndLocation().orElseThrow().getLineNumber());
+	}
+
+	/**
+	 * Test method for
+	 * {@link org.x2vc.stylesheet.structure.StylesheetStructureExtractor#extractStructure(java.lang.String)}.
+	 */
+	@Test
+	void test_SingleTemplateWithNestedDirectives() {
+		final String in = """
+							<?xml version="1.0"?>
+							<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+							<xsl:template name="bar">
+							<span>foo <xsl:value-of select="bar"/> baz</span>
+							</xsl:template>
+							</xsl:stylesheet>
+							""";
+		final IXSLTDirectiveNode rootNode = this.extractor.extractStructure(in).getRootNode();
+
+		assertEquals("stylesheet", rootNode.getName());
+		assertEquals(1, rootNode.getChildElements().size());
+		assertEquals(2, rootNode.getStartLocation().orElseThrow().getLineNumber());
+		assertEquals(6, rootNode.getEndLocation().orElseThrow().getLineNumber());
+		assertEquals(80, rootNode.getStartLocation().orElseThrow().getColumnNumber());
+		assertEquals(18, rootNode.getEndLocation().orElseThrow().getColumnNumber());
+
+		final IStructureTreeNode templateNode = rootNode.getChildElements().get(0);
+		assertInstanceOf(IXSLTDirectiveNode.class, templateNode);
+		final IXSLTDirectiveNode templateNodeAsDirective = (IXSLTDirectiveNode) templateNode;
+		assertEquals("template", templateNodeAsDirective.getName());
+		assertEquals("bar", templateNodeAsDirective.getXSLTAttributes().get("name"));
+		assertEquals(1, templateNodeAsDirective.getChildElements().size());
+		assertEquals(3, templateNodeAsDirective.getStartLocation().orElseThrow().getLineNumber());
+		assertEquals(5, templateNodeAsDirective.getEndLocation().orElseThrow().getLineNumber());
+
+		final IStructureTreeNode spanNode = templateNodeAsDirective.getChildElements().get(0);
+		assertInstanceOf(IXMLNode.class, spanNode);
+		final IXMLNode spanNodeAsXML = (IXMLNode) spanNode;
+		assertEquals("span", spanNodeAsXML.getName().getLocalPart());
+		assertEquals(4, spanNodeAsXML.getStartLocation().orElseThrow().getLineNumber());
+		assertEquals(4, spanNodeAsXML.getEndLocation().orElseThrow().getLineNumber());
+
+		final ImmutableList<IStructureTreeNode> spanChildren = spanNodeAsXML.getChildElements();
+		assertEquals(3, spanChildren.size());
+
+		final IStructureTreeNode spanChild1 = spanChildren.get(0);
+		assertInstanceOf(ITextNode.class, spanChild1);
+		assertEquals("foo ", ((ITextNode) spanChild1).getText());
+
+		final IStructureTreeNode spanChild2 = spanChildren.get(1);
+		assertInstanceOf(IXSLTDirectiveNode.class, spanChild2);
+		final IXSLTDirectiveNode spanChild2AsDirective = (IXSLTDirectiveNode) spanChild2;
+		assertEquals("value-of", spanChild2AsDirective.getName());
+		assertEquals("bar", spanChild2AsDirective.getXSLTAttributes().get("select"));
+		assertEquals(4, spanChild2AsDirective.getStartLocation().orElseThrow().getLineNumber());
+		assertEquals(4, spanChild2AsDirective.getEndLocation().orElseThrow().getLineNumber());
+
+		final IStructureTreeNode spanChild3 = spanChildren.get(2);
+		assertInstanceOf(ITextNode.class, spanChild3);
+		assertEquals(" baz", ((ITextNode) spanChild3).getText());
 	}
 
 	/**
