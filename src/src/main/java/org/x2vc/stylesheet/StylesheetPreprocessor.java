@@ -14,6 +14,7 @@ import org.x2vc.stylesheet.structure.IStylesheetStructureExtractor;
 import org.x2vc.utilities.SaxonLoggerAdapter;
 import org.x2vc.utilities.XMLUtilities;
 
+import com.github.racc.tscg.TypesafeConfig;
 import com.google.common.collect.Multimap;
 import com.google.inject.Inject;
 
@@ -35,12 +36,16 @@ public class StylesheetPreprocessor implements IStylesheetPreprocessor {
 	private INamespaceExtractor namespaceExtractor;
 	private IStylesheetStructureExtractor extractor;
 
+	private Boolean prettyPrinterEnabled;
+
 	@Inject
 	StylesheetPreprocessor(Processor processor, INamespaceExtractor namespaceExtractor,
-			IStylesheetStructureExtractor extractor) {
+			IStylesheetStructureExtractor extractor,
+			@TypesafeConfig("x2vc.stylesheet.pretty_print") Boolean prettyPrinterEnabled) {
 		this.processor = processor;
 		this.namespaceExtractor = namespaceExtractor;
 		this.extractor = extractor;
+		this.prettyPrinterEnabled = prettyPrinterEnabled;
 	}
 
 	@Override
@@ -49,13 +54,16 @@ public class StylesheetPreprocessor implements IStylesheetPreprocessor {
 		checkNotNull(originalSource);
 		checkStylesheet(uri, originalSource);
 
-		// pretty-print the stylesheet to make it easier to identify elements by
-		// position
-		final String formattedSource = XMLUtilities.prettyPrint(originalSource, format -> {
-			format.setIndentSize(4);
-			format.setNewlines(true);
-			format.setNewLineAfterNTags(1);
-		});
+		String formattedSource = originalSource;
+		if (Boolean.TRUE.equals(this.prettyPrinterEnabled)) {
+			// pretty-print the stylesheet to make it easier to identify elements by
+			// position
+			formattedSource = XMLUtilities.prettyPrint(originalSource, format -> {
+				format.setIndentSize(4);
+				format.setNewlines(true);
+				format.setNewLineAfterNTags(1);
+			});
+		}
 
 		// collect the namespaces and prefixes and select an unused one for the trace
 		// elements

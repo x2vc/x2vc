@@ -50,7 +50,7 @@ class StylesheetPreprocessorTest {
 	void prepareInstances() {
 		this.xsltProcessor = new Processor();
 		this.preprocessor = new StylesheetPreprocessor(this.xsltProcessor, this.namespaceExtractor,
-				this.structureExtractor);
+				this.structureExtractor, false);
 		lenient().when(this.structureExtractor.extractStructure(anyString())).thenReturn(this.structure);
 	}
 
@@ -158,13 +158,32 @@ class StylesheetPreprocessorTest {
 												""";
 
 	@Test
-	void testStylesheetContents() throws SaxonApiException {
-		when(this.namespaceExtractor.extractNamespaces(argThat(Matchers.equalToCompressingWhiteSpace(this.minimalStylesheet_Formatted)))).thenReturn(this.namespacePrefixes);
+	void testStylesheetContents_WithFormatterEnabled() throws SaxonApiException {
+		this.preprocessor = new StylesheetPreprocessor(this.xsltProcessor, this.namespaceExtractor,
+				this.structureExtractor, true);
+		when(this.namespaceExtractor
+			.extractNamespaces(argThat(Matchers.equalToCompressingWhiteSpace(this.minimalStylesheet_Formatted))))
+			.thenReturn(this.namespacePrefixes);
+		when(this.namespaceExtractor.findUnusedPrefix(this.namespacePrefixes.keySet(), "trace"))
+			.thenReturn("trace1234");
+		final IStylesheetInformation info = this.preprocessor.prepareStylesheet(URI.create("foobar"),
+				this.minimalStylesheet);
+		assertEquals(URI.create("foobar"), info.getURI());
+		assertEquals(this.minimalStylesheet, info.getOriginalStylesheet());
+		assertTrue(Matchers.equalToCompressingWhiteSpace(this.minimalStylesheet_Formatted)
+			.matches(info.getPreparedStylesheet()));
+		assertSame(this.namespacePrefixes, info.getNamespacePrefixes());
+		assertEquals("trace1234", info.getTraceNamespacePrefix());
+	}
+
+	@Test
+	void testStylesheetContents_WithFormatterDisabled() throws SaxonApiException {
+		when(this.namespaceExtractor.extractNamespaces(argThat(Matchers.equalToCompressingWhiteSpace(this.minimalStylesheet)))).thenReturn(this.namespacePrefixes);
 		when(this.namespaceExtractor.findUnusedPrefix(this.namespacePrefixes.keySet(), "trace")).thenReturn("trace1234");
 		final IStylesheetInformation info = this.preprocessor.prepareStylesheet(URI.create("foobar"), this.minimalStylesheet);
 		assertEquals(URI.create("foobar"), info.getURI());
 		assertEquals(this.minimalStylesheet, info.getOriginalStylesheet());
-		assertTrue(Matchers.equalToCompressingWhiteSpace(this.minimalStylesheet_Formatted).matches(info.getPreparedStylesheet()));
+		assertTrue(Matchers.equalToCompressingWhiteSpace(this.minimalStylesheet).matches(info.getPreparedStylesheet()));
 		assertSame(this.namespacePrefixes, info.getNamespacePrefixes());
 		assertEquals("trace1234", info.getTraceNamespacePrefix());
 	}
