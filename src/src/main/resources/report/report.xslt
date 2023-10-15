@@ -10,6 +10,11 @@
 			<xsl:call-template name="head" />
 			<body class="is-preload" onload="PR.prettyPrint()">
 				<xsl:call-template name="body-contents" />
+				<script type="text/javascript" src=".x2vc/js/jquery.min.js"></script>
+				<script type="text/javascript" src=".x2vc/js/browser.min.js"></script>
+				<script type="text/javascript" src=".x2vc/js/breakpoints.min.js"></script>
+				<script type="text/javascript" src=".x2vc/js/util.js"></script>
+				<script type="text/javascript" src=".x2vc/js/main.js"></script>
 			</body>
 		</html>
 	</xsl:template>
@@ -21,11 +26,6 @@
 			<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 			<link rel="stylesheet" type="text/css" href=".x2vc/css/main.css" />
 			<link rel="stylesheet" type="text/css" href=".x2vc/css/prettify.css" />
-			<script type="text/javascript" src=".x2vc/js/jquery.min.js"></script>
-			<script type="text/javascript" src=".x2vc/js/browser.min.js"></script>
-			<script type="text/javascript" src=".x2vc/js/breakpoints.min.js"></script>
-			<script type="text/javascript" src=".x2vc/js/util.js"></script>
-			<script type="text/javascript" src=".x2vc/js/main.js"></script>
 			<script type="text/javascript" src=".x2vc/js/prettify.js"></script>
 		</head>
 	</xsl:template>
