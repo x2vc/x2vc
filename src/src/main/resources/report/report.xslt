@@ -81,6 +81,59 @@
 				</xsl:otherwise>
 			</xsl:choose>
 		</p>
+		<xsl:apply-templates select="coverage"/>
+	</xsl:template>
+
+	<xsl:template match="coverage">
+		<p>
+			The following table gives an overview of the coverage achieved by the check.
+		</p>
+		<table>
+			<thead>
+				<tr>
+					<th style="width:25%"></th>
+					<th style="width:15%">fully covered</th>
+					<th style="width:15%">partially covered</th>
+					<th style="width:15%">not covered</th>
+					<th style="width:15%">empty</th>
+					<th style="width:15%">total</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr>
+					<th>XSLT Directives</th>
+					<td><xsl:value-of select="byDirective/fullCoverageCount"/></td>
+					<td><xsl:value-of select="byDirective/partialCoverageCount"/></td>
+					<td><xsl:value-of select="byDirective/noCoverageCount"/></td>
+					<td>-</td>
+					<td><xsl:value-of select="byDirective/totalCount"/></td>
+				</tr>
+				<tr>
+					<th></th>
+					<td><xsl:value-of select="format-number(byDirective/fullCoveragePercentage, '##0.00')"/> %</td>
+					<td><xsl:value-of select="format-number(byDirective/partialCoveragePercentage, '##0.00')"/> %</td>
+					<td><xsl:value-of select="format-number(byDirective/noCoveragePercentage, '##0.00')"/> %</td>
+					<td>-</td>
+					<td></td>
+				</tr>
+				<tr>
+					<th>Lines of Stylesheet Code</th>
+					<td><xsl:value-of select="byLine/fullCoverageCount"/></td>
+					<td><xsl:value-of select="byLine/partialCoverageCount"/></td>
+					<td><xsl:value-of select="byLine/noCoverageCount"/></td>
+					<td><xsl:value-of select="byLine/emptyCount"/></td>
+					<td><xsl:value-of select="byLine/totalCount"/></td>
+				</tr>
+				<tr>
+					<th></th>
+					<td><xsl:value-of select="format-number(byLine/fullCoveragePercentage, '##0.00')"/> %</td>
+					<td><xsl:value-of select="format-number(byLine/partialCoveragePercentage, '##0.00')"/> %</td>
+					<td><xsl:value-of select="format-number(byLine/emptyPercentage, '##0.00')"/> %</td>
+					<td><xsl:value-of select="format-number(byLine/noCoveragePercentage, '##0.00')"/> %</td>
+					<td></td>
+				</tr>
+			</tbody>
+		</table>
 	</xsl:template>
 
 	<xsl:template match="section" mode="content">

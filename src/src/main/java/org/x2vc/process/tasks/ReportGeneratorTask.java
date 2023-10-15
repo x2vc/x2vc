@@ -11,6 +11,8 @@ import org.x2vc.report.IReportWriter;
 import org.x2vc.report.IVulnerabilityCandidate;
 import org.x2vc.report.IVulnerabilityCandidateCollector;
 import org.x2vc.report.IVulnerabilityReport;
+import org.x2vc.stylesheet.coverage.ICoverageStatistics;
+import org.x2vc.stylesheet.coverage.ICoverageTraceAnalyzer;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.io.Files;
@@ -26,6 +28,7 @@ public class ReportGeneratorTask extends AbstractTask implements IReportGenerato
 
 	private IDocumentAnalyzer analyzer;
 	private IVulnerabilityCandidateCollector vulnerabilityCandidateCollector;
+	private ICoverageTraceAnalyzer coverageTraceAnalyzer;
 	private IReportWriter reportWriter;
 	private Consumer<Boolean> callback;
 
@@ -34,10 +37,13 @@ public class ReportGeneratorTask extends AbstractTask implements IReportGenerato
 	@SuppressWarnings("java:S107") // large number of parameters due to dependency injection
 	@Inject
 	ReportGeneratorTask(IDocumentAnalyzer analyzer, IVulnerabilityCandidateCollector vulnerabilityCandidateCollector,
-			IReportWriter reportWriter, @Assisted File xsltFile, @Assisted Consumer<Boolean> callback) {
+			ICoverageTraceAnalyzer coverageTraceAnalyzer, IReportWriter reportWriter,
+			@Assisted File xsltFile,
+			@Assisted Consumer<Boolean> callback) {
 		super(xsltFile);
 		this.analyzer = analyzer;
 		this.vulnerabilityCandidateCollector = vulnerabilityCandidateCollector;
+		this.coverageTraceAnalyzer = coverageTraceAnalyzer;
 		this.reportWriter = reportWriter;
 		this.callback = callback;
 	}
@@ -47,16 +53,22 @@ public class ReportGeneratorTask extends AbstractTask implements IReportGenerato
 		logger.traceEntry("for task ID {}", this.getTaskID());
 		try {
 			final URI stylesheetURI = this.getXSLTFile().toURI();
+
 			final ImmutableSet<IVulnerabilityCandidate> vulnerabilityCandidates = this.vulnerabilityCandidateCollector
 				.get(stylesheetURI);
+			final ICoverageStatistics coverageStatistics = this.coverageTraceAnalyzer.getStatistics(stylesheetURI);
+
 			final Object basename = Files.getNameWithoutExtension(this.getXSLTFile().getName());
 			final File outputFile = new File(this.getXSLTFile().getParentFile(),
 					String.format("%s_x2vc_report.html", basename));
+
 			logger.info("Consolidating {} vulnerability candidates for stylesheet {} into report file {}",
 					vulnerabilityCandidates.size(),
 					this.getXSLTFile(), outputFile);
+
 			final IVulnerabilityReport report = this.analyzer.consolidateResults(stylesheetURI,
-					vulnerabilityCandidates);
+					vulnerabilityCandidates, coverageStatistics);
+
 			this.reportWriter.write(report, outputFile);
 			this.callback.accept(true);
 		} catch (final Exception ex) {

@@ -26,6 +26,7 @@ import org.x2vc.report.IVulnerabilityReport;
 import org.x2vc.report.IVulnerabilityReportSection;
 import org.x2vc.schema.ISchemaManager;
 import org.x2vc.schema.structure.IXMLSchema;
+import org.x2vc.stylesheet.coverage.ICoverageStatistics;
 import org.x2vc.utilities.URIUtilities;
 import org.x2vc.utilities.URIUtilities.ObjectType;
 import org.x2vc.xml.document.IDocumentModifier;
@@ -269,8 +270,7 @@ class DocumentAnalyzerTest {
 	}
 
 	/**
-	 * Test method for
-	 * {@link org.x2vc.analysis.DocumentAnalyzer#consolidateResults(java.net.URI, java.util.Set)}.
+	 * Test method for {@link org.x2vc.analysis.DocumentAnalyzer#consolidateResults(java.net.URI, java.util.Set)}.
 	 */
 	@Test
 	void testConsolidate() {
@@ -317,7 +317,8 @@ class DocumentAnalyzerTest {
 
 		final DocumentAnalyzer analyzer = new DocumentAnalyzer(Sets.newSet(rule1, rule2, rule3), this.schemaManager);
 
-		final IVulnerabilityReport report = analyzer.consolidateResults(this.stylesheetURI, candidates);
+		final IVulnerabilityReport report = analyzer.consolidateResults(this.stylesheetURI, candidates,
+				mock(ICoverageStatistics.class));
 
 		assertEquals(this.stylesheetURI, report.getStylesheetURI());
 		assertEquals(List.of(section1a, section1b, section1c, section2a, section3a), report.getSections());

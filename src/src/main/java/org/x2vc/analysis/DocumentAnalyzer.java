@@ -22,6 +22,7 @@ import org.x2vc.report.VulnerabilityReport;
 import org.x2vc.report.VulnerabilityReport.Builder;
 import org.x2vc.schema.ISchemaManager;
 import org.x2vc.schema.structure.IXMLSchema;
+import org.x2vc.stylesheet.coverage.ICoverageStatistics;
 import org.x2vc.xml.document.IDocumentModifier;
 import org.x2vc.xml.document.IXMLDocumentContainer;
 
@@ -171,7 +172,8 @@ public class DocumentAnalyzer implements IDocumentAnalyzer {
 	}
 
 	@Override
-	public IVulnerabilityReport consolidateResults(URI stylesheetURI, Set<IVulnerabilityCandidate> candidates) {
+	public IVulnerabilityReport consolidateResults(URI stylesheetURI, Set<IVulnerabilityCandidate> candidates,
+			ICoverageStatistics coverageStatistics) {
 
 		// obtain the schema reference
 		final IXMLSchema schema = this.schemaManager.getSchema(stylesheetURI);
@@ -182,7 +184,8 @@ public class DocumentAnalyzer implements IDocumentAnalyzer {
 		candidates.forEach(c -> candidatesByRuleID.put(c.getAnalyzerRuleID(), c));
 
 		// start building report
-		final Builder builder = VulnerabilityReport.builder(stylesheetURI);
+		final Builder builder = VulnerabilityReport.builder(stylesheetURI)
+			.withCoverageStatistics(coverageStatistics);
 
 		// process all rules, whether we have vulnerability candidates or not
 		for (final String ruleID : getRuleIDs()) {

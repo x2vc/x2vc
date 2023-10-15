@@ -18,17 +18,19 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.inject.Inject;
+import com.google.inject.Singleton;
 
 /**
  * Standard implementation of {@link ICoverageTraceAnalyzer}.
  */
+@Singleton
 public class CoverageTraceAnalyzer implements ICoverageTraceAnalyzer {
 
 	private static final Logger logger = LogManager.getLogger();
 
 	private IStylesheetManager stylesheetManager;
 
-	private Map<URI, CoverageTreeNode> coverageTrees = Maps.newHashMap();
+	private Map<URI, CoverageTreeNode> coverageTrees = Maps.newConcurrentMap();
 
 	@Inject
 	CoverageTraceAnalyzer(IStylesheetManager stylesheetManager) {
