@@ -31,8 +31,7 @@ public class ProcessDirector implements IProcessDirector {
 	private IStaticSchemaAnalysisTaskFactory staticSchemaAnalysisTaskFactory;
 	private ISchemaExplorationTaskFactory schemaExplorationTaskFactory;
 	private ISchemaEvolutionTaskFactory schemaEvolutionTaskFactory;
-	private IInitialVulnerabilityCheckTaskFactory initialVulnerabilityCheckTaskFactory;
-	private IFollowUpVulnerabilityCheckTaskFactory followUpVulnerabilityCheckTaskFactory;
+	private IVulnerabilityCheckTaskFactory vulnerabilityCheckTaskFactory;
 	private IReportGeneratorTaskFactory reportGeneratorTaskFactory;
 	private IWorkerProcessManager workerProcessManager;
 	private ISchemaModifierCollector schemaModifierCollector;
@@ -55,8 +54,7 @@ public class ProcessDirector implements IProcessDirector {
 			IStaticSchemaAnalysisTaskFactory staticSchemaAnalysisTaskFactory,
 			ISchemaExplorationTaskFactory schemaExplorationTaskFactory,
 			ISchemaEvolutionTaskFactory schemaEvolutionTaskFactory,
-			IInitialVulnerabilityCheckTaskFactory initialVulnerabilityCheckTaskFactory,
-			IFollowUpVulnerabilityCheckTaskFactory followUpVulnerabilityCheckTaskFactory,
+			IVulnerabilityCheckTaskFactory vulnerabilityCheckTaskFactory,
 			IReportGeneratorTaskFactory reportGeneratorTaskFactory,
 			IWorkerProcessManager workerProcessManager,
 			ISchemaModifierCollector schemaModifierCollector,
@@ -69,8 +67,7 @@ public class ProcessDirector implements IProcessDirector {
 		this.staticSchemaAnalysisTaskFactory = staticSchemaAnalysisTaskFactory;
 		this.schemaExplorationTaskFactory = schemaExplorationTaskFactory;
 		this.schemaEvolutionTaskFactory = schemaEvolutionTaskFactory;
-		this.initialVulnerabilityCheckTaskFactory = initialVulnerabilityCheckTaskFactory;
-		this.followUpVulnerabilityCheckTaskFactory = followUpVulnerabilityCheckTaskFactory;
+		this.vulnerabilityCheckTaskFactory = vulnerabilityCheckTaskFactory;
 		this.reportGeneratorTaskFactory = reportGeneratorTaskFactory;
 		this.workerProcessManager = workerProcessManager;
 		this.schemaModifierCollector = schemaModifierCollector;
@@ -326,7 +323,7 @@ public class ProcessDirector implements IProcessDirector {
 					this.xssInitialDocumentCount,
 					this.xsltFile);
 			for (int i = 0; i < this.xssInitialDocumentCount; i++) {
-				final IInitialVulnerabilityCheckTask checkTask = this.initialVulnerabilityCheckTaskFactory
+				final IVulnerabilityCheckTask checkTask = this.vulnerabilityCheckTaskFactory
 					.create(
 							this.xsltFile, this::collectFollowupRequest, this::handleVulnerabilityCheckComplete);
 				this.vulnerabilityCheckTasks.add(checkTask.getTaskID());
@@ -350,7 +347,7 @@ public class ProcessDirector implements IProcessDirector {
 				ruleName = oModifier.get().getAnalyzerRuleID().orElse("(unknown)");
 			}
 			logger.debug("received follow-up request for rule {}", ruleName);
-			final IFollowUpVulnerabilityCheckTask checkTask = this.followUpVulnerabilityCheckTaskFactory
+			final IVulnerabilityCheckTask checkTask = this.vulnerabilityCheckTaskFactory
 				.create(this.xsltFile, request, this::collectFollowupRequest, this::handleVulnerabilityCheckComplete);
 			this.vulnerabilityCheckTasks.add(checkTask.getTaskID());
 			this.workerProcessManager.submit(checkTask);

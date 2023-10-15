@@ -80,11 +80,8 @@ public class CheckerModule extends AbstractModule {
 			.implement(IInitializationTask.class, InitializationTask.class)
 			.build(IInitializationTaskFactory.class));
 		install(new FactoryModuleBuilder()
-			.implement(IInitialVulnerabilityCheckTask.class, InitialVulnerabilityCheckTask.class)
-			.build(IInitialVulnerabilityCheckTaskFactory.class));
-		install(new FactoryModuleBuilder()
-			.implement(IFollowUpVulnerabilityCheckTask.class, FollowUpVulnerabilityCheckTask.class)
-			.build(IFollowUpVulnerabilityCheckTaskFactory.class));
+			.implement(IVulnerabilityCheckTask.class, VulnerabilityCheckTask.class)
+			.build(IVulnerabilityCheckTaskFactory.class));
 		install(new FactoryModuleBuilder()
 			.implement(IReportGeneratorTask.class, ReportGeneratorTask.class)
 			.build(IReportGeneratorTaskFactory.class));

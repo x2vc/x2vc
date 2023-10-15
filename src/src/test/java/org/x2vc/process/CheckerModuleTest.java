@@ -71,9 +71,7 @@ class CheckerModuleTest {
 	@Inject
 	private Provider<IInitializationTaskFactory> initializationTaskFactoryProvider;
 	@Inject
-	private Provider<IInitialVulnerabilityCheckTaskFactory> initialVulnerabilityCheckTaskFactoryProvider;
-	@Inject
-	private Provider<IFollowUpVulnerabilityCheckTaskFactory> followUpVulnerabilityCheckTaskFactoryProvider;
+	private Provider<IVulnerabilityCheckTaskFactory> vulnerabilityCheckTaskFactoryProvider;
 	@Inject
 	private Provider<IReportGeneratorTaskFactory> reportGeneratorTaskFactoryProvider;
 	@Inject
@@ -198,16 +196,16 @@ class CheckerModuleTest {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	void testInitialVulnerabilityCheckTaskFactory() {
-		final IInitialVulnerabilityCheckTaskFactory factory = this.initialVulnerabilityCheckTaskFactoryProvider.get();
+	void testVulnerabilityCheckTaskFactory_Initial() {
+		final IVulnerabilityCheckTaskFactory factory = this.vulnerabilityCheckTaskFactoryProvider.get();
 		assertNotNull(factory);
 		assertNotNull(factory.create(mock(File.class), mock(Consumer.class), mock(BiConsumer.class)));
 	}
 
 	@SuppressWarnings("unchecked")
 	@Test
-	void testFollowUpVulnerabilityCheckTaskFactory() {
-		final IFollowUpVulnerabilityCheckTaskFactory factory = this.followUpVulnerabilityCheckTaskFactoryProvider.get();
+	void testVulnerabilityCheckTaskFactory_FollowUp() {
+		final IVulnerabilityCheckTaskFactory factory = this.vulnerabilityCheckTaskFactoryProvider.get();
 		assertNotNull(factory);
 		assertNotNull(factory.create(mock(File.class), mock(IDocumentRequest.class), mock(Consumer.class),
 				mock(BiConsumer.class)));
