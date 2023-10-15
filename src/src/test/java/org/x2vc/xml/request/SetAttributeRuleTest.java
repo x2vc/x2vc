@@ -42,8 +42,8 @@ class SetAttributeRuleTest {
 	void testNormalizeWithRequestedValue() {
 		final UUID ruleID = UUID.randomUUID();
 		final UUID attributeID = UUID.randomUUID();
-		final IRequestedValue originalValue = mock(IRequestedValue.class);
-		final IRequestedValue normalizedValue = mock(IRequestedValue.class);
+		final IRequestedValue originalValue = mock();
+		final IRequestedValue normalizedValue = mock();
 		when(originalValue.normalize()).thenReturn(normalizedValue);
 
 		final SetAttributeRule originalRule = new SetAttributeRule(ruleID, attributeID, originalValue);

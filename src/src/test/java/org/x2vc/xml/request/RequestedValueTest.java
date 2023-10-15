@@ -21,8 +21,8 @@ class RequestedValueTest {
 	 */
 	@Test
 	void testNormalize() {
-		final IDocumentModifier normalizedModifier = mock(IDocumentModifier.class);
-		final IDocumentModifier originalModifier = mock(IDocumentModifier.class);
+		final IDocumentModifier normalizedModifier = mock();
+		final IDocumentModifier originalModifier = mock();
 		when(originalModifier.normalize()).thenReturn(normalizedModifier);
 
 		final RequestedValue originalValue = new RequestedValue("foobar", originalModifier);

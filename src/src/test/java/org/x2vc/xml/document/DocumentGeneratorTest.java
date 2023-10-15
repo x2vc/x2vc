@@ -337,7 +337,7 @@ class DocumentGeneratorTest {
 		this.extensionFunctionRules.add(extensionFunctionRule);
 
 		// prepare value generator
-		final IExtensionFunctionResult functionResult = mock(IExtensionFunctionResult.class);
+		final IExtensionFunctionResult functionResult = mock();
 		// when(functionResult.getXDMValue()).thenReturn(XdmValue.makeValue("foobar"));
 		when(this.valueGenerator.generateValue(extensionFunctionRule)).thenReturn(functionResult);
 		this.valueDescriptors
@@ -373,7 +373,7 @@ class DocumentGeneratorTest {
 		this.StylesheetParameterRules.add(StylesheetParameterRule);
 
 		// prepare value generator
-		final IStylesheetParameterValue parameterValue = mock(IStylesheetParameterValue.class);
+		final IStylesheetParameterValue parameterValue = mock();
 		// when(functionResult.getXDMValue()).thenReturn(XdmValue.makeValue("foobar"));
 		when(this.valueGenerator.generateValue(StylesheetParameterRule)).thenReturn(parameterValue);
 		this.valueDescriptors

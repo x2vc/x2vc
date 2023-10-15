@@ -27,10 +27,10 @@ class XSLTDirectiveNodeTest {
 	 */
 	@Test
 	void testGetChildDirectives_WithChildDirectivesAbsent() {
-		final IStructureTreeNode nonDirective1 = mock(IStructureTreeNode.class);
+		final IStructureTreeNode nonDirective1 = mock();
 		lenient().when(nonDirective1.isXSLTDirective()).thenReturn(false);
 		lenient().when(nonDirective1.isText()).thenReturn(true);
-		final IStructureTreeNode nonDirective2 = mock(IStructureTreeNode.class);
+		final IStructureTreeNode nonDirective2 = mock();
 		lenient().when(nonDirective2.isXSLTDirective()).thenReturn(false);
 		lenient().when(nonDirective2.isXML()).thenReturn(true);
 
@@ -41,12 +41,12 @@ class XSLTDirectiveNodeTest {
 	}
 
 	void testGetChildDirectives_WithChildDirectivesPresent() {
-		final IStructureTreeNode nonDirective1 = mock(IStructureTreeNode.class);
+		final IStructureTreeNode nonDirective1 = mock();
 		lenient().when(nonDirective1.isXSLTDirective()).thenReturn(false);
 		lenient().when(nonDirective1.isText()).thenReturn(true);
-		final IStructureTreeNode directive1 = mock(IStructureTreeNode.class);
+		final IStructureTreeNode directive1 = mock();
 		lenient().when(directive1.isXSLTDirective()).thenReturn(true);
-		final IStructureTreeNode nonDirective2 = mock(IStructureTreeNode.class);
+		final IStructureTreeNode nonDirective2 = mock();
 		lenient().when(nonDirective2.isXSLTDirective()).thenReturn(false);
 		lenient().when(nonDirective2.isXML()).thenReturn(true);
 

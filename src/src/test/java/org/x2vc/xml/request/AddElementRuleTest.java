@@ -23,18 +23,18 @@ class AddElementRuleTest {
 	 */
 	@Test
 	void testNormalize() {
-		final ISetAttributeRule originalAttributeRule = mock(ISetAttributeRule.class);
-		final ISetAttributeRule normalizedAttributeRule = mock(ISetAttributeRule.class);
+		final ISetAttributeRule originalAttributeRule = mock();
+		final ISetAttributeRule normalizedAttributeRule = mock();
 		when(originalAttributeRule.normalize()).thenReturn(normalizedAttributeRule);
 
 		// add two content rules - order must be preserved
 
-		final IContentGenerationRule originalContentRule1 = mock(IContentGenerationRule.class);
-		final IContentGenerationRule normalizedContentRule1 = mock(IContentGenerationRule.class);
+		final IContentGenerationRule originalContentRule1 = mock();
+		final IContentGenerationRule normalizedContentRule1 = mock();
 		when(originalContentRule1.normalize()).thenReturn(normalizedContentRule1);
 
-		final IContentGenerationRule originalContentRule2 = mock(IContentGenerationRule.class);
-		final IContentGenerationRule normalizedContentRule2 = mock(IContentGenerationRule.class);
+		final IContentGenerationRule originalContentRule2 = mock();
+		final IContentGenerationRule normalizedContentRule2 = mock();
 		when(originalContentRule2.normalize()).thenReturn(normalizedContentRule2);
 
 		final UUID ruleID = UUID.randomUUID();

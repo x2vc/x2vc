@@ -74,7 +74,7 @@ class DirectAttributeCheckRuleTest extends AnalyzerRuleTestBase {
 		final UUID attributeID = attribute.getID();
 
 		// prepare a value descriptor to return a known ID
-		final IValueDescriptor valueDescriptor = mock(IValueDescriptor.class);
+		final IValueDescriptor valueDescriptor = mock();
 		when(valueDescriptor.getSchemaObjectID()).thenReturn(attributeID);
 		when(valueDescriptor.getValue()).thenReturn(generatedValue);
 
@@ -125,7 +125,7 @@ class DirectAttributeCheckRuleTest extends AnalyzerRuleTestBase {
 		final UUID elementTypeID = elementType.getID();
 
 		// prepare a value descriptor to return a known ID
-		final IValueDescriptor valueDescriptor = mock(IValueDescriptor.class);
+		final IValueDescriptor valueDescriptor = mock();
 		when(valueDescriptor.getSchemaObjectID()).thenReturn(elementTypeID);
 		when(valueDescriptor.getValue()).thenReturn(generatedValue);
 

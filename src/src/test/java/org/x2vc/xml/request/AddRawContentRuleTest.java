@@ -42,8 +42,8 @@ class AddRawContentRuleTest {
 	void testNormalizeWithRequestedValue() {
 		final UUID ruleID = UUID.randomUUID();
 		final UUID elementID = UUID.randomUUID();
-		final IRequestedValue originalValue = mock(IRequestedValue.class);
-		final IRequestedValue normalizedValue = mock(IRequestedValue.class);
+		final IRequestedValue originalValue = mock();
+		final IRequestedValue normalizedValue = mock();
 		when(originalValue.normalize()).thenReturn(normalizedValue);
 
 		final AddRawContentRule originalRule = new AddRawContentRule(ruleID, elementID, originalValue);

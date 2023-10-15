@@ -38,17 +38,17 @@ class ValueTraceAnalyzerTest {
 		// prepare schema access
 		final URI stylesheetURI = URIUtilities.makeMemoryURI(ObjectType.SCHEMA, "mySchema");
 		final int schemaVersion = 42;
-		final ISchemaManager schemaManager = mock(ISchemaManager.class);
-		final IXMLSchema schema = mock(IXMLSchema.class);
+		final ISchemaManager schemaManager = mock();
+		final IXMLSchema schema = mock();
 		when(schemaManager.getSchema(stylesheetURI, schemaVersion)).thenReturn(schema);
 
 		// prepare XML container
-		final IXMLDocumentContainer xmlContainer = mock(IXMLDocumentContainer.class);
+		final IXMLDocumentContainer xmlContainer = mock();
 		when(xmlContainer.getStylesheeURI()).thenReturn(stylesheetURI);
 		when(xmlContainer.getSchemaVersion()).thenReturn(schemaVersion);
 
 		// prepare HTML container
-		final IHTMLDocumentContainer htmlContainer = mock(IHTMLDocumentContainer.class);
+		final IHTMLDocumentContainer htmlContainer = mock();
 		when(htmlContainer.getSource()).thenReturn(xmlContainer);
 
 		// prepare test proxies and expressions
@@ -67,15 +67,14 @@ class ValueTraceAnalyzerTest {
 				proxy2, expression2b);
 
 		// prepare preprocessor
-		final IValueTracePreprocessor valueTracePreprocessor = mock(IValueTracePreprocessor.class);
+		final IValueTracePreprocessor valueTracePreprocessor = mock();
 		when(valueTracePreprocessor.prepareEvents(htmlContainer)).thenReturn(preprocessedExpressions);
 
 		// prepare modifier collector
-		@SuppressWarnings("unchecked")
-		final Consumer<ISchemaModifier> modifierCollector = mock(Consumer.class);
+		final Consumer<ISchemaModifier> modifierCollector = mock();
 
 		// prepare the modifier creation coordinator structure
-		final IModifierCreationCoordinator modifierCreationCoordinator = mock(IModifierCreationCoordinator.class);
+		final IModifierCreationCoordinator modifierCreationCoordinator = mock();
 		final IModifierCreationCoordinatorFactory modifierCreationCoordinatorFactory = mock(
 				IModifierCreationCoordinatorFactory.class);
 		when(modifierCreationCoordinatorFactory.createCoordinator(schema, modifierCollector))
@@ -86,7 +85,7 @@ class ValueTraceAnalyzerTest {
 		final IEvaluationTreeItem item1b = mock(IEvaluationTreeItem.class, "item 1b");
 		final IEvaluationTreeItem item2a = mock(IEvaluationTreeItem.class, "item 2a");
 		final IEvaluationTreeItem item2b = mock(IEvaluationTreeItem.class, "item 2b");
-		final IEvaluationTreeItemFactory evaluationTreeItemFactory = mock(IEvaluationTreeItemFactory.class);
+		final IEvaluationTreeItemFactory evaluationTreeItemFactory = mock();
 		when(evaluationTreeItemFactory.createItemForExpression(expression1a)).thenReturn(item1a);
 		when(evaluationTreeItemFactory.createItemForExpression(expression1b)).thenReturn(item1b);
 		when(evaluationTreeItemFactory.createItemForExpression(expression2a)).thenReturn(item2a);

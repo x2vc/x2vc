@@ -61,7 +61,7 @@ class AttributeGetterItemTest {
 	@Test
 	void testEvaluation() {
 		final StructuredQName attributeName = new StructuredQName("pfx", "foo://bar", "baz");
-		final FingerprintedQName fingerprintedAttributeName = mock(FingerprintedQName.class);
+		final FingerprintedQName fingerprintedAttributeName = mock();
 		when(fingerprintedAttributeName.getStructuredQName()).thenReturn(attributeName);
 		when(this.expression.getAttributeName()).thenReturn(fingerprintedAttributeName);
 

@@ -38,11 +38,18 @@ class ExtensionFunctionHandlerTest {
 	private IXMLSchema schema;
 	private List<IExtensionFunction> functionDefinitions;
 
+	@Mock
 	private IExtensionFunction function;
 	private UUID functionID;
 	private QName functionName;
+
+	@Mock
 	private SequenceType resultSequenceType;
+
+	@Mock
 	private SequenceType argument1SequenceType;
+
+	@Mock
 	private SequenceType argument2SequenceType;
 
 	@Mock
@@ -57,21 +64,17 @@ class ExtensionFunctionHandlerTest {
 		this.extensionFunctionHandler = new ExtensionFunctionHandler(this.schema);
 
 		// prepare a function definition with result type and two argument types
-		this.function = mock(IExtensionFunction.class);
 		this.functionName = new QName("http://foo/bar", "myFunc");
 		this.functionID = UUID.fromString("b0f6bb4d-5b88-4b95-8710-6e7052c40b51");
 		when(this.function.getQualifiedName()).thenReturn(this.functionName);
 		when(this.function.getID()).thenReturn(this.functionID);
 
-		this.resultSequenceType = mock(SequenceType.class);
 		final IFunctionSignatureType resultType = mock(IFunctionSignatureType.class);
 		when(resultType.getSequenceType()).thenReturn(this.resultSequenceType);
 		when(this.function.getResultType()).thenReturn(resultType);
 
-		this.argument1SequenceType = mock(SequenceType.class);
 		final IFunctionSignatureType argument1Type = mock(IFunctionSignatureType.class);
 		when(argument1Type.getSequenceType()).thenReturn(this.argument1SequenceType);
-		this.argument2SequenceType = mock(SequenceType.class);
 		final IFunctionSignatureType argument2Type = mock(IFunctionSignatureType.class);
 		when(argument2Type.getSequenceType()).thenReturn(this.argument2SequenceType);
 		when(this.function.getArgumentTypes()).thenReturn(ImmutableList.of(argument1Type, argument2Type));

@@ -118,8 +118,8 @@ class AbstractRuleTest {
 	 */
 	@Test
 	void testGetElementSelectors_NoModifier() {
-		final IXMLDocumentContainer documentContainer = mock(IXMLDocumentContainer.class);
-		final IXMLDocumentDescriptor documentDescriptor = mock(IXMLDocumentDescriptor.class);
+		final IXMLDocumentContainer documentContainer = mock();
+		final IXMLDocumentDescriptor documentDescriptor = mock();
 		when(documentContainer.getDocumentDescriptor()).thenReturn(documentDescriptor);
 		when(documentDescriptor.getModifier()).thenReturn(Optional.empty());
 		assertThrows(IllegalArgumentException.class, () -> this.rule.getElementSelectors(documentContainer));
@@ -131,10 +131,10 @@ class AbstractRuleTest {
 	 */
 	@Test
 	void testGetElementSelectors_NoPayload() {
-		final IXMLDocumentContainer documentContainer = mock(IXMLDocumentContainer.class);
-		final IXMLDocumentDescriptor documentDescriptor = mock(IXMLDocumentDescriptor.class);
+		final IXMLDocumentContainer documentContainer = mock();
+		final IXMLDocumentDescriptor documentDescriptor = mock();
 		when(documentContainer.getDocumentDescriptor()).thenReturn(documentDescriptor);
-		final IDocumentModifier modifier = mock(IDocumentModifier.class);
+		final IDocumentModifier modifier = mock();
 		when(documentDescriptor.getModifier()).thenReturn(Optional.of(modifier));
 		when(modifier.getPayload()).thenReturn(Optional.empty());
 		assertThrows(IllegalArgumentException.class, () -> this.rule.getElementSelectors(documentContainer));
@@ -146,10 +146,10 @@ class AbstractRuleTest {
 	 */
 	@Test
 	void testGetElementSelectors_WrongType() {
-		final IXMLDocumentContainer documentContainer = mock(IXMLDocumentContainer.class);
-		final IXMLDocumentDescriptor documentDescriptor = mock(IXMLDocumentDescriptor.class);
+		final IXMLDocumentContainer documentContainer = mock();
+		final IXMLDocumentDescriptor documentDescriptor = mock();
 		when(documentContainer.getDocumentDescriptor()).thenReturn(documentDescriptor);
-		final IDocumentModifier modifier = mock(IDocumentModifier.class);
+		final IDocumentModifier modifier = mock();
 		when(documentDescriptor.getModifier()).thenReturn(Optional.of(modifier));
 		when(modifier.getPayload()).thenReturn(Optional.of(new IModifierPayload() {
 		}));
@@ -162,12 +162,12 @@ class AbstractRuleTest {
 	 */
 	@Test
 	void testGetElementSelectors() {
-		final IXMLDocumentContainer documentContainer = mock(IXMLDocumentContainer.class);
-		final IXMLDocumentDescriptor documentDescriptor = mock(IXMLDocumentDescriptor.class);
+		final IXMLDocumentContainer documentContainer = mock();
+		final IXMLDocumentDescriptor documentDescriptor = mock();
 		when(documentContainer.getDocumentDescriptor()).thenReturn(documentDescriptor);
-		final IDocumentModifier modifier = mock(IDocumentModifier.class);
+		final IDocumentModifier modifier = mock();
 		when(documentDescriptor.getModifier()).thenReturn(Optional.of(modifier));
-		final IAnalyzerRulePayload payload = mock(IAnalyzerRulePayload.class);
+		final IAnalyzerRulePayload payload = mock();
 		when(modifier.getPayload()).thenReturn(Optional.of(payload));
 		when(payload.getElementSelector()).thenReturn(Optional.of("elementSelector"));
 		final Set<String> selectors = this.rule.getElementSelectors(documentContainer);

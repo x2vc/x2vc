@@ -36,7 +36,7 @@ class ProcessingMessageCollectorTest {
 	 */
 	@Test
 	void testURIAccess() {
-		final IProcessingMessage message = mock(IProcessingMessage.class);
+		final IProcessingMessage message = mock();
 		when(message.getSeverity()).thenReturn(Severity.INFO);
 		when(message.getMessage()).thenReturn("rhubarb");
 
@@ -60,12 +60,12 @@ class ProcessingMessageCollectorTest {
 	 */
 	@Test
 	void testFileAccess() {
-		final IProcessingMessage message = mock(IProcessingMessage.class);
+		final IProcessingMessage message = mock();
 		when(message.getSeverity()).thenReturn(Severity.INFO);
 		when(message.getMessage()).thenReturn("rhubarb");
 
 		final URI fileURI = URI.create("foo://bar/baz");
-		final File file = mock(File.class);
+		final File file = mock();
 		when(file.toURI()).thenReturn(fileURI);
 
 		final Consumer<IProcessingMessage> sink = this.collector.getSinkFor(file);

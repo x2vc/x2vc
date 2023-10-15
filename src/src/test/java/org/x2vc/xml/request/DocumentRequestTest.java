@@ -231,8 +231,8 @@ class DocumentRequestTest {
 	@Test
 	void testNormalizeWithoutModifier() {
 
-		final IAddElementRule originalRootRule = mock(IAddElementRule.class);
-		final IAddElementRule normalizedRootRule = mock(IAddElementRule.class);
+		final IAddElementRule originalRootRule = mock();
+		final IAddElementRule normalizedRootRule = mock();
 		when(originalRootRule.normalize()).thenReturn(normalizedRootRule);
 
 		final URI schemaURI = URI.create("foo:bar");
@@ -258,12 +258,12 @@ class DocumentRequestTest {
 	@Test
 	void testNormalizeWithModifier() {
 
-		final IAddElementRule originalRootRule = mock(IAddElementRule.class);
-		final IAddElementRule normalizedRootRule = mock(IAddElementRule.class);
+		final IAddElementRule originalRootRule = mock();
+		final IAddElementRule normalizedRootRule = mock();
 		when(originalRootRule.normalize()).thenReturn(normalizedRootRule);
 
-		final IDocumentModifier originalModifier = mock(IDocumentModifier.class);
-		final IDocumentModifier normalizedModifier = mock(IDocumentModifier.class);
+		final IDocumentModifier originalModifier = mock();
+		final IDocumentModifier normalizedModifier = mock();
 		when(originalModifier.normalize()).thenReturn(normalizedModifier);
 
 		final URI schemaURI = URI.create("foo:bar");

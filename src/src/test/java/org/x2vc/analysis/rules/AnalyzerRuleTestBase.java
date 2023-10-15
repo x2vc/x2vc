@@ -14,6 +14,9 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.nodes.Node;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.x2vc.analysis.IAnalyzerRule;
 import org.x2vc.report.IVulnerabilityCandidate;
 import org.x2vc.schema.ISchemaManager;
@@ -33,16 +36,21 @@ import com.google.common.collect.Lists;
 /**
  * Base class for tests of {@link IAnalyzerRule} implementations.
  */
+@ExtendWith(MockitoExtension.class)
 public abstract class AnalyzerRuleTestBase {
 
 	protected URI stylesheetURI;
 
+	@Mock
 	protected ISchemaManager schemaManager;
 
+	@Mock
 	protected IXMLSchema schema;
 
+	@Mock
 	protected IXMLDocumentDescriptor documentDescriptor;
 
+	@Mock
 	protected IXMLDocumentContainer documentContainer;
 
 	protected List<IDocumentModifier> modifiers;
@@ -69,16 +77,9 @@ public abstract class AnalyzerRuleTestBase {
 	@BeforeEach
 	void setUp() throws Exception {
 		this.stylesheetURI = URIUtilities.makeMemoryURI(ObjectType.STYLESHEET, "foobar");
-
-		this.schemaManager = mock(ISchemaManager.class);
-		this.schema = mock(IXMLSchema.class);
 		lenient().when(this.schemaManager.getSchema(this.stylesheetURI)).thenReturn(this.schema);
-
-		this.documentContainer = mock(IXMLDocumentContainer.class);
 		lenient().when(this.documentContainer.getStylesheeURI()).thenReturn(this.stylesheetURI);
-		this.documentDescriptor = mock(IXMLDocumentDescriptor.class);
 		lenient().when(this.documentContainer.getDocumentDescriptor()).thenReturn(this.documentDescriptor);
-
 		this.modifiers = Lists.newLinkedList();
 		this.vulnerabilities = Lists.newLinkedList();
 	}
@@ -115,7 +116,7 @@ public abstract class AnalyzerRuleTestBase {
 	 */
 	protected IAttribute mockUnlimitedStringAttribute() throws IllegalArgumentException {
 		final UUID attributeID = UUID.randomUUID();
-		final IAttribute attribute = mock(IAttribute.class);
+		final IAttribute attribute = mock();
 		lenient().when(this.schema.getObjectByID(attributeID)).thenReturn(attribute);
 		lenient().when(attribute.getID()).thenReturn(attributeID);
 		lenient().when(attribute.isUserModifiable()).thenReturn(true);
@@ -130,7 +131,7 @@ public abstract class AnalyzerRuleTestBase {
 	 */
 	protected IElementType mockUnlimitedStringElement() throws IllegalArgumentException {
 		final UUID elementTypeID = UUID.randomUUID();
-		final IElementType elementType = mock(IElementType.class);
+		final IElementType elementType = mock();
 		lenient().when(this.schema.getObjectByID(elementTypeID)).thenReturn(elementType);
 		lenient().when(elementType.getID()).thenReturn(elementTypeID);
 		lenient().when(elementType.isUserModifiable()).thenReturn(Optional.of(true));
@@ -147,7 +148,7 @@ public abstract class AnalyzerRuleTestBase {
 	 */
 	protected IElementType mockMixedElement() throws IllegalArgumentException {
 		final UUID elementTypeID = UUID.randomUUID();
-		final IElementType elementType = mock(IElementType.class);
+		final IElementType elementType = mock();
 		lenient().when(this.schema.getObjectByID(elementTypeID)).thenReturn(elementType);
 		lenient().when(elementType.getID()).thenReturn(elementTypeID);
 		lenient().when(elementType.isUserModifiable()).thenReturn(Optional.of(true));
@@ -163,9 +164,9 @@ public abstract class AnalyzerRuleTestBase {
 	 */
 	protected void mockModifierWithPayload(String elementSelector, String injectedValue,
 			final UUID schemaElementID) {
-		final IDocumentModifier modifier = mock(IDocumentModifier.class);
+		final IDocumentModifier modifier = mock();
 		lenient().when(this.documentDescriptor.getModifier()).thenReturn(Optional.of(modifier));
-		final IAnalyzerRulePayload payload = mock(IAnalyzerRulePayload.class);
+		final IAnalyzerRulePayload payload = mock();
 		lenient().when(modifier.getPayload()).thenReturn(Optional.of(payload));
 		lenient().when(payload.getElementSelector()).thenReturn(Optional.of(elementSelector));
 		lenient().when(payload.getInjectedValue()).thenReturn(Optional.of(injectedValue));
@@ -182,9 +183,9 @@ public abstract class AnalyzerRuleTestBase {
 	 */
 	protected void mockModifierWithPayload(String elementSelector, String injectedValue,
 			final UUID schemaElementID, String elementName, String attributeName) {
-		final IDocumentModifier modifier = mock(IDocumentModifier.class);
+		final IDocumentModifier modifier = mock();
 		lenient().when(this.documentDescriptor.getModifier()).thenReturn(Optional.of(modifier));
-		final IAnalyzerRulePayload payload = mock(IAnalyzerRulePayload.class);
+		final IAnalyzerRulePayload payload = mock();
 		lenient().when(modifier.getPayload()).thenReturn(Optional.of(payload));
 		lenient().when(payload.getElementSelector()).thenReturn(Optional.of(elementSelector));
 		lenient().when(payload.getInjectedValue()).thenReturn(Optional.of(injectedValue));

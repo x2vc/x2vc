@@ -124,7 +124,7 @@ class StylesheetParameterTest {
 	 */
 	@Test
 	void testGetType() {
-		final IFunctionSignatureType type = mock(IFunctionSignatureType.class);
+		final IFunctionSignatureType type = mock();
 		final StylesheetParameter param = StylesheetParameter.builder("myParam")
 			.withType(type)
 			.build();
@@ -138,7 +138,7 @@ class StylesheetParameterTest {
 	@Test
 	void testBuilderFrom() {
 		final UUID id = UUID.randomUUID();
-		final IFunctionSignatureType type = mock(IFunctionSignatureType.class);
+		final IFunctionSignatureType type = mock();
 		final StylesheetParameter originalFunction = StylesheetParameter.builder(id, "myParam")
 			.withComment("foobar")
 			.withNamespaceURI("http://foo.bar")
@@ -176,7 +176,7 @@ class StylesheetParameterTest {
 	 */
 	@Test
 	void testToString() {
-		final IFunctionSignatureType paramType = mock(IFunctionSignatureType.class);
+		final IFunctionSignatureType paramType = mock();
 		when(paramType.toString()).thenReturn("PTY");
 		final StylesheetParameter param = StylesheetParameter.builder("myParam")
 			.withNamespaceURI("http://foo.bar")

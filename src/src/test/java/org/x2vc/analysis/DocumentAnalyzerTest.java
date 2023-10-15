@@ -201,8 +201,8 @@ class DocumentAnalyzerTest {
 		// connect rules with same ID
 		when(this.source.getDocumentDescriptor().getModifier()).thenReturn(Optional.of(this.modifier));
 		when(this.modifier.getAnalyzerRuleID()).thenReturn(Optional.of("FOO-RULE"));
-		final IAnalyzerRule rule1 = mock(IAnalyzerRule.class);
-		final IAnalyzerRule rule2 = mock(IAnalyzerRule.class);
+		final IAnalyzerRule rule1 = mock();
+		final IAnalyzerRule rule2 = mock();
 		when(rule1.getRuleID()).thenReturn("FOO-RULE");
 		when(rule2.getRuleID()).thenReturn("FOO-RULE"); // must trigger an exception because rule IDs have to be unique
 		final DocumentAnalyzer analyzer = new DocumentAnalyzer(Sets.newSet(rule1, rule2), this.schemaManager);
@@ -275,41 +275,41 @@ class DocumentAnalyzerTest {
 	@Test
 	void testConsolidate() {
 
-		final IXMLSchema schema = mock(IXMLSchema.class);
+		final IXMLSchema schema = mock();
 		when(this.schemaManager.getSchema(this.stylesheetURI)).thenReturn(schema);
 
-		final IAnalyzerRule rule1 = mock(IAnalyzerRule.class);
+		final IAnalyzerRule rule1 = mock();
 		when(rule1.getRuleID()).thenReturn("RULE-1");
 
-		final IAnalyzerRule rule2 = mock(IAnalyzerRule.class);
+		final IAnalyzerRule rule2 = mock();
 		when(rule2.getRuleID()).thenReturn("RULE-2");
 
-		final IAnalyzerRule rule3 = mock(IAnalyzerRule.class);
+		final IAnalyzerRule rule3 = mock();
 		when(rule3.getRuleID()).thenReturn("RULE-3");
 
-		final IVulnerabilityCandidate candidate1a = mock(IVulnerabilityCandidate.class);
+		final IVulnerabilityCandidate candidate1a = mock();
 		when(candidate1a.getAnalyzerRuleID()).thenReturn("RULE-1");
 
-		final IVulnerabilityCandidate candidate1b = mock(IVulnerabilityCandidate.class);
+		final IVulnerabilityCandidate candidate1b = mock();
 		when(candidate1b.getAnalyzerRuleID()).thenReturn("RULE-1");
 
-		final IVulnerabilityCandidate candidate2a = mock(IVulnerabilityCandidate.class);
+		final IVulnerabilityCandidate candidate2a = mock();
 		when(candidate2a.getAnalyzerRuleID()).thenReturn("RULE-2");
 
-		final IVulnerabilityCandidate candidate2b = mock(IVulnerabilityCandidate.class);
+		final IVulnerabilityCandidate candidate2b = mock();
 		when(candidate2b.getAnalyzerRuleID()).thenReturn("RULE-2");
 
-		final IVulnerabilityReportSection section1a = mock(IVulnerabilityReportSection.class);
-		final IVulnerabilityReportSection section1b = mock(IVulnerabilityReportSection.class);
-		final IVulnerabilityReportSection section1c = mock(IVulnerabilityReportSection.class);
+		final IVulnerabilityReportSection section1a = mock();
+		final IVulnerabilityReportSection section1b = mock();
+		final IVulnerabilityReportSection section1c = mock();
 		final List<IVulnerabilityReportSection> sections1 = List.of(section1a, section1b, section1c);
 		when(rule1.consolidateResults(schema, Set.of(candidate1a, candidate1b))).thenReturn(sections1);
 
-		final IVulnerabilityReportSection section2a = mock(IVulnerabilityReportSection.class);
+		final IVulnerabilityReportSection section2a = mock();
 		final List<IVulnerabilityReportSection> sections2 = List.of(section2a);
 		when(rule2.consolidateResults(schema, Set.of(candidate2a, candidate2b))).thenReturn(sections2);
 
-		final IVulnerabilityReportSection section3a = mock(IVulnerabilityReportSection.class);
+		final IVulnerabilityReportSection section3a = mock();
 		final List<IVulnerabilityReportSection> sections3 = List.of(section3a);
 		when(rule3.consolidateResults(schema, Set.of())).thenReturn(sections3);
 

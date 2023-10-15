@@ -166,8 +166,8 @@ class ValueTracePreprocessorTest {
 		when(this.traceIDToRuleIDMap.containsKey(traceID1)).thenReturn(true);
 		when(this.traceIDToRuleIDMap.containsKey(traceID2)).thenReturn(true);
 
-		final IElementReference reference1 = mock(IElementReference.class);
-		final IElementReference reference2 = mock(IElementReference.class);
+		final IElementReference reference1 = mock();
+		final IElementReference reference2 = mock();
 		when(reference1.getID()).thenReturn(referenceID1);
 		when(reference2.getID()).thenReturn(referenceID2);
 		lenient().when(this.schema.getObjectByID(referenceID1, IElementReference.class)).thenReturn(reference1);
@@ -175,15 +175,15 @@ class ValueTracePreprocessorTest {
 		lenient().when(this.schema.getObjectByID(referenceID1)).thenReturn(reference1);
 		lenient().when(this.schema.getObjectByID(referenceID2)).thenReturn(reference2);
 
-		final IGenerationRule rule1 = mock(IGenerationRule.class);
-		final IGenerationRule rule2 = mock(IGenerationRule.class);
+		final IGenerationRule rule1 = mock();
+		final IGenerationRule rule2 = mock();
 		when(this.request.getRuleByID(ruleID1)).thenReturn(rule1);
 		when(this.request.getRuleByID(ruleID2)).thenReturn(rule2);
 		when(rule1.getSchemaObjectID()).thenReturn(Optional.of(referenceID1));
 		when(rule2.getSchemaObjectID()).thenReturn(Optional.of(referenceID2));
 
-		final Expression expression1 = mock(Expression.class);
-		final Expression expression2 = mock(Expression.class);
+		final Expression expression1 = mock();
+		final Expression expression2 = mock();
 
 		final ValueAccessTraceEvent event1 = ValueAccessTraceEvent.builder()
 			.withContextElementID(traceID1)
@@ -260,8 +260,8 @@ class ValueTracePreprocessorTest {
 		when(this.traceIDToRuleIDMap.containsKey(traceID2a)).thenReturn(true);
 		when(this.traceIDToRuleIDMap.containsKey(traceID2b)).thenReturn(true);
 
-		final IElementReference reference1 = mock(IElementReference.class);
-		final IElementReference reference2 = mock(IElementReference.class);
+		final IElementReference reference1 = mock();
+		final IElementReference reference2 = mock();
 		when(reference1.getID()).thenReturn(referenceID1);
 		when(reference2.getID()).thenReturn(referenceID2);
 		lenient().when(this.schema.getObjectByID(referenceID1, IElementReference.class)).thenReturn(reference1);
@@ -269,10 +269,10 @@ class ValueTracePreprocessorTest {
 		lenient().when(this.schema.getObjectByID(referenceID1)).thenReturn(reference1);
 		lenient().when(this.schema.getObjectByID(referenceID2)).thenReturn(reference2);
 
-		final IGenerationRule rule1a = mock(IGenerationRule.class);
-		final IGenerationRule rule1b = mock(IGenerationRule.class);
-		final IGenerationRule rule2a = mock(IGenerationRule.class);
-		final IGenerationRule rule2b = mock(IGenerationRule.class);
+		final IGenerationRule rule1a = mock();
+		final IGenerationRule rule1b = mock();
+		final IGenerationRule rule2a = mock();
+		final IGenerationRule rule2b = mock();
 		when(this.request.getRuleByID(ruleID1a)).thenReturn(rule1a);
 		when(this.request.getRuleByID(ruleID1b)).thenReturn(rule1b);
 		when(this.request.getRuleByID(ruleID2a)).thenReturn(rule2a);
@@ -282,10 +282,10 @@ class ValueTracePreprocessorTest {
 		when(rule2a.getSchemaObjectID()).thenReturn(Optional.of(referenceID2));
 		when(rule2b.getSchemaObjectID()).thenReturn(Optional.of(referenceID2));
 
-		final Expression expression1a = mock(Expression.class);
-		final Expression expression1b = mock(Expression.class);
-		final Expression expression2a = mock(Expression.class);
-		final Expression expression2b = mock(Expression.class);
+		final Expression expression1a = mock();
+		final Expression expression1b = mock();
+		final Expression expression2a = mock();
+		final Expression expression2b = mock();
 
 		final ValueAccessTraceEvent event1a = ValueAccessTraceEvent.builder()
 			.withContextElementID(traceID1a)
@@ -352,8 +352,8 @@ class ValueTracePreprocessorTest {
 		final UUID documentTraceID = UUID.randomUUID();
 		when(this.htmlContainer.getDocumentTraceID()).thenReturn(documentTraceID);
 
-		final Expression expression1 = mock(Expression.class);
-		final Expression expression2 = mock(Expression.class);
+		final Expression expression1 = mock();
+		final Expression expression2 = mock();
 
 		final ValueAccessTraceEvent event1 = ValueAccessTraceEvent.builder()
 			.withContextElementID(documentTraceID)

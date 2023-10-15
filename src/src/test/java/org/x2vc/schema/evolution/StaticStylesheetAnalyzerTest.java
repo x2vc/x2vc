@@ -79,11 +79,11 @@ class StaticStylesheetAnalyzerTest {
 	 */
 	@Test
 	void testAnalyze_Parameter_Existing() {
-		final IXSLTParameterNode stylesheetParameter = mock(IXSLTParameterNode.class);
+		final IXSLTParameterNode stylesheetParameter = mock();
 		when(stylesheetParameter.getQualifiedName()).thenReturn(new QName("http://name.space", "localPart"));
 		this.stylesheetParameters.add(stylesheetParameter);
 
-		final IStylesheetParameter schemaParameter = mock(IStylesheetParameter.class);
+		final IStylesheetParameter schemaParameter = mock();
 		when(schemaParameter.getQualifiedName()).thenReturn(new QName("http://name.space", "localPart"));
 		this.schemaParameters.add(schemaParameter);
 
@@ -98,7 +98,7 @@ class StaticStylesheetAnalyzerTest {
 	 */
 	@Test
 	void testAnalyze_Parameter_Missing() {
-		final IXSLTParameterNode stylesheetParameter = mock(IXSLTParameterNode.class);
+		final IXSLTParameterNode stylesheetParameter = mock();
 		when(stylesheetParameter.getQualifiedName()).thenReturn(new QName("http://name.space", "localPart"));
 		this.stylesheetParameters.add(stylesheetParameter);
 

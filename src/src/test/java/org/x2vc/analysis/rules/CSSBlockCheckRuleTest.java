@@ -72,7 +72,7 @@ class CSSBlockCheckRuleTest extends AnalyzerRuleTestBase {
 		final UUID attributeID = attribute.getID();
 
 		// prepare a value descriptor to return a known ID
-		final IValueDescriptor valueDescriptor = mock(IValueDescriptor.class);
+		final IValueDescriptor valueDescriptor = mock();
 		lenient().when(valueDescriptor.getSchemaObjectID()).thenReturn(attributeID);
 		lenient().when(valueDescriptor.getValue()).thenReturn(generatedValue);
 
@@ -121,7 +121,7 @@ class CSSBlockCheckRuleTest extends AnalyzerRuleTestBase {
 		final UUID elementTypeID = elementType.getID();
 
 		// prepare a value descriptor to return a known ID
-		final IValueDescriptor valueDescriptor = mock(IValueDescriptor.class);
+		final IValueDescriptor valueDescriptor = mock();
 		lenient().when(valueDescriptor.getSchemaObjectID()).thenReturn(elementTypeID);
 		lenient().when(valueDescriptor.getValue()).thenReturn(generatedValue);
 

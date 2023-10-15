@@ -41,7 +41,7 @@ class EvaluationTreeItemFactoryTest {
 
 	@Test
 	void testCreateItem_Expression() {
-		final Expression expression = mock(Expression.class);
+		final Expression expression = mock();
 		final IEvaluationTreeItem item = this.factory.createItemForExpression(expression);
 		assertInstanceOf(UnsupportedExpressionItem.class, item);
 		assertSame(this.schema, ((UnsupportedExpressionItem) item).getSchema());
@@ -49,7 +49,7 @@ class EvaluationTreeItemFactoryTest {
 
 	@Test
 	void testCreateItem_NodeTest() {
-		final NodeTest nodeTest = mock(NodeTest.class);
+		final NodeTest nodeTest = mock();
 		final IEvaluationTreeItem item = this.factory.createItemForNodeTest(nodeTest);
 		assertInstanceOf(UnsupportedNodeTestItem.class, item);
 		assertSame(this.schema, ((UnsupportedNodeTestItem) item).getSchema());
@@ -57,7 +57,7 @@ class EvaluationTreeItemFactoryTest {
 
 	@Test
 	void testInitializeAllCreatedItems_SingleItem() {
-		final IEvaluationTreeItem item = mock(IEvaluationTreeItem.class);
+		final IEvaluationTreeItem item = mock();
 		this.factory.injectUninitializedItem(item);
 		this.factory.initializeAllCreatedItems();
 		final ArgumentCaptor<IEvaluationTreeItemFactory> factoryCaptor = ArgumentCaptor
@@ -68,9 +68,9 @@ class EvaluationTreeItemFactoryTest {
 
 	@Test
 	void testInitializeAllCreatedItems_MultipleItems() {
-		final IEvaluationTreeItem rootItem = mock(IEvaluationTreeItem.class);
-		final IEvaluationTreeItem subItem1 = mock(IEvaluationTreeItem.class);
-		final IEvaluationTreeItem subItem2 = mock(IEvaluationTreeItem.class);
+		final IEvaluationTreeItem rootItem = mock();
+		final IEvaluationTreeItem subItem1 = mock();
+		final IEvaluationTreeItem subItem2 = mock();
 		doAnswer(new Answer<Object>() {
 			@Override
 			public Object answer(InvocationOnMock invocation) {

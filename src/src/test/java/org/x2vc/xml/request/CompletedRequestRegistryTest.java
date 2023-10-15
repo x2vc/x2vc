@@ -33,9 +33,9 @@ class CompletedRequestRegistryTest {
 	@Test
 	void testRegisterAndContains() {
 
-		final IAddElementRule originalRootRule = mock(IAddElementRule.class);
-		final IAddElementRule alternateRootRule = mock(IAddElementRule.class);
-		final IAddElementRule normalizedRootRule = mock(IAddElementRule.class);
+		final IAddElementRule originalRootRule = mock();
+		final IAddElementRule alternateRootRule = mock();
+		final IAddElementRule normalizedRootRule = mock();
 		when(originalRootRule.normalize()).thenReturn(normalizedRootRule);
 		when(alternateRootRule.normalize()).thenReturn(normalizedRootRule);
 

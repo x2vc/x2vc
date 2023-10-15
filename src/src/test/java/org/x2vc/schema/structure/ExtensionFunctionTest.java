@@ -125,7 +125,7 @@ class ExtensionFunctionTest {
 	 */
 	@Test
 	void testGetResultType() {
-		final IFunctionSignatureType type = mock(IFunctionSignatureType.class);
+		final IFunctionSignatureType type = mock();
 		final ExtensionFunction function = ExtensionFunction.builder("myFunc")
 			.withResultType(type)
 			.build();
@@ -147,10 +147,10 @@ class ExtensionFunctionTest {
 	 */
 	@Test
 	void testGetArgumentTypes() {
-		final IFunctionSignatureType type1 = mock(IFunctionSignatureType.class);
-		final IFunctionSignatureType type2 = mock(IFunctionSignatureType.class);
-		final IFunctionSignatureType type3 = mock(IFunctionSignatureType.class);
-		final IFunctionSignatureType type4 = mock(IFunctionSignatureType.class);
+		final IFunctionSignatureType type1 = mock();
+		final IFunctionSignatureType type2 = mock();
+		final IFunctionSignatureType type3 = mock();
+		final IFunctionSignatureType type4 = mock();
 		final ExtensionFunction function = ExtensionFunction.builder("myFunc")
 			.withArgumentType(type1)
 			.withArgumentTypes(List.of(type2, type3))
@@ -166,10 +166,10 @@ class ExtensionFunctionTest {
 	@Test
 	void testBuilderFrom() {
 		final UUID id = UUID.randomUUID();
-		final IFunctionSignatureType resultType = mock(IFunctionSignatureType.class);
-		final IFunctionSignatureType argumentType1 = mock(IFunctionSignatureType.class);
-		final IFunctionSignatureType argumentType2 = mock(IFunctionSignatureType.class);
-		final IFunctionSignatureType argumentType3 = mock(IFunctionSignatureType.class);
+		final IFunctionSignatureType resultType = mock();
+		final IFunctionSignatureType argumentType1 = mock();
+		final IFunctionSignatureType argumentType2 = mock();
+		final IFunctionSignatureType argumentType3 = mock();
 		final ExtensionFunction originalFunction = ExtensionFunction.builder(id, "myFunc")
 			.withComment("foobar")
 			.withNamespaceURI("http://foo.bar")
@@ -209,11 +209,11 @@ class ExtensionFunctionTest {
 	 */
 	@Test
 	void testToString() {
-		final IFunctionSignatureType retType = mock(IFunctionSignatureType.class);
+		final IFunctionSignatureType retType = mock();
 		when(retType.toString()).thenReturn("RET");
-		final IFunctionSignatureType argType1 = mock(IFunctionSignatureType.class);
+		final IFunctionSignatureType argType1 = mock();
 		when(argType1.toString()).thenReturn("ARG1");
-		final IFunctionSignatureType argType2 = mock(IFunctionSignatureType.class);
+		final IFunctionSignatureType argType2 = mock();
 		when(argType2.toString()).thenReturn("ARG2");
 		final ExtensionFunction function = ExtensionFunction.builder("myFunc")
 			.withNamespaceURI("http://foo.bar")

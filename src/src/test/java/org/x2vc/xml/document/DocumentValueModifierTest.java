@@ -27,7 +27,7 @@ class DocumentValueModifierTest {
 		final String originalValue = "$$ORIGINAL$$";
 		final String replacementValue = "%%REPLACEMENT%%";
 		final String analyzerRuleID = "Rule-42-ABC";
-		final IModifierPayload payload = mock(IModifierPayload.class);
+		final IModifierPayload payload = mock();
 
 		final DocumentValueModifier originalModifier = DocumentValueModifier.builder(schemaElementID,
 				generationRuleID)

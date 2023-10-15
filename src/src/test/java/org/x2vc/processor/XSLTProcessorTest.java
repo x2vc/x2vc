@@ -223,12 +223,12 @@ class XSLTProcessorTest {
 		when(this.xmlDocument.getDocument()).thenReturn(input);
 
 		final UUID parameterID = UUID.randomUUID();
-		final IStylesheetParameterValue paramValue = mock(IStylesheetParameterValue.class);
+		final IStylesheetParameterValue paramValue = mock();
 		when(paramValue.getParameterID()).thenReturn(parameterID);
 		when(paramValue.getXDMValue()).thenReturn(XdmValue.makeValue("FooBarBaz"));
 		this.parameterValues.add(paramValue);
 
-		final IStylesheetParameter parameterDefinition = mock(IStylesheetParameter.class);
+		final IStylesheetParameter parameterDefinition = mock();
 		when(parameterDefinition.getQualifiedName()).thenReturn(new QName("myParam"));
 		when(this.schema.getObjectByID(parameterID, IStylesheetParameter.class)).thenReturn(parameterDefinition);
 
