@@ -120,19 +120,6 @@ class CoverageTreeNode {
 			}
 		} else {
 			// select the child nodes that cover the line
-			final List<CoverageTreeNode> temp1 = this.children
-				.stream()
-				.filter(c -> c.spansLine(lineNumber))
-				.toList();
-
-			final List<CoverageStatus> temp2 = temp1.stream()
-				.map(c -> c.getCoverageStatusAtLine(lineNumber))
-				.toList();
-
-			final List<CoverageStatus> temp3 = temp2.stream()
-				.filter(s -> s != CoverageStatus.EMPTY) // make it easier to handle the mapping
-				.toList();
-
 			final Set<CoverageStatus> childStatus = this.children
 				.stream()
 				.filter(c -> c.spansLine(lineNumber))

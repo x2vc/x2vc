@@ -59,8 +59,7 @@ public class StylesheetStructure implements IStylesheetStructure {
 	 */
 	void setRootNode(IXSLTDirectiveNode rootNode) {
 		checkNotNull(rootNode);
-		checkArgument(rootNode.isXSLTDirective());
-		final String rootName = rootNode.asDirective().getName();
+		final String rootName = rootNode.getName();
 		checkArgument(rootName.equals(XSLTConstants.Elements.TRANSFORM)
 				|| rootName.equals(XSLTConstants.Elements.STYLESHEET));
 		this.rootNode = rootNode;
@@ -87,8 +86,8 @@ public class StylesheetStructure implements IStylesheetStructure {
 		logger.traceEntry();
 		final ImmutableList<IXSLTTemplateNode> result = ImmutableList.copyOf(
 				this.rootNode.getChildDirectives().stream()
-					.filter(d -> d.isXSLTTemplate())
-					.map(d -> d.asTemplate())
+					.filter(IXSLTTemplateNode.class::isInstance)
+					.map(IXSLTTemplateNode.class::cast)
 					.iterator());
 		return logger.traceExit(result);
 	});

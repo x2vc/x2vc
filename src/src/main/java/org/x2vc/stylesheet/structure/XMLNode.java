@@ -32,16 +32,6 @@ public class XMLNode extends AbstractStructureTreeNode implements IXMLNode {
 	}
 
 	@Override
-	public boolean isXML() {
-		return true;
-	}
-
-	@Override
-	public IXMLNode asXML() throws IllegalStateException {
-		return this;
-	}
-
-	@Override
 	public QName getName() {
 		return this.name;
 	}

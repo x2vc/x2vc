@@ -3,7 +3,6 @@ package org.x2vc.stylesheet.structure;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 
 import org.junit.jupiter.api.Disabled;
@@ -27,12 +26,8 @@ class XSLTDirectiveNodeTest {
 	 */
 	@Test
 	void testGetChildDirectives_WithChildDirectivesAbsent() {
-		final IStructureTreeNode nonDirective1 = mock();
-		lenient().when(nonDirective1.isXSLTDirective()).thenReturn(false);
-		lenient().when(nonDirective1.isText()).thenReturn(true);
-		final IStructureTreeNode nonDirective2 = mock();
-		lenient().when(nonDirective2.isXSLTDirective()).thenReturn(false);
-		lenient().when(nonDirective2.isXML()).thenReturn(true);
+		final IXMLNode nonDirective1 = mock();
+		final IXMLNode nonDirective2 = mock();
 
 		final IXSLTDirectiveNode node = XSLTDirectiveNode.builder(this.parentStructure, "someName")
 			.addChildElement(nonDirective1).addChildElement(nonDirective2).build();
@@ -41,14 +36,9 @@ class XSLTDirectiveNodeTest {
 	}
 
 	void testGetChildDirectives_WithChildDirectivesPresent() {
-		final IStructureTreeNode nonDirective1 = mock();
-		lenient().when(nonDirective1.isXSLTDirective()).thenReturn(false);
-		lenient().when(nonDirective1.isText()).thenReturn(true);
-		final IStructureTreeNode directive1 = mock();
-		lenient().when(directive1.isXSLTDirective()).thenReturn(true);
-		final IStructureTreeNode nonDirective2 = mock();
-		lenient().when(nonDirective2.isXSLTDirective()).thenReturn(false);
-		lenient().when(nonDirective2.isXML()).thenReturn(true);
+		final IXMLNode nonDirective1 = mock();
+		final IXSLTDirectiveNode directive1 = mock();
+		final IXMLNode nonDirective2 = mock();
 
 		final IXSLTDirectiveNode node = XSLTDirectiveNode.builder(this.parentStructure, "someName")
 			.addChildElement(nonDirective1).addChildElement(directive1).addChildElement(nonDirective2).build();

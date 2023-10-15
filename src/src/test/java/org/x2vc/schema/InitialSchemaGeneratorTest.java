@@ -104,10 +104,9 @@ class InitialSchemaGeneratorTest {
 	void testSingleLevel(String matches, String rootElementNames) {
 		final List<IXSLTTemplateNode> templates = Lists.newArrayList();
 		Splitter.on(',').split(matches).iterator().forEachRemaining(match -> {
-			templates.add(XSLTDirectiveNode.builder(this.structure, "template")
+			templates.add((IXSLTTemplateNode) XSLTDirectiveNode.builder(this.structure, "template")
 				.addXSLTAttribute("match", match)
-				.build()
-				.asTemplate());
+				.build());
 		});
 		when(this.structure.getTemplates()).thenReturn(ImmutableList.copyOf(templates));
 		final IXMLSchema schema = this.generator.generateSchema(this.stylesheet, this.schemaURI);
@@ -128,10 +127,9 @@ class InitialSchemaGeneratorTest {
 	})
 	void testMultiLevelPath(String matches) {
 		final List<IXSLTTemplateNode> templates = Lists.newArrayList();
-		templates.add(XSLTDirectiveNode.builder(this.structure, "template")
+		templates.add((IXSLTTemplateNode) XSLTDirectiveNode.builder(this.structure, "template")
 			.addXSLTAttribute("match", matches)
-			.build()
-			.asTemplate());
+			.build());
 		when(this.structure.getTemplates()).thenReturn(ImmutableList.copyOf(templates));
 		final IXMLSchema schema = this.generator.generateSchema(this.stylesheet, this.schemaURI);
 

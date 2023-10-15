@@ -40,16 +40,6 @@ public class TextNode extends AbstractStructureTreeNode implements ITextNode {
 	}
 
 	@Override
-	public boolean isText() {
-		return true;
-	}
-
-	@Override
-	public ITextNode asText() throws IllegalStateException {
-		return this;
-	}
-
-	@Override
 	public String getText() {
 		return this.text;
 	}

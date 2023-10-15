@@ -46,16 +46,6 @@ public final class XSLTParameterNode extends AbstractStructureTreeNode implement
 	}
 
 	@Override
-	public boolean isXSLTParameter() {
-		return true;
-	}
-
-	@Override
-	public IXSLTParameterNode asParameter() throws IllegalStateException {
-		return this;
-	}
-
-	@Override
 	public Optional<String> getNamespaceURI() {
 		return Optional.ofNullable(this.namespaceURI);
 	}

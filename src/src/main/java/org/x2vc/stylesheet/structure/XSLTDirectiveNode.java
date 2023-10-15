@@ -46,16 +46,6 @@ public class XSLTDirectiveNode extends AbstractStructureTreeNode implements IXSL
 	}
 
 	@Override
-	public boolean isXSLTDirective() {
-		return true;
-	}
-
-	@Override
-	public IXSLTDirectiveNode asDirective() throws IllegalStateException {
-		return this;
-	}
-
-	@Override
 	public String getName() {
 		return this.name;
 	}
@@ -103,7 +93,10 @@ public class XSLTDirectiveNode extends AbstractStructureTreeNode implements IXSL
 	public ImmutableList<IXSLTDirectiveNode> getChildDirectives() {
 		if (this.childDirectives == null) {
 			this.childDirectives = ImmutableList.copyOf(
-					this.childElements.stream().filter(e -> e.isXSLTDirective()).map(e -> e.asDirective()).iterator());
+					this.childElements.stream()
+						.filter(IXSLTDirectiveNode.class::isInstance)
+						.map(IXSLTDirectiveNode.class::cast)
+						.iterator());
 		}
 		return this.childDirectives;
 	}

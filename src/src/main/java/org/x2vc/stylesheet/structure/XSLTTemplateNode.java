@@ -23,16 +23,6 @@ public class XSLTTemplateNode extends XSLTDirectiveNode implements IXSLTTemplate
 		super(builder);
 	}
 
-	@Override
-	public boolean isXSLTTemplate() {
-		return true;
-	}
-
-	@Override
-	public IXSLTTemplateNode asTemplate() throws IllegalStateException {
-		return this;
-	}
-
 	@XmlTransient
 	@SuppressWarnings("java:S4738") // Java supplier does not support memoization
 	Supplier<Optional<String>> matchPatternSupplier = Suppliers.memoize(() -> getXSLTAttribute("match"));

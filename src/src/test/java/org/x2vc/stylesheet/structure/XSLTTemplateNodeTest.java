@@ -1,9 +1,6 @@
 package org.x2vc.stylesheet.structure;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.text.DecimalFormat;
 import java.util.Optional;
@@ -30,8 +27,8 @@ class XSLTTemplateNodeTest {
 			.builder(this.parentStructure, XSLTConstants.Elements.TEMPLATE)
 			.addXSLTAttribute("match", "foobar")
 			.build();
-		assertTrue(directive.isXSLTTemplate());
-		final IXSLTTemplateNode template = directive.asTemplate();
+		assertInstanceOf(IXSLTTemplateNode.class, directive);
+		final IXSLTTemplateNode template = (IXSLTTemplateNode) directive;
 		final Optional<String> oValue = template.getMatchPattern();
 		assertTrue(oValue.isPresent());
 		assertEquals("foobar", oValue.get());
@@ -45,8 +42,8 @@ class XSLTTemplateNodeTest {
 		final IXSLTDirectiveNode directive = XSLTDirectiveNode
 			.builder(this.parentStructure, XSLTConstants.Elements.TEMPLATE)
 			.build();
-		assertTrue(directive.isXSLTTemplate());
-		final IXSLTTemplateNode template = directive.asTemplate();
+		assertInstanceOf(IXSLTTemplateNode.class, directive);
+		final IXSLTTemplateNode template = (IXSLTTemplateNode) directive;
 		final Optional<String> oValue = template.getMatchPattern();
 		assertFalse(oValue.isPresent());
 	}
@@ -60,8 +57,8 @@ class XSLTTemplateNodeTest {
 			.builder(this.parentStructure, XSLTConstants.Elements.TEMPLATE)
 			.addXSLTAttribute("name", "foobar")
 			.build();
-		assertTrue(directive.isXSLTTemplate());
-		final IXSLTTemplateNode template = directive.asTemplate();
+		assertInstanceOf(IXSLTTemplateNode.class, directive);
+		final IXSLTTemplateNode template = (IXSLTTemplateNode) directive;
 		final Optional<String> oValue = template.getTemplateName();
 		assertTrue(oValue.isPresent());
 		assertEquals("foobar", oValue.get());
@@ -75,8 +72,8 @@ class XSLTTemplateNodeTest {
 		final IXSLTDirectiveNode directive = XSLTDirectiveNode
 			.builder(this.parentStructure, XSLTConstants.Elements.TEMPLATE)
 			.build();
-		assertTrue(directive.isXSLTTemplate());
-		final IXSLTTemplateNode template = directive.asTemplate();
+		assertInstanceOf(IXSLTTemplateNode.class, directive);
+		final IXSLTTemplateNode template = (IXSLTTemplateNode) directive;
 		final Optional<String> oValue = template.getTemplateName();
 		assertFalse(oValue.isPresent());
 	}
@@ -90,8 +87,8 @@ class XSLTTemplateNodeTest {
 			.builder(this.parentStructure, XSLTConstants.Elements.TEMPLATE)
 			.addXSLTAttribute("priority", "-1.25")
 			.build();
-		assertTrue(directive.isXSLTTemplate());
-		final IXSLTTemplateNode template = directive.asTemplate();
+		assertInstanceOf(IXSLTTemplateNode.class, directive);
+		final IXSLTTemplateNode template = (IXSLTTemplateNode) directive;
 		final Optional<Double> oValue = template.getPriority();
 		assertTrue(oValue.isPresent());
 		assertEquals(-1.25, oValue.get());
@@ -105,8 +102,8 @@ class XSLTTemplateNodeTest {
 		final IXSLTDirectiveNode directive = XSLTDirectiveNode
 			.builder(this.parentStructure, XSLTConstants.Elements.TEMPLATE)
 			.build();
-		assertTrue(directive.isXSLTTemplate());
-		final IXSLTTemplateNode template = directive.asTemplate();
+		assertInstanceOf(IXSLTTemplateNode.class, directive);
+		final IXSLTTemplateNode template = (IXSLTTemplateNode) directive;
 		final Optional<Double> oValue = template.getPriority();
 		assertFalse(oValue.isPresent());
 	}
@@ -120,8 +117,8 @@ class XSLTTemplateNodeTest {
 			.builder(this.parentStructure, XSLTConstants.Elements.TEMPLATE)
 			.addXSLTAttribute("mode", "foobar")
 			.build();
-		assertTrue(directive.isXSLTTemplate());
-		final IXSLTTemplateNode template = directive.asTemplate();
+		assertInstanceOf(IXSLTTemplateNode.class, directive);
+		final IXSLTTemplateNode template = (IXSLTTemplateNode) directive;
 		final Optional<String> oValue = template.getMode();
 		assertTrue(oValue.isPresent());
 		assertEquals("foobar", oValue.get());
@@ -135,8 +132,8 @@ class XSLTTemplateNodeTest {
 		final IXSLTDirectiveNode directive = XSLTDirectiveNode
 			.builder(this.parentStructure, XSLTConstants.Elements.TEMPLATE)
 			.build();
-		assertTrue(directive.isXSLTTemplate());
-		final IXSLTTemplateNode template = directive.asTemplate();
+		assertInstanceOf(IXSLTTemplateNode.class, directive);
+		final IXSLTTemplateNode template = (IXSLTTemplateNode) directive;
 		final Optional<String> oValue = template.getMode();
 		assertFalse(oValue.isPresent());
 	}
@@ -150,8 +147,8 @@ class XSLTTemplateNodeTest {
 			.builder(this.parentStructure, XSLTConstants.Elements.TEMPLATE)
 			.addXSLTAttribute("match", "foobar")
 			.build();
-		assertTrue(directive.isXSLTTemplate());
-		final IXSLTTemplateNode template = directive.asTemplate();
+		assertInstanceOf(IXSLTTemplateNode.class, directive);
+		final IXSLTTemplateNode template = (IXSLTTemplateNode) directive;
 		assertContains("template matching 'foobar'", template.getShortText());
 	}
 
@@ -164,8 +161,8 @@ class XSLTTemplateNodeTest {
 			.builder(this.parentStructure, XSLTConstants.Elements.TEMPLATE)
 			.addXSLTAttribute("name", "foobar")
 			.build();
-		assertTrue(directive.isXSLTTemplate());
-		final IXSLTTemplateNode template = directive.asTemplate();
+		assertInstanceOf(IXSLTTemplateNode.class, directive);
+		final IXSLTTemplateNode template = (IXSLTTemplateNode) directive;
 		assertContains("template named 'foobar'", template.getShortText());
 	}
 
@@ -179,8 +176,8 @@ class XSLTTemplateNodeTest {
 			.addXSLTAttribute("match", "foobar")
 			.addXSLTAttribute("name", "boofar")
 			.build();
-		assertTrue(directive.isXSLTTemplate());
-		final IXSLTTemplateNode template = directive.asTemplate();
+		assertInstanceOf(IXSLTTemplateNode.class, directive);
+		final IXSLTTemplateNode template = (IXSLTTemplateNode) directive;
 		assertContains("template named 'boofar' matching 'foobar'", template.getShortText());
 	}
 
@@ -194,8 +191,8 @@ class XSLTTemplateNodeTest {
 			.addXSLTAttribute("match", "foobar")
 			.addXSLTAttribute("mode", "DontModeMe")
 			.build();
-		assertTrue(directive.isXSLTTemplate());
-		final IXSLTTemplateNode template = directive.asTemplate();
+		assertInstanceOf(IXSLTTemplateNode.class, directive);
+		final IXSLTTemplateNode template = (IXSLTTemplateNode) directive;
 		assertContains("with mode 'DontModeMe'", template.getShortText());
 	}
 
@@ -209,8 +206,8 @@ class XSLTTemplateNodeTest {
 			.addXSLTAttribute("match", "foobar")
 			.addXSLTAttribute("priority", "-4.2")
 			.build();
-		assertTrue(directive.isXSLTTemplate());
-		final IXSLTTemplateNode template = directive.asTemplate();
+		assertInstanceOf(IXSLTTemplateNode.class, directive);
+		final IXSLTTemplateNode template = (IXSLTTemplateNode) directive;
 		// ensure that the expected value uses the correct decimal separator
 		final String expected = String.format("with priority %s", new DecimalFormat("0.#").format(-4.2));
 		assertContains(expected, template.getShortText());
@@ -227,8 +224,8 @@ class XSLTTemplateNodeTest {
 			.addXSLTAttribute("mode", "DontModeMe")
 			.addXSLTAttribute("priority", "-4.2")
 			.build();
-		assertTrue(directive.isXSLTTemplate());
-		final IXSLTTemplateNode template = directive.asTemplate();
+		assertInstanceOf(IXSLTTemplateNode.class, directive);
+		final IXSLTTemplateNode template = (IXSLTTemplateNode) directive;
 		// ensure that the expected value uses the correct decimal separator
 		final String expected = String.format("with mode 'DontModeMe' and priority %s",
 				new DecimalFormat("0.#").format(-4.2));
@@ -245,8 +242,8 @@ class XSLTTemplateNodeTest {
 			.addXSLTAttribute("match", "foobar")
 			.withStartLocation(PolymorphLocation.builder().withLineNumber(42).build())
 			.build();
-		assertTrue(directive.isXSLTTemplate());
-		final IXSLTTemplateNode template = directive.asTemplate();
+		assertInstanceOf(IXSLTTemplateNode.class, directive);
+		final IXSLTTemplateNode template = (IXSLTTemplateNode) directive;
 		assertContains("defined in line 42", template.getShortText());
 	}
 

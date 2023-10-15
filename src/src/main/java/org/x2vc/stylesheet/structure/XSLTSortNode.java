@@ -37,16 +37,6 @@ public class XSLTSortNode extends AbstractStructureTreeNode implements IXSLTSort
 	}
 
 	@Override
-	public boolean isXSLTSort() {
-		return true;
-	}
-
-	@Override
-	public IXSLTSortNode asSort() throws IllegalStateException {
-		return this;
-	}
-
-	@Override
 	public Optional<PolymorphLocation> getStartLocation() {
 		return Optional.ofNullable(this.startLocation);
 	}
