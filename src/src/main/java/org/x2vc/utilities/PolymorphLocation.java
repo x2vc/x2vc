@@ -2,23 +2,28 @@ package org.x2vc.utilities;
 
 import java.util.Objects;
 
+import org.apache.logging.log4j.util.Strings;
+
 /**
  * Implementation of various interfaces that all represent the same thing - a location in an XML or XSLT file.
  */
-public class PolymorphLocation implements javax.xml.stream.Location, javax.xml.transform.SourceLocator {
+public final class PolymorphLocation
+		implements javax.xml.stream.Location, javax.xml.transform.SourceLocator, Comparable<PolymorphLocation> {
 
-	private int lineNumber;
-	private int columnNumber;
-	private int characterOffset;
-	private String publicId;
-	private String systemId;
+	private static boolean useCompactToStringNotation = true;
+
+	private final int lineNumber;
+	private final int columnNumber;
+	private final int characterOffset;
+	private final String publicID;
+	private final String systemID;
 
 	private PolymorphLocation(Builder builder) {
 		this.lineNumber = builder.lineNumber;
 		this.columnNumber = builder.columnNumber;
 		this.characterOffset = builder.characterOffset;
-		this.publicId = builder.publicId;
-		this.systemId = builder.systemId;
+		this.publicID = builder.publicId;
+		this.systemID = builder.systemId;
 	}
 
 	/**
@@ -28,16 +33,16 @@ public class PolymorphLocation implements javax.xml.stream.Location, javax.xml.t
 	 * @param lineNumber
 	 * @param columnNumber
 	 * @param characterOffset
-	 * @param publicId
-	 * @param systemId
+	 * @param publicID
+	 * @param systemID
 	 */
-	private PolymorphLocation(int lineNumber, int columnNumber, int characterOffset, String publicId, String systemId) {
+	private PolymorphLocation(int lineNumber, int columnNumber, int characterOffset, String publicID, String systemID) {
 		super();
 		this.lineNumber = lineNumber;
 		this.columnNumber = columnNumber;
 		this.characterOffset = characterOffset;
-		this.publicId = publicId;
-		this.systemId = systemId;
+		this.publicID = publicID;
+		this.systemID = systemID;
 	}
 
 	@Override
@@ -57,26 +62,59 @@ public class PolymorphLocation implements javax.xml.stream.Location, javax.xml.t
 
 	@Override
 	public String getPublicId() {
-		return this.publicId;
+		return this.publicID;
 	}
 
 	@Override
 	public String getSystemId() {
-		return this.systemId;
+		return this.systemID;
+	}
+
+	@Override
+	public int compareTo(PolymorphLocation other) {
+		// -1: this < other
+		// 0: this = other
+		// 1: this > other
+		if (this.getLineNumber() < other.getLineNumber()) {
+			return -1;
+		} else if (this.getLineNumber() > other.getLineNumber()) {
+			return 1;
+		} else {
+			if (this.getColumnNumber() < other.getColumnNumber()) {
+				return -1;
+			} else if (this.getColumnNumber() > other.getColumnNumber()) {
+				return 1;
+			} else {
+				return 0;
+			}
+		}
+		// TODO Support comparison of locations from different sources
 	}
 
 	@Override
 	public String toString() {
-		return "Line number = " + getLineNumber() + "\n" +
-				"Column number = " + getColumnNumber() + "\n" +
-				"System Id = " + getSystemId() + "\n" +
-				"Public Id = " + getPublicId() + "\n" +
-				"CharacterOffset = " + getCharacterOffset() + "\n";
+		if (useCompactToStringNotation) {
+			final StringBuilder sb = new StringBuilder();
+			if (!Strings.isBlank(this.publicID)) {
+				sb.append("{P:" + this.publicID + "}");
+			}
+			if (!Strings.isBlank(this.systemID)) {
+				sb.append("{S:" + this.systemID + "}");
+			}
+			sb.append(String.format("l%d/c%d=ch%d", this.lineNumber, this.columnNumber, this.characterOffset));
+			return sb.toString();
+		} else {
+			return "Line number = " + getLineNumber() + "\n" +
+					"Column number = " + getColumnNumber() + "\n" +
+					"System Id = " + getSystemId() + "\n" +
+					"Public Id = " + getPublicId() + "\n" +
+					"CharacterOffset = " + getCharacterOffset() + "\n";
+		}
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(this.characterOffset, this.columnNumber, this.lineNumber, this.publicId, this.systemId);
+		return Objects.hash(this.characterOffset, this.columnNumber, this.lineNumber, this.publicID, this.systemID);
 	}
 
 	@Override
@@ -92,8 +130,8 @@ public class PolymorphLocation implements javax.xml.stream.Location, javax.xml.t
 		}
 		final PolymorphLocation other = (PolymorphLocation) obj;
 		return this.characterOffset == other.characterOffset && this.columnNumber == other.columnNumber
-				&& this.lineNumber == other.lineNumber && Objects.equals(this.publicId, other.publicId)
-				&& Objects.equals(this.systemId, other.systemId);
+				&& this.lineNumber == other.lineNumber && Objects.equals(this.publicID, other.publicID)
+				&& Objects.equals(this.systemID, other.systemID);
 	}
 
 	/**
