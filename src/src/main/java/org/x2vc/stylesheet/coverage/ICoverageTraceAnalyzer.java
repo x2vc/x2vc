@@ -38,4 +38,11 @@ public interface ICoverageTraceAnalyzer {
 	 */
 	ICoverageStatistics getStatistics(URI stylesheetURI);
 
+	/**
+	 * @param stylesheetURI
+	 * @return the code coverage information - essentially the output of {@link #getLineCoverage(URI)} combined with the
+	 *         actual source code
+	 */
+	ImmutableList<ILineCoverage> getCodeCoverage(URI stylesheetURI);
+
 }

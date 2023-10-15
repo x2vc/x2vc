@@ -75,31 +75,29 @@ class CoverageTreeNode {
 	}
 
 	private CoverageStatus getCoverageStatus() {
-		if (this.children.isEmpty()) {
-			return (this.executionCount > 0) ? CoverageStatus.FULL : CoverageStatus.NONE;
+		// consider both own and child status
+		final Set<CoverageStatus> statusCollection = this.children
+			.stream()
+			.map(c -> c.getCoverageStatus())
+			.filter(s -> s != CoverageStatus.EMPTY) // shouldn't occur here, so away with it
+			.collect(Collectors.toSet());
+		statusCollection.add((this.executionCount > 0) ? CoverageStatus.FULL : CoverageStatus.NONE);
+		// possible states:
+		// FULL --> FULL
+		// FULL, PARTIAL --> PARTIAL
+		// FULL, PARTIAL, NONE --> PARTIAL
+		// FULL, NONE --> PARTIAL
+		// PARTIAL --> PARTIAL
+		// PARTIAL, NONE --> PARTIAL
+		// NONE --> NONE
+		// empty --> NONE
+		if ((statusCollection.size() == 1) && (statusCollection.contains(CoverageStatus.FULL))) {
+			return CoverageStatus.FULL;
+		} else if ((statusCollection.isEmpty())
+				|| ((statusCollection.size() == 1) && (statusCollection.contains(CoverageStatus.NONE)))) {
+			return CoverageStatus.NONE;
 		} else {
-			final Set<CoverageStatus> childStatus = this.children
-				.stream()
-				.map(c -> c.getCoverageStatus())
-				.filter(s -> s != CoverageStatus.EMPTY) // shouldn't occur here, so away with it
-				.collect(Collectors.toSet());
-			// possible states:
-			// FULL --> FULL
-			// FULL, PARTIAL --> PARTIAL
-			// FULL, PARTIAL, NONE --> PARTIAL
-			// FULL, NONE --> PARTIAL
-			// PARTIAL --> PARTIAL
-			// PARTIAL, NONE --> PARTIAL
-			// NONE --> NONE
-			// empty --> NONE
-			if ((childStatus.size() == 1) && (childStatus.contains(CoverageStatus.FULL))) {
-				return CoverageStatus.FULL;
-			} else if ((childStatus.isEmpty())
-					|| ((childStatus.size() == 1) && (childStatus.contains(CoverageStatus.NONE)))) {
-				return CoverageStatus.NONE;
-			} else {
-				return CoverageStatus.PARTIAL;
-			}
+			return CoverageStatus.PARTIAL;
 		}
 	}
 
@@ -122,6 +120,19 @@ class CoverageTreeNode {
 			}
 		} else {
 			// select the child nodes that cover the line
+			final List<CoverageTreeNode> temp1 = this.children
+				.stream()
+				.filter(c -> c.spansLine(lineNumber))
+				.toList();
+
+			final List<CoverageStatus> temp2 = temp1.stream()
+				.map(c -> c.getCoverageStatusAtLine(lineNumber))
+				.toList();
+
+			final List<CoverageStatus> temp3 = temp2.stream()
+				.filter(s -> s != CoverageStatus.EMPTY) // make it easier to handle the mapping
+				.toList();
+
 			final Set<CoverageStatus> childStatus = this.children
 				.stream()
 				.filter(c -> c.spansLine(lineNumber))

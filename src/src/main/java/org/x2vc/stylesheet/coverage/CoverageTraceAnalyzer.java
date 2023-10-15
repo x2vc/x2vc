@@ -14,6 +14,7 @@ import org.x2vc.processor.ITraceEvent;
 import org.x2vc.stylesheet.IStylesheetInformation;
 import org.x2vc.stylesheet.IStylesheetManager;
 
+import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -168,6 +169,27 @@ public class CoverageTraceAnalyzer implements ICoverageTraceAnalyzer {
 			.build();
 
 		return logger.traceExit(result);
+	}
+
+	@Override
+	public ImmutableList<ILineCoverage> getCodeCoverage(URI stylesheetURI) {
+		logger.traceEntry();
+		final List<ILineCoverage> lines = Lists.newArrayList();
+
+		final CoverageStatus[] coverage = getLineCoverage(stylesheetURI);
+		final String source = this.stylesheetManager.get(stylesheetURI).getPreparedStylesheet();
+		final Iterable<String> sourceLines = Splitter.onPattern("\r?\n").split(source);
+		int lineNumber = 0;
+		for (final String sourceLine : sourceLines) {
+			if (lineNumber < coverage.length) {
+				lines.add(new LineCoverage(lineNumber + 1, sourceLine, coverage[lineNumber]));
+			} else {
+				lines.add(new LineCoverage(lineNumber + 1, sourceLine, CoverageStatus.EMPTY));
+			}
+			lineNumber++;
+		}
+
+		return logger.traceExit(ImmutableList.copyOf(lines));
 	}
 
 }

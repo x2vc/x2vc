@@ -1,0 +1,14 @@
+span.coverage-full {
+	background-color: palegreen;
+	display: block;
+}
+
+span.coverage-partial {
+	background-color: lightgoldenrodyellow;
+	display: block;
+}
+
+span.coverage-none {
+	background-color: lightcoral;
+	display: block;
+}

@@ -13,7 +13,9 @@ import org.x2vc.report.IVulnerabilityCandidateCollector;
 import org.x2vc.report.IVulnerabilityReport;
 import org.x2vc.stylesheet.coverage.ICoverageStatistics;
 import org.x2vc.stylesheet.coverage.ICoverageTraceAnalyzer;
+import org.x2vc.stylesheet.coverage.ILineCoverage;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.io.Files;
 import com.google.inject.Inject;
@@ -57,6 +59,7 @@ public class ReportGeneratorTask extends AbstractTask implements IReportGenerato
 			final ImmutableSet<IVulnerabilityCandidate> vulnerabilityCandidates = this.vulnerabilityCandidateCollector
 				.get(stylesheetURI);
 			final ICoverageStatistics coverageStatistics = this.coverageTraceAnalyzer.getStatistics(stylesheetURI);
+			final ImmutableList<ILineCoverage> codeCoverage = this.coverageTraceAnalyzer.getCodeCoverage(stylesheetURI);
 
 			final Object basename = Files.getNameWithoutExtension(this.getXSLTFile().getName());
 			final File outputFile = new File(this.getXSLTFile().getParentFile(),
@@ -67,7 +70,7 @@ public class ReportGeneratorTask extends AbstractTask implements IReportGenerato
 					this.getXSLTFile(), outputFile);
 
 			final IVulnerabilityReport report = this.analyzer.consolidateResults(stylesheetURI,
-					vulnerabilityCandidates, coverageStatistics);
+					vulnerabilityCandidates, coverageStatistics, codeCoverage);
 
 			this.reportWriter.write(report, outputFile);
 			this.callback.accept(true);

@@ -26,6 +26,7 @@
 			<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
 			<link rel="stylesheet" type="text/css" href=".x2vc/css/main.css" />
 			<link rel="stylesheet" type="text/css" href=".x2vc/css/prettify.css" />
+			<link rel="stylesheet" type="text/css" href=".x2vc/css/x2vc.css" />
 			<script type="text/javascript" src=".x2vc/js/prettify.js"></script>
 		</head>
 	</xsl:template>
@@ -54,6 +55,7 @@
 						</header>
 						<xsl:call-template name="header-info" />
 						<xsl:apply-templates select="sections/section" mode="content"/>
+						<xsl:apply-templates select="codeCoverage"/>
 					</section>
 				</div>
 			</div>
@@ -86,7 +88,9 @@
 
 	<xsl:template match="coverage">
 		<p>
-			The following table gives an overview of the coverage achieved by the check.
+			The following table gives an overview of the coverage achieved by the check. A more detailed
+			view on the parts of the stylesheet source code that have been covered can be obtained from the
+			<a href="#codeCoverage">code coverage section</a> at the end of the report.
 		</p>
 		<table>
 			<thead>
@@ -218,6 +222,28 @@
 		</dl>
 	</xsl:template>
 
+	<xsl:template match="codeCoverage">
+		<h2 id="codeCoverage">Stylesheet Code Coverage</h2>
+		<pre>
+			<code class="prettyprint">
+				<xsl:apply-templates select="line"/>
+			</code>
+		</pre>
+	</xsl:template>
+
+	<xsl:template match="line">
+		<span>
+			<xsl:attribute name="class">
+				<xsl:choose>
+				<xsl:when test="@coverage='FULL'">coverage-full</xsl:when>
+				<xsl:when test="@coverage='PARTIAL'">coverage-partial</xsl:when>
+				<xsl:when test="@coverage='NONE'">coverage-none</xsl:when>
+				</xsl:choose>
+			</xsl:attribute>
+			<xsl:value-of select="text()" />
+		</span>
+	</xsl:template>
+
 	<xsl:template name="sidebar">
 		<div id="sidebar">
 			<div class="inner">
@@ -227,6 +253,9 @@
 					</header>
 					<ul>
 						<xsl:apply-templates select="sections/section" mode="toc"/>
+						<li>
+							<a href="#codeCoverage">Code Coverage</a>
+						</li>
 					</ul>
 				</nav>
 				<footer id="footer">

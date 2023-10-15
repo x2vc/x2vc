@@ -23,9 +23,11 @@ import org.x2vc.report.VulnerabilityReport.Builder;
 import org.x2vc.schema.ISchemaManager;
 import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.stylesheet.coverage.ICoverageStatistics;
+import org.x2vc.stylesheet.coverage.ILineCoverage;
 import org.x2vc.xml.document.IDocumentModifier;
 import org.x2vc.xml.document.IXMLDocumentContainer;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
@@ -173,7 +175,7 @@ public class DocumentAnalyzer implements IDocumentAnalyzer {
 
 	@Override
 	public IVulnerabilityReport consolidateResults(URI stylesheetURI, Set<IVulnerabilityCandidate> candidates,
-			ICoverageStatistics coverageStatistics) {
+			ICoverageStatistics coverageStatistics, ImmutableList<ILineCoverage> codeCoverage) {
 
 		// obtain the schema reference
 		final IXMLSchema schema = this.schemaManager.getSchema(stylesheetURI);
@@ -185,7 +187,8 @@ public class DocumentAnalyzer implements IDocumentAnalyzer {
 
 		// start building report
 		final Builder builder = VulnerabilityReport.builder(stylesheetURI)
-			.withCoverageStatistics(coverageStatistics);
+			.withCoverageStatistics(coverageStatistics)
+			.withCodeCoverage(codeCoverage);
 
 		// process all rules, whether we have vulnerability candidates or not
 		for (final String ruleID : getRuleIDs()) {

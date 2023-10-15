@@ -9,9 +9,11 @@ import org.x2vc.processor.IHTMLDocumentContainer;
 import org.x2vc.report.IVulnerabilityCandidate;
 import org.x2vc.report.IVulnerabilityReport;
 import org.x2vc.stylesheet.coverage.ICoverageStatistics;
+import org.x2vc.stylesheet.coverage.ILineCoverage;
 import org.x2vc.xml.document.IDocumentModifier;
 import org.x2vc.xml.document.IXMLDocumentDescriptor;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
 /**
@@ -51,9 +53,10 @@ public interface IDocumentAnalyzer {
 	 * @param stylesheetURI
 	 * @param candidates
 	 * @param coverageStatistics
+	 * @param codeCoverage
 	 * @return a consolidated vulnerability report
 	 */
 	IVulnerabilityReport consolidateResults(URI stylesheetURI, Set<IVulnerabilityCandidate> candidates,
-			ICoverageStatistics coverageStatistics);
+			ICoverageStatistics coverageStatistics, ImmutableList<ILineCoverage> codeCoverage);
 
 }

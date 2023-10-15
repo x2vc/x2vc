@@ -1,6 +1,7 @@
 css/fontawesome-all.min.css
 css/main.css
 css/prettify.css
+css/x2vc.css
 js/breakpoints.min.js
 js/browser.min.js
 js/jquery.min.js

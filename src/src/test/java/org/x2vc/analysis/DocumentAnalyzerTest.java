@@ -27,12 +27,14 @@ import org.x2vc.report.IVulnerabilityReportSection;
 import org.x2vc.schema.ISchemaManager;
 import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.stylesheet.coverage.ICoverageStatistics;
+import org.x2vc.stylesheet.coverage.ILineCoverage;
 import org.x2vc.utilities.URIUtilities;
 import org.x2vc.utilities.URIUtilities.ObjectType;
 import org.x2vc.xml.document.IDocumentModifier;
 import org.x2vc.xml.document.IXMLDocumentContainer;
 import org.x2vc.xml.document.IXMLDocumentDescriptor;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
 @ExtendWith(MockitoExtension.class)
@@ -317,8 +319,9 @@ class DocumentAnalyzerTest {
 
 		final DocumentAnalyzer analyzer = new DocumentAnalyzer(Sets.newSet(rule1, rule2, rule3), this.schemaManager);
 
+		final ImmutableList<ILineCoverage> codeCoverage = mock();
 		final IVulnerabilityReport report = analyzer.consolidateResults(this.stylesheetURI, candidates,
-				mock(ICoverageStatistics.class));
+				mock(ICoverageStatistics.class), codeCoverage);
 
 		assertEquals(this.stylesheetURI, report.getStylesheetURI());
 		assertEquals(List.of(section1a, section1b, section1c, section2a, section3a), report.getSections());

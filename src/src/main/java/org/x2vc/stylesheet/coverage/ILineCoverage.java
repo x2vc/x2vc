@@ -12,6 +12,11 @@ public interface ILineCoverage {
 	int getLineNumber();
 
 	/**
+	 * @return the XSLT source code of the line
+	 */
+	String getContents();
+
+	/**
 	 * @return the coverage status
 	 */
 	CoverageStatus getCoverage();
