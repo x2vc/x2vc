@@ -9,8 +9,6 @@ import org.x2vc.analysis.IAnalyzerRule;
 import org.x2vc.analysis.IDocumentAnalyzer;
 import org.x2vc.process.commands.*;
 import org.x2vc.process.tasks.*;
-import org.x2vc.processor.HTMLDocumentFactory;
-import org.x2vc.processor.IHTMLDocumentFactory;
 import org.x2vc.processor.IXSLTProcessor;
 import org.x2vc.processor.XSLTProcessor;
 import org.x2vc.report.*;
@@ -96,7 +94,6 @@ public class CheckerModule extends AbstractModule {
 			.build(IStaticSchemaAnalysisTaskFactory.class));
 
 		// processor
-		bind(IHTMLDocumentFactory.class).to(HTMLDocumentFactory.class);
 		bind(IXSLTProcessor.class).to(XSLTProcessor.class);
 
 		// report

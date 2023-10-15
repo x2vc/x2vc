@@ -5,16 +5,13 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.net.URI;
 import java.util.Objects;
 
-import org.x2vc.stylesheet.coverage.IStylesheetCoverage;
-import org.x2vc.stylesheet.coverage.StylesheetCoverage;
 import org.x2vc.stylesheet.structure.IStylesheetStructure;
 
 import com.google.common.collect.Multimap;
 
 /**
- * This object is a result of the stylesheet preparation process and provides
- * access to the precompiled extended stylesheet and the structure information.
- * It can also be used to create a new coverage statistics object.
+ * This object is a result of the stylesheet preparation process and provides access to the precompiled extended
+ * stylesheet and the structure information. It can also be used to create a new coverage statistics object.
  *
  * This object can be serialized and deserialized to create a local copy.
  */
@@ -90,11 +87,6 @@ public class StylesheetInformation implements IStylesheetInformation {
 	@Override
 	public IStylesheetStructure getStructure() {
 		return this.structure;
-	}
-
-	@Override
-	public IStylesheetCoverage createCoverageStatistics() {
-		return new StylesheetCoverage(this.structure);
 	}
 
 }

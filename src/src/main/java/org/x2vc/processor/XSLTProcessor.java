@@ -10,7 +10,6 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.x2vc.processor.IHTMLDocumentFactory.Builder;
 import org.x2vc.schema.ISchemaManager;
 import org.x2vc.schema.structure.IStylesheetParameter;
 import org.x2vc.schema.structure.IXMLSchema;
@@ -63,16 +62,13 @@ public class XSLTProcessor implements IXSLTProcessor {
 
 	private IStylesheetManager stylesheetManager;
 	private ISchemaManager schemaManager;
-	private IHTMLDocumentFactory documentFactory;
 	private Integer cacheSize;
 
 	@Inject
 	XSLTProcessor(IStylesheetManager stylesheetManager, ISchemaManager schemaManager,
-			IHTMLDocumentFactory documentFactory,
 			@TypesafeConfig("x2vc.stylesheet.compiled.cachesize") Integer cacheSize) {
 		this.stylesheetManager = stylesheetManager;
 		this.schemaManager = schemaManager;
-		this.documentFactory = documentFactory;
 		this.cacheSize = cacheSize;
 	}
 
@@ -89,7 +85,7 @@ public class XSLTProcessor implements IXSLTProcessor {
 	@Override
 	public IHTMLDocumentContainer processDocument(IXMLDocumentContainer xmlDocument) {
 		logger.traceEntry();
-		final Builder builder = this.documentFactory.newBuilder(xmlDocument);
+		final HTMLDocumentContainer.Builder builder = HTMLDocumentContainer.builder(xmlDocument);
 		ProcessorCacheEntry cacheEntry = null;
 		try {
 			cacheEntry = this.processorCacheSupplier.get().get(CacheKey.fromXMLDocumentContainer(xmlDocument));

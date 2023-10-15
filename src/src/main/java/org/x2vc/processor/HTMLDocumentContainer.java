@@ -2,13 +2,11 @@ package org.x2vc.processor;
 
 import static com.google.common.base.Preconditions.checkArgument;
 
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-import org.x2vc.stylesheet.IStylesheetManager;
-import org.x2vc.stylesheet.coverage.IStylesheetCoverage;
 import org.x2vc.xml.document.IXMLDocumentContainer;
 
 import com.google.common.collect.ImmutableList;
@@ -18,23 +16,18 @@ import net.sf.saxon.s9api.SaxonApiException;
 /**
  * Standard implementation of {@link IHTMLDocumentContainer}.
  */
-public class HTMLDocumentContainer implements IHTMLDocumentContainer {
+public final class HTMLDocumentContainer implements IHTMLDocumentContainer {
 
-	private static final Logger logger = LogManager.getLogger();
-	private IStylesheetManager stylesheetManager;
-
-	private IXMLDocumentContainer source;
-	private String htmlDocument;
-	private SaxonApiException compilationError;
-	private SaxonApiException processingError;
-	private ImmutableList<ITraceEvent> traceEvents;
-	private IStylesheetCoverage coverage;
-	private UUID documentTraceID;
+	private final IXMLDocumentContainer source;
+	private final String htmlDocument;
+	private final Optional<SaxonApiException> compilationError;
+	private final Optional<SaxonApiException> processingError;
+	private final ImmutableList<ITraceEvent> traceEvents;
+	private final UUID documentTraceID;
 
 	/**
-	 * Internal constructor - use an injected {@link IHTMLDocumentFactory} to create a new document container.
+	 * Internal constructor - use {@link #builder(IXMLDocumentContainer)} to create a new document container.
 	 *
-	 * @param stylesheetManager
 	 * @param source
 	 * @param htmlDocument
 	 * @param compilationError
@@ -42,10 +35,9 @@ public class HTMLDocumentContainer implements IHTMLDocumentContainer {
 	 * @param traceEvents
 	 * @param documentTraceID
 	 */
-	HTMLDocumentContainer(IStylesheetManager stylesheetManager, IXMLDocumentContainer source, String htmlDocument,
+	HTMLDocumentContainer(IXMLDocumentContainer source, String htmlDocument,
 			SaxonApiException compilationError, SaxonApiException processingError,
 			ImmutableList<ITraceEvent> traceEvents, UUID documentTraceID) {
-		this.stylesheetManager = stylesheetManager;
 		// we can either have a result document or error conditions, but not both
 		if (htmlDocument == null) {
 			checkArgument((compilationError != null) || (processingError != null));
@@ -54,8 +46,8 @@ public class HTMLDocumentContainer implements IHTMLDocumentContainer {
 		}
 		this.source = source;
 		this.htmlDocument = htmlDocument;
-		this.compilationError = compilationError;
-		this.processingError = processingError;
+		this.compilationError = Optional.ofNullable(compilationError);
+		this.processingError = Optional.ofNullable(processingError);
 		this.traceEvents = traceEvents;
 		this.documentTraceID = documentTraceID;
 	}
@@ -72,12 +64,12 @@ public class HTMLDocumentContainer implements IHTMLDocumentContainer {
 
 	@Override
 	public Optional<SaxonApiException> getCompilationError() {
-		return Optional.ofNullable(this.compilationError);
+		return this.compilationError;
 	}
 
 	@Override
 	public Optional<SaxonApiException> getProcessingError() {
-		return Optional.ofNullable(this.processingError);
+		return this.processingError;
 	}
 
 	@Override
@@ -96,32 +88,122 @@ public class HTMLDocumentContainer implements IHTMLDocumentContainer {
 	}
 
 	@Override
-	public Optional<IStylesheetCoverage> getCoverage() {
-		if ((this.traceEvents != null) && (this.coverage == null)) {
-			buildCoverage();
+	public int hashCode() {
+		return Objects.hash(this.compilationError, this.documentTraceID, this.htmlDocument, this.processingError,
+				this.source, this.traceEvents);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
 		}
-		return Optional.ofNullable(this.coverage);
+		if (!(obj instanceof HTMLDocumentContainer)) {
+			return false;
+		}
+		final HTMLDocumentContainer other = (HTMLDocumentContainer) obj;
+		return Objects.equals(this.compilationError, other.compilationError)
+				&& Objects.equals(this.documentTraceID, other.documentTraceID)
+				&& Objects.equals(this.htmlDocument, other.htmlDocument)
+				&& Objects.equals(this.processingError, other.processingError)
+				&& Objects.equals(this.source, other.source)
+				&& Objects.equals(this.traceEvents, other.traceEvents);
 	}
 
 	/**
-	 * Fills a {@link IStylesheetCoverage} object with the information supplied by the trace events.
+	 * Creates a new builder to construct a {@link IHTMLDocumentContainer} instance.
+	 *
+	 * @param source
+	 * @return the builder
 	 */
-	private void buildCoverage() {
-		logger.traceEntry();
-		// TODO XSLT Coverage: rebuild after structure extraction changes
-//		final IStylesheetInformation stylesheet = this.stylesheetManager.get(this.source.getStylesheeURI());
-//		final IStylesheetStructure structure = stylesheet.getStructure();
-//		this.coverage = stylesheet.createCoverageStatistics();
-//		for (final ITraceEvent traceEvent : this.traceEvents) {
-//			final int traceID = traceEvent.getTraceID();
-//			final IXSLTDirectiveNode directive = structure.getDirectiveByTraceID(traceID);
-//			if (!directive.getName().equals(traceEvent.getElementName())) {
-//				logger.warn("Trace event element name {} differs from structure element name {}",
-//						traceEvent.getElementName(), directive.getName());
-//			}
-//			this.coverage.recordElementCoverage(traceID, Maps.newHashMap());
-//		}
-		logger.traceExit();
+	public static Builder builder(IXMLDocumentContainer source) {
+		return new Builder(source);
+	}
+
+	/**
+	 * A builder to create new {@link IHTMLDocumentContainer} instances.
+	 */
+	public static final class Builder {
+		private IXMLDocumentContainer source;
+		private String htmlDocument;
+		private SaxonApiException compilationError;
+		private SaxonApiException processingError;
+		private ImmutableList<ITraceEvent> traceEvents;
+		private UUID documentTraceID;
+
+		/**
+		 * @param stylesheetManager
+		 * @param source
+		 */
+		Builder(IXMLDocumentContainer source) {
+			this.source = source;
+		}
+
+		/**
+		 * Adds a HTML document to the builder
+		 *
+		 * @param htmlDocument field to set
+		 * @return builder
+		 */
+		public Builder withHtmlDocument(String htmlDocument) {
+			this.htmlDocument = htmlDocument;
+			return this;
+		}
+
+		/**
+		 * Sets a compilation error on the builder.
+		 *
+		 * @param compilationError field to set
+		 * @return builder
+		 */
+		public Builder withCompilationError(SaxonApiException compilationError) {
+			this.compilationError = compilationError;
+			return this;
+		}
+
+		/**
+		 * Sets a processing error on the builder.
+		 *
+		 * @param processingError field to set
+		 * @return builder
+		 */
+		public Builder withProcessingError(SaxonApiException processingError) {
+			this.processingError = processingError;
+			return this;
+		}
+
+		/**
+		 * Adds trace events to the builder.
+		 *
+		 * @param traceEvents
+		 * @return builder
+		 */
+		public Builder withTraceEvents(List<ITraceEvent> traceEvents) {
+			this.traceEvents = ImmutableList.copyOf(traceEvents);
+			return this;
+		}
+
+		/**
+		 * Adds the document trace ID to the builder
+		 *
+		 * @param documentTraceID
+		 * @return builder
+		 */
+		public Builder withDocumentTraceID(UUID documentTraceID) {
+			this.documentTraceID = documentTraceID;
+			return this;
+		}
+
+		/**
+		 * Builder method of the builder.
+		 *
+		 * @return built class
+		 */
+		public IHTMLDocumentContainer build() {
+			return new HTMLDocumentContainer(this.source, this.htmlDocument,
+					this.compilationError, this.processingError, this.traceEvents, this.documentTraceID);
+		}
+
 	}
 
 }

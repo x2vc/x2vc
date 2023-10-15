@@ -20,7 +20,6 @@ import org.x2vc.analysis.IDocumentAnalyzer;
 import org.x2vc.process.commands.IProcessDirectorFactory;
 import org.x2vc.process.commands.IProcessDirectorManager;
 import org.x2vc.process.tasks.*;
-import org.x2vc.processor.IHTMLDocumentFactory;
 import org.x2vc.processor.IXSLTProcessor;
 import org.x2vc.report.IProcessingMessageCollector;
 import org.x2vc.report.IReportWriter;
@@ -80,8 +79,6 @@ class CheckerModuleTest {
 	private Provider<ISchemaExplorationTaskFactory> schemaExplorationTaskFactoryProvider;
 	@Inject
 	private Provider<IStaticSchemaAnalysisTaskFactory> staticSchemaAnalysisTaskFactoryProvider;
-	@Inject
-	private Provider<IHTMLDocumentFactory> htmlDocumentFactoryProvider;
 	@Inject
 	private Provider<IXSLTProcessor> xsltProcessorProvider;
 	@Inject
@@ -241,11 +238,6 @@ class CheckerModuleTest {
 		final IStaticSchemaAnalysisTaskFactory factory = this.staticSchemaAnalysisTaskFactoryProvider.get();
 		assertNotNull(factory);
 		assertNotNull(factory.create(mock(File.class), mock(Consumer.class), mock(BiConsumer.class)));
-	}
-
-	@Test
-	void testHTMLDocumentFactory() {
-		assertNotNull(this.htmlDocumentFactoryProvider.get());
 	}
 
 	@Test

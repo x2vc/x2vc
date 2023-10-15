@@ -3,7 +3,6 @@ package org.x2vc.processor;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.x2vc.stylesheet.coverage.IStylesheetCoverage;
 import org.x2vc.xml.document.IXMLDocumentContainer;
 
 import com.google.common.collect.ImmutableList;
@@ -55,10 +54,5 @@ public interface IHTMLDocumentContainer {
 	 * @return the trace ID used for the document root node
 	 */
 	UUID getDocumentTraceID();
-
-	/**
-	 * @return the coverage information collected during the execution.
-	 */
-	Optional<IStylesheetCoverage> getCoverage();
 
 }

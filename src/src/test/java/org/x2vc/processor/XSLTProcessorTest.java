@@ -47,8 +47,6 @@ class XSLTProcessorTest {
 	@Mock
 	private IStylesheetInformation stylesheet;
 
-	private IHTMLDocumentFactory documentFactory;
-
 	@Mock
 	private IXMLDocumentContainer xmlDocument;
 
@@ -69,8 +67,7 @@ class XSLTProcessorTest {
 	 */
 	@BeforeEach
 	void setUp() throws Exception {
-		this.documentFactory = new HTMLDocumentFactory(this.stylesheetManager);
-		this.wrapper = new XSLTProcessor(this.stylesheetManager, this.schemaManager, this.documentFactory, 25);
+		this.wrapper = new XSLTProcessor(this.stylesheetManager, this.schemaManager, 25);
 
 		this.stylesheetURI = URIUtilities.makeMemoryURI(ObjectType.STYLESHEET, "foo");
 		lenient().when(this.xmlDocument.getStylesheeURI()).thenReturn(this.stylesheetURI);
