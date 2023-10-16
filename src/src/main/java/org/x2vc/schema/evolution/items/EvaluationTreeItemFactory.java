@@ -19,6 +19,10 @@ import net.sf.saxon.expr.instruct.*;
 import net.sf.saxon.expr.sort.DocumentSorter;
 import net.sf.saxon.expr.sort.SortExpression;
 import net.sf.saxon.functions.IntegratedFunctionCall;
+import net.sf.saxon.functions.SystemFunction;
+import net.sf.saxon.om.AxisInfo;
+import net.sf.saxon.om.NamespaceUri;
+import net.sf.saxon.om.StructuredQName;
 import net.sf.saxon.pattern.*;
 
 /**
@@ -45,6 +49,7 @@ public class EvaluationTreeItemFactory implements IEvaluationTreeItemFactory {
 	public IEvaluationTreeItem createItemForExpression(Expression expression) {
 		checkNotNull(expression);
 		logger.traceEntry("for {} {}", expression.getClass().getSimpleName(), expression);
+
 		IEvaluationTreeItem newItem = null;
 		// ===== Expression subclass net.sf.saxon.expr.Expression (abstract) =====
 		// Expression subclass ..net.sf.saxon.expr.Assignation (abstract)
@@ -80,7 +85,7 @@ public class EvaluationTreeItemFactory implements IEvaluationTreeItemFactory {
 					booleanExpression);
 		} else if (expression instanceof final FilterExpression filterExpression) {
 			// Expression subclass ....net.sf.saxon.expr.FilterExpression
-			newItem = new FilterExpressionItem(this.schema, this.coordinator, filterExpression);
+			newItem = createItemForFilterExpression(filterExpression);
 		} else if (expression instanceof final GeneralComparison generalComparison) {
 			// Expression subclass ....net.sf.saxon.expr.GeneralComparison (abstract)
 			// Expression subclass ......net.sf.saxon.expr.GeneralComparison20
@@ -331,6 +336,101 @@ public class EvaluationTreeItemFactory implements IEvaluationTreeItemFactory {
 			newItem = new UnsupportedExpressionItem(this.schema, this.coordinator, expression);
 		}
 		this.uninitializedItems.add(newItem);
+		return logger.traceExit(newItem);
+	}
+
+	/**
+	 * @param filterExpression
+	 * @return
+	 */
+	protected IEvaluationTreeItem createItemForFilterExpression(FilterExpression target) {
+		logger.traceEntry("for FilterExpression {}", target);
+
+		// prepare a simple default value first...
+		IEvaluationTreeItem newItem;
+		newItem = new FilterExpressionItem(this.schema, this.coordinator, target);
+
+		// Unfortunately FilterExpressions require special handling...
+		// There is a common expression "//foo/bar" that leads an expression that looks a bit weird at first glance.
+		// It is transformed into "descendant::element(Q{}bar)[parent::element(Q{}foo)]" (which is correct: "find any
+		// descendant element bar that has a parant foo"). However, for these cases, we need to reverse the order of
+		// operations: evaluate the filter expression first to get the parent, then the base expression to get the
+		// descendant element. We effectively need to transform this special case into
+		// "descendant::element(Q{}foo)/child::element(Q{}bar)". This would be represented by a SlashExpression
+
+		// Things get even more complicated because both the left-hand and the right-hand side element might be wrapped
+		// in an exists() system function call, which has to be taken into account as well: both
+		// "descendant::element(Q{}bar)[exists(parent::element(Q{}foo)]" and
+		// "exists(descendant::element(Q{}bar)[exists(parent::element(Q{}foo))])" have to become
+		// "descendant::element(Q{}foo)/child::element(Q{}bar)[exists(.)]".
+
+		final Expression originalBaseExpression = target.getBase();
+		final Expression originalFilterExpression = target.getFilter();
+
+		SystemFunction wrappingTargetFunction = null;
+
+		Expression baseExpression = originalBaseExpression;
+
+		// check the base expression whether it needs to be unwrapped
+		SystemFunctionCall baseWrappingSystemFunctionCall = null;
+		if (baseExpression instanceof final SystemFunctionCall sfc) {
+			final StructuredQName functionName = sfc.getFunctionName();
+			if (functionName.getNamespaceUri().equals(NamespaceUri.FN)
+					&& functionName.getLocalPart().equals("exists")) {
+				baseWrappingSystemFunctionCall = sfc;
+				baseExpression = baseWrappingSystemFunctionCall.getArg(0);
+				wrappingTargetFunction = baseWrappingSystemFunctionCall.getTargetFunction();
+			}
+		}
+
+		// check base expression whether it is a descendant search
+		if (baseExpression instanceof final AxisExpression baseAxisExpression
+				&& ((baseAxisExpression.getAxis() == AxisInfo.DESCENDANT)
+						|| (baseAxisExpression.getAxis() == AxisInfo.DESCENDANT_OR_SELF))) {
+
+			// check the filter expression whether it needs to be unwrapped
+			Expression filterExpression = originalFilterExpression;
+			SystemFunctionCall filterWrappingSystemFunctionCall = null;
+			if (filterExpression instanceof final SystemFunctionCall sfc) {
+				final StructuredQName functionName = sfc.getFunctionName();
+				if (functionName.getNamespaceUri().equals(NamespaceUri.FN)
+						&& functionName.getLocalPart().equals("exists")) {
+					filterWrappingSystemFunctionCall = sfc;
+					filterExpression = filterWrappingSystemFunctionCall.getArg(0);
+					wrappingTargetFunction = filterWrappingSystemFunctionCall.getTargetFunction();
+				}
+			}
+
+			// see if the filter expression ascends the parent axis
+			if (filterExpression instanceof final AxisExpression filterAxisExpression
+					&& (filterAxisExpression.getAxis() == AxisInfo.PARENT)) {
+
+				// looks like it - so let's reformat this
+
+				// create an AxisExpression for the first step
+				final Expression firstStepExpression = new AxisExpression(baseAxisExpression.getAxis(),
+						filterAxisExpression.getNodeTest());
+
+				// create an AxisExpression for the second step
+				Expression secondStepExpression = new AxisExpression(AxisInfo.CHILD,
+						baseAxisExpression.getNodeTest());
+
+				// wrap if required
+				if (wrappingTargetFunction != null) {
+					secondStepExpression = new FilterExpression(secondStepExpression,
+							new SystemFunctionCall(wrappingTargetFunction,
+									new Expression[] { new ContextItemExpression() }));
+				}
+
+				// create slash expression
+				final SlashExpression slashExpression = new SlashExpression(firstStepExpression, secondStepExpression);
+
+				logger.debug("replaced expression {} with {}", target, slashExpression);
+
+				newItem = createItemForExpression(slashExpression);
+			}
+		}
+
 		return logger.traceExit(newItem);
 	}
 
