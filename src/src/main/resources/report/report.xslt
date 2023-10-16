@@ -65,6 +65,7 @@
 	</xsl:template>
 
 	<xsl:template name="header-info">
+		<h2 id="overview">Overview</h2>
 		<p>
 			The file
 			<a href="{@stylesheetURI}">
@@ -76,16 +77,46 @@
 				<xsl:when test="@totalIssues=0">
 					No issues were found.
 				</xsl:when>
-				<xsl:when test="@totalIssues=1">
-					One issue was found.
-				</xsl:when>
 				<xsl:otherwise>
-					<xsl:value-of select="@totalIssues" /> issues were found.
+					The following issues were found:
+					<table>
+						<thead>
+							<tr>
+								<th colspan="2">Vulnerability Class</th>
+								<th>Issues</th>
+							</tr>
+						</thead>
+						<tbody>
+							<xsl:apply-templates select="sections/section" mode="overview" />
+							<tr>
+								<th colspan="2">Total</th>
+								<th>
+									<xsl:value-of select="@totalIssues" />
+								</th>
+							</tr>
+						</tbody>
+					</table>
 				</xsl:otherwise>
 			</xsl:choose>
 		</p>
-		<xsl:apply-templates select="coverage"/>
+		<xsl:apply-templates select="coverage" />
 	</xsl:template>
+
+	<xsl:template match="section" mode="overview">
+	<xsl:if test="count(issues/issue)>0">
+		<tr>
+			<td>
+				<xsl:value-of select="ruleID" />
+			</td>
+			<td>
+				<xsl:value-of select="heading" />
+			</td>
+			<td>
+				<xsl:value-of select="count(issues/issue)" />
+			</td>
+		</tr>
+	</xsl:if>
+</xsl:template>
 
 	<xsl:template match="coverage">
 		<p>
@@ -287,6 +318,9 @@
 						<h2>Contents</h2>
 					</header>
 					<ul>
+						<li>
+							<a href="#overview">Overview</a>
+						</li>
 						<xsl:apply-templates select="sections/section" mode="toc"/>
 						<li>
 							<a href="#codeCoverage">Code Coverage</a>
