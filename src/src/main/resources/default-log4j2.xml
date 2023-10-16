@@ -29,7 +29,7 @@
 		</Routing>
 		<ReportCollector name="Report">
 			<PatternLayout>
-				<Pattern>%date{HH:mm:ss.SSS} %level{length=1} [%tn] %30.30logger{1.1.*}#%-20.20M: %msg%n%throwable</Pattern>
+				<Pattern>%msg</Pattern>
 			</PatternLayout>
 		</ReportCollector>
 	</Appenders>
