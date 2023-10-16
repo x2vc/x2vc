@@ -1,21 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="warn" monitorInterval="30">
 
-    <Properties>
-        <Property name="LOG_PATTERN">%date{HH:mm:ss.SSS} %level{WARN=WRN, DEBUG=DBG, ERROR=ERR, TRACE=TRC, INFO=INF} [%tn] %30.30logger{1.1.*}#%-25.25M: %msg%n%throwable</Property>
-    </Properties>
+	<Appenders>
+		<Console name="Console" target="SYSTEM_OUT" follow="true">
+			<PatternLayout>
+				<Pattern>%date{HH:mm:ss.SSS} %level{length=1} [%tn] %30.30logger{1.1.*}#%-20.20M: %msg%n%throwable</Pattern>
+<!-- 			<Pattern>%date{HH:mm:ss.SSS} [%tn] %level{length=1}: %msg%n%throwable</Pattern> -->
+			</PatternLayout>
+		</Console>
+<!--
+		<RollingFile name="Rolling" fileName="log4j-execution.log" filePattern="log4j-execution.%i.log">
+			<PatternLayout>
+				<Pattern>%date{HH:mm:ss.SSS} %level{length=1} [%tn] %30.30logger{1.1.*}#%-20.20M: %msg%n%throwable</Pattern>
+			</PatternLayout>
+			<Policies>
+				<OnStartupTriggeringPolicy />
+			</Policies>
+			<DefaultRolloverStrategy fileIndex="min" max="9" />
+		</RollingFile>
+-->
+	</Appenders>
 
-    <Appenders>
-        <Console name="Console" target="SYSTEM_OUT" follow="true">
-            <PatternLayout pattern="${LOG_PATTERN}"/>
-        </Console>
-    </Appenders>
-
-    <Loggers>
-        <Root level="trace">
-            <AppenderRef ref="Console"/>
-        </Root>
-
-    </Loggers>
+	<Loggers>
+		<Root level="trace">
+			<AppenderRef ref="Console" />
+		</Root>
+	</Loggers>
 
 </Configuration>
