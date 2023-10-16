@@ -12,3 +12,43 @@ span.coverage-none {
 	background-color: lightcoral;
 	display: block;
 }
+
+
+td.msg-level {
+	white-space: nowrap;
+}
+
+td.msg-thread {
+	white-space: nowrap;
+}
+
+table tbody tr.msg-fatal {
+	background-color: lightcoral;
+	color: #222;
+}
+
+table tbody tr.msg-error {
+	background-color: lightcoral;
+	color: #222;
+}
+
+table tbody tr.msg-warn {
+	background-color: lightgoldenrodyellow;
+	color: #222;
+}
+
+table tbody tr.msg-info {
+	background-color: palegreen;
+	color: #222;
+}
+
+table tbody tr.msg-debug{
+	background-color: lightgray;
+	color: #222;
+}
+
+table tbody tr.msg-trace {
+	background-color: lightgray;
+	color: #222;
+}
+

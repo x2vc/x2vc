@@ -3,6 +3,7 @@ package org.x2vc.analysis;
 import static com.google.common.base.Preconditions.checkArgument;
 
 import java.net.URI;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -24,6 +25,7 @@ import org.x2vc.schema.ISchemaManager;
 import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.stylesheet.coverage.ICoverageStatistics;
 import org.x2vc.stylesheet.coverage.ILineCoverage;
+import org.x2vc.utilities.ReportCollectorAppender;
 import org.x2vc.xml.document.IDocumentModifier;
 import org.x2vc.xml.document.IXMLDocumentContainer;
 
@@ -188,7 +190,9 @@ public class DocumentAnalyzer implements IDocumentAnalyzer {
 		// start building report
 		final Builder builder = VulnerabilityReport.builder(stylesheetURI)
 			.withCoverageStatistics(coverageStatistics)
-			.withCodeCoverage(codeCoverage);
+			.withCodeCoverage(codeCoverage)
+			.addMessages(ReportCollectorAppender
+				.removeCollectedMessage(Paths.get(stylesheetURI).getFileName().toString()));
 
 		// process all rules, whether we have vulnerability candidates or not
 		for (final String ruleID : getRuleIDs()) {

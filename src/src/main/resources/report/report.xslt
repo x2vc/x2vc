@@ -56,6 +56,7 @@
 						<xsl:call-template name="header-info" />
 						<xsl:apply-templates select="sections/section" mode="content"/>
 						<xsl:apply-templates select="codeCoverage"/>
+						<xsl:apply-templates select="messages"/>
 					</section>
 				</div>
 			</div>
@@ -244,6 +245,40 @@
 		</span>
 	</xsl:template>
 
+	<xsl:template match="messages">
+		<h2 id="logMessages">Analyzer Log Messages</h2>
+		<table>
+			<thead>
+				<tr>
+					<th>Level</th>
+					<th>Thread</th>
+					<th>Message</th>
+				</tr>
+			</thead>
+			<tbody>
+				<xsl:apply-templates select="message" />
+			</tbody>
+		</table>
+	</xsl:template>
+
+	<xsl:template match="message">
+		<tr>
+			<xsl:attribute name="class">
+				<xsl:choose>
+				<xsl:when test="@level='FATAL'">msg-fatal</xsl:when>
+				<xsl:when test="@level='ERROR'">msg-error</xsl:when>
+				<xsl:when test="@level='WARN'">msg-warn</xsl:when>
+				<xsl:when test="@level='INFO'">msg-info</xsl:when>
+				<xsl:when test="@level='DEBUG'">msg-debug</xsl:when>
+				<xsl:when test="@level='TRACE'">msg-trace</xsl:when>
+				</xsl:choose>
+			</xsl:attribute>
+			<td class="msg-level"><xsl:value-of select="@level" /></td>
+			<td class="msg-thread"><xsl:value-of select="@thread" /></td>
+			<td><xsl:value-of select="text()" /></td>
+		</tr>
+	</xsl:template>
+
 	<xsl:template name="sidebar">
 		<div id="sidebar">
 			<div class="inner">
@@ -255,6 +290,9 @@
 						<xsl:apply-templates select="sections/section" mode="toc"/>
 						<li>
 							<a href="#codeCoverage">Code Coverage</a>
+						</li>
+						<li>
+							<a href="#logMessages">Log Messages</a>
 						</li>
 					</ul>
 				</nav>

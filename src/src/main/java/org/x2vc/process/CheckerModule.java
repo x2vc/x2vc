@@ -11,7 +11,10 @@ import org.x2vc.process.commands.*;
 import org.x2vc.process.tasks.*;
 import org.x2vc.processor.IXSLTProcessor;
 import org.x2vc.processor.XSLTProcessor;
-import org.x2vc.report.*;
+import org.x2vc.report.IReportWriter;
+import org.x2vc.report.IVulnerabilityCandidateCollector;
+import org.x2vc.report.ReportWriter;
+import org.x2vc.report.VulnerabilityCandidateCollector;
 import org.x2vc.schema.IInitialSchemaGenerator;
 import org.x2vc.schema.ISchemaManager;
 import org.x2vc.schema.InitialSchemaGenerator;
@@ -99,7 +102,6 @@ public class CheckerModule extends AbstractModule {
 		bind(IXSLTProcessor.class).to(XSLTProcessor.class);
 
 		// report
-		bind(IProcessingMessageCollector.class).to(ProcessingMessageCollector.class);
 		bind(IReportWriter.class).to(ReportWriter.class);
 		bind(IVulnerabilityCandidateCollector.class).to(VulnerabilityCandidateCollector.class);
 

@@ -21,7 +21,6 @@ import org.x2vc.process.commands.IProcessDirectorFactory;
 import org.x2vc.process.commands.IProcessDirectorManager;
 import org.x2vc.process.tasks.*;
 import org.x2vc.processor.IXSLTProcessor;
-import org.x2vc.report.IProcessingMessageCollector;
 import org.x2vc.report.IReportWriter;
 import org.x2vc.report.IVulnerabilityCandidateCollector;
 import org.x2vc.schema.IInitialSchemaGenerator;
@@ -82,8 +81,6 @@ class CheckerModuleTest {
 	private Provider<IStaticSchemaAnalysisTaskFactory> staticSchemaAnalysisTaskFactoryProvider;
 	@Inject
 	private Provider<IXSLTProcessor> xsltProcessorProvider;
-	@Inject
-	private Provider<IProcessingMessageCollector> processingMessageCollectorProvider;
 	@Inject
 	private Provider<IReportWriter> reportWriterProvider;
 	@Inject
@@ -246,11 +243,6 @@ class CheckerModuleTest {
 	@Test
 	void testXSLTProcessor() {
 		assertNotNull(this.xsltProcessorProvider.get());
-	}
-
-	@Test
-	void testProcessingMessageCollector() {
-		assertNotNull(this.processingMessageCollectorProvider.get());
 	}
 
 	@Test

@@ -6,7 +6,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.same;
 import static org.mockito.Mockito.*;
 
+import java.io.File;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -273,9 +275,14 @@ class DocumentAnalyzerTest {
 
 	/**
 	 * Test method for {@link org.x2vc.analysis.DocumentAnalyzer#consolidateResults(java.net.URI, java.util.Set)}.
+	 *
+	 * @throws URISyntaxException
 	 */
 	@Test
-	void testConsolidate() {
+	void testConsolidate() throws URISyntaxException {
+		this.stylesheetURI = new File(
+				"src/test/resources/data/org.x2vc.analysis.DocumentAnalyzer/SampleStylesheet.xslt")
+			.toURI();
 
 		final IXMLSchema schema = mock();
 		when(this.schemaManager.getSchema(this.stylesheetURI)).thenReturn(schema);
