@@ -1,6 +1,5 @@
 package org.x2vc.processor;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -10,6 +9,8 @@ import org.x2vc.schema.structure.IExtensionFunction;
 import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.xml.document.IExtensionFunctionResult;
 import org.x2vc.xml.document.IXMLDocumentDescriptor;
+
+import com.google.common.collect.Maps;
 
 import net.sf.saxon.s9api.*;
 
@@ -22,7 +23,7 @@ public class ExtensionFunctionHandler implements IExtensionFunctionHandler {
 
 	private IXMLSchema schema;
 
-	private Map<Long, Map<UUID, IExtensionFunctionResult>> storedResults = new HashMap<>();
+	private Map<Long, Map<UUID, IExtensionFunctionResult>> storedResults = Maps.newConcurrentMap();
 
 	/**
 	 * Default constructor.
@@ -58,7 +59,7 @@ public class ExtensionFunctionHandler implements IExtensionFunctionHandler {
 	public void storeFunctionResults(IXMLDocumentDescriptor descriptor) {
 		logger.traceEntry();
 		final long threadID = Thread.currentThread().threadId();
-		final Map<UUID, IExtensionFunctionResult> results = new HashMap<>();
+		final Map<UUID, IExtensionFunctionResult> results = Maps.newConcurrentMap();
 		for (final IExtensionFunctionResult result : descriptor.getExtensionFunctionResults()) {
 			results.put(result.getFunctionID(), result);
 		}
