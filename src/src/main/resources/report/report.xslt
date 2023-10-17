@@ -146,9 +146,9 @@
 				</tr>
 				<tr>
 					<th></th>
-					<td><xsl:value-of select="format-number(byDirective/fullCoveragePercentage, '##0.00')"/> %</td>
-					<td><xsl:value-of select="format-number(byDirective/partialCoveragePercentage, '##0.00')"/> %</td>
-					<td><xsl:value-of select="format-number(byDirective/noCoveragePercentage, '##0.00')"/> %</td>
+					<td><xsl:value-of select="format-number(byDirective/fullCoveragePercentage, '##0.0')"/> %</td>
+					<td><xsl:value-of select="format-number(byDirective/partialCoveragePercentage, '##0.0')"/> %</td>
+					<td><xsl:value-of select="format-number(byDirective/noCoveragePercentage, '##0.0')"/> %</td>
 					<td>-</td>
 					<td></td>
 				</tr>
@@ -162,10 +162,10 @@
 				</tr>
 				<tr>
 					<th></th>
-					<td><xsl:value-of select="format-number(byLine/fullCoveragePercentage, '##0.00')"/> %</td>
-					<td><xsl:value-of select="format-number(byLine/partialCoveragePercentage, '##0.00')"/> %</td>
-					<td><xsl:value-of select="format-number(byLine/emptyPercentage, '##0.00')"/> %</td>
-					<td><xsl:value-of select="format-number(byLine/noCoveragePercentage, '##0.00')"/> %</td>
+					<td><xsl:value-of select="format-number(byLine/fullCoveragePercentage, '##0.0')"/> %</td>
+					<td><xsl:value-of select="format-number(byLine/partialCoveragePercentage, '##0.0')"/> %</td>
+					<td><xsl:value-of select="format-number(byLine/noCoveragePercentage, '##0.0')"/> %</td>
+					<td><xsl:value-of select="format-number(byLine/emptyPercentage, '##0.0')"/> %</td>
 					<td></td>
 				</tr>
 			</tbody>
