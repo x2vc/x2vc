@@ -87,7 +87,9 @@ public final class XMLElementType extends XMLDataObject implements IElementType 
 		if (this.contentType == ContentType.DATA) {
 			return super.getDataType();
 		} else {
-			throw logger.throwing(new IllegalStateException("DataType is only supported for data elements"));
+			throw logger.throwing(new IllegalStateException(String.format(
+					"DataType is only supported for data elements (current element %s has content type %s)", getID(),
+					this.contentType)));
 		}
 	}
 
@@ -96,7 +98,9 @@ public final class XMLElementType extends XMLDataObject implements IElementType 
 		if (this.contentType == ContentType.DATA) {
 			return super.getMaxLength();
 		} else {
-			throw logger.throwing(new IllegalStateException("DataType is only supported for data elements"));
+			throw logger.throwing(new IllegalStateException(String.format(
+					"DataType is only supported for data elements (current element %s has content type %s)", getID(),
+					this.contentType)));
 		}
 	}
 
@@ -105,7 +109,9 @@ public final class XMLElementType extends XMLDataObject implements IElementType 
 		if (this.contentType == ContentType.DATA) {
 			return super.getMinValue();
 		} else {
-			throw logger.throwing(new IllegalStateException("DataType is only supported for data elements"));
+			throw logger.throwing(new IllegalStateException(String.format(
+					"DataType is only supported for data elements (current element %s has content type %s)", getID(),
+					this.contentType)));
 		}
 	}
 
@@ -114,7 +120,9 @@ public final class XMLElementType extends XMLDataObject implements IElementType 
 		if (this.contentType == ContentType.DATA) {
 			return super.getMaxValue();
 		} else {
-			throw logger.throwing(new IllegalStateException("DataType is only supported for data elements"));
+			throw logger.throwing(new IllegalStateException(String.format(
+					"DataType is only supported for data elements (current element %s has content type %s)", getID(),
+					this.contentType)));
 		}
 	}
 
@@ -123,7 +131,9 @@ public final class XMLElementType extends XMLDataObject implements IElementType 
 		if (this.contentType == ContentType.DATA) {
 			return super.getDiscreteValues();
 		} else {
-			throw logger.throwing(new IllegalStateException("Discrete values are only supported for data elements"));
+			throw logger.throwing(new IllegalStateException(String.format(
+					"Discrete values are only supported for data elements (current element %s has content type %s)",
+					getID(), this.contentType)));
 		}
 	}
 
@@ -132,7 +142,9 @@ public final class XMLElementType extends XMLDataObject implements IElementType 
 		if (this.contentType == ContentType.DATA) {
 			return super.isFixedValueset();
 		} else {
-			throw logger.throwing(new IllegalStateException("Discrete values are only supported for data elements"));
+			throw logger.throwing(new IllegalStateException(String.format(
+					"Discrete values are only supported for data elements (current element %s has content type %s)",
+					getID(), this.contentType)));
 		}
 	}
 
@@ -142,7 +154,9 @@ public final class XMLElementType extends XMLDataObject implements IElementType 
 			return this.elements;
 		} else {
 			throw logger
-				.throwing(new IllegalStateException("Sub-Elements are only supported for element and mixed content"));
+				.throwing(new IllegalStateException(String.format(
+						"Sub-Elements are only supported for element and mixed content (current element %s has content type %s)",
+						getID(), this.contentType)));
 		}
 	}
 
@@ -152,7 +166,9 @@ public final class XMLElementType extends XMLDataObject implements IElementType 
 			return this.elementArrangement;
 		} else {
 			throw logger
-				.throwing(new IllegalStateException("Element arrangement is only supported for element-only elements"));
+				.throwing(new IllegalStateException(String.format(
+						"Element arrangement is only supported for element-only elements (current element %s has content type %s)",
+						getID(), this.contentType)));
 		}
 	}
 
@@ -160,7 +176,9 @@ public final class XMLElementType extends XMLDataObject implements IElementType 
 	public Optional<Boolean> isUserModifiable() {
 		if (this.contentType == ContentType.ELEMENT) {
 			throw logger.throwing(
-					new IllegalStateException("User modification tagging is not supported for element-only elements"));
+					new IllegalStateException(String.format(
+							"User modification tagging is not supported for element-only elements (current element %s has content type %s)",
+							getID(), this.contentType)));
 		} else {
 			return Optional.ofNullable(this.userModifiable);
 		}
