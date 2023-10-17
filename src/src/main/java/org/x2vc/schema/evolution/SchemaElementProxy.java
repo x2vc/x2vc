@@ -209,11 +209,16 @@ public final class SchemaElementProxy implements ISchemaElementProxy {
 	@SuppressWarnings("java:S4738") // Java supplier does not support memoization
 	private transient Supplier<List<ISchemaElementProxy>> subElementSupplier = Suppliers.memoize(() -> {
 		if (isElement()) {
-			return getElementType().orElseThrow().getElements()
-				.stream()
-				.map(SchemaElementProxy::new)
-				.map(ISchemaElementProxy.class::cast)
-				.toList();
+			final IElementType elementType = getElementType().orElseThrow();
+			if (elementType.hasElementContent()) {
+				return elementType.getElements()
+					.stream()
+					.map(SchemaElementProxy::new)
+					.map(ISchemaElementProxy.class::cast)
+					.toList();
+			} else {
+				return List.of();
+			}
 		} else if (isElementModifier()) {
 			return this.getElementModifier().orElseThrow().getSubElements()
 				.stream()
