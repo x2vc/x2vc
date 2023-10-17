@@ -31,7 +31,7 @@
 		</elementType>
 
 		<elementType contentType="ELEMENT" elementArrangement="SEQUENCE" id="c48e4c70-a325-4c0d-8a17-11f9440c4f68">
-			<attribute name="country" dataType="STRING" optional="false" fixedValueset="false" userModifiable="false"
+			<attribute name="country" dataType="STRING" optional="false" fixedValueset="false" userModifiable="true"
 				id="acd2a904-1531-4c78-b207-815b862be5ab" />
 			<comment>name and address, used for shipTo and billTo</comment>
 			<subElement name="name" elementID="bcd654c9-2a3c-476f-97d7-21a805badddc" minOccurrence="1" maxOccurrence="1"

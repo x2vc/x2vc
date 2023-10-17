@@ -15,10 +15,7 @@ import org.jsoup.select.Elements;
 import org.x2vc.report.IVulnerabilityCandidate;
 import org.x2vc.report.VulnerabilityCandidate;
 import org.x2vc.schema.ISchemaManager;
-import org.x2vc.schema.structure.IElementType;
-import org.x2vc.schema.structure.ISchemaObject;
-import org.x2vc.schema.structure.IXMLSchema;
-import org.x2vc.schema.structure.XMLDataType;
+import org.x2vc.schema.structure.*;
 import org.x2vc.xml.document.IDocumentModifier;
 import org.x2vc.xml.document.IXMLDocumentContainer;
 import org.x2vc.xml.value.IValueDescriptor;
@@ -84,23 +81,44 @@ public class DisabledOutputEscapingCheckRule extends AbstractTextRule {
 				// The disable-output-escaping vulnerability only applies to string data output
 				// elements
 				final ISchemaObject schemaObject = schema.getObjectByID(schemaElementID);
-				if ((schemaObject instanceof final IElementType schemaElement)
-						&& (schemaElement.hasDataContent() && schemaElement.getDataType() == XMLDataType.STRING)) {
-					// try to replace the entire element with script element
-					logger.debug("attempt to replace \"{}\" with \"&lt;script&gt;...\" for schema element {}",
-							currentValue,
-							schemaElementID);
-					final AnalyzerRulePayload payload = AnalyzerRulePayload.builder()
-						.withSchemaElementID(schemaElementID)
-						.withElementSelector(parentElementPath)
-						.withElementName("script")
-						.withInjectedValue("XSS-E.3")
-						.build();
-					requestModification(schema, valueDescriptor, currentValue,
-							"&lt;script&gt;alert('XSS-E.3!')&lt;/script&gt;",
-							payload,
-							collector);
-
+				if (schemaObject instanceof final IElementType schemaElement) {
+					if (schemaElement.hasDataContent() && schemaElement.getDataType() == XMLDataType.STRING) {
+						// try to replace the entire element with script element
+						logger.debug("attempt to replace \"{}\" with \"&lt;script&gt;...\" for schema element {}",
+								currentValue,
+								schemaElementID);
+						final AnalyzerRulePayload payload = AnalyzerRulePayload.builder()
+							.withSchemaElementID(schemaElementID)
+							.withElementSelector(parentElementPath)
+							.withElementName("script")
+							.withInjectedValue("XSS-E.3")
+							.build();
+						requestModification(schema, valueDescriptor, currentValue,
+								"&lt;script&gt;alert('XSS-E.3!')&lt;/script&gt;",
+								payload,
+								collector);
+					}
+				} else if (schemaObject instanceof final IAttribute schemaAttribute) {
+					if (schemaAttribute.getDataType() == XMLDataType.STRING) {
+						// try to replace the entire element with script element
+						logger.debug("attempt to replace \"{}\" with \"&lt;script&gt;...\" for schema attribute {}",
+								currentValue,
+								schemaElementID);
+						final AnalyzerRulePayload payload = AnalyzerRulePayload.builder()
+							.withSchemaElementID(schemaElementID)
+							.withElementSelector(parentElementPath)
+							.withElementName("script")
+							.withInjectedValue("XSS-E.3")
+							.build();
+						requestModification(schema, valueDescriptor, currentValue,
+								"&lt;script&gt;alert(`XSS-E.3!`)&lt;/script&gt;",
+								payload,
+								collector);
+						// FIXME For some reason, this doesn't work - needs more brain time
+					}
+				} else {
+					logger.warn("Unsupported schema object type {} ({})", schemaObject.getClass().getSimpleName(),
+							schemaObject);
 				}
 			}
 		}
@@ -145,7 +163,6 @@ public class DisabledOutputEscapingCheckRule extends AbstractTextRule {
 						.build()
 						.sendTo(collector);
 				}
-
 			});
 		} else {
 			logger.warn("follow-up check called for non-element node");
