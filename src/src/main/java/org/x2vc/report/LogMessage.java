@@ -38,6 +38,7 @@ public final class LogMessage implements ILogMessage {
 		this.levelString = level.name();
 		this.threadName = threadName;
 		this.message = message
+			.replace("&", "&amp;")
 			.replace("<", "&lt;")
 			.replace(">", "&gt;")
 			.replace("'", "&apos;")

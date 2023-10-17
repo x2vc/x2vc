@@ -23,6 +23,7 @@ public final class LineCoverage implements ILineCoverage {
 		super();
 		this.lineNumber = lineNumber;
 		this.contents = contents
+			.replace("&", "&amp;")
 			.replace("<", "&lt;")
 			.replace(">", "&gt;")
 			.replace("'", "&apos;")
