@@ -127,6 +127,7 @@ public class AxisExpressionItem extends AbstractEvaluationTreeItem<AxisExpressio
 			// get the possible referring elements
 			final IXMLSchema schema = getSchema();
 			result = schema.getElementTypes().stream()
+				.filter(t -> t.hasElementContent())
 				.filter(t -> t.getElements().stream()
 					.anyMatch(r -> r.equals(contextItem.getElementReference().orElseThrow())))
 				.flatMap(t -> schema.getReferencesUsing(t).stream())
