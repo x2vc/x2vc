@@ -116,6 +116,36 @@ public class DisabledOutputEscapingCheckRule extends AbstractTextRule {
 								collector);
 						// FIXME For some reason, this doesn't work - needs more brain time
 					}
+				} else if (schemaObject instanceof final IExtensionFunction schemaFunction) {
+					// TODO DisabledOutputEscapingCheckRule: add return type check
+					logger.debug("attempt to replace \"{}\" with \"&lt;script&gt;...\" for extension function {}",
+							currentValue,
+							schemaElementID);
+					final AnalyzerRulePayload payload = AnalyzerRulePayload.builder()
+						.withSchemaElementID(schemaElementID)
+						.withElementSelector(parentElementPath)
+						.withElementName("script")
+						.withInjectedValue("XSS-E.3")
+						.build();
+					requestModification(schema, valueDescriptor, currentValue,
+							"&lt;script&gt;alert(`XSS-E.3!`)&lt;/script&gt;",
+							payload,
+							collector);
+				} else if (schemaObject instanceof final IStylesheetParameter schemaParameter) {
+					// TODO DisabledOutputEscapingCheckRule: add parameter type check
+					logger.debug("attempt to replace \"{}\" with \"&lt;script&gt;...\" for stylesheet parameter {}",
+							currentValue,
+							schemaElementID);
+					final AnalyzerRulePayload payload = AnalyzerRulePayload.builder()
+						.withSchemaElementID(schemaElementID)
+						.withElementSelector(parentElementPath)
+						.withElementName("script")
+						.withInjectedValue("XSS-E.3")
+						.build();
+					requestModification(schema, valueDescriptor, currentValue,
+							"&lt;script&gt;alert(`XSS-E.3!`)&lt;/script&gt;",
+							payload,
+							collector);
 				} else {
 					logger.warn("Unsupported schema object type {} ({})", schemaObject.getClass().getSimpleName(),
 							schemaObject);
