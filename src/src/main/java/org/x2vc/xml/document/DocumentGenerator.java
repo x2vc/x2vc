@@ -303,7 +303,17 @@ public class DocumentGenerator implements IDocumentGenerator {
 			logger.traceEntry("for rule {} and attribute {}", rule.getID(), rule.getAttributeID());
 			final IAttribute attribute = this.schema.getObjectByID(rule.getAttributeID(), IAttribute.class);
 			final String value = this.valueGenerator.generateValue(rule);
-			this.xmlWriter.add(this.eventFactory.createAttribute(attribute.getName(), value));
+			if (value.contains("&")) {
+				// This is used e.g. by DisabledOutputEscapingCheckRule.
+				// We can't add this value through the xmlWriter because it will be escaped.
+				// Therefore we add a marker here that will be replaced in post-processing.
+				final UUID marker = UUID.randomUUID();
+				this.rawDataReplacementMap.put(marker, value);
+				this.xmlWriter
+					.add(this.eventFactory.createAttribute(attribute.getName(), String.format("$%s$", marker)));
+			} else {
+				this.xmlWriter.add(this.eventFactory.createAttribute(attribute.getName(), value));
+			}
 			logger.traceExit();
 		}
 

@@ -162,6 +162,45 @@ class DocumentGeneratorTest {
 	}
 
 	@Test
+	void testGenerateDocument_EmptyElementWithAttribute_WithEncodedValue() throws FileNotFoundException, JAXBException {
+		// load schema and extract relevant objects
+		this.schema = loadSchema("EmptyElementWithAttribute.x2vc_schema");
+		final IElementReference rootElementReference = this.schema.getRootElements().iterator().next();
+		final IAttribute rootAttribute = rootElementReference.getElement().getAttributes().iterator().next();
+
+		// prepare generation rules and request
+		final ISetAttributeRule rootAttributeRule = new SetAttributeRule(rootAttribute);
+		this.rootElementRule = AddElementRule.builder(rootElementReference).addAttributeRule(rootAttributeRule)
+			.build();
+
+		// prepare value generator
+		when(this.valueGenerator.generateValue(rootAttributeRule)).thenReturn("&lt;baz/&gt;");
+		this.valueDescriptors
+			.add(new ValueDescriptor(rootAttribute.getID(), rootAttributeRule.getID(), "&lt;baz/&gt;", false));
+
+		final IXMLDocumentContainer document = this.documentGenerator.generateDocument(this.request);
+		assertNotNull(document);
+
+		// encoded value may not be re-encoded again (turning &lt; into &amp;lt;)
+		assertTrue(document.getDocument().contains("someAttribute=\"&lt;baz/&gt;\""));
+		final String expectedXML = """
+									<root someAttribute="&lt;baz/&gt;"/>
+									""";
+		assertXMLEquals(expectedXML, document.getDocument(), node -> traceNodeFilter(node));
+
+		final IXMLDocumentDescriptor descriptor = document.getDocumentDescriptor();
+		assertEquals(VALUE_PREFIX, descriptor.getValuePrefix());
+		assertEquals(VALUE_LENGTH, descriptor.getValueLength());
+
+		final Optional<ImmutableSet<IValueDescriptor>> valDescSet = descriptor.getValueDescriptors("&lt;baz/&gt;");
+		assertTrue(valDescSet.isPresent());
+		assertEquals(1, valDescSet.get().size());
+		final IValueDescriptor valDesc = valDescSet.get().iterator().next();
+		assertEquals(rootAttribute.getID(), valDesc.getSchemaObjectID());
+		assertEquals(rootAttributeRule.getID(), valDesc.getGenerationRuleID());
+	}
+
+	@Test
 	void testGenerateDocument_ElementWithDataContent() throws FileNotFoundException, JAXBException {
 		// load schema and extract relevant objects
 		this.schema = loadSchema("ElementWithDataContent.x2vc_schema");
@@ -369,7 +408,8 @@ class DocumentGeneratorTest {
 
 		// prepare generation rules and request
 		this.rootElementRule = AddElementRule.builder(rootElementReference).build();
-		final StylesheetParameterRule StylesheetParameterRule = new StylesheetParameterRule(StylesheetParameter.getID());
+		final StylesheetParameterRule StylesheetParameterRule = new StylesheetParameterRule(
+				StylesheetParameter.getID());
 		this.StylesheetParameterRules.add(StylesheetParameterRule);
 
 		// prepare value generator
@@ -384,7 +424,8 @@ class DocumentGeneratorTest {
 		assertEquals(VALUE_PREFIX, descriptor.getValuePrefix());
 		assertEquals(VALUE_LENGTH, descriptor.getValueLength());
 
-		final ImmutableCollection<IStylesheetParameterValue> parameterValues = descriptor.getStylesheetParameterValues();
+		final ImmutableCollection<IStylesheetParameterValue> parameterValues = descriptor
+			.getStylesheetParameterValues();
 		assertEquals(1, parameterValues.size());
 		assertSame(parameterValue, parameterValues.iterator().next());
 

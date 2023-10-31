@@ -7,9 +7,9 @@
 			<attribute name="system" dataType="STRING" optional="false" fixedValueset="false" userModifiable="true"
 				id="b59d6e81-03ec-441d-9b21-410adeea0754">
 				<comment>system environment</comment>
-				<discreteValue dataType="STRING" stringValue="dev" id="1e1535b3-69c1-4fa9-a8fa-646e83f589d4" />
+				<discreteValue dataType="STRING" stringValue="dev"  id="1e1535b3-69c1-4fa9-a8fa-646e83f589d4" />
 				<discreteValue dataType="STRING" stringValue="test" id="0e0a9f5c-db39-4ac6-aa02-4903d9f896c5" />
-				<discreteValue dataType="STRING" stringValue="prod" id="c74256c6-3919-4f27-bb4c-74bcefb6239" />
+				<discreteValue dataType="STRING" stringValue="prod" id="c74256c6-3919-4f27-bb4c-74bcefb62396" />
 			</attribute>
 			<attribute name="background" dataType="STRING" optional="false" fixedValueset="false" userModifiable="true"
 				id="e7ba1e88-1526-46bd-872a-eb70936116cb">
@@ -31,7 +31,7 @@
 		</elementType>
 
 		<elementType contentType="ELEMENT" elementArrangement="SEQUENCE" id="c48e4c70-a325-4c0d-8a17-11f9440c4f68">
-			<attribute name="country" dataType="STRING" optional="false" fixedValueset="false" userModifiable="false"
+			<attribute name="country" dataType="STRING" optional="false" fixedValueset="false" userModifiable="true"
 				id="acd2a904-1531-4c78-b207-815b862be5ab" />
 			<comment>name and address, used for shipTo and billTo</comment>
 			<subElement name="name" elementID="bcd654c9-2a3c-476f-97d7-21a805badddc" minOccurrence="1" maxOccurrence="1"

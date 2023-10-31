@@ -24,7 +24,7 @@ import com.google.common.collect.ImmutableSet;
 import com.google.inject.Inject;
 
 /**
- * Rule E.2: Check the text content of every element that contains the prefix used to generate the values whether it is
+ * Rule E.3: Check the text content of every element that contains the prefix used to generate the values whether it is
  * possible to inject arbitrary code in case disable-output-escaping is activated.
  */
 public class DisabledOutputEscapingCheckRule extends AbstractTextRule {
@@ -114,7 +114,6 @@ public class DisabledOutputEscapingCheckRule extends AbstractTextRule {
 								"&lt;script&gt;alert(`XSS-E.3!`)&lt;/script&gt;",
 								payload,
 								collector);
-						// FIXME For some reason, this doesn't work - needs more brain time
 					}
 				} else if (schemaObject instanceof final IExtensionFunction schemaFunction) {
 					// TODO DisabledOutputEscapingCheckRule: add return type check
