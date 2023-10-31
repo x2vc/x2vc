@@ -46,6 +46,8 @@ public abstract class AbstractProcessCommand implements Callable<Integer> {
 			return logger.traceExit(1);
 		}
 
+		final long startTime = System.nanoTime();
+
 		// pre-initialize thread pool and watcher (keeps logs organized)
 		this.workerProcessManager.initialize();
 
@@ -58,7 +60,11 @@ public abstract class AbstractProcessCommand implements Callable<Integer> {
 
 		this.workerProcessManager.shutdown();
 
-		logger.info("Processing completed");
+		final long endTime = System.nanoTime();
+		final long totalTime = endTime - startTime;
+
+		logger.info("Processing completed in {} seconds", String.format("%.2f", (totalTime / 1000000000.0)));
+
 		// TODO Logging: produce statistics output here
 
 		return logger.traceExit(0);
