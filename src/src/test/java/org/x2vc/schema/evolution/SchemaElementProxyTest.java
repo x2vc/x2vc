@@ -260,6 +260,7 @@ class SchemaElementProxyTest {
 
 		final IElementType element = mock();
 		when(element.getElements()).thenReturn(List.of(ref1, ref2, ref3));
+		when(element.hasElementContent()).thenReturn(true);
 
 		final IElementReference reference = mock();
 		when(reference.getElement()).thenReturn(element);
