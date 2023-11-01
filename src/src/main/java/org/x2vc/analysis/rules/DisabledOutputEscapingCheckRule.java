@@ -79,10 +79,11 @@ public class DisabledOutputEscapingCheckRule extends AbstractTextRule {
 				final String currentValue = valueDescriptor.getValue();
 				final UUID schemaElementID = valueDescriptor.getSchemaObjectID();
 				// The disable-output-escaping vulnerability only applies to string data output
-				// elements
+				// elements or mixed mode elements
 				final ISchemaObject schemaObject = schema.getObjectByID(schemaElementID);
 				if (schemaObject instanceof final IElementType schemaElement) {
-					if (schemaElement.hasDataContent() && schemaElement.getDataType() == XMLDataType.STRING) {
+					if ((schemaElement.hasDataContent() && schemaElement.getDataType() == XMLDataType.STRING) ||
+							(schemaElement.hasMixedContent())) {
 						// try to replace the entire element with script element
 						logger.debug("attempt to replace \"{}\" with \"&lt;script&gt;...\" for schema element {}",
 								currentValue,

@@ -61,11 +61,11 @@ class DisabledOutputEscapingCheckRuleTest extends AnalyzerRuleTestBase {
 			"foobar,      DATA,  false",
 			"foobar,      MIXED, false",
 			"qwer1234,    DATA,  true",
-			"qwer1234,    MIXED, false",
+			"qwer1234,    MIXED, true",
 			"abcqwer1234, DATA,  true",
-			"abcqwer1234, MIXED, false",
+			"abcqwer1234, MIXED, true",
 			"qwer1234xyz, DATA,  true",
-			"qwer1234xyz, MIXED, false"
+			"qwer1234xyz, MIXED, true"
 	})
 	void testCheckElementNode(String text,
 			IElementType.ContentType contentType, boolean modifiersExpected) {
