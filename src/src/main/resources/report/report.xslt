@@ -179,19 +179,28 @@
 			<xsl:value-of select="heading" />
 		</h2>
 		<p>
-			<xsl:copy-of select="introduction/node()" />
+			<!-- <xsl:copy-of select="introduction/node()" /> -->
+			<xsl:apply-templates select="introduction/node()" mode="xss-filter"/>
 		</p>
 		<xsl:if test="description">
 			<p>
-				<xsl:copy-of select="description/node()" />
+				<!-- <xsl:copy-of select="description/node()" /> -->
+				<xsl:apply-templates select="description/node()" mode="xss-filter"/>
 			</p>
 		</xsl:if>
 		<xsl:if test="countermeasures">
 			<p>
-				<xsl:copy-of select="countermeasures/node()" />
+				<!-- <xsl:copy-of select="countermeasures/node()" /> -->
+				<xsl:apply-templates select="countermeasures/node()" mode="xss-filter"/>
 			</p>
 		</xsl:if>
 		<xsl:apply-templates select="issues/issue" mode="content" />
+	</xsl:template>
+
+	<xsl:template match="@*|*" mode="xss-filter">
+		<xsl:copy>
+			<xsl:apply-templates select="text()|code" mode="xss-filter"/>
+		</xsl:copy>
 	</xsl:template>
 
 	<xsl:template match="issue" mode="content">
