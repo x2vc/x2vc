@@ -214,6 +214,11 @@
 					<artifactId>xml-maven-plugin</artifactId>
 					<version>1.1.0</version>
 				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>license-maven-plugin</artifactId>
+					<version>2.3.0</version>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 
@@ -246,6 +251,38 @@
 				<configuration>
 					<redirectTestOutputToFile>true</redirectTestOutputToFile>
 				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>license-maven-plugin</artifactId>
+				<configuration>
+					<verbose>false</verbose>
+					<addSvnKeyWords>true</addSvnKeyWords>
+				</configuration>
+				<executions>
+					<execution>
+						<id>first</id>
+						<goals>
+							<goal>update-file-header</goal>
+						</goals>
+						<phase>process-sources</phase>
+						<configuration>
+							<projectName>x2vc - XSLT XSS Vulnerability Checker</projectName>
+							<organizationName>x2vc authors and contributors</organizationName>
+							<inceptionYear>2023</inceptionYear>
+							<licenseName>epl_only_v2</licenseName>
+							<addSvnKeyWords>false</addSvnKeyWords>
+							<roots>
+								<root>src/main/java</root>
+								<root>src/test/java</root>
+							</roots>
+							<extraExtensions>
+								<xslt>xml</xslt>
+							</extraExtensions>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 
 			<plugin>
