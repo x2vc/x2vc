@@ -7,9 +7,9 @@
 
 	<groupId>org.x2vc</groupId>
 	<artifactId>checker</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.1.0-SNAPSHOT</version>
 	<name>x2vc Checker</name>
-	<url>https://github.com/vwegert/x2vc</url>
+	<url>https://x2vc.org</url>
 	<description>XSLT XSS Vulnerability Checker</description>
 
 	<properties>
@@ -168,27 +168,10 @@
 				<plugin>
 					<artifactId>maven-compiler-plugin</artifactId>
 					<version>3.11.0</version>
-					<configuration>
-						<annotationProcessorPaths>
-							<!-- picocli, see https://picocli.info/#_using_build_tools -->
-							<path>
-								<groupId>info.picocli</groupId>
-								<artifactId>picocli-codegen</artifactId>
-								<version>4.7.4</version>
-							</path>
-						</annotationProcessorPaths>
-						<compilerArgs>
-							<arg>
-								-Aproject=${project.groupId}/${project.artifactId}</arg>
-						</compilerArgs>
-					</configuration>
 				</plugin>
 				<plugin>
 					<artifactId>maven-surefire-plugin</artifactId>
 					<version>3.1.2</version>
-					<configuration>
-						<redirectTestOutputToFile>true</redirectTestOutputToFile>
-					</configuration>
 				</plugin>
 				<plugin>
 					<artifactId>maven-jar-plugin</artifactId>
@@ -202,6 +185,16 @@
 					<artifactId>maven-deploy-plugin</artifactId>
 					<version>3.1.1</version>
 				</plugin>
+				<plugin>
+					<artifactId>maven-assembly-plugin</artifactId>
+					<version>3.6.0</version>
+				</plugin>
+				<!-- startup script generation, see https://www.mojohaus.org/appassembler/appassembler-maven-plugin -->
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>appassembler-maven-plugin</artifactId>
+					<version>1.10</version>
+				</plugin>
 				<!-- site lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#site_Lifecycle -->
 				<plugin>
 					<artifactId>maven-site-plugin</artifactId>
@@ -211,8 +204,132 @@
 					<artifactId>maven-project-info-reports-plugin</artifactId>
 					<version>3.4.5</version>
 				</plugin>
+				<plugin>
+					<groupId>com.github.jinnovations</groupId>
+					<artifactId>attribution-maven-plugin</artifactId>
+					<version>0.9.9</version>
+				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>xml-maven-plugin</artifactId>
+					<version>1.1.0</version>
+				</plugin>
 			</plugins>
 		</pluginManagement>
-	</build>
 
+		<plugins>
+
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<annotationProcessorPaths>
+						<!-- picocli, see https://picocli.info/#_using_build_tools -->
+						<path>
+							<groupId>info.picocli</groupId>
+							<artifactId>picocli-codegen</artifactId>
+							<version>4.7.4</version>
+						</path>
+						<path>
+							<groupId>org.apache.logging.log4j</groupId>
+							<artifactId>log4j-core</artifactId>
+							<version>2.20.0</version>
+						</path>
+					</annotationProcessorPaths>
+					<compilerArgs>
+						<arg>
+							-Aproject=${project.groupId}/${project.artifactId}</arg>
+					</compilerArgs>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<redirectTestOutputToFile>true</redirectTestOutputToFile>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>com.github.jinnovations</groupId>
+				<artifactId>attribution-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>generate-attribution-file</goal>
+						</goals>
+						<phase>generate-resources</phase>
+					</execution>
+				</executions>
+				<configuration>
+					<outputFile>${project.build.directory}/attribution/attribution.xml</outputFile>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>xml-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>transform</goal>
+						</goals>
+						<phase>generate-resources</phase>
+					</execution>
+				</executions>
+				<configuration>
+					<transformationSets>
+						<transformationSet>
+							<dir>${project.build.directory}/attribution</dir>
+							<stylesheet>src/assembly/attribution.xslt</stylesheet>
+							<fileMappers>
+								<fileMapper implementation="org.codehaus.plexus.components.io.filemappers.RegExpFileMapper">
+									<pattern>attribution.xml</pattern>
+									<replacement>NOTICE</replacement>
+								</fileMapper>
+							</fileMappers>
+						</transformationSet>
+					</transformationSets>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>appassembler-maven-plugin</artifactId>
+				<configuration>
+					<licenseHeaderFile>src/assembly/license-header.txt</licenseHeaderFile>
+					<programs>
+						<program>
+							<mainClass>org.x2vc.Checker</mainClass>
+							<id>x2vc</id>
+						</program>
+					</programs>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>package</phase> <!-- bind to the packaging phase -->
+						<goals>
+							<goal>assemble</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-assembly-plugin</artifactId>
+				<configuration>
+					<descriptors>
+						<descriptor>src/assembly/zip.xml</descriptor>
+					</descriptors>
+				</configuration>
+				<executions>
+					<execution>
+						<id>make-assembly</id> <!-- this is used for inheritance merges -->
+						<phase>package</phase> <!-- bind to the packaging phase -->
+						<goals>
+							<goal>single</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>
