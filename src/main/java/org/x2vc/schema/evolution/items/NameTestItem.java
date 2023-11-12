@@ -9,7 +9,7 @@ package org.x2vc.schema.evolution.items;
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
@@ -57,8 +57,8 @@ public class NameTestItem extends AbstractNodeTestTreeItem<NameTest> {
 		case Type.ATTRIBUTE:
 			registerAttributeAccess(contextItem, target.getMatchingNodeName());
 			break;
-		// TODO NameTest: support NodeKind PROCESSING_INSTRUCTION
-		// TODO NameTest: support NodeKind NAMESPACE
+		// TODO #24 NameTest: support NodeKind PROCESSING_INSTRUCTION
+		// TODO #19 NameTest: support NodeKind NAMESPACE
 		default:
 			logger.warn("Unsupported node kind {} in NameTest", target.getNodeKind());
 		}
@@ -70,7 +70,7 @@ public class NameTestItem extends AbstractNodeTestTreeItem<NameTest> {
 	@Override
 	protected ImmutableCollection<ISchemaElementProxy> filter(Collection<ISchemaElementProxy> candidateItems,
 			NameTest target) {
-		// TODO NameTest: support full qualified names
+		// TODO #19 NameTest: support full qualified names
 		final String nameLocalPart = target.getMatchingNodeName().getLocalPart();
 		final Set<ISchemaElementProxy> result = Sets.newHashSet();
 		for (final ISchemaElementProxy item : candidateItems) {

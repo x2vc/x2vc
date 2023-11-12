@@ -9,7 +9,7 @@ package org.x2vc.schema.evolution.items;
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
@@ -77,7 +77,7 @@ public class SystemFunctionCallItem extends AbstractEvaluationTreeItem<SystemFun
 			case "current":
 				return evaluateFunctionCurrent(contextItem);
 //			case "document"
-//			    // TODO SystemFunctionCallItem: support function "document"
+//			    // TODO #12 SystemFunctionCallItem: support function "document"
 			case "element-available":
 				return evaluateFunctionWithoutAccess(contextItem);
 			case "false":
@@ -95,9 +95,9 @@ public class SystemFunctionCallItem extends AbstractEvaluationTreeItem<SystemFun
 			case "generate-id":
 				return evaluateFunctionWithoutAccess(contextItem);
 //			case "id":
-//				// TODO SystemFunctionCallItem: support function "id"
+//				// TODO #12 SystemFunctionCallItem: support function "id"
 //			case "key":
-//				// TODO SystemFunctionCallItem: support function "key"
+//				// TODO #12 SystemFunctionCallItem: support function "key"
 			case "lang":
 				return evaluateFunctionWithoutAccess(contextItem);
 			case "last":
@@ -141,7 +141,7 @@ public class SystemFunctionCallItem extends AbstractEvaluationTreeItem<SystemFun
 			case "true":
 				return evaluateFunctionWithoutAccess(contextItem);
 //			case "unparsed-entity-uri":
-//				// TODO SystemFunctionCallItem: support function "unparsed-entity-uri"
+//				// TODO #12 SystemFunctionCallItem: support function "unparsed-entity-uri"
 
 			default:
 				logger.warn("Unsupported system function {}: {}", functionName.getLocalPart(), target);

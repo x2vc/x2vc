@@ -9,7 +9,7 @@ package org.x2vc.schema.evolution.items;
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
@@ -37,7 +37,7 @@ public class NumberInstructionItem extends AbstractEvaluationTreeItem<NumberInst
 	@Override
 	protected void initialize(IEvaluationTreeItemFactory itemFactory, NumberInstruction target) {
 		this.selectItem = itemFactory.createItemForExpression(target.getSelect());
-		// TODO check whether patterns need to be taken into account as well
+		// TODO #12 check whether patterns need to be taken into account as well
 	}
 
 	@Override

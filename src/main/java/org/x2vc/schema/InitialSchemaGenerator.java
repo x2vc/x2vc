@@ -9,7 +9,7 @@ package org.x2vc.schema;
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
@@ -182,24 +182,24 @@ public class InitialSchemaGenerator implements IInitialSchemaGenerator {
 			if (pattern instanceof final AncestorQualifiedPattern ancestorQualifiedPattern) {
 				resultNode = processAncestorQualifiedPattern(ancestorQualifiedPattern, targetNode, isPrefix);
 			}
-			// TODO Initial Schema Generator: support AnchorPattern
+			// TODO #23 Initial Schema Generator: support AnchorPattern
 			else if (pattern instanceof final BasePatternWithPredicate basePatternWithPredicate) {
 				resultNode = processBasePatternWithPredicate(basePatternWithPredicate, targetNode, isPrefix);
 			}
-			// TODO Initial Schema Generator: support BooleanExpressionPattern
-			// TODO Initial Schema Generator: support GeneralNodePattern
-			// TODO Initial Schema Generator: support GeneralPositionalPattern
-			// TODO Initial Schema Generator: support ItemTypePattern
-			// TODO Initial Schema Generator: support NodeSetPattern
+			// TODO #23 Initial Schema Generator: support BooleanExpressionPattern
+			// TODO #23 Initial Schema Generator: support GeneralNodePattern
+			// TODO #23 Initial Schema Generator: support GeneralPositionalPattern
+			// TODO #23 Initial Schema Generator: support ItemTypePattern
+			// TODO #23 Initial Schema Generator: support NodeSetPattern
 			else if (pattern instanceof final NodeTestPattern nodeTestPattern) {
 				resultNode = processNodeTestPattern(nodeTestPattern, targetNode, isPrefix);
 			}
-			// TODO Initial Schema Generator: support PatternThatSetsCurrent
-			// TODO Initial Schema Generator: support SimplePositionalPattern
-			// TODO Initial Schema Generator: support StreamingFunctionArgumentPattern
-			// TODO Initial Schema Generator: support UniversalPattern
-			// TODO Initial Schema Generator: support VennPattern > ExceptPattern
-			// TODO Initial Schema Generator: support VennPattern > IntersectPattern
+			// TODO #23 Initial Schema Generator: support PatternThatSetsCurrent
+			// TODO #23 Initial Schema Generator: support SimplePositionalPattern
+			// TODO #23 Initial Schema Generator: support StreamingFunctionArgumentPattern
+			// TODO #23 Initial Schema Generator: support UniversalPattern
+			// TODO #23 Initial Schema Generator: support VennPattern > ExceptPattern
+			// TODO #23 Initial Schema Generator: support VennPattern > IntersectPattern
 			else if (pattern instanceof final UnionPattern unionPattern) {
 				resultNode = processUnionPattern(unionPattern, targetNode, isPrefix);
 			} else {
@@ -250,7 +250,7 @@ public class InitialSchemaGenerator implements IInitialSchemaGenerator {
 			logger.traceEntry("with pattern \"{}\"", pattern);
 			final SchemaConstructionNode resultNode = processPattern(pattern.getBasePattern(), targetNode, isPrefix);
 			final Expression predicate = pattern.getPredicate();
-			// TODO Initial Schema Generator: support patterns of BasePatternWithPredicate
+			// TODO #23 Initial Schema Generator: support patterns of BasePatternWithPredicate
 			logger.warn("Unable to add predicate \"{}\" to pattern selector {}, check generated schema!", predicate,
 					resultNode.toString());
 			return logger.traceExit(resultNode);
@@ -302,7 +302,7 @@ public class InitialSchemaGenerator implements IInitialSchemaGenerator {
 				// check if the name test only matches a single element name
 				final StructuredQName matchingNodeName = nameTest.getMatchingNodeName();
 				if (matchingNodeName != null) {
-					// TODO add namespace support
+					// TODO #19 add namespace support
 					resultNode = targetNode.addChild(matchingNodeName.getLocalPart());
 				} else {
 					logger.warn("Don't know how to handle node name test \"{}\"", nameTest);

@@ -9,7 +9,7 @@ package org.x2vc.schema.structure;
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
@@ -43,7 +43,7 @@ public final class XMLAttribute extends XMLDataObject implements IAttribute {
 		this.name = builder.name;
 		this.optional = builder.optional;
 		this.userModifiable = builder.userModifiable;
-		// TODO XML Schema: Validate XMLAttribute attribute combinations
+		// TODO #37 XML Schema: Validate XMLAttribute attribute combinations
 	}
 
 	private XMLAttribute() {

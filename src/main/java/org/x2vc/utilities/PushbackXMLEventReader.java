@@ -9,7 +9,7 @@ package org.x2vc.utilities;
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
@@ -78,13 +78,13 @@ public class PushbackXMLEventReader implements IPushbackXMLEventReader {
 
 	@Override
 	public String getElementText() throws XMLStreamException {
-		// TODO PushbackXMLEventReader: add support for getElementText()
+		// TODO #33 PushbackXMLEventReader: add support for getElementText()
 		throw new UnsupportedOperationException("PushbackXMLEventReader does not support getElementText() yet");
 	}
 
 	@Override
 	public XMLEvent nextTag() throws XMLStreamException {
-		// TODO PushbackXMLEventReader: add support for nextTag()
+		// TODO #33 PushbackXMLEventReader: add support for nextTag()
 		throw new UnsupportedOperationException("PushbackXMLEventReader does not support nextTag() yet");
 	}
 

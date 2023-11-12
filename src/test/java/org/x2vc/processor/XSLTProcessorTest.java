@@ -9,7 +9,7 @@ package org.x2vc.processor;
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
@@ -149,7 +149,7 @@ class XSLTProcessorTest {
 		// of the XSLT processor itself
 		assertTrue(document.contains("<li>abc</li>"));
 
-		// TODO re-enable once new trace listener is complete
+		// TODO #39 re-enable once new trace listener is complete
 //		assertTrue(htmlDocument.getTraceEvents().isPresent());
 //		final ImmutableList<ITraceEvent> traceEvents = htmlDocument.getTraceEvents().get();
 //		assertEquals(

@@ -9,7 +9,7 @@ package org.x2vc.processor;
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
@@ -267,7 +267,7 @@ class ProcessorObserver implements Consumer<Message>, ErrorListener, TraceListen
 	private void recordValueAccessForInstruction(Instruction instruction, Optional<UUID> elementID) {
 		logger.traceEntry("with instruction {}", instruction);
 
-		// TODO XSLT 3.0: check Expression --> Instruction --> AnalyzeString
+		// TODO #22 XSLT 3.0: check Expression --> Instruction --> AnalyzeString
 		if (instruction instanceof ApplyNextMatchingTemplate) {
 			// Expression --> Instruction --> ApplyNextMatchingTemplate (abstract)
 			// Expression --> Instruction --> ApplyNextMatchingTemplate --> ApplyImports
@@ -276,12 +276,12 @@ class ProcessorObserver implements Consumer<Message>, ErrorListener, TraceListen
 		} else if (instruction instanceof final ApplyTemplates applyTemplates) {
 			// Expression --> Instruction --> ApplyTemplates
 			recordValueAccessForExpression(instruction, applyTemplates.getSelectExpression(), elementID);
-			// TODO consider xsl:sort below apply-templates
+			// TODO #12 consider xsl:sort below apply-templates
 		} else if (instruction instanceof Block) {
 			// Expression --> Instruction --> Block
 			// no value access to analyze here
 		}
-		// TODO XSLT 3.0: check Expression --> Instruction --> BreakInstr
+		// TODO #22 XSLT 3.0: check Expression --> Instruction --> BreakInstr
 		else if (instruction instanceof CallTemplate) {
 			// Expression --> Instruction --> CallTemplate
 			// nothing to do here since all values are known statically
@@ -293,32 +293,32 @@ class ProcessorObserver implements Consumer<Message>, ErrorListener, TraceListen
 			// Expression --> Instruction --> ComponentTracer
 			// ignore trace expressions for now
 		}
-		// TODO XSLT 3.0: check Expression --> Instruction --> ConditionalBlock
+		// TODO #22 XSLT 3.0: check Expression --> Instruction --> ConditionalBlock
 		else if (instruction instanceof final CopyOf copyOf) {
 			// Expression --> Instruction --> CopyOf
 			recordValueAccessForExpression(instruction, copyOf.getSelect(), elementID);
 		}
-		// TODO Saxon proprietary: check Expression --> Instruction --> Doctype
+		// TODO #12 Saxon proprietary: check Expression --> Instruction --> Doctype
 		else if (instruction instanceof final ForEach forEach) {
 			// Expression --> Instruction --> ForEach
 			recordValueAccessForExpression(instruction, forEach.getSelect(), elementID);
-			// TODO consider xsl:sort below for-each
+			// TODO #12 consider xsl:sort below for-each
 		}
-		// TODO XSLT 2.0: check Expression --> Instruction --> ForEachGroup
-		// TODO XSLT 3.0: check Expression --> Instruction --> Fork
-		// TODO XSLT 3.0: check Expression --> Instruction --> IterateInstr
+		// TODO #21 XSLT 2.0: check Expression --> Instruction --> ForEachGroup
+		// TODO #22 XSLT 3.0: check Expression --> Instruction --> Fork
+		// TODO #22 XSLT 3.0: check Expression --> Instruction --> IterateInstr
 		else if (instruction instanceof final LocalParam localParam) {
 			// Expression --> Instruction --> LocalParam
 			recordValueAccessForExpression(instruction, localParam.getSelectExpression(), elementID);
 		}
-		// TODO XSLT 3.0: check Expression --> Instruction --> LocalParamBlock
+		// TODO #22 XSLT 3.0: check Expression --> Instruction --> LocalParamBlock
 		else if (instruction instanceof final MessageInstr messageInstr) {
 			// Expression --> Instruction --> MessageInstr
 			recordValueAccessForExpression(instruction, messageInstr.getErrorCode(), elementID);
 			recordValueAccessForExpression(instruction, messageInstr.getSelect(), elementID);
 			recordValueAccessForExpression(instruction, messageInstr.getTerminate(), elementID);
 		}
-		// TODO XSLT 3.0: check Expression --> Instruction --> NextIteration
+		// TODO #22 XSLT 3.0: check Expression --> Instruction --> NextIteration
 		else if (instruction instanceof DocumentInstr) {
 			// Expression --> Instruction --> ParentNodeConstructor --> DocumentInstr
 			// nothing to do here since all values are known statically
@@ -333,7 +333,7 @@ class ProcessorObserver implements Consumer<Message>, ErrorListener, TraceListen
 			// Expression --> Instruction --> ParentNodeConstructor --> ElementCreator --> FixedElement
 			// nothing to do here since all values are known statically
 		}
-		// TODO XSLT 2.0: check Expression --> Instruction --> ResultDocument
+		// TODO #21 XSLT 2.0: check Expression --> Instruction --> ResultDocument
 		else if (instruction instanceof final ComputedAttribute computedAttribute) {
 			// Expression --> Instruction --> SimpleNodeConstructor --> AttributeCreator --> ComputedAttribute
 			recordValueAccessForExpression(instruction, computedAttribute.getNameExp(), elementID);
@@ -346,7 +346,7 @@ class ProcessorObserver implements Consumer<Message>, ErrorListener, TraceListen
 			// Expression --> Instruction --> SimpleNodeConstructor --> Comment
 			// nothing to do here since all values are known statically
 		}
-		// TODO XSLT 2.0: check Expression --> Instruction --> SimpleNodeConstructor --> NamespaceConstructor
+		// TODO #21 XSLT 2.0: check Expression --> Instruction --> SimpleNodeConstructor --> NamespaceConstructor
 		else if (instruction instanceof final ProcessingInstruction processingInstruction) {
 			// Expression --> Instruction --> SimpleNodeConstructor --> ProcessingInstruction
 			recordValueAccessForExpression(instruction, processingInstruction.getNameExp(), elementID);
@@ -354,7 +354,7 @@ class ProcessorObserver implements Consumer<Message>, ErrorListener, TraceListen
 			// Expression --> Instruction --> SimpleNodeConstructor --> ValueOf
 			recordValueAccessForExpression(instruction, valueOf.getSelect(), elementID);
 		}
-		// TODO XSLT 3.0: check Expression --> Instruction --> SourceDocument
+		// TODO #22 XSLT 3.0: check Expression --> Instruction --> SourceDocument
 		else if (instruction instanceof TraceExpression) {
 			// Expression --> Instruction --> TraceExpression
 			// ignore trace expressions for now
@@ -362,7 +362,7 @@ class ProcessorObserver implements Consumer<Message>, ErrorListener, TraceListen
 			// Expression --> Instruction --> UseAttributeSet
 			// nothing to do here since all values are known statically
 		}
-		// TODO XSLT 3.0: check Expression --> Instruction --> MergeInstr
+		// TODO #22 XSLT 3.0: check Expression --> Instruction --> MergeInstr
 		else {
 			logger.warn("Instruction type {} not yet covered by value access trace",
 					instruction.getClass().getSimpleName());
@@ -386,7 +386,7 @@ class ProcessorObserver implements Consumer<Message>, ErrorListener, TraceListen
 		try {
 			expCopy = expression.copy(this.noRebindingMap);
 		} catch (final ConcurrentModificationException e) {
-			// TODO Check what to do with CMEs during Expression.copy() - report bug?
+			// TODO #31 Check what to do with CMEs during Expression.copy() - report bug?
 			// see also https://saxonica.plan.io/issues/4363
 			logger.warn(
 					"Encountered what is (probably) a bug in Saxon. Will use original expression instead of copy - beware of side effects");

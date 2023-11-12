@@ -9,7 +9,7 @@ package org.x2vc.stylesheet;
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
@@ -42,7 +42,7 @@ class StylesheetPreprocessorTest {
 
 	// This series of tests uses the actual Saxon XSLT processor. Using a mocked
 	// version would be more stable, but it's a lot of work...
-	// TODO XSLT: provide tests that do not require Saxon
+	// TODO #32 XSLT: provide tests that do not require Saxon
 
 	Processor xsltProcessor;
 
@@ -110,7 +110,7 @@ class StylesheetPreprocessorTest {
 		});
 
 		fail("test not completed");
-		// TODO XSLT check: check stylesheet for unsupported features
+		// TODO #30 XSLT check: check stylesheet for unsupported features
 	}
 
 	final String unsupportedStylesheet_ApplyImports = """
@@ -131,7 +131,7 @@ class StylesheetPreprocessorTest {
 		});
 
 		fail("test not completed");
-		// TODO XSLT check: check stylesheet for unsupported features
+		// TODO #30 XSLT check: check stylesheet for unsupported features
 	}
 
 	final String unsupportedStylesheet_Include = """
@@ -152,7 +152,7 @@ class StylesheetPreprocessorTest {
 		});
 
 		fail("test not completed");
-		// TODO XSLT check: check stylesheet for unsupported features
+		// TODO #30 XSLT check: check stylesheet for unsupported features
 	}
 
 	final String minimalStylesheet = """
@@ -201,8 +201,5 @@ class StylesheetPreprocessorTest {
 		assertSame(this.namespacePrefixes, info.getNamespacePrefixes());
 		assertEquals("trace1234", info.getTraceNamespacePrefix());
 	}
-
-	// TODO XSLT structure: support XSLT structure extraction
-	// TODO XSLT coverage: support XSLT coverage statistics
 
 }
