@@ -9,7 +9,7 @@ package org.x2vc.analysis.rules;
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
@@ -189,9 +189,11 @@ public abstract class AbstractRule implements IAnalyzerRule {
 		final Multimap<String, IVulnerabilityCandidate> candidatesBySectionID = MultimapBuilder.hashKeys()
 			.arrayListValues().build();
 		candidates.forEach(c -> candidatesBySectionID.put(getReportSectionID(c), c));
+		logger.debug("sorted {} candidates into {} sections", candidates.size(), candidatesBySectionID.keySet().size());
 
 		final List<IVulnerabilityReportSection> sections = Lists.newArrayList();
 		for (final String sectionID : getReportSectionIDs()) {
+			logger.debug("adding section ID {} to report", sectionID);
 			final Collection<IVulnerabilityCandidate> sectionCandidates = candidatesBySectionID.get(sectionID);
 			final VulnerabilityReportSection.Builder sectionBuilder = VulnerabilityReportSection.builder()
 				.withRuleID(getRuleID())
@@ -199,8 +201,10 @@ public abstract class AbstractRule implements IAnalyzerRule {
 				.withShortHeading(getReportSectionShortHeading(sectionID));
 			if (sectionCandidates.isEmpty()) {
 				// create empty placeholder section
+				logger.debug("section ID {} is empty", sectionID);
 				sectionBuilder.withIntroduction(getReportPlaceholderIntroduction(sectionID));
 			} else {
+				logger.debug("section ID {} contains {} candidates", sectionID, sectionCandidates.size());
 				final List<IVulnerabilityReportIssue> issues = createReportIssues(schema, sectionCandidates);
 				sectionBuilder
 					.withIntroduction(getReportIntroduction(sectionID))

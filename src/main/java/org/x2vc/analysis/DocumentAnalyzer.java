@@ -9,7 +9,7 @@ package org.x2vc.analysis;
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
@@ -175,7 +175,7 @@ public class DocumentAnalyzer implements IDocumentAnalyzer {
 	 * @throws IllegalArgumentException
 	 */
 	private IAnalyzerRule filterRuleByID(String ruleID) throws IllegalArgumentException {
-		logger.traceEntry();
+		logger.traceEntry("for rule ID {}", ruleID);
 		// TODO Document Analyzer: move to map of rules
 		final List<IAnalyzerRule> filteredRules = this.rules.stream().filter(r -> r.getRuleID().equals(ruleID))
 			.toList();
@@ -192,6 +192,7 @@ public class DocumentAnalyzer implements IDocumentAnalyzer {
 	@Override
 	public IVulnerabilityReport consolidateResults(URI stylesheetURI, Set<IVulnerabilityCandidate> candidates,
 			ICoverageStatistics coverageStatistics, ImmutableList<ILineCoverage> codeCoverage) {
+		logger.traceEntry();
 
 		// obtain the schema reference
 		final IXMLSchema schema = this.schemaManager.getSchema(stylesheetURI);
@@ -200,6 +201,7 @@ public class DocumentAnalyzer implements IDocumentAnalyzer {
 		final Multimap<String, IVulnerabilityCandidate> candidatesByRuleID = MultimapBuilder.hashKeys()
 			.arrayListValues().build();
 		candidates.forEach(c -> candidatesByRuleID.put(c.getAnalyzerRuleID(), c));
+		logger.debug("consolidating {} candidates for {} rules", candidates.size(), candidatesByRuleID.keySet().size());
 
 		// start building report
 		final Builder builder = VulnerabilityReport.builder(stylesheetURI)
@@ -210,11 +212,16 @@ public class DocumentAnalyzer implements IDocumentAnalyzer {
 
 		// process all rules, whether we have vulnerability candidates or not
 		for (final String ruleID : getRuleIDs()) {
-			final IAnalyzerRule rule = filterRuleByID(ruleID);
-			builder.addSections(rule.consolidateResults(schema, Set.copyOf(candidatesByRuleID.get(ruleID))));
+			try {
+				final IAnalyzerRule rule = filterRuleByID(ruleID);
+				builder.addSections(rule.consolidateResults(schema, Set.copyOf(candidatesByRuleID.get(ruleID))));
+			} catch (Exception e) {
+				logger.error("error occurred consolidating results for rule {}, report may be incomplete", ruleID);
+				logger.trace("error details", e);
+			}
 		}
 
-		return builder.build();
+		return logger.traceExit(builder.build());
 	}
 
 }
