@@ -9,7 +9,7 @@ package org.x2vc.schema.structure;
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
@@ -68,7 +68,7 @@ public final class XMLElementType extends XMLDataObject implements IElementType 
 		this.userModifiable = builder.userModifiable;
 		this.elements = List.copyOf(builder.elements);
 		this.elementArrangement = builder.elementArrangement;
-		// TODO XML Schema: Validate XMLElementType attribute combinations
+		// TODO #37 XML Schema: Validate XMLElementType attribute combinations
 	}
 
 	@Override

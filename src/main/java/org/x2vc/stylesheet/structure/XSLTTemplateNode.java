@@ -9,7 +9,7 @@ package org.x2vc.stylesheet.structure;
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
@@ -130,7 +130,7 @@ public class XSLTTemplateNode extends XSLTDirectiveNode implements IXSLTTemplate
 		final Optional<PolymorphLocation> start = getStartLocation();
 		if (start.isPresent()) {
 			final int line = start.get().getLineNumber();
-			// TODO add file name
+			// TODO #20 add file name
 			result.append(String.format(" defined in line %d", line));
 		}
 		return result.toString();

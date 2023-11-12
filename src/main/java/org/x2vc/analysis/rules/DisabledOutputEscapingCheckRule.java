@@ -9,7 +9,7 @@ package org.x2vc.analysis.rules;
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
@@ -131,7 +131,7 @@ public class DisabledOutputEscapingCheckRule extends AbstractTextRule {
 								collector);
 					}
 				} else if (schemaObject instanceof final IExtensionFunction schemaFunction) {
-					// TODO DisabledOutputEscapingCheckRule: add return type check
+					// TODO #36 DisabledOutputEscapingCheckRule: add return type check
 					logger.debug("attempt to replace \"{}\" with \"&lt;script&gt;...\" for extension function {}",
 							currentValue,
 							schemaElementID);
@@ -146,7 +146,7 @@ public class DisabledOutputEscapingCheckRule extends AbstractTextRule {
 							payload,
 							collector);
 				} else if (schemaObject instanceof final IStylesheetParameter schemaParameter) {
-					// TODO DisabledOutputEscapingCheckRule: add parameter type check
+					// TODO #36 DisabledOutputEscapingCheckRule: add parameter type check
 					logger.debug("attempt to replace \"{}\" with \"&lt;script&gt;...\" for stylesheet parameter {}",
 							currentValue,
 							schemaElementID);

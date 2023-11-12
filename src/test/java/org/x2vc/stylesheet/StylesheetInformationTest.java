@@ -9,7 +9,7 @@ package org.x2vc.stylesheet;
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
@@ -85,7 +85,7 @@ class StylesheetInformationTest {
 	 * Test method for {@link org.x2vc.stylesheet.StylesheetInformation#equals(java.lang.Object)}.
 	 */
 	@Test
-	@Disabled("implementation needs to be adjusted") // TODO check equals() and hashCode()
+	@Disabled("implementation needs to be adjusted") // TODO #26 check equals() and hashCode()
 	void testEqualsObject() {
 		EqualsVerifier.forClass(StylesheetInformation.class).verify();
 	}

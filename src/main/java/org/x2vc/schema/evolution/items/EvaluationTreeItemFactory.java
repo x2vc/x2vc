@@ -9,7 +9,7 @@ package org.x2vc.schema.evolution.items;
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
@@ -105,14 +105,14 @@ public class EvaluationTreeItemFactory implements IEvaluationTreeItemFactory {
 			// Expression subclass ......net.sf.saxon.expr.GeneralComparison20
 			newItem = new IndependentBinaryExpressionItem<GeneralComparison>(this.schema, this.coordinator,
 					generalComparison);
-			// TODO support Expression subclass ....net.sf.saxon.expr.IdentityComparison
-			// TODO support Expression subclass ....net.sf.saxon.expr.LookupExpression
+			// TODO #12 support Expression subclass ....net.sf.saxon.expr.IdentityComparison
+			// TODO #12 support Expression subclass ....net.sf.saxon.expr.LookupExpression
 		} else if (expression instanceof final SlashExpression slashExpression) {
 			// Expression subclass ....net.sf.saxon.expr.SlashExpression
 			// Expression subclass ......net.sf.saxon.expr.SimpleStepExpression
 			newItem = new SlashExpressionItem(this.schema, this.coordinator, slashExpression);
 		}
-		// TODO support Expression subclass ....net.sf.saxon.expr.SwitchCaseComparison
+		// TODO #12 support Expression subclass ....net.sf.saxon.expr.SwitchCaseComparison
 		else if (expression instanceof final ValueComparison valueComparison) {
 			// Expression subclass ....net.sf.saxon.expr.ValueComparison
 			newItem = new IndependentBinaryExpressionItem<ValueComparison>(this.schema, this.coordinator,
@@ -132,26 +132,26 @@ public class EvaluationTreeItemFactory implements IEvaluationTreeItemFactory {
 			// Although technically a value access, we can't learn anything new from a "this" (.) access...
 			newItem = new NoOperationItem<ContextItemExpression>(this.schema, this.coordinator, contextItemExpression);
 		}
-		// TODO support Expression subclass ..net.sf.saxon.expr.DynamicFunctionCall
+		// TODO #12 support Expression subclass ..net.sf.saxon.expr.DynamicFunctionCall
 		else if (expression instanceof final ErrorExpression errorExpression) {
 			// Expression subclass ..net.sf.saxon.expr.ErrorExpression
 			newItem = new NoOperationItem<ErrorExpression>(this.schema, this.coordinator, errorExpression);
 		}
-		// TODO support Expression subclass ..net.sf.saxon.expr.FunctionCall (abstract)
-		// TODO support Expression subclass ....net.sf.saxon.expr.StaticFunctionCall
+		// TODO #12 support Expression subclass ..net.sf.saxon.expr.FunctionCall (abstract)
+		// TODO #12 support Expression subclass ....net.sf.saxon.expr.StaticFunctionCall
 		else if (expression instanceof final SystemFunctionCall systemFunctionCall) {
 			// Expression subclass ......net.sf.saxon.expr.SystemFunctionCall
 			// Expression subclass ........net.sf.saxon.expr.SystemFunctionCall.Optimized (abstract)
 			newItem = new SystemFunctionCallItem(this.schema, this.coordinator, systemFunctionCall);
 		}
-		// TODO support Expression subclass ....net.sf.saxon.expr.UserFunctionCall
+		// TODO #12 support Expression subclass ....net.sf.saxon.expr.UserFunctionCall
 		else if (expression instanceof final IntegratedFunctionCall integratedFunctionCall) {
 			// Expression subclass ....net.sf.saxon.functions.IntegratedFunctionCall
 			newItem = new IntegratedFunctionCallItem(this.schema, this.coordinator, integratedFunctionCall);
 		}
-		// TODO support Expression subclass ....net.sf.saxon.xpath.XPathFunctionCall
-		// TODO support Expression subclass ..net.sf.saxon.expr.IntegerRangeTest
-		// TODO support Expression subclass ..net.sf.saxon.expr.IsLastExpression
+		// TODO #12 support Expression subclass ....net.sf.saxon.xpath.XPathFunctionCall
+		// TODO #12 support Expression subclass ..net.sf.saxon.expr.IntegerRangeTest
+		// TODO #12 support Expression subclass ..net.sf.saxon.expr.IsLastExpression
 		else if (expression instanceof final Literal literal) {
 			// Expression subclass ..net.sf.saxon.expr.Literal
 			// Expression subclass ....net.sf.saxon.expr.StringLiteral
@@ -162,39 +162,38 @@ public class EvaluationTreeItemFactory implements IEvaluationTreeItemFactory {
 			// Expression subclass ..net.sf.saxon.expr.NumberSequenceFormatter
 			newItem = new NumberSequenceFormatterItem(this.schema, this.coordinator, numberSequenceFormatter);
 		}
-		// TODO support Expression subclass ..net.sf.saxon.expr.PseudoExpression (abstract)
-		// TODO support Expression subclass ....net.sf.saxon.expr.DefaultedArgumentExpression
-		// TODO support Expression subclass
-		// ......net.sf.saxon.expr.DefaultedArgumentExpression.DefaultCollationArgument
-		// TODO support Expression subclass ....net.sf.saxon.expr.sort.SortKeyDefinition
-		// TODO support Expression subclass ....net.sf.saxon.expr.sort.SortKeyDefinitionList
-		// TODO support Expression subclass ....net.sf.saxon.pattern.Pattern (abstract)
-		// TODO support Expression subclass ......net.sf.saxon.pattern.AncestorQualifiedPattern
-		// TODO support Expression subclass ......net.sf.saxon.pattern.AnchorPattern
-		// TODO support Expression subclass ......net.sf.saxon.pattern.BasePatternWithPredicate
-		// TODO support Expression subclass ......net.sf.saxon.pattern.BooleanExpressionPattern
-		// TODO support Expression subclass ......net.sf.saxon.pattern.GeneralNodePattern
-		// TODO support Expression subclass ......net.sf.saxon.pattern.GeneralPositionalPattern
-		// TODO support Expression subclass ......net.sf.saxon.pattern.ItemTypePattern
-		// TODO support Expression subclass ......net.sf.saxon.pattern.NodeSetPattern
-		// TODO support Expression subclass ......net.sf.saxon.pattern.NodeTestPattern
-		// TODO support Expression subclass ......net.sf.saxon.pattern.PatternThatSetsCurrent
-		// TODO support Expression subclass ......net.sf.saxon.pattern.SimplePositionalPattern
-		// TODO support Expression subclass ......net.sf.saxon.pattern.StreamingFunctionArgumentPattern
-		// TODO support Expression subclass ......net.sf.saxon.pattern.UniversalPattern
-		// TODO support Expression subclass ......net.sf.saxon.pattern.VennPattern (abstract)
-		// TODO support Expression subclass ........net.sf.saxon.pattern.ExceptPattern
-		// TODO support Expression subclass ........net.sf.saxon.pattern.IntersectPattern
-		// TODO support Expression subclass ........net.sf.saxon.pattern.UnionPattern
-		// TODO support Expression subclass ..net.sf.saxon.expr.RangeExpression
+		// TODO #12 support Expression subclass ..net.sf.saxon.expr.PseudoExpression (abstract)
+		// TODO #12 support Expression subclass ....net.sf.saxon.expr.DefaultedArgumentExpression
+		// TODO #12 support Expression subclass ......net.sf.saxon.expr.DefaultedArgumentExpression.DefaultCollationArgument
+		// TODO #12 support Expression subclass ....net.sf.saxon.expr.sort.SortKeyDefinition
+		// TODO #12 support Expression subclass ....net.sf.saxon.expr.sort.SortKeyDefinitionList
+		// TODO #12 support Expression subclass ....net.sf.saxon.pattern.Pattern (abstract)
+		// TODO #12 support Expression subclass ......net.sf.saxon.pattern.AncestorQualifiedPattern
+		// TODO #12 support Expression subclass ......net.sf.saxon.pattern.AnchorPattern
+		// TODO #12 support Expression subclass ......net.sf.saxon.pattern.BasePatternWithPredicate
+		// TODO #12 support Expression subclass ......net.sf.saxon.pattern.BooleanExpressionPattern
+		// TODO #12 support Expression subclass ......net.sf.saxon.pattern.GeneralNodePattern
+		// TODO #12 support Expression subclass ......net.sf.saxon.pattern.GeneralPositionalPattern
+		// TODO #12 support Expression subclass ......net.sf.saxon.pattern.ItemTypePattern
+		// TODO #12 support Expression subclass ......net.sf.saxon.pattern.NodeSetPattern
+		// TODO #12 support Expression subclass ......net.sf.saxon.pattern.NodeTestPattern
+		// TODO #12 support Expression subclass ......net.sf.saxon.pattern.PatternThatSetsCurrent
+		// TODO #12 support Expression subclass ......net.sf.saxon.pattern.SimplePositionalPattern
+		// TODO #12 support Expression subclass ......net.sf.saxon.pattern.StreamingFunctionArgumentPattern
+		// TODO #12 support Expression subclass ......net.sf.saxon.pattern.UniversalPattern
+		// TODO #12 support Expression subclass ......net.sf.saxon.pattern.VennPattern (abstract)
+		// TODO #12 support Expression subclass ........net.sf.saxon.pattern.ExceptPattern
+		// TODO #12 support Expression subclass ........net.sf.saxon.pattern.IntersectPattern
+		// TODO #12 support Expression subclass ........net.sf.saxon.pattern.UnionPattern
+		// TODO #12 support Expression subclass ..net.sf.saxon.expr.RangeExpression
 		else if (expression instanceof final RootExpression rootExpression) {
 			// Expression subclass ..net.sf.saxon.expr.RootExpression
 			newItem = new RootExpressionItem(this.schema, this.coordinator, rootExpression);
 		}
-		// TODO support Expression subclass ..net.sf.saxon.expr.SimpleExpression (abstract)
-		// TODO support Expression subclass ..net.sf.saxon.expr.SuppliedParameterReference
-		// TODO support Expression subclass ..net.sf.saxon.expr.TryCatch
-		// TODO support Expression subclass ..net.sf.saxon.expr.UnaryExpression (abstract)
+		// TODO #12 support Expression subclass ..net.sf.saxon.expr.SimpleExpression (abstract)
+		// TODO #12 support Expression subclass ..net.sf.saxon.expr.SuppliedParameterReference
+		// TODO #12 support Expression subclass ..net.sf.saxon.expr.TryCatch
+		// TODO #12 support Expression subclass ..net.sf.saxon.expr.UnaryExpression (abstract)
 		else if (expression instanceof final AdjacentTextNodeMerger adjacentTextNodeMerger) {
 			// Expression subclass ....net.sf.saxon.expr.AdjacentTextNodeMerger
 			// check all sub-expressions
@@ -225,12 +224,12 @@ public class EvaluationTreeItemFactory implements IEvaluationTreeItemFactory {
 			// The cast itself does not constitute a value access, but check the contained expression.
 			newItem = new UnaryExpressionItem<CastingExpression>(this.schema, this.coordinator, castingExpression);
 		}
-		// TODO support Expression subclass ....net.sf.saxon.expr.CompareToConstant (abstract)
-		// TODO support Expression subclass ......net.sf.saxon.expr.CompareToIntegerConstant
-		// TODO support Expression subclass ......net.sf.saxon.expr.CompareToStringConstant
-		// TODO support Expression subclass ....net.sf.saxon.expr.ConsumingOperand
-		// TODO support Expression subclass ....net.sf.saxon.expr.EmptyTextNodeRemover
-		// TODO support Expression subclass ....net.sf.saxon.expr.HomogeneityChecker
+		// TODO #12 support Expression subclass ....net.sf.saxon.expr.CompareToConstant (abstract)
+		// TODO #12 support Expression subclass ......net.sf.saxon.expr.CompareToIntegerConstant
+		// TODO #12 support Expression subclass ......net.sf.saxon.expr.CompareToStringConstant
+		// TODO #12 support Expression subclass ....net.sf.saxon.expr.ConsumingOperand
+		// TODO #12 support Expression subclass ....net.sf.saxon.expr.EmptyTextNodeRemover
+		// TODO #12 support Expression subclass ....net.sf.saxon.expr.HomogeneityChecker
 		else if (expression instanceof final InstanceOfExpression instanceOfExpression) {
 			// Expression subclass ....net.sf.saxon.expr.InstanceOfExpression
 			newItem = new UnaryExpressionItem<InstanceOfExpression>(this.schema, this.coordinator,
@@ -240,8 +239,8 @@ public class EvaluationTreeItemFactory implements IEvaluationTreeItemFactory {
 			// The check itself does not constitute a value access, but check the contained expression.
 			newItem = new UnaryExpressionItem<ItemChecker>(this.schema, this.coordinator, itemChecker);
 		}
-		// TODO support Expression subclass ....net.sf.saxon.expr.LookupAllExpression
-		// TODO support Expression subclass ....net.sf.saxon.expr.NegateExpression
+		// TODO #12 support Expression subclass ....net.sf.saxon.expr.LookupAllExpression
+		// TODO #12 support Expression subclass ....net.sf.saxon.expr.NegateExpression
 		else if (expression instanceof final SingleItemFilter singleItemFilter) {
 			// Expression subclass ....net.sf.saxon.expr.SingleItemFilter (abstract)
 			// Expression subclass ......net.sf.saxon.expr.FirstItemExpression
@@ -253,17 +252,17 @@ public class EvaluationTreeItemFactory implements IEvaluationTreeItemFactory {
 			// Expression subclass ....net.sf.saxon.expr.SingletonAtomizer
 			newItem = new UnaryExpressionItem<SingletonAtomizer>(this.schema, this.coordinator, singletonAtomizer);
 		}
-		// TODO support Expression subclass ....net.sf.saxon.expr.TailCallLoop
-		// TODO support Expression subclass ....net.sf.saxon.expr.TailExpression
-		// TODO support Expression subclass ....net.sf.saxon.expr.instruct.OnEmptyExpr
-		// TODO support Expression subclass ....net.sf.saxon.expr.instruct.OnNonEmptyExpr
-		// TODO support Expression subclass ....net.sf.saxon.expr.instruct.SequenceInstr
-		// TODO Expression subclass ....net.sf.saxon.expr.instruct.WherePopulated
+		// TODO #12 support Expression subclass ....net.sf.saxon.expr.TailCallLoop
+		// TODO #12 support Expression subclass ....net.sf.saxon.expr.TailExpression
+		// TODO #12 support Expression subclass ....net.sf.saxon.expr.instruct.OnEmptyExpr
+		// TODO #12 support Expression subclass ....net.sf.saxon.expr.instruct.OnNonEmptyExpr
+		// TODO #12 support Expression subclass ....net.sf.saxon.expr.instruct.SequenceInstr
+		// TODO #12 support Expression subclass ....net.sf.saxon.expr.instruct.WherePopulated
 		else if (expression instanceof final DocumentSorter documentSorter) {
 			// Expression subclass ....net.sf.saxon.expr.sort.DocumentSorter
 			newItem = new UnaryExpressionItem<DocumentSorter>(this.schema, this.coordinator, documentSorter);
 		}
-		// TODO support Expression subclass ....net.sf.saxon.functions.hof.FunctionSequenceCoercer
+		// TODO #12 support Expression subclass ....net.sf.saxon.functions.hof.FunctionSequenceCoercer
 		else if (expression instanceof final VariableReference variableReference) {
 			// Expression subclass ..net.sf.saxon.expr.VariableReference (abstract)
 			// Expression subclass ....net.sf.saxon.expr.GlobalVariableReference
@@ -271,81 +270,81 @@ public class EvaluationTreeItemFactory implements IEvaluationTreeItemFactory {
 			// Variable references do not constitute a context access and do not have any sub-expressions to check
 			newItem = new NoOperationItem<VariableReference>(this.schema, this.coordinator, variableReference);
 		}
-		// TODO support Expression subclass ..net.sf.saxon.expr.flwor.FLWORExpression
-		// TODO support Expression subclass ..net.sf.saxon.expr.flwor.TupleExpression
-		// TODO support Expression subclass ..net.sf.saxon.expr.instruct.EvaluateInstr
-		// TODO support Expression subclass ..net.sf.saxon.expr.instruct.Instruction (abstract)
-		// TODO support Expression subclass ....net.sf.saxon.expr.instruct.AnalyzeString
-		// TODO support Expression subclass ....net.sf.saxon.expr.instruct.ApplyNextMatchingTemplate (abstract)
-		// TODO support Expression subclass ......net.sf.saxon.expr.instruct.ApplyImports
-		// TODO support Expression subclass ......net.sf.saxon.expr.instruct.NextMatch
-		// TODO support Expression subclass ....net.sf.saxon.expr.instruct.ApplyTemplates
+		// TODO #12 support Expression subclass ..net.sf.saxon.expr.flwor.FLWORExpression
+		// TODO #12 support Expression subclass ..net.sf.saxon.expr.flwor.TupleExpression
+		// TODO #12 support Expression subclass ..net.sf.saxon.expr.instruct.EvaluateInstr
+		// TODO #12 support Expression subclass ..net.sf.saxon.expr.instruct.Instruction (abstract)
+		// TODO #12 support Expression subclass ....net.sf.saxon.expr.instruct.AnalyzeString
+		// TODO #12 support Expression subclass ....net.sf.saxon.expr.instruct.ApplyNextMatchingTemplate (abstract)
+		// TODO #12 support Expression subclass ......net.sf.saxon.expr.instruct.ApplyImports
+		// TODO #12 support Expression subclass ......net.sf.saxon.expr.instruct.NextMatch
+		// TODO #12 support Expression subclass ....net.sf.saxon.expr.instruct.ApplyTemplates
 		else if (expression instanceof final Block block) {
 			// Expression subclass ....net.sf.saxon.expr.instruct.Block
 			newItem = new BlockItem(this.schema, this.coordinator, block);
 		}
-		// TODO support Expression subclass ....net.sf.saxon.expr.instruct.BreakInstr
-		// TODO support Expression subclass ....net.sf.saxon.expr.instruct.CallTemplate
+		// TODO #12 support Expression subclass ....net.sf.saxon.expr.instruct.BreakInstr
+		// TODO #12 support Expression subclass ....net.sf.saxon.expr.instruct.CallTemplate
 		else if (expression instanceof final Choose choose) {
 			// Expression subclass ....net.sf.saxon.expr.instruct.Choose
 			newItem = new ChooseItem(this.schema, this.coordinator, choose);
 		}
-		// TODO support Expression subclass ....net.sf.saxon.expr.instruct.ComponentTracer
-		// TODO support Expression subclass ....net.sf.saxon.expr.instruct.ConditionalBlock
-		// TODO support Expression subclass ....net.sf.saxon.expr.instruct.CopyOf
-		// TODO support Expression subclass ....net.sf.saxon.expr.instruct.Doctype
-		// TODO support Expression subclass ....net.sf.saxon.expr.instruct.ForEach
-		// TODO support Expression subclass ....net.sf.saxon.expr.instruct.ForEachGroup
-		// TODO support Expression subclass ....net.sf.saxon.expr.instruct.Fork
-		// TODO support Expression subclass ....net.sf.saxon.expr.instruct.IterateInstr
-		// TODO support Expression subclass ....net.sf.saxon.expr.instruct.LocalParam
-		// TODO support Expression subclass ....net.sf.saxon.expr.instruct.LocalParamBlock
-		// TODO support Expression subclass ....net.sf.saxon.expr.instruct.MessageInstr
-		// TODO support Expression subclass ....net.sf.saxon.expr.instruct.NextIteration
-		// TODO support Expression subclass ....net.sf.saxon.expr.instruct.ParentNodeConstructor (abstract)
+		// TODO #12 support Expression subclass ....net.sf.saxon.expr.instruct.ComponentTracer
+		// TODO #12 support Expression subclass ....net.sf.saxon.expr.instruct.ConditionalBlock
+		// TODO #12 support Expression subclass ....net.sf.saxon.expr.instruct.CopyOf
+		// TODO #12 support Expression subclass ....net.sf.saxon.expr.instruct.Doctype
+		// TODO #12 support Expression subclass ....net.sf.saxon.expr.instruct.ForEach
+		// TODO #12 support Expression subclass ....net.sf.saxon.expr.instruct.ForEachGroup
+		// TODO #12 support Expression subclass ....net.sf.saxon.expr.instruct.Fork
+		// TODO #12 support Expression subclass ....net.sf.saxon.expr.instruct.IterateInstr
+		// TODO #12 support Expression subclass ....net.sf.saxon.expr.instruct.LocalParam
+		// TODO #12 support Expression subclass ....net.sf.saxon.expr.instruct.LocalParamBlock
+		// TODO #12 support Expression subclass ....net.sf.saxon.expr.instruct.MessageInstr
+		// TODO #12 support Expression subclass ....net.sf.saxon.expr.instruct.NextIteration
+		// TODO #12 support Expression subclass ....net.sf.saxon.expr.instruct.ParentNodeConstructor (abstract)
 		else if (expression instanceof final DocumentInstr documentInstr) {
 			// Expression subclass ......net.sf.saxon.expr.instruct.DocumentInstr
 			newItem = new DocumentInstrItem(this.schema, this.coordinator, documentInstr);
 		}
-		// TODO support Expression subclass ......net.sf.saxon.expr.instruct.ElementCreator (abstract)
-		// TODO support Expression subclass ........net.sf.saxon.expr.instruct.ComputedElement
-		// TODO support Expression subclass ........net.sf.saxon.expr.instruct.Copy
-		// TODO support Expression subclass ........net.sf.saxon.expr.instruct.FixedElement
-		// TODO support Expression subclass ....net.sf.saxon.expr.instruct.ResultDocument
-		// TODO support Expression subclass ....net.sf.saxon.expr.instruct.SimpleNodeConstructor (abstract)
-		// TODO support Expression subclass ......net.sf.saxon.expr.instruct.AttributeCreator (abstract)
-		// TODO support Expression subclass ........net.sf.saxon.expr.instruct.ComputedAttribute
-		// TODO support Expression subclass ........net.sf.saxon.expr.instruct.FixedAttribute
-		// TODO support Expression subclass ......net.sf.saxon.expr.instruct.Comment
-		// TODO support Expression subclass ......net.sf.saxon.expr.instruct.NamespaceConstructor
-		// TODO support Expression subclass ......net.sf.saxon.expr.instruct.ProcessingInstruction
+		// TODO #12 support Expression subclass ......net.sf.saxon.expr.instruct.ElementCreator (abstract)
+		// TODO #12 support Expression subclass ........net.sf.saxon.expr.instruct.ComputedElement
+		// TODO #12 support Expression subclass ........net.sf.saxon.expr.instruct.Copy
+		// TODO #12 support Expression subclass ........net.sf.saxon.expr.instruct.FixedElement
+		// TODO #12 support Expression subclass ....net.sf.saxon.expr.instruct.ResultDocument
+		// TODO #12 support Expression subclass ....net.sf.saxon.expr.instruct.SimpleNodeConstructor (abstract)
+		// TODO #12 support Expression subclass ......net.sf.saxon.expr.instruct.AttributeCreator (abstract)
+		// TODO #12 support Expression subclass ........net.sf.saxon.expr.instruct.ComputedAttribute
+		// TODO #12 support Expression subclass ........net.sf.saxon.expr.instruct.FixedAttribute
+		// TODO #12 support Expression subclass ......net.sf.saxon.expr.instruct.Comment
+		// TODO #12 support Expression subclass ......net.sf.saxon.expr.instruct.NamespaceConstructor
+		// TODO #12 support Expression subclass ......net.sf.saxon.expr.instruct.ProcessingInstruction
 		else if (expression instanceof final ValueOf valueOf) {
 			// Expression subclass ......net.sf.saxon.expr.instruct.ValueOf
 			newItem = new ValueOfItem(this.schema, this.coordinator, valueOf);
 		}
-		// TODO support Expression subclass ....net.sf.saxon.expr.instruct.SourceDocument
+		// TODO #12 support Expression subclass ....net.sf.saxon.expr.instruct.SourceDocument
 		else if (expression instanceof final TraceExpression traceExpression) {
 			// Expression subclass ....net.sf.saxon.expr.instruct.TraceExpression
 			// We don't care for the trace expression, but have to examine its sub-expression
 			newItem = new TraceExpressionItem(this.schema, this.coordinator, traceExpression);
 		}
-		// TODO support Expression subclass ....net.sf.saxon.expr.instruct.UseAttributeSet
-		// TODO support Expression subclass ....net.sf.saxon.expr.sort.MergeInstr
+		// TODO #12 support Expression subclass ....net.sf.saxon.expr.instruct.UseAttributeSet
+		// TODO #12 support Expression subclass ....net.sf.saxon.expr.sort.MergeInstr
 		else if (expression instanceof final NumberInstruction numberInstruction) {
 			// Expression subclass ..net.sf.saxon.expr.instruct.NumberInstruction
 			newItem = new NumberInstructionItem(this.schema, this.coordinator, numberInstruction);
 		}
-		// TODO support Expression subclass ..net.sf.saxon.expr.sort.ConditionalSorter
+		// TODO #12 support Expression subclass ..net.sf.saxon.expr.sort.ConditionalSorter
 		else if (expression instanceof final SortExpression sortExpression) {
 			// Expression subclass ..net.sf.saxon.expr.sort.SortExpression
 			newItem = new SortExpressionItem(this.schema, this.coordinator, sortExpression);
 		}
-		// TODO support Expression subclass ..net.sf.saxon.functions.CurrentGroupCall
-		// TODO support Expression subclass ..net.sf.saxon.functions.CurrentGroupingKeyCall
-		// TODO support Expression subclass ..net.sf.saxon.functions.hof.PartialApply
-		// TODO support Expression subclass ..net.sf.saxon.functions.hof.UserFunctionReference
-		// TODO support Expression subclass ..net.sf.saxon.ma.arrays.SquareArrayConstructor
-		// TODO support Expression subclass ..net.sf.saxon.xpath.JAXPVariableReference
+		// TODO #12 support Expression subclass ..net.sf.saxon.functions.CurrentGroupCall
+		// TODO #12 support Expression subclass ..net.sf.saxon.functions.CurrentGroupingKeyCall
+		// TODO #12 support Expression subclass ..net.sf.saxon.functions.hof.PartialApply
+		// TODO #12 support Expression subclass ..net.sf.saxon.functions.hof.UserFunctionReference
+		// TODO #12 support Expression subclass ..net.sf.saxon.ma.arrays.SquareArrayConstructor
+		// TODO #12 support Expression subclass ..net.sf.saxon.xpath.JAXPVariableReference
 		else {
 			newItem = new UnsupportedExpressionItem(this.schema, this.coordinator, expression);
 		}
@@ -460,14 +459,14 @@ public class EvaluationTreeItemFactory implements IEvaluationTreeItemFactory {
 			// NodeTest subclass CombinedNodeTest
 			newItem = new CombinedNodeTestItem(this.schema, this.coordinator, combinedNodeTest);
 		}
-		// TODO support NodeTest subclass DocumentNodeTest
-		// TODO support NodeTest subclass ErrorType
-		// TODO support NodeTest subclass LocalNameTest
+		// TODO #12 support NodeTest subclass DocumentNodeTest
+		// TODO #12 support NodeTest subclass ErrorType
+		// TODO #12 support NodeTest subclass LocalNameTest
 		else if (nodeTest instanceof final MultipleNodeKindTest multipleNodeKindTest) {
 			// NodeTest subclass MultipleNodeKindTest
 			newItem = new MultipleNodeKindTestItem(this.schema, this.coordinator, multipleNodeKindTest);
 		}
-		// TODO support NodeTest subclass NamespaceTest
+		// TODO #12 support NodeTest subclass NamespaceTest
 		else if (nodeTest instanceof final NameTest nameTest) {
 			// NodeTest subclass NameTest
 			newItem = new NameTestItem(this.schema, this.coordinator, nameTest);
@@ -475,8 +474,8 @@ public class EvaluationTreeItemFactory implements IEvaluationTreeItemFactory {
 			// NodeTest subclass NodeKindTest
 			newItem = new NodeKindTestItem(this.schema, this.coordinator, nodeKindTest);
 		}
-		// TODO support NodeTest subclass NodeSelector
-		// TODO support NodeTest subclass SameNameTest
+		// TODO #12 support NodeTest subclass NodeSelector
+		// TODO #12 support NodeTest subclass SameNameTest
 		else {
 			newItem = new UnsupportedNodeTestItem(this.schema, this.coordinator, nodeTest);
 		}

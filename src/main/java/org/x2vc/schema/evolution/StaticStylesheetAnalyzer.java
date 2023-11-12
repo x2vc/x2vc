@@ -9,7 +9,7 @@ package org.x2vc.schema.evolution;
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
@@ -68,12 +68,12 @@ public class StaticStylesheetAnalyzer implements IStaticStylesheetAnalyzer {
 			final QName parameterName = formalParameter.getQualifiedName();
 			logger.debug("checking formal stylesheet parameter {}", parameterName);
 			if (existingParameters.containsKey(parameterName)) {
-				// TODO Static Stylesheet Analyzer: check stylesheet parameter type compatibility
+				// TODO #23 Static Stylesheet Analyzer: check stylesheet parameter type compatibility
 				logger.debug("parameter {} exists, no further action taken", parameterName);
 				existingParameters.remove(parameterName);
 			} else {
 				logger.debug("parameter {} is missing from schema", parameterName);
-				// TODO Static Stylesheet Analyzer: implement more sophisticated type derivation
+				// TODO #23 Static Stylesheet Analyzer: implement more sophisticated type derivation
 				final FunctionSignatureType type = new FunctionSignatureType(
 						SequenceItemType.STRING,
 						OccurrenceIndicator.ONE);
@@ -92,7 +92,7 @@ public class StaticStylesheetAnalyzer implements IStaticStylesheetAnalyzer {
 			logger.warn("Stylesheet parameter {} ({}) does not match any formal parameter in the stylesheet",
 					existingParameter.getID(), existingParameter.getQualifiedName());
 		}
-		// TODO Static Stylesheet Analyzer: support removal of superfluous parameters
+		// TODO #40 Static Stylesheet Analyzer: support removal of superfluous parameters
 
 		logger.traceExit();
 	}

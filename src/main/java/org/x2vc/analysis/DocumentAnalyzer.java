@@ -176,7 +176,7 @@ public class DocumentAnalyzer implements IDocumentAnalyzer {
 	 */
 	private IAnalyzerRule filterRuleByID(String ruleID) throws IllegalArgumentException {
 		logger.traceEntry("for rule ID {}", ruleID);
-		// TODO Document Analyzer: move to map of rules
+		// TODO #41 Document Analyzer: move to map of rules
 		final List<IAnalyzerRule> filteredRules = this.rules.stream().filter(r -> r.getRuleID().equals(ruleID))
 			.toList();
 		if (filteredRules.isEmpty()) {
