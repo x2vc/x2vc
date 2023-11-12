@@ -9,7 +9,7 @@ package org.x2vc.xml.value;
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
@@ -434,7 +434,7 @@ public class ValueGenerator implements IValueGenerator {
 
 		final IFunctionSignatureType resultType = function.getResultType();
 		if (resultType.getOccurrenceIndicator() != OccurrenceIndicator.ONE) {
-			// TODO Extension Functions: support other return type occurrence indicators
+			// TODO #28 Extension Functions: support other return type occurrence indicators
 			throw logger.throwing(new UnsupportedOperationException(
 					String.format("Generating a value with an occurrence of %s is not yet supported",
 							resultType.getOccurrenceIndicator())));
@@ -458,7 +458,7 @@ public class ValueGenerator implements IValueGenerator {
 					generateRandomStringWithPrefix(Optional.empty()));
 			break;
 		default:
-			// TODO Extension Functions: support other return type data types
+			// TODO #28 Extension Functions: support other return type data types
 			throw logger.throwing(new UnsupportedOperationException(
 					String.format("Generating a value with an item type of %s is not yet supported",
 							resultType.getSequenceItemType())));
@@ -478,7 +478,7 @@ public class ValueGenerator implements IValueGenerator {
 
 		final IFunctionSignatureType resultType = function.getResultType();
 		if (resultType.getOccurrenceIndicator() != OccurrenceIndicator.ONE) {
-			// TODO Extension Functions: support other return type occurrence indicators
+			// TODO #28 Extension Functions: support other return type occurrence indicators
 			throw logger.throwing(new UnsupportedOperationException(
 					String.format("Generating a value with an occurrence of %s is not yet supported",
 							resultType.getOccurrenceIndicator())));
@@ -502,7 +502,7 @@ public class ValueGenerator implements IValueGenerator {
 					requestedValue.getValue());
 			break;
 		default:
-			// TODO Extension Functions: support other return type data types
+			// TODO #28 Extension Functions: support other return type data types
 			throw logger.throwing(new UnsupportedOperationException(
 					String.format("Generating a value with an item tyoe of %s is not yet supported",
 							resultType.getSequenceItemType())));
@@ -539,7 +539,7 @@ public class ValueGenerator implements IValueGenerator {
 
 		final IFunctionSignatureType resultType = parameter.getType();
 		if (resultType.getOccurrenceIndicator() != OccurrenceIndicator.ONE) {
-			// TODO Extension Parameters: support other return type occurrence indicators
+			// TODO #28 Extension Parameters: support other return type occurrence indicators
 			throw logger.throwing(new UnsupportedOperationException(
 					String.format("Generating a value with an occurrence of %s is not yet supported",
 							resultType.getOccurrenceIndicator())));
@@ -563,7 +563,7 @@ public class ValueGenerator implements IValueGenerator {
 					generateRandomStringWithPrefix(Optional.empty()));
 			break;
 		default:
-			// TODO Extension Parameters: support other return type data types
+			// TODO #28 Extension Parameters: support other return type data types
 			throw logger.throwing(new UnsupportedOperationException(
 					String.format("Generating a value with an item tyoe of %s is not yet supported",
 							resultType.getSequenceItemType())));
@@ -583,7 +583,7 @@ public class ValueGenerator implements IValueGenerator {
 
 		final IFunctionSignatureType resultType = parameter.getType();
 		if (resultType.getOccurrenceIndicator() != OccurrenceIndicator.ONE) {
-			// TODO Extension Parameters: support other return type occurrence indicators
+			// TODO #28 Extension Parameters: support other return type occurrence indicators
 			throw logger.throwing(new UnsupportedOperationException(
 					String.format("Generating a value with an occurrence of %s is not yet supported",
 							resultType.getOccurrenceIndicator())));
@@ -607,7 +607,7 @@ public class ValueGenerator implements IValueGenerator {
 					requestedValue.getValue());
 			break;
 		default:
-			// TODO Extension Parameters: support other return type data types
+			// TODO #28 Extension Parameters: support other return type data types
 			throw logger.throwing(new UnsupportedOperationException(
 					String.format("Generating a value with an item tyoe of %s is not yet supported",
 							resultType.getSequenceItemType())));

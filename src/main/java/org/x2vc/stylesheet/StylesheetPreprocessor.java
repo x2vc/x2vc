@@ -9,7 +9,7 @@ package org.x2vc.stylesheet;
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
@@ -128,7 +128,7 @@ public class StylesheetPreprocessor implements IStylesheetPreprocessor {
 			throw new IllegalArgumentException("Stylesheet cannot be compiled", e);
 		}
 
-		// TODO XSLT check: check stylesheet for unsupported features
+		// TODO #30 XSLT check: check stylesheet for unsupported features
 		logger.traceExit();
 	}
 

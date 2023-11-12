@@ -9,7 +9,7 @@ package org.x2vc.process.commands;
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
@@ -79,7 +79,7 @@ public abstract class AbstractProcessCommand implements Callable<Integer> {
 
 		logger.info("Processing completed in {} seconds", String.format("%.2f", (totalTime / 1000000000.0)));
 
-		// TODO Logging: produce statistics output here
+		// TODO #38 Logging: produce statistics output here
 
 		return logger.traceExit(0);
 

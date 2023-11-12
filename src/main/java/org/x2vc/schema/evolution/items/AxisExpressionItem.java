@@ -9,7 +9,7 @@ package org.x2vc.schema.evolution.items;
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
@@ -81,8 +81,8 @@ public class AxisExpressionItem extends AbstractEvaluationTreeItem<AxisExpressio
 		final Set<ISchemaElementProxy> result = Sets.newHashSet();
 		final int axis = target.getAxis();
 		switch (axis) {
-		// TODO support axis ANCESTOR
-		// TODO support axis ANCESTOR_OR_SELF
+		// TODO #12 support axis ANCESTOR
+		// TODO #12 support axis ANCESTOR_OR_SELF
 		case AxisInfo.ATTRIBUTE:
 			result.addAll(contextItem.getSubAttributes());
 			break;
@@ -96,18 +96,18 @@ public class AxisExpressionItem extends AbstractEvaluationTreeItem<AxisExpressio
 			result.addAll(collectDescendants(contextItem));
 			result.add(contextItem);
 			break;
-		// TODO support axis FOLLOWING
-		// TODO support axis FOLLOWING_SIBLING
-		// TODO support axis NAMESPACE
+		// TODO #12 support axis FOLLOWING
+		// TODO #12 support axis FOLLOWING_SIBLING
+		// TODO #12 support axis NAMESPACE
 		case AxisInfo.PARENT:
 			result.addAll(getParent(contextItem));
 			break;
-		// TODO support axis PRECEDING
-		// TODO support axis PRECEDING_SIBLING
+		// TODO #12 support axis PRECEDING
+		// TODO #12 support axis PRECEDING_SIBLING
 		case AxisInfo.SELF:
 			result.add(contextItem);
 			break;
-		// TODO support axis PRECEDING_OR_ANCESTOR
+		// TODO #12 support axis PRECEDING_OR_ANCESTOR
 		default:
 			logger.warn("Unsupported axis {}: {}", AxisInfo.axisName[axis], target);
 		}
@@ -149,7 +149,7 @@ public class AxisExpressionItem extends AbstractEvaluationTreeItem<AxisExpressio
 				.map(ISchemaElementProxy.class::cast)
 				.toList();
 		} else if (contextItem.isElementModifier()) {
-			// TODO support retrieving parent of modifier
+			// TODO #12 support retrieving parent of modifier
 			logger.warn("Unsupported axis parent for element modifiers");
 		} else {
 			logger.warn("Unsupported axis parent for context item type {}", contextItem.getType());

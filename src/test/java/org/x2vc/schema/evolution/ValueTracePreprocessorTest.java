@@ -9,7 +9,7 @@ package org.x2vc.schema.evolution;
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
@@ -395,11 +395,11 @@ class ValueTracePreprocessorTest {
 
 	}
 
-	// TODO ValueTracePreprocessor: add test: event without context ID should be ignored
-	// TODO ValueTracePreprocessor: add test: resolve IElementReference
-	// TODO ValueTracePreprocessor: add test: events pointing to other schema objects should be ignored
-	// TODO ValueTracePreprocessor: add test: rules not relating to schema elements should be ignored
-	// TODO ValueTracePreprocessor: add test: event referring to non-existent rule ID not in map should be ignored
-	// TODO ValueTracePreprocessor: add test: event referring to non-existent rule not in request should be ignored
+	// TODO #25 ValueTracePreprocessor: add test: event without context ID should be ignored
+	// TODO #25 ValueTracePreprocessor: add test: resolve IElementReference
+	// TODO #25 ValueTracePreprocessor: add test: events pointing to other schema objects should be ignored
+	// TODO #25 ValueTracePreprocessor: add test: rules not relating to schema elements should be ignored
+	// TODO #25 ValueTracePreprocessor: add test: event referring to non-existent rule ID not in map should be ignored
+	// TODO #25 ValueTracePreprocessor: add test: event referring to non-existent rule not in request should be ignored
 
 }

@@ -9,7 +9,7 @@ package org.x2vc.stylesheet.coverage;
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
@@ -82,7 +82,7 @@ class CoverageTraceAnalyzerTest {
 		when(this.xmlContainer.getStylesheeURI()).thenReturn(this.stylesheetURI);
 		when(this.stylesheetManager.get(this.stylesheetURI)).thenReturn(this.stylesheetInfo);
 
-		// TODO CoverageTraceAnalyzer: replace actual instance of StylesheetStructureExtractor with mock
+		// TODO #32 CoverageTraceAnalyzer: replace actual instance of StylesheetStructureExtractor with mock
 		// (requires mocking of the entire stylesheet structure, which is A LOT of work)
 		this.extractor = new StylesheetStructureExtractor();
 		when(this.stylesheetInfo.getStructure()).thenAnswer(a -> this.stylesheetStructure);

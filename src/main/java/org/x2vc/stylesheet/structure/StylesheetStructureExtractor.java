@@ -9,7 +9,7 @@ package org.x2vc.stylesheet.structure;
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
@@ -114,7 +114,7 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 
 				case XMLStreamConstants.PROCESSING_INSTRUCTION:
 					logger.warn("processing PROCESSING_INSTRUCTION event ignored: {}", event);
-					// TODO XSLT structure extraction: decide how to handle processing instructions
+					// TODO #24 XSLT structure extraction: decide how to handle processing instructions
 					break;
 
 				case XMLStreamConstants.CHARACTERS:
@@ -149,7 +149,7 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 
 				case XMLStreamConstants.ENTITY_REFERENCE:
 					logger.warn("ignoring ENTITY_REFERENCE event: {}", event);
-					// TODO XSLT structure extraction: decide how to handle entity references
+					// TODO #27 XSLT structure extraction: decide how to handle entity references
 					// (never seen them occur, though)
 					break;
 
@@ -159,7 +159,7 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 					break;
 
 				case XMLStreamConstants.DTD:
-					// TODO XSLT structure extraction: decide how to handle entity references
+					// TODO #27 XSLT structure extraction: decide how to handle entity references
 					logger.warn("ignoring DTD event: {}", event);
 					break;
 
@@ -174,12 +174,12 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 					break;
 
 				case XMLStreamConstants.NOTATION_DECLARATION:
-					// TODO XSLT structure extraction: decide how to handle notation declarations
+					// TODO #27 XSLT structure extraction: decide how to handle notation declarations
 					logger.warn("ignoring NOTATION_DECLARATION event: {}", event);
 					break;
 
 				case XMLStreamConstants.ENTITY_DECLARATION:
-					// TODO XSLT structure extraction: decide how to handle entity declarations
+					// TODO #27 XSLT structure extraction: decide how to handle entity declarations
 					logger.warn("ignoring ENTITY_DECLARATION event: {}", event);
 					break;
 

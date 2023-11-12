@@ -9,7 +9,7 @@ package org.x2vc.utilities;
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
@@ -102,7 +102,7 @@ public final class PolymorphLocation
 				return 0;
 			}
 		}
-		// TODO Support comparison of locations from different sources
+		// TODO #20 Support comparison of locations from different sources
 	}
 
 	@Override
