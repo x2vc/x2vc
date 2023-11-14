@@ -15,7 +15,7 @@ caution than usual.
 
 ## Requirements
 
-x2vc requires at least Java 20 installed (check using java -version on the
+x2vc requires at least Java 21 installed (check using java -version on the
 command line). All other required libraries are bundled in the distribution
 archive.
 
