@@ -9,7 +9,7 @@ package org.x2vc.xml.request;
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
@@ -18,7 +18,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 /**
- * An {@link IGenerationRule} to register an value for a template parameter to pass to the XSLT processor.
+ * An {@link IGenerationRule} to register a value for a template parameter to pass to the XSLT processor.
  */
 public interface IStylesheetParameterRule extends IGenerationRule {
 
