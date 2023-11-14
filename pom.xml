@@ -14,8 +14,8 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<maven.compiler.source>20</maven.compiler.source>
-		<maven.compiler.target>20</maven.compiler.target>
+		<maven.compiler.source>21</maven.compiler.source>
+		<maven.compiler.target>21</maven.compiler.target>
 	</properties>
 
 	<distributionManagement>
@@ -65,7 +65,7 @@
 		<dependency>
 			<groupId>info.picocli</groupId>
 			<artifactId>picocli</artifactId>
-			<version>4.7.4</version>
+			<version>4.7.5</version>
 		</dependency>
 		<dependency>
 			<groupId>javax.activation</groupId>
@@ -90,7 +90,7 @@
 		<dependency>
 			<groupId>com.typesafe</groupId>
 			<artifactId>config</artifactId>
-			<version>1.4.2</version>
+			<version>1.4.3</version>
 		</dependency>
 		<dependency>
 			<groupId>com.github.racc</groupId>
@@ -256,7 +256,7 @@
 						<path>
 							<groupId>info.picocli</groupId>
 							<artifactId>picocli-codegen</artifactId>
-							<version>4.7.4</version>
+							<version>4.7.5</version>
 						</path>
 						<path>
 							<groupId>org.apache.logging.log4j</groupId>
