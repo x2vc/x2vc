@@ -15,6 +15,13 @@ package org.x2vc.process.commands;
  */
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.PathMatcher;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.concurrent.Callable;
 
@@ -24,6 +31,7 @@ import org.x2vc.process.IWorkerProcessManager;
 import org.x2vc.process.LoggingMixin;
 import org.x2vc.process.tasks.ProcessingMode;
 
+import com.google.common.collect.Lists;
 import com.google.inject.Inject;
 
 import picocli.CommandLine.Mixin;
@@ -56,7 +64,7 @@ public abstract class AbstractProcessCommand implements Callable<Integer> {
 		logger.traceEntry();
 
 		// ensure that all files are accessible
-		if (!checkFiles()) {
+		if (!resolveAndCheckFiles()) {
 			return logger.traceExit(1);
 		}
 
@@ -88,21 +96,49 @@ public abstract class AbstractProcessCommand implements Callable<Integer> {
 	protected abstract ProcessingMode getProcessingMode();
 
 	/**
-	 * Checks whether the files specified on the command line are readable.
+	 * Resolves wildcards in file names and checks whether the files specified on the command line are readable.
 	 */
-	private boolean checkFiles() {
+	private boolean resolveAndCheckFiles() {
+		logger.traceEntry();
 		int erroneousFiles = 0;
-		for (final File file : this.xsltFiles) {
+
+		// Resolves any wildcards left over in the file names specified in @{@link #xsltFiles}.
+		// The reason for this is that wildcard expansion is only performed on Windows (see #3).
+
+		List<File> resolvedFiles = Lists.newArrayList();
+		for (final File originalFile: xsltFiles) {
+			if ((originalFile.getPath().contains("*")) || (originalFile.getPath().contains("?"))) {
+				Path path = Paths.get("");
+				if (originalFile.getParentFile() != null) {
+					path = originalFile.getParentFile().toPath();
+				}
+				try (DirectoryStream<Path> dirStream = Files.newDirectoryStream(path, originalFile.getName())) {
+					dirStream.forEach(p -> {
+						logger.debug("resolving wildcard {} to filename {}", originalFile.getPath(), p.toFile());
+						resolvedFiles.add(p.toFile());
+					});
+				} catch (IOException e) {
+					logger.error("Unable to resolve file specification: {}", originalFile.getPath(), e);
+					erroneousFiles++;
+				}
+			} else {
+				resolvedFiles.add(originalFile);
+			}
+		}
+
+		for (final File file : resolvedFiles) {
 			if (!file.canRead()) {
 				logger.error("Unable to read file {}", file);
 				erroneousFiles++;
 			}
 		}
+
 		if (erroneousFiles > 0) {
 			logger.fatal("{} of the files specified are inaccessible, aborting", erroneousFiles);
-			return false;
+			return logger.traceExit(false);
 		} else {
-			return true;
+			xsltFiles = resolvedFiles;
+			return logger.traceExit(true);
 		}
 	}
 }

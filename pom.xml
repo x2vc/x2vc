@@ -18,7 +18,17 @@
 		<maven.compiler.target>21</maven.compiler.target>
 	</properties>
 
+	<scm>
+		<developerConnection>scm:git:https://github.com/x2vc/xevc.git</developerConnection>
+		<tag>HEAD</tag>
+	</scm>
+
 	<distributionManagement>
+		<repository>
+			<id>github</id>
+			<name>GitHub Packages</name>
+			<url>https://maven.pkg.github.com/x2vc/x2vc</url>
+		</repository>
 		<site>
 			<id>x2vc.website</id>
 			<url>scm:git:https://github.com/x2vc/x2vc.github.io.git</url>
@@ -162,14 +172,12 @@
 		<pluginManagement>
 			<!-- lock down plugins versions to avoid using Maven defaults  -->
 			<plugins>
-				<!-- clean lifecycle, see
-				https://maven.apache.org/ref/current/maven-core/lifecycles.html#clean_Lifecycle -->
+				<!-- clean lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#clean_Lifecycle -->
 				<plugin>
 					<artifactId>maven-clean-plugin</artifactId>
 					<version>3.3.2</version>
 				</plugin>
-				<!-- default lifecycle, jar packaging: see
-				https://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_jar_packaging -->
+				<!-- default lifecycle, jar packaging: see https://maven.apache.org/ref/current/maven-core/default-bindings.html#Plugin_bindings_for_jar_packaging -->
 				<plugin>
 					<artifactId>maven-resources-plugin</artifactId>
 					<version>3.3.1</version>
@@ -213,18 +221,21 @@
 					<artifactId>license-maven-plugin</artifactId>
 					<version>2.3.0</version>
 				</plugin>
-				<!-- startup script generation, see
-				https://www.mojohaus.org/appassembler/appassembler-maven-plugin -->
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-release-plugin</artifactId>
+					<version>3.0.1</version>
+				</plugin>
+				<!-- startup script generation, see https://www.mojohaus.org/appassembler/appassembler-maven-plugin -->
 				<plugin>
 					<groupId>org.codehaus.mojo</groupId>
 					<artifactId>appassembler-maven-plugin</artifactId>
 					<version>2.1.0</version>
 				</plugin>
-				<!-- site lifecycle, see
-				https://maven.apache.org/ref/current/maven-core/lifecycles.html#site_Lifecycle -->
+				<!-- site lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#site_Lifecycle -->
 				<plugin>
 					<artifactId>maven-site-plugin</artifactId>
-					<version>4.0.0-M11</version>
+					<version>4.0.0-M10</version>
 				</plugin>
 				<plugin>
 					<artifactId>maven-project-info-reports-plugin</artifactId>
@@ -251,8 +262,7 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
 					<annotationProcessorPaths>
-						<!-- picocli, see
-						https://picocli.info/#_using_build_tools -->
+						<!-- picocli, see https://picocli.info/#_using_build_tools -->
 						<path>
 							<groupId>info.picocli</groupId>
 							<artifactId>picocli-codegen</artifactId>
@@ -321,8 +331,7 @@
 					</execution>
 				</executions>
 				<configuration>
-					<outputFile>
-						${project.build.directory}/attribution/attribution.xml</outputFile>
+					<outputFile>${project.build.directory}/attribution/attribution.xml</outputFile>
 				</configuration>
 			</plugin>
 
@@ -343,8 +352,7 @@
 							<dir>${project.build.directory}/attribution</dir>
 							<stylesheet>src/assembly/attribution.xslt</stylesheet>
 							<fileMappers>
-								<fileMapper
-									implementation="org.codehaus.plexus.components.io.filemappers.RegExpFileMapper">
+								<fileMapper implementation="org.codehaus.plexus.components.io.filemappers.RegExpFileMapper">
 									<pattern>attribution.xml</pattern>
 									<replacement>NOTICE</replacement>
 								</fileMapper>
@@ -385,8 +393,7 @@
 				</configuration>
 				<executions>
 					<execution>
-						<id>make-assembly</id> <!-- this is used for inheritance
-						merges -->
+						<id>make-assembly</id> <!-- this is used for inheritance merges -->
 						<phase>package</phase> <!-- bind to the packaging phase -->
 						<goals>
 							<goal>single</goal>
