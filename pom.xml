@@ -18,6 +18,19 @@
 		<maven.compiler.target>21</maven.compiler.target>
 	</properties>
 
+	<scm>
+		<developerConnection>scm:git:https://github.com/x2vc/xevc.git</developerConnection>
+		<tag>HEAD</tag>
+	</scm>
+
+	<distributionManagement>
+		<repository>
+			<id>github</id>
+			<name>GitHub Packages</name>
+			<url>https://maven.pkg.github.com/x2vc/x2vc</url>
+		</repository>
+	</distributionManagement>
+
 	<dependencies>
 		<!-- full runtime dependencies -->
 		<dependency>
@@ -188,6 +201,11 @@
 				<plugin>
 					<artifactId>maven-assembly-plugin</artifactId>
 					<version>3.6.0</version>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-release-plugin</artifactId>
+					<version>3.0.1</version>
 				</plugin>
 				<!-- startup script generation, see https://www.mojohaus.org/appassembler/appassembler-maven-plugin -->
 				<plugin>
