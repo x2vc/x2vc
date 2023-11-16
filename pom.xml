@@ -19,8 +19,9 @@
 	</properties>
 
 	<scm>
-		<developerConnection>scm:git:https://github.com/x2vc/xevc.git</developerConnection>
+		<developerConnection>scm:git:https://github.com/x2vc/x2vc.git</developerConnection>
 		<tag>HEAD</tag>
+		<url>https://github.com/x2vc/x2vc</url>
 	</scm>
 
 	<distributionManagement>
@@ -241,13 +242,6 @@
 					<artifactId>maven-project-info-reports-plugin</artifactId>
 					<version>3.4.5</version>
 				</plugin>
-				<!-- TODO Javadoc generation doesn't work - examine later '
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-javadoc-plugin</artifactId>
-					<version>2.9</version>
-				</plugin>
-				-->
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-scm-publish-plugin</artifactId>
@@ -459,11 +453,11 @@
 									==> ?
 								<report>dependency-info</report>
 									==> not intended to be used as a dependency
+								<report>dependency-management</report>
 								<report>index</report>
 								<report>plugin-management</report>
 							-->
 							<report>ci-management</report>
-							<report>dependency-management</report>
 							<report>distribution-management</report>
 							<report>issue-management</report>
 							<report>licenses</report>

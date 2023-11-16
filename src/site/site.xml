@@ -13,14 +13,15 @@
 
 	<bannerLeft name="XSLT XSS Vulnerability Checker" href="https://x2vc.org/">
 		<image src="images/x2vc-logo.png" />
-		<!--  TODO adjust the baseline of the logo to match the text next to it -->
 	</bannerLeft>
 
 	<custom>
 		<fluidoSkin>
+			<!--  TODO search does not work yet
 			<googleSearch>
 				<sitesearch />
 			</googleSearch>
+			 -->
 			<gitHub>
 				<projectId>x2vc/x2vc</projectId>
 				<ribbonOrientation>right</ribbonOrientation>
@@ -38,13 +39,20 @@
 
 		<menu name="Introduction">
 			<item name="Overview" href="index.html" />
+			<!--  TODO  add this back in once the pages are complete
+                 If you're interested in how this all works and what the vulneratbilities this tool checks for actually are, check the pages
+                 in the *background* section, most notably the [Vulnerability Classes](vclasses.html) and the [Mode of Operation](mode-op.html). -->
 			<item name="Installation" href="installation.html" />
 			<item name="Usage" href="usage.html">
 				<item name="XSS Scan" href="usage-xss.html" />
 				<item name="Schema Derivation" href="usage-schema.html" />
+				<!--  TODO explain requirement for manual intervention -->
 			</item>
 		</menu>
 
+		<!--  TODO add schema file syntax -->
+
+		<!--  TODO complete the following chapters
 		<menu name="Background">
 			<item name="Scope and Limitations" href="scope.html" />
 			<item name="Vulnerability Classes" href="vclasses.html">
@@ -63,6 +71,7 @@
 			<item name="Mode of Operation" href="mode-op.html" />
 			<item name="References" href="references.html" />
 		</menu>
+		-->
 
 		<menu name="Advanced Usage">
 			<item name="Configuration" href="config.html" />
@@ -71,11 +80,10 @@
 
 		<menu name="Development">
 			<item name="Checkout and Build" href="build.html" />
-			<item name="IDE Recommendations" href="ide.html" />
-			<item name="Debugging" href="debug.html" />
+			<item name="IDE" href="ide.html" />
+			<!--  TODO	<item name="Debugging" href="debug.html" /> -->
 			<item name="Issue Tracker" href="https://github.com/x2vc/x2vc/issues" target="_blank" />
-<!-- TODO	<item name="Technical Documentation" href="todo.html" />
-			<item name="Javadoc" href="todo.html" />
+			<!-- TODO	<item name="Technical Documentation" href="todo.html" />
 			<item name="Test Reports" href="todo.html" /> -->
 		</menu>
 

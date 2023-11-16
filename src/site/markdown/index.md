@@ -36,5 +36,3 @@ safeguard operations.
 If you want to give x2vc a try, head on over to the [installation](installation.html) and [usage](usage.html) instructions.
 A number of example files are available so that you don't have to bring your own.
 
-If you're interested in how this all works and what the vulneratbilities this tool checks for actually are, check the pages
-in the *background* section, most notably the [Vulnerability Classes](vclasses.html) and the [Mode of Operation](mode-op.html).
