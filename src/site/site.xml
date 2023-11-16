@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<site xmlns="http://maven.apache.org/SITE/2.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/SITE/2.0.0 https://maven.apache.org/xsd/site-2.0.0.xsd"
+  name="x2vc">
+
+	<!-- site model reference: https://maven.apache.org/doxia/doxia-sitetools/doxia-site-model/site.html -->
+
+	<skin>
+		<groupId>org.apache.maven.skins</groupId>
+		<artifactId>maven-fluido-skin</artifactId>
+		<version>2.0.0-M8</version>
+	</skin>
+
+	<bannerLeft name="XSLT XSS Vulnerability Checker" href="https://x2vc.org/">
+		<image src="images/x2vc-logo.png" />
+	</bannerLeft>
+
+	<custom>
+		<fluidoSkin>
+			<!--  TODO search does not work yet
+			<googleSearch>
+				<sitesearch />
+			</googleSearch>
+			 -->
+			<gitHub>
+				<projectId>x2vc/x2vc</projectId>
+				<ribbonOrientation>right</ribbonOrientation>
+				<ribbonColor>orange</ribbonColor>
+			</gitHub>
+		</fluidoSkin>
+	</custom>
+
+	<body>
+		<links>
+			<item name="W3C XSLT" href="https://www.w3.org/TR/xslt/" target="_blank"/>
+			<item name="OWASP" href="https://owasp.org/www-community/attacks/xss/" target="_blank"/>
+			<item name="MITRE CWE-79" href="https://cwe.mitre.org/data/definitions/79.html" target="_blank"/>
+		</links>
+
+		<menu name="Introduction">
+			<item name="Overview" href="index.html" />
+			<!--  TODO  add this back in once the pages are complete
+                 If you're interested in how this all works and what the vulneratbilities this tool checks for actually are, check the pages
+                 in the *background* section, most notably the [Vulnerability Classes](vclasses.html) and the [Mode of Operation](mode-op.html). -->
+			<item name="Installation" href="installation.html" />
+			<item name="Usage" href="usage.html">
+				<item name="XSS Scan" href="usage-xss.html" />
+				<item name="Schema Derivation" href="usage-schema.html" />
+				<!--  TODO explain requirement for manual intervention -->
+			</item>
+		</menu>
+
+		<!--  TODO add schema file syntax -->
+
+		<!--  TODO complete the following chapters
+		<menu name="Background">
+			<item name="Scope and Limitations" href="scope.html" />
+			<item name="Vulnerability Classes" href="vclasses.html">
+				<item name="A.1 - Attribute Injection" href="vclass-a1.html" />
+				<item name="E.1 - Element Injection" href="vclass-e1.html" />
+				<item name="E.2 - Unrestricted Copy Operation" href="vclass-e2.html" />
+				<item name="E.3 - Disabled Output Escaping" href="vclass-e3.html" />
+				<item name="H.1 - JavaScript Handler Code Injection" href="vclass-h1.html" />
+				<item name="J.1 - JavaScript Block Code Injection" href="vclass-j1.html" />
+				<item name="J.2 - JavaScript Source Manipulation" href="vclass-j2.html" />
+				<item name="S.1 - Inline CSS Code Injection" href="vclass-s1.html" />
+				<item name="S.2 - Internal CSS Code Injection" href="vclass-s2.html" />
+				<item name="S.3 - CSS Source Manipulation" href="vclass-s3.html" />
+				<item name="U.1 - URL Manipulation" href="vclass-u1.html" />
+			</item>
+			<item name="Mode of Operation" href="mode-op.html" />
+			<item name="References" href="references.html" />
+		</menu>
+		-->
+
+		<menu name="Advanced Usage">
+			<item name="Configuration" href="config.html" />
+			<item name="Custom Logging" href="logging.html" />
+		</menu>
+
+		<menu name="Development">
+			<item name="Checkout and Build" href="build.html" />
+			<item name="IDE" href="ide.html" />
+			<!--  TODO	<item name="Debugging" href="debug.html" /> -->
+			<item name="Issue Tracker" href="https://github.com/x2vc/x2vc/issues" target="_blank" />
+			<!-- TODO	<item name="Technical Documentation" href="todo.html" />
+			<item name="Test Reports" href="todo.html" /> -->
+		</menu>
+
+		<menu ref="reports" />
+
+	</body>
+</site>
