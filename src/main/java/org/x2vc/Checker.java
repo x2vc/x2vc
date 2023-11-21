@@ -1,8 +1,3 @@
-package org.x2vc;
-
-import org.apache.logging.log4j.core.config.Configurator;
-import org.x2vc.process.CheckerFactory;
-
 /*-
  * #%L
  * x2vc - XSLT XSS Vulnerability Checker
@@ -16,7 +11,10 @@ import org.x2vc.process.CheckerFactory;
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
+package org.x2vc;
 
+import org.apache.logging.log4j.core.config.Configurator;
+import org.x2vc.process.CheckerFactory;
 import org.x2vc.process.CommonOptions;
 import org.x2vc.process.VersionProvider;
 import org.x2vc.process.commands.FullProcessCommand;

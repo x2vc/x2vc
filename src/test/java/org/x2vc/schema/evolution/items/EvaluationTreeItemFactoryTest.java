@@ -1,5 +1,3 @@
-package org.x2vc.schema.evolution.items;
-
 /*-
  * #%L
  * x2vc - XSLT XSS Vulnerability Checker
@@ -13,6 +11,8 @@ package org.x2vc.schema.evolution.items;
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
+package org.x2vc.schema.evolution.items;
+
 
 import static org.junit.Assert.assertSame;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;

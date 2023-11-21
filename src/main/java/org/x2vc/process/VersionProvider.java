@@ -1,7 +1,3 @@
-package org.x2vc.process;
-
-import com.google.common.base.Strings;
-
 /*-
  * #%L
  * x2vc - XSLT XSS Vulnerability Checker
@@ -11,11 +7,13 @@ import com.google.common.base.Strings;
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- *
+ * 
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
+package org.x2vc.process;
 
+import com.google.common.base.Strings;
 import picocli.CommandLine.IVersionProvider;
 
 /**

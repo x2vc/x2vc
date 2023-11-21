@@ -1,5 +1,3 @@
-package org.x2vc.stylesheet.coverage;
-
 /*-
  * #%L
  * x2vc - XSLT XSS Vulnerability Checker
@@ -13,6 +11,8 @@ package org.x2vc.stylesheet.coverage;
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
+package org.x2vc.stylesheet.coverage;
+
 
 import org.x2vc.stylesheet.structure.IXSLTDirectiveNode;
 import org.x2vc.utilities.PolymorphLocation;

@@ -1,5 +1,3 @@
-package org.x2vc.schema.evolution;
-
 /*-
  * #%L
  * x2vc - XSLT XSS Vulnerability Checker
@@ -13,6 +11,8 @@ package org.x2vc.schema.evolution;
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
+package org.x2vc.schema.evolution;
+
 
 import java.util.*;
 import java.util.function.Consumer;
