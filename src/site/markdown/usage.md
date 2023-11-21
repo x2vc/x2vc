@@ -17,7 +17,8 @@ where `mode` must be one of
 You can specify one or multiple files on the command line. Be aware that there are currently [an
 issue](https://github.com/x2vc/x2vc/issues/3) with wildcards not working consistently on all platforms.
 
-More advanced options are available for further
+You can use the option `-v` to enable debugging messages both on the console and in the log files. Use `-vv` or `-v -v`
+to enable trace logging - be aware that this will be **very** verbose indeed. More advanced options are available for further
 [configuration](config.html) and [logging](logging.html) purposes, but they are not required in most cases.
 
 ## Console output
