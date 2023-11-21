@@ -14,6 +14,8 @@
 package org.x2vc.process;
 
 import java.util.List;
+import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -52,6 +54,7 @@ import org.x2vc.xml.request.RequestGenerator;
 import org.x2vc.xml.value.*;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Provides;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.multibindings.Multibinder;
 import com.typesafe.config.Config;
@@ -186,6 +189,14 @@ public class CheckerModule extends AbstractModule {
 			}
 		});
 		logger.traceExit();
+	}
+
+	/**
+	 * @return the random number generator to use
+	 */
+	@Provides
+	Random provideRandomNumberGenerator() {
+		return ThreadLocalRandom.current();
 	}
 
 }
