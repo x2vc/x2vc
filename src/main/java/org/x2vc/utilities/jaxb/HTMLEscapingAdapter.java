@@ -1,5 +1,3 @@
-package org.x2vc.utilities.jaxb;
-
 /*-
  * #%L
  * x2vc - XSLT XSS Vulnerability Checker
@@ -13,6 +11,8 @@ package org.x2vc.utilities.jaxb;
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
+package org.x2vc.utilities.jaxb;
+
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 

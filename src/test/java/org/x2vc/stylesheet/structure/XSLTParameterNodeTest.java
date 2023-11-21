@@ -1,5 +1,3 @@
-package org.x2vc.stylesheet.structure;
-
 /*-
  * #%L
  * x2vc - XSLT XSS Vulnerability Checker
@@ -13,6 +11,8 @@ package org.x2vc.stylesheet.structure;
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
+package org.x2vc.stylesheet.structure;
+
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;

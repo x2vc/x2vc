@@ -1,5 +1,3 @@
-package org.x2vc.schema.evolution;
-
 /*-
  * #%L
  * x2vc - XSLT XSS Vulnerability Checker
@@ -9,11 +7,11 @@ package org.x2vc.schema.evolution;
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- *
+ * 
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
-
+package org.x2vc.schema.evolution;
 import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertSame;

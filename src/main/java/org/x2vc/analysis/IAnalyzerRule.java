@@ -1,5 +1,3 @@
-package org.x2vc.analysis;
-
 /*-
  * #%L
  * x2vc - XSLT XSS Vulnerability Checker
@@ -13,6 +11,8 @@ package org.x2vc.analysis;
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
+package org.x2vc.analysis;
+
 
 import java.util.List;
 import java.util.Set;

@@ -1,5 +1,3 @@
-package org.x2vc.process.commands;
-
 /*-
  * #%L
  * x2vc - XSLT XSS Vulnerability Checker
@@ -13,6 +11,7 @@ package org.x2vc.process.commands;
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
+package org.x2vc.process.commands;
 
 /**
  * This component controls the overall schema evolution and vulnerability check process for a single stylesheet.

@@ -1,5 +1,3 @@
-package org.x2vc.analysis;
-
 /*-
  * #%L
  * x2vc - XSLT XSS Vulnerability Checker
@@ -9,11 +7,11 @@ package org.x2vc.analysis;
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- *
+ * 
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
-
+package org.x2vc.analysis;
 import static com.google.common.base.Preconditions.checkArgument;
 
 import java.net.URI;

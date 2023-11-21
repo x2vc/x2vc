@@ -272,6 +272,7 @@
 					</compilerArgs>
 				</configuration>
 			</plugin>
+
 			<plugin>
 				<artifactId>maven-surefire-plugin</artifactId>
 				<configuration>
@@ -280,12 +281,20 @@
 			</plugin>
 
 			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifest>
+							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+
+			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>license-maven-plugin</artifactId>
-				<configuration>
-					<verbose>false</verbose>
-					<addSvnKeyWords>true</addSvnKeyWords>
-				</configuration>
 				<executions>
 					<execution>
 						<id>first</id>
@@ -299,6 +308,7 @@
 							<inceptionYear>2023</inceptionYear>
 							<licenseName>epl_only_v2</licenseName>
 							<addSvnKeyWords>false</addSvnKeyWords>
+							<addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage>
 							<roots>
 								<root>src/main/java</root>
 								<root>src/test/java</root>
@@ -306,6 +316,9 @@
 							<extraExtensions>
 								<xslt>xml</xslt>
 							</extraExtensions>
+							<excludes>
+								<exclude>**/package-info.java</exclude>
+							</excludes>
 						</configuration>
 					</execution>
 				</executions>
