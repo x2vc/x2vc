@@ -4,10 +4,6 @@ x2vc provides various options to control its operation. The options are listed a
 [default configuration file](https://github.com/x2vc/x2vc/blob/main/src/main/resources/application.conf).
 There are two ways to override these defaults: specifying individual options or providing an additional configuration file.
 
-**Note:** Due to an [issue with the command line handling](https://github.com/x2vc/x2vc/issues/65), specifying the
-parameters as shown here currently doesn't work. The best approach is to use an [IDE](ide.html) to launch the application with
-the parameters specified as shown - other options are being investigated.
-
 ## Setting individual options
 
 To change the value of an option, use the command line parameter `-D<name>=<value>`. For example, to limit the maximum number of threads to 4, use

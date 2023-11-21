@@ -20,3 +20,6 @@ $ x2vc <mode> <file(s)> --logConfig path/to/alt-log4j2.xml [otherOptions]
 ```
 
 This will cause x2vc to use the alternate configuration file instead of the default file contained in the application.
+
+Note that it is not advised to use this option in combination with `-v` because the results may turn out to be
+different than anticipated.
