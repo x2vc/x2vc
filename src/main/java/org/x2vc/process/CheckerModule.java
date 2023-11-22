@@ -57,6 +57,7 @@ import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.multibindings.Multibinder;
+import com.thedeanda.lorem.LoremIpsum;
 import com.typesafe.config.Config;
 
 /**
@@ -197,6 +198,14 @@ public class CheckerModule extends AbstractModule {
 	@Provides
 	Random provideRandomNumberGenerator() {
 		return ThreadLocalRandom.current();
+	}
+
+	/**
+	 * @return the random text generator to use
+	 */
+	@Provides
+	LoremIpsum provideTextGenerator() {
+		return LoremIpsum.getInstance();
 	}
 
 }

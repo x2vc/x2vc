@@ -61,6 +61,7 @@ import com.github.racc.tscg.TypesafeConfigModule;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import com.thedeanda.lorem.LoremIpsum;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
@@ -141,6 +142,8 @@ class CheckerModuleTest {
 	private Provider<IValueGeneratorFactory> valueGeneratorFactory;
 	@Inject
 	private Provider<Random> randomProvider;
+	@Inject
+	private Provider<LoremIpsum> loremIpsumProvider;
 
 	@BeforeEach
 	void setUp() throws Exception {
@@ -380,6 +383,13 @@ class CheckerModuleTest {
 		final Random rng = this.randomProvider.get();
 		assertNotNull(rng);
 		assertInstanceOf(ThreadLocalRandom.class, rng);
+	}
+
+	@Test
+	void testLoremIpsumProvider() {
+		final LoremIpsum li = this.loremIpsumProvider.get();
+		assertNotNull(li);
+		assertInstanceOf(LoremIpsum.class, li);
 	}
 
 }
