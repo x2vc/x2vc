@@ -7,12 +7,11 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.schema.evolution;
-
 
 import static org.x2vc.CustomAssertions.assertXMLEquals;
 
@@ -87,7 +86,7 @@ class SchemaModificationProcessorTest {
 	})
 	void test_complexSchema_noChanges(String schemaFileName) throws JAXBException, IOException {
 		final File schemaFile = new File(
-				"src/test/resources/data/org.x2vc.schema.evolution.SchemaModificationProcessorTest/" + schemaFileName);
+				"src/test/resources/data/org.x2vc.schema.evolution.SchemaModificationProcessor/" + schemaFileName);
 		final String originalSchemaSource = Files.asCharSource(schemaFile, StandardCharsets.UTF_8).read();
 		final XMLSchema originalSchema = (XMLSchema) this.unmarshaller
 			.unmarshal(new StringReader(originalSchemaSource));
