@@ -16,7 +16,7 @@ package org.x2vc.stylesheet.structure;
 
 import java.util.Optional;
 
-import org.x2vc.utilities.PolymorphLocation;
+import org.x2vc.utilities.xml.PolymorphLocation;
 
 import com.google.common.collect.ImmutableList;
 

@@ -20,7 +20,7 @@ import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.x2vc.stylesheet.structure.IXSLTDirectiveNode;
-import org.x2vc.utilities.PolymorphLocation;
+import org.x2vc.utilities.xml.PolymorphLocation;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Range;

@@ -17,7 +17,7 @@ package org.x2vc.processor;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.x2vc.utilities.PolymorphLocation;
+import org.x2vc.utilities.xml.PolymorphLocation;
 
 import net.sf.saxon.expr.Expression;
 

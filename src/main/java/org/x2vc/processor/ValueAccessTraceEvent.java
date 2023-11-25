@@ -20,7 +20,7 @@ import java.util.UUID;
 
 import javax.xml.transform.SourceLocator;
 
-import org.x2vc.utilities.PolymorphLocation;
+import org.x2vc.utilities.xml.PolymorphLocation;
 
 import net.sf.saxon.expr.Expression;
 

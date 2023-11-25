@@ -15,7 +15,7 @@ package org.x2vc.stylesheet.coverage;
 
 
 import org.x2vc.stylesheet.structure.IXSLTDirectiveNode;
-import org.x2vc.utilities.PolymorphLocation;
+import org.x2vc.utilities.xml.PolymorphLocation;
 
 /**
  * Information about the collected coverage information concerning a single directive of the stylesheet.

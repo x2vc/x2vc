@@ -23,7 +23,7 @@ import java.util.Optional;
 
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.x2vc.utilities.PolymorphLocation;
+import org.x2vc.utilities.xml.PolymorphLocation;
 
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;

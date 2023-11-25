@@ -24,7 +24,7 @@ import org.apache.logging.log4j.Logger;
 import org.x2vc.stylesheet.structure.IStylesheetStructure;
 import org.x2vc.stylesheet.structure.IStylesheetStructureExtractor;
 import org.x2vc.utilities.SaxonLoggerAdapter;
-import org.x2vc.utilities.XMLUtilities;
+import org.x2vc.utilities.xml.XMLUtilities;
 
 import com.github.racc.tscg.TypesafeConfig;
 import com.google.common.collect.Multimap;

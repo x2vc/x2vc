@@ -36,9 +36,9 @@ import org.x2vc.stylesheet.structure.IStylesheetStructure;
 import org.x2vc.stylesheet.structure.IStylesheetStructureExtractor;
 import org.x2vc.stylesheet.structure.IXSLTDirectiveNode;
 import org.x2vc.stylesheet.structure.StylesheetStructureExtractor;
-import org.x2vc.utilities.PolymorphLocation;
 import org.x2vc.utilities.URIUtilities;
 import org.x2vc.utilities.URIUtilities.ObjectType;
+import org.x2vc.utilities.xml.PolymorphLocation;
 import org.x2vc.xml.document.IXMLDocumentContainer;
 
 import com.google.common.collect.ImmutableList;

@@ -16,7 +16,7 @@ package org.x2vc.processor;
 
 import java.util.Optional;
 
-import org.x2vc.utilities.PolymorphLocation;
+import org.x2vc.utilities.xml.PolymorphLocation;
 
 /**
  * An event that tracks the execution (or evaluation) of an XSLT directive.

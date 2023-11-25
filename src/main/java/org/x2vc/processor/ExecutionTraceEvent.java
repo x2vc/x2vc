@@ -17,7 +17,7 @@ package org.x2vc.processor;
 import java.util.Objects;
 import java.util.Optional;
 
-import org.x2vc.utilities.PolymorphLocation;
+import org.x2vc.utilities.xml.PolymorphLocation;
 
 /**
  * Standard implementation of {@link IExecutionTraceEvent}.

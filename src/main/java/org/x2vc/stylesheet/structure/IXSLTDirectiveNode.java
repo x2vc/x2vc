@@ -18,7 +18,7 @@ import java.util.Optional;
 
 import javax.xml.namespace.QName;
 
-import org.x2vc.utilities.PolymorphLocation;
+import org.x2vc.utilities.xml.PolymorphLocation;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;

@@ -17,7 +17,7 @@ package org.x2vc.stylesheet.coverage;
 import java.util.Objects;
 
 import org.x2vc.stylesheet.structure.IXSLTDirectiveNode;
-import org.x2vc.utilities.PolymorphLocation;
+import org.x2vc.utilities.xml.PolymorphLocation;
 
 /**
  * Standard implementation of {@link IDirectiveCoverage}.

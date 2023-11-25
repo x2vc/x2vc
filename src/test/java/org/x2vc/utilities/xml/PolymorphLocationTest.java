@@ -7,12 +7,11 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
-package org.x2vc.utilities;
-
+package org.x2vc.utilities.xml;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.mock;
@@ -28,7 +27,7 @@ import nl.jqno.equalsverifier.EqualsVerifier;
 class PolymorphLocationTest {
 
 	/**
-	 * Test method for {@link org.x2vc.utilities.PolymorphLocation#equals(java.lang.Object)}.
+	 * Test method for {@link org.x2vc.utilities.xml.PolymorphLocation#equals(java.lang.Object)}.
 	 */
 	@Test
 	void testEqualsObject() {
@@ -60,7 +59,7 @@ class PolymorphLocationTest {
 	}
 
 	/**
-	 * Test method for {@link org.x2vc.utilities.PolymorphLocation#from(javax.xml.stream.Location)}.
+	 * Test method for {@link org.x2vc.utilities.xml.PolymorphLocation#from(javax.xml.stream.Location)}.
 	 */
 	@Test
 	void testFromLocation() {
@@ -80,7 +79,7 @@ class PolymorphLocationTest {
 	}
 
 	/**
-	 * Test method for {@link org.x2vc.utilities.PolymorphLocation#from(javax.xml.transform.SourceLocator)}.
+	 * Test method for {@link org.x2vc.utilities.xml.PolymorphLocation#from(javax.xml.transform.SourceLocator)}.
 	 */
 	@Test
 	void testFromSourceLocator() {
