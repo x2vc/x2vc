@@ -7,17 +7,16 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.xml.value;
 
-
 import java.net.URI;
 import java.util.HashSet;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.Random;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -47,8 +46,11 @@ public class PrefixSelector implements IPrefixSelector {
 	private static final Logger logger = LogManager.getLogger();
 	private IStylesheetManager stylesheetManager;
 
+	private Random rng;
+
 	@Inject
-	PrefixSelector(IStylesheetManager stylesheetManager) {
+	PrefixSelector(Random rng, IStylesheetManager stylesheetManager) {
+		this.rng = rng;
 		this.stylesheetManager = stylesheetManager;
 	}
 
@@ -83,15 +85,14 @@ public class PrefixSelector implements IPrefixSelector {
 				}
 			});
 
-		final int index = ThreadLocalRandom.current().nextInt(possiblePrefixes.size());
+		final int index = this.rng.nextInt(possiblePrefixes.size());
 		logger.debug("selecting {} out of {} possible prefixes left after filtering", index, possiblePrefixes.size());
 		final String prefix = possiblePrefixes.toArray(new String[0])[index];
 		return logger.traceExit(new PrefixData(prefix, VALUE_LENGTH));
 	}
 
 	/**
-	 * @return a {@link HashSet} of all of the permutations possible for the set
-	 *         prefix length
+	 * @return a {@link HashSet} of all of the permutations possible for the set prefix length
 	 */
 	private HashSet<String> generatePossiblePrefixes() {
 		List<String> values = Lists.newArrayList("");

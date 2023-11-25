@@ -7,15 +7,16 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.xml.value;
+
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.Random;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -54,8 +55,16 @@ public class ValueGenerator implements IValueGenerator {
 	private int stringMinWordCount;
 	private int stringMaxWordCount;
 
+	/**
+	 * When a mixed value is generated, how many words should be generated randomly for each text part?
+	 */
+	private int mixedMinWordCount;
+	private int mixedMaxWordCount;
+
 	private static final Logger logger = LogManager.getLogger();
 
+	private Random rng;
+	private LoremIpsum textGenerator;
 	private ISchemaManager schemaManager;
 	private IDocumentRequest request;
 	private IPrefixSelector prefixSelector;
@@ -64,33 +73,42 @@ public class ValueGenerator implements IValueGenerator {
 	private String valuePrefix;
 	private Integer valueLength;
 	private List<IValueDescriptor> valueDescriptors;
-	private LoremIpsum textGenerator;
 	int nextGeneratedValueCounter = 1;
 
 	/**
 	 * Creates a new value generator.
 	 *
+	 * @param rng
+	 * @param textGenerator
 	 * @param schemaManager
 	 * @param prefixSelector
 	 * @param request
 	 * @param discreteValueSelectionRatio
 	 * @param stringMinWordCount
 	 * @param stringMaxWordCount
+	 * @param mixedMinWordCount
+	 * @param mixedMaxWordCount
 	 */
 	@Inject
-	public ValueGenerator(ISchemaManager schemaManager, IPrefixSelector prefixSelector,
+	public ValueGenerator(Random rng, LoremIpsum textGenerator, ISchemaManager schemaManager,
+			IPrefixSelector prefixSelector,
 			@Assisted IDocumentRequest request,
 			@TypesafeConfig("x2vc.xml.value.discrete_value_selection_ratio") Double discreteValueSelectionRatio,
 			@TypesafeConfig("x2vc.xml.value.string_min_word_count") Integer stringMinWordCount,
-			@TypesafeConfig("x2vc.xml.value.string_max_word_count") Integer stringMaxWordCount) {
+			@TypesafeConfig("x2vc.xml.value.string_max_word_count") Integer stringMaxWordCount,
+			@TypesafeConfig("x2vc.xml.value.mixed_min_word_count") Integer mixedMinWordCount,
+			@TypesafeConfig("x2vc.xml.value.mixed_max_word_count") Integer mixedMaxWordCount) {
+		this.rng = rng;
+		this.textGenerator = textGenerator;
 		this.schemaManager = schemaManager;
 		this.prefixSelector = prefixSelector;
 		this.request = request;
 		this.discreteValueSelectionRatio = discreteValueSelectionRatio;
 		this.stringMinWordCount = stringMinWordCount;
 		this.stringMaxWordCount = stringMaxWordCount;
+		this.mixedMinWordCount = mixedMinWordCount;
+		this.mixedMaxWordCount = mixedMaxWordCount;
 		this.valueDescriptors = Lists.newArrayList();
-		this.textGenerator = LoremIpsum.getInstance();
 	}
 
 	@Override
@@ -254,7 +272,7 @@ public class ValueGenerator implements IValueGenerator {
 		}
 		switch (dataType) {
 		case BOOLEAN:
-			return (ThreadLocalRandom.current().nextBoolean()) ? "true" : "false";
+			return (this.rng.nextBoolean()) ? "true" : "false";
 		case INTEGER:
 			return generateValueForIntegerObject(schemaObject);
 		case STRING:
@@ -286,10 +304,10 @@ public class ValueGenerator implements IValueGenerator {
 			} else {
 				// no, the values are just "interesting" values - select one of these, but not
 				// all of the time
-				selectDiscreteValue = (ThreadLocalRandom.current().nextDouble() < this.discreteValueSelectionRatio);
+				selectDiscreteValue = (this.rng.nextDouble() < this.discreteValueSelectionRatio);
 			}
 			if (selectDiscreteValue) {
-				final int index = ThreadLocalRandom.current().nextInt(discreteValues.length);
+				final int index = this.rng.nextInt(discreteValues.length);
 				logger.debug("selecting discrete value {} of {} values available", index + 1, discreteValues.length);
 				result = Integer.toString(discreteValues[index].asInteger());
 			}
@@ -299,7 +317,7 @@ public class ValueGenerator implements IValueGenerator {
 		if (result == null) {
 			final Integer minValue = schemaObject.getMinValue().orElse(Integer.MIN_VALUE);
 			final Integer maxValue = schemaObject.getMaxValue().orElse(Integer.MAX_VALUE - 1);
-			result = Integer.toString(ThreadLocalRandom.current().nextInt(minValue, maxValue + 1));
+			result = Integer.toString(this.rng.nextInt(minValue, maxValue + 1));
 		}
 		return logger.traceExit(result);
 	}
@@ -324,10 +342,10 @@ public class ValueGenerator implements IValueGenerator {
 			} else {
 				// no, the values are just "interesting" values - select one of these, but not
 				// all of the time
-				selectDiscreteValue = (ThreadLocalRandom.current().nextDouble() < this.discreteValueSelectionRatio);
+				selectDiscreteValue = (this.rng.nextDouble() < this.discreteValueSelectionRatio);
 			}
 			if (selectDiscreteValue) {
-				final int index = ThreadLocalRandom.current().nextInt(discreteValues.length);
+				final int index = this.rng.nextInt(discreteValues.length);
 				logger.debug("selecting discrete value {} of {} values available", index + 1, discreteValues.length);
 				result = discreteValues[index].asString();
 			}
@@ -378,7 +396,7 @@ public class ValueGenerator implements IValueGenerator {
 		} else {
 			if (this.request.getMixedContentGenerationMode() == MixedContentGenerationMode.FULL) {
 				// generate some raw content: some text with a few tags inside
-				value = switch (ThreadLocalRandom.current().nextInt(6)) {
+				value = switch (this.rng.nextInt(6)) {
 				case 1 -> "#PREFIX# <b>#TEXT#</b> #TEXT#";
 				case 2 -> "#PREFIX# <i>#TEXT#</i> #TEXT#";
 				case 3 -> "#PREFIX# <a href=\"foobar\">#TEXT#</a> #TEXT#";
@@ -397,7 +415,8 @@ public class ValueGenerator implements IValueGenerator {
 				value = value.replaceFirst("#PREFIX#", prefixValue);
 			}
 			while (value.contains("#TEXT#")) {
-				value = value.replaceFirst("#TEXT#", this.textGenerator.getWords(5, 50));
+				value = value.replaceFirst("#TEXT#",
+						this.textGenerator.getWords(this.mixedMinWordCount, this.mixedMaxWordCount));
 			}
 			this.valueDescriptors.add(new ValueDescriptor(rule.getElementID(), rule.getID(), value));
 		}
@@ -441,15 +460,15 @@ public class ValueGenerator implements IValueGenerator {
 		switch (resultType.getSequenceItemType()) {
 		case BOOLEAN:
 			result = new BooleanExtensionFunctionResult(function.getID(),
-					ThreadLocalRandom.current().nextBoolean());
+					this.rng.nextBoolean());
 			break;
 		case INT:
 			result = new IntegerExtensionFunctionResult(function.getID(),
-					ThreadLocalRandom.current().nextInt());
+					this.rng.nextInt());
 			break;
 		case INTEGER:
 			result = new IntegerExtensionFunctionResult(function.getID(),
-					ThreadLocalRandom.current().nextInt());
+					this.rng.nextInt());
 			break;
 		case STRING:
 			result = new StringExtensionFunctionResult(function.getID(),
@@ -546,15 +565,15 @@ public class ValueGenerator implements IValueGenerator {
 		switch (resultType.getSequenceItemType()) {
 		case BOOLEAN:
 			result = new BooleanStylesheetParameterValue(parameter.getID(),
-					ThreadLocalRandom.current().nextBoolean());
+					this.rng.nextBoolean());
 			break;
 		case INT:
 			result = new IntegerStylesheetParameterValue(parameter.getID(),
-					ThreadLocalRandom.current().nextInt());
+					this.rng.nextInt());
 			break;
 		case INTEGER:
 			result = new IntegerStylesheetParameterValue(parameter.getID(),
-					ThreadLocalRandom.current().nextInt());
+					this.rng.nextInt());
 			break;
 		case STRING:
 			result = new StringStylesheetParameterValue(parameter.getID(),

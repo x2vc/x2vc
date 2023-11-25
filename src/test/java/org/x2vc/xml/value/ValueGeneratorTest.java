@@ -7,18 +7,18 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.xml.value;
 
-
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import java.net.URI;
 import java.util.*;
@@ -29,6 +29,8 @@ import javax.annotation.Nullable;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.x2vc.schema.ISchemaManager;
@@ -42,8 +44,7 @@ import org.x2vc.xml.document.IStylesheetParameterValue;
 import org.x2vc.xml.request.*;
 import org.x2vc.xml.value.IPrefixSelector.PrefixData;
 
-import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Multiset;
+import com.thedeanda.lorem.LoremIpsum;
 
 import net.sf.saxon.s9api.ItemType;
 import net.sf.saxon.s9api.OccurrenceIndicator;
@@ -52,6 +53,18 @@ import net.sf.saxon.s9api.XdmValue;
 
 @ExtendWith(MockitoExtension.class)
 class ValueGeneratorTest {
+
+	private static final int MIN_WORD_COUNT = 10;
+	private static final int MAX_WORD_COUNT = 50;
+	private static final double DISCRETE_VALUE_SELECTION_RATIO = 0.75;
+	private static final double DVSR_SEL_DISCRETE_VALUE = 0.5;
+	private static final double DVSR_SEL_RANDOM_VALUE = 0.8;
+
+	@Mock
+	Random rng;
+
+	@Mock
+	LoremIpsum rtg;
 
 	// stylesheet
 	@Mock
@@ -177,7 +190,9 @@ class ValueGeneratorTest {
 		this.ruleID = UUID.randomUUID();
 
 		// value generator under test
-		this.valueGenerator = new ValueGenerator(this.schemaManager, this.prefixSelector, this.request, 0.75, 10, 50);
+		this.valueGenerator = new ValueGenerator(this.rng, this.rtg, this.schemaManager, this.prefixSelector,
+				this.request, DISCRETE_VALUE_SELECTION_RATIO, MIN_WORD_COUNT, MAX_WORD_COUNT, MIN_WORD_COUNT,
+				MAX_WORD_COUNT);
 
 	}
 
@@ -230,7 +245,8 @@ class ValueGeneratorTest {
 		lenient().when(this.StylesheetParameterRule.getID()).thenReturn(this.ruleID);
 		lenient().when(this.StylesheetParameterRule.getParameterID()).thenReturn(this.parameterID);
 		if (withRequestedValue) {
-			lenient().when(this.StylesheetParameterRule.getRequestedValue()).thenReturn(Optional.of(this.requestedValue));
+			lenient().when(this.StylesheetParameterRule.getRequestedValue())
+				.thenReturn(Optional.of(this.requestedValue));
 		} else {
 			lenient().when(this.StylesheetParameterRule.getRequestedValue()).thenReturn(Optional.empty());
 		}
@@ -257,7 +273,7 @@ class ValueGeneratorTest {
 		final List<XMLDiscreteValue> valueList = Arrays.stream(discreteValues)
 			.map(val -> XMLDiscreteValue.builder().withStringValue(val).build()).toList();
 		lenient().when(this.attribute.getDataType()).thenReturn(XMLDataType.STRING);
-		lenient().when(this.attribute.getDiscreteValues()).thenReturn(Set.copyOf(valueList));
+		lenient().when(this.attribute.getDiscreteValues()).thenReturn(List.copyOf(valueList));
 		lenient().when(this.attribute.isFixedValueset()).thenReturn(Optional.of(fixedValueset));
 		lenient().when(this.attribute.getMaxLength()).thenReturn(Optional.ofNullable(maxLength));
 		lenient().when(this.attribute.getMinValue()).thenThrow(new IllegalStateException()); // n/a for string
@@ -269,7 +285,7 @@ class ValueGeneratorTest {
 	 */
 	void prepareAttributeForBoolean() {
 		lenient().when(this.attribute.getDataType()).thenReturn(XMLDataType.BOOLEAN);
-		lenient().when(this.attribute.getDiscreteValues()).thenReturn(Set.of());
+		lenient().when(this.attribute.getDiscreteValues()).thenReturn(List.of());
 		lenient().when(this.attribute.isFixedValueset()).thenReturn(Optional.empty());
 		lenient().when(this.attribute.getMaxLength()).thenThrow(new IllegalStateException()); // n/a for boolean
 		lenient().when(this.attribute.getMinValue()).thenThrow(new IllegalStateException()); // n/a for boolean
@@ -281,7 +297,7 @@ class ValueGeneratorTest {
 	 */
 	void prepareAttributeForInteger(@Nullable Integer minValue, @Nullable Integer maxValue) {
 		lenient().when(this.attribute.getDataType()).thenReturn(XMLDataType.INTEGER);
-		lenient().when(this.attribute.getDiscreteValues()).thenReturn(Set.of());
+		lenient().when(this.attribute.getDiscreteValues()).thenReturn(List.of());
 		lenient().when(this.attribute.isFixedValueset()).thenReturn(Optional.empty());
 		lenient().when(this.attribute.getMaxLength()).thenThrow(new IllegalStateException()); // n/a for integer
 		lenient().when(this.attribute.getMinValue()).thenReturn(Optional.ofNullable(minValue));
@@ -295,7 +311,7 @@ class ValueGeneratorTest {
 		final List<XMLDiscreteValue> valueList = Arrays.stream(discreteValues)
 			.map(val -> XMLDiscreteValue.builder().withIntegerValue(val).build()).toList();
 		lenient().when(this.attribute.getDataType()).thenReturn(XMLDataType.INTEGER);
-		lenient().when(this.attribute.getDiscreteValues()).thenReturn(Set.copyOf(valueList));
+		lenient().when(this.attribute.getDiscreteValues()).thenReturn(List.copyOf(valueList));
 		lenient().when(this.attribute.isFixedValueset()).thenReturn(Optional.of(fixedValueset));
 		lenient().when(this.attribute.getMaxLength()).thenThrow(new IllegalStateException()); // n/a for integer
 		lenient().when(this.attribute.getMinValue()).thenReturn(Optional.empty());
@@ -338,6 +354,17 @@ class ValueGeneratorTest {
 	}
 
 	/**
+	 * Prepares the {@link IExtensionFunction} mockup as integer for use without discrete values
+	 */
+	void prepareFunctionForInt() {
+		lenient().when(this.functionResultType.getItemType()).thenReturn(ItemType.INT);
+		lenient().when(this.functionResultType.getOccurrenceIndicator()).thenReturn(OccurrenceIndicator.ONE);
+		lenient().when(this.functionResultType.getSequenceItemType()).thenReturn(SequenceItemType.INT);
+		lenient().when(this.functionResultType.getSequenceType())
+			.thenReturn(SequenceType.makeSequenceType(ItemType.INT, OccurrenceIndicator.ONE));
+	}
+
+	/**
 	 * Prepares the {@link IStylesheetParameter} mockup as string for use without discrete values
 	 *
 	 * @param maxLength
@@ -373,6 +400,17 @@ class ValueGeneratorTest {
 	}
 
 	/**
+	 * Prepares the {@link IStylesheetParameter} mockup as integer for use without discrete values
+	 */
+	void prepareParameterForInt() {
+		lenient().when(this.parameterType.getItemType()).thenReturn(ItemType.INT);
+		lenient().when(this.parameterType.getOccurrenceIndicator()).thenReturn(OccurrenceIndicator.ONE);
+		lenient().when(this.parameterType.getSequenceItemType()).thenReturn(SequenceItemType.INT);
+		lenient().when(this.parameterType.getSequenceType())
+			.thenReturn(SequenceType.makeSequenceType(ItemType.INT, OccurrenceIndicator.ONE));
+	}
+
+	/**
 	 * Test method for {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ISetAttributeRule)}
 	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
@@ -381,8 +419,11 @@ class ValueGeneratorTest {
 		prepareSetAttributeRule(false);
 		prepareAttributeForString(null);
 
+		when(this.rtg.getWords(MIN_WORD_COUNT, MAX_WORD_COUNT)).thenReturn("Lorem Ipsum");
+
 		final String generatedValue = this.valueGenerator.generateValue(this.setAttributeRule);
 		assertTrue(generatedValue.startsWith(TEST_PREFIX), "generated value does not start with prefix");
+		assertTrue(generatedValue.endsWith("Lorem Ipsum"), "generated value does not end with expected value");
 		assertValueDescriptorPresent(this.attributeID, generatedValue, false);
 	}
 
@@ -395,6 +436,8 @@ class ValueGeneratorTest {
 		final int maxLength = 42;
 		prepareSetAttributeRule(false);
 		prepareAttributeForString(maxLength);
+
+		when(this.rtg.getWords(MIN_WORD_COUNT, MAX_WORD_COUNT)).thenReturn("Lorem Ipsum 22222222333333333344444444444");
 
 		final String generatedValue = this.valueGenerator.generateValue(this.setAttributeRule);
 		assertTrue(generatedValue.startsWith(TEST_PREFIX), "generated value does not start with prefix");
@@ -411,6 +454,8 @@ class ValueGeneratorTest {
 		final int maxLength = TEST_VAL_LENGTH - 1;
 		prepareSetAttributeRule(false);
 		prepareAttributeForString(maxLength);
+
+		when(this.rtg.getWords(MIN_WORD_COUNT, MAX_WORD_COUNT)).thenReturn("Lorem Ipsum");
 
 		final String generatedValue = this.valueGenerator.generateValue(this.setAttributeRule);
 		// generated value should still start with prefix
@@ -429,6 +474,8 @@ class ValueGeneratorTest {
 		prepareSetAttributeRule(false);
 		prepareAttributeForString(maxLength);
 
+		when(this.rtg.getWords(MIN_WORD_COUNT, MAX_WORD_COUNT)).thenReturn("Lorem Ipsum");
+
 		final String generatedValue = this.valueGenerator.generateValue(this.setAttributeRule);
 		// can't do anything about the prefix, at least check the overall length
 		assertTrue(generatedValue.length() <= maxLength, "generated value too long");
@@ -444,17 +491,23 @@ class ValueGeneratorTest {
 		prepareSetAttributeRule(false);
 		prepareAttributeForString(null, false, "xxxx1", "xxxx2", "xxxx3");
 
-		// There's a bit of randomness at play here - so just generate a larger number
-		// of values and check that at least some if the discrete values are present.
-		final int NUM_TESTS = 50;
-		final Multiset<String> values = HashMultiset.create();
-		for (int i = 0; i < NUM_TESTS; i++) {
-			final String generatedValue = this.valueGenerator.generateValue(this.setAttributeRule);
-			values.add(generatedValue);
-		}
+		// set the RNG to choose a discrete value on the first call, a random value on the second
+		when(this.rng.nextDouble()).thenReturn(DVSR_SEL_DISCRETE_VALUE, DVSR_SEL_RANDOM_VALUE);
 
-		final int totalDiscreteValueCount = values.count("xxxx1") + values.count("xxxx2") + values.count("xxxx3");
-		assertTrue(totalDiscreteValueCount > 0, "discrete values should have appeared in here somewhere");
+		// for the discrete value, choose the second entry
+		when(this.rng.nextInt(3)).thenReturn(1);
+
+		// for the random value, choose some text
+		when(this.rtg.getWords(MIN_WORD_COUNT, MAX_WORD_COUNT)).thenReturn("Lorem Ipsum");
+
+		// first generated value should be the discrete value
+		final String generatedValue1 = this.valueGenerator.generateValue(this.setAttributeRule);
+		assertEquals("xxxx2", generatedValue1);
+
+		// second generated value should be the random value
+		final String generatedValue2 = this.valueGenerator.generateValue(this.setAttributeRule);
+		assertTrue(generatedValue2.startsWith(TEST_PREFIX), "generated value does not start with prefix");
+		assertTrue(generatedValue2.endsWith("Lorem Ipsum"), "generated value does not end with expected value");
 	}
 
 	/**
@@ -466,18 +519,21 @@ class ValueGeneratorTest {
 		prepareSetAttributeRule(false);
 		prepareAttributeForString(null, true, "xxxx1", "xxxx2", "xxxx3");
 
-		// There's a bit of randomness at play here - so just generate a larger number
-		// of values and check that the sum of all fixed values matches the number of
-		// iterations.
-		final int NUM_TESTS = 50;
-		final Multiset<String> values = HashMultiset.create();
-		for (int i = 0; i < NUM_TESTS; i++) {
-			final String generatedValue = this.valueGenerator.generateValue(this.setAttributeRule);
-			values.add(generatedValue);
-		}
+		// for the discrete value, choose the entries in order 2, 1, 3
+		when(this.rng.nextInt(3)).thenReturn(1, 0, 2);
 
-		final int totalDiscreteValueCount = values.count("xxxx1") + values.count("xxxx2") + values.count("xxxx3");
-		assertEquals(NUM_TESTS, totalDiscreteValueCount);
+		final String generatedValue1 = this.valueGenerator.generateValue(this.setAttributeRule);
+		assertEquals("xxxx2", generatedValue1);
+
+		final String generatedValue2 = this.valueGenerator.generateValue(this.setAttributeRule);
+		assertEquals("xxxx1", generatedValue2);
+
+		final String generatedValue3 = this.valueGenerator.generateValue(this.setAttributeRule);
+		assertEquals("xxxx3", generatedValue3);
+
+		// RNG may not have been queried whether to generate a discrete or a random value!
+		verify(this.rng, never()).nextDouble();
+		verifyNoInteractions(this.rtg);
 	}
 
 	/**
@@ -494,6 +550,9 @@ class ValueGeneratorTest {
 
 		assertEquals(value, this.valueGenerator.generateValue(this.setAttributeRule));
 		assertValueDescriptorPresent(this.attributeID, value, true);
+
+		// RNG and RTG may not have been queried
+		verifyNoInteractions(this.rng, this.rtg);
 	}
 
 	/**
@@ -527,21 +586,27 @@ class ValueGeneratorTest {
 		prepareSetAttributeRule(true);
 		prepareAttributeForString(null, true, "xxxx1", "xxxx2", "xxxx3");
 
-		// the generated value may not be the requested value
-		assertNotEquals(value, this.valueGenerator.generateValue(this.setAttributeRule));
+		// for the discrete value, choose the second entry
+		when(this.rng.nextInt(3)).thenReturn(1);
+
+		// the generated value may not be the requested value, but must be the chosen value
+		assertEquals("xxxx2", this.valueGenerator.generateValue(this.setAttributeRule));
 	}
 
 	/**
 	 * Test method for {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ISetAttributeRule)}
 	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
-	@Test
-	void testGenerateValue_SetAttributeRule_Boolean() {
+	@ParameterizedTest
+	@CsvSource({ "true", "false" })
+	void testGenerateValue_SetAttributeRule_Boolean(boolean simulatedValue) {
 		prepareSetAttributeRule(false);
 		prepareAttributeForBoolean();
 
+		when(this.rng.nextBoolean()).thenReturn(simulatedValue);
+
 		final String generatedValue = this.valueGenerator.generateValue(this.setAttributeRule);
-		assertTrue(generatedValue.equals("true") || generatedValue.equals("false"));
+		assertEquals(Boolean.toString(simulatedValue), generatedValue);
 		assertValueDescriptorPresent(this.attributeID, generatedValue, false);
 	}
 
@@ -549,42 +614,38 @@ class ValueGeneratorTest {
 	 * Test method for {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ISetAttributeRule)}
 	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
-	@Test
-	void testGenerateValue_SetAttributeRule_BooleanRequestedValue() {
-		final String value = "false";
-		when(this.requestedValue.getValue()).thenReturn(value);
-
-		prepareSetAttributeRule(true);
-		prepareAttributeForBoolean();
-
-		// to rule out random influence, generate a number of values and check they ALL
-		// match the requested value
-		final int NUM_TESTS = 50;
-		int requestedCount = 0;
-		for (int i = 0; i < NUM_TESTS; i++) {
-			final String generatedValue = this.valueGenerator.generateValue(this.setAttributeRule);
-			if (generatedValue.equals(value)) {
-				requestedCount++;
-			}
-		}
-
-		assertEquals(NUM_TESTS, requestedCount);
-	}
-
-	/**
-	 * Test method for {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ISetAttributeRule)}
-	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
-	 */
-	@Test
-	void testGenerateValue_SetAttributeRule_BooleanRequestedValueInvalidType() {
-		final String value = "rhubarb"; // not a valid boolean value
+	@ParameterizedTest
+	@CsvSource({"true", "false"})
+	void testGenerateValue_SetAttributeRule_BooleanRequestedValue(String value) {
 		when(this.requestedValue.getValue()).thenReturn(value);
 
 		prepareSetAttributeRule(true);
 		prepareAttributeForBoolean();
 
 		final String generatedValue = this.valueGenerator.generateValue(this.setAttributeRule);
-		assertTrue(generatedValue.equals("true") || generatedValue.equals("false"));
+		assertEquals(value, generatedValue);
+
+		// RNG and RTG may not have been queried
+		verifyNoInteractions(this.rng, this.rtg);
+	}
+
+	/**
+	 * Test method for {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.ISetAttributeRule)}
+	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
+	 */
+	@ParameterizedTest
+	@CsvSource({ "true", "false" })
+	void testGenerateValue_SetAttributeRule_BooleanRequestedValueInvalidType(boolean simulatedValue) {
+		final String value = "rhubarb"; // not a valid boolean value
+		when(this.requestedValue.getValue()).thenReturn(value);
+
+		prepareSetAttributeRule(true);
+		prepareAttributeForBoolean();
+
+		when(this.rng.nextBoolean()).thenReturn(simulatedValue);
+
+		final String generatedValue = this.valueGenerator.generateValue(this.setAttributeRule);
+		assertEquals(Boolean.toString(simulatedValue), generatedValue);
 	}
 
 	/**
@@ -596,9 +657,11 @@ class ValueGeneratorTest {
 		prepareSetAttributeRule(false);
 		prepareAttributeForInteger(null, null);
 
+		final Integer simulatedValue = 42;
+		when(this.rng.nextInt(Integer.MIN_VALUE, Integer.MAX_VALUE)).thenReturn(simulatedValue);
+
 		final String generatedString = this.valueGenerator.generateValue(this.setAttributeRule);
-		final Integer generatedInteger = Integer.parseInt(generatedString);
-		assertNotNull(generatedInteger);
+		assertEquals("42", generatedString);
 		assertValueDescriptorPresent(this.attributeID, generatedString, false);
 	}
 
@@ -609,17 +672,15 @@ class ValueGeneratorTest {
 	@Test
 	void testGenerateValue_SetAttributeRule_IntegerMin() {
 		final int minValue = 352416;
+		final int simulatedValue = 463527;
 		prepareSetAttributeRule(false);
 		prepareAttributeForInteger(minValue, null);
 
-		// The randomness makes it impossible to check this decisively. All we can do is
-		// generate a number of values and check they all comply.
-		final int NUM_TESTS = 50;
-		for (int i = 0; i < NUM_TESTS; i++) {
-			final String generatedString = this.valueGenerator.generateValue(this.setAttributeRule);
-			final Integer generatedInteger = Integer.parseInt(generatedString);
-			assertTrue(generatedInteger >= minValue);
-		}
+		when(this.rng.nextInt(minValue, Integer.MAX_VALUE)).thenReturn(simulatedValue);
+
+		final String generatedString = this.valueGenerator.generateValue(this.setAttributeRule);
+		final Integer generatedInteger = Integer.parseInt(generatedString);
+		assertEquals(simulatedValue, generatedInteger);
 	}
 
 	/**
@@ -629,17 +690,15 @@ class ValueGeneratorTest {
 	@Test
 	void testGenerateValue_SetAttributeRule_IntegerMax() {
 		final int maxValue = 625143;
+		final int simulatedValue = 514032;
 		prepareSetAttributeRule(false);
 		prepareAttributeForInteger(null, maxValue);
 
-		// The randomness makes it impossible to check this decisively. All we can do is
-		// generate a number of values and check they all comply.
-		final int NUM_TESTS = 50;
-		for (int i = 0; i < NUM_TESTS; i++) {
-			final String generatedString = this.valueGenerator.generateValue(this.setAttributeRule);
-			final Integer generatedInteger = Integer.parseInt(generatedString);
-			assertTrue(generatedInteger <= maxValue);
-		}
+		when(this.rng.nextInt(Integer.MIN_VALUE, maxValue + 1)).thenReturn(simulatedValue);
+
+		final String generatedString = this.valueGenerator.generateValue(this.setAttributeRule);
+		final Integer generatedInteger = Integer.parseInt(generatedString);
+		assertEquals(simulatedValue, generatedInteger);
 	}
 
 	/**
@@ -649,19 +708,16 @@ class ValueGeneratorTest {
 	@Test
 	void testGenerateValue_SetAttributeRule_IntegerMinMax() {
 		final int minValue = 352416;
+		final int simulatedValue = 463527;
 		final int maxValue = 625143;
 		prepareSetAttributeRule(false);
 		prepareAttributeForInteger(minValue, maxValue);
 
-		// The randomness makes it impossible to check this decisively. All we can do is
-		// generate a number of values and check they all comply.
-		final int NUM_TESTS = 50;
-		for (int i = 0; i < NUM_TESTS; i++) {
-			final String generatedString = this.valueGenerator.generateValue(this.setAttributeRule);
-			final Integer generatedInteger = Integer.parseInt(generatedString);
-			assertTrue(generatedInteger >= minValue);
-			assertTrue(generatedInteger <= maxValue);
-		}
+		when(this.rng.nextInt(minValue, maxValue + 1)).thenReturn(simulatedValue);
+
+		final String generatedString = this.valueGenerator.generateValue(this.setAttributeRule);
+		final Integer generatedInteger = Integer.parseInt(generatedString);
+		assertEquals(simulatedValue, generatedInteger);
 	}
 
 	/**
@@ -673,17 +729,22 @@ class ValueGeneratorTest {
 		prepareSetAttributeRule(false);
 		prepareAttributeForInteger(false, 42, 21, 84);
 
-		// There's a bit of randomness at play here - so just generate a larger number
-		// of values and check that at least some of the discrete values are present.
-		final int NUM_TESTS = 50;
-		final Multiset<String> values = HashMultiset.create();
-		for (int i = 0; i < NUM_TESTS; i++) {
-			final String generatedValue = this.valueGenerator.generateValue(this.setAttributeRule);
-			values.add(generatedValue);
-		}
+		// set the RNG to choose a discrete value on the first call, a random value on the second
+		when(this.rng.nextDouble()).thenReturn(DVSR_SEL_DISCRETE_VALUE, DVSR_SEL_RANDOM_VALUE);
 
-		final int totalDiscreteValueCount = values.count("42") + values.count("21") + values.count("84");
-		assertTrue(totalDiscreteValueCount > 0, "discrete values should have appeared in here somewhere");
+		// for the discrete value, choose the second entry
+		when(this.rng.nextInt(3)).thenReturn(1);
+
+		// for the random value, just choose something...
+		when(this.rng.nextInt(Integer.MIN_VALUE, Integer.MAX_VALUE)).thenReturn(123456);
+
+		// first value must be the selected value
+		final String generatedValue1 = this.valueGenerator.generateValue(this.setAttributeRule);
+		assertEquals("21", generatedValue1);
+
+		// second value must be the simulated random value
+		final String generatedValue2 = this.valueGenerator.generateValue(this.setAttributeRule);
+		assertEquals("123456", generatedValue2);
 	}
 
 	/**
@@ -695,17 +756,21 @@ class ValueGeneratorTest {
 		prepareSetAttributeRule(false);
 		prepareAttributeForInteger(true, 42, 21, 84);
 
-		// Again generate a larger number of values and check that the occurrence of all
-		// values sums up to the total number of values generated.
-		final int NUM_TESTS = 50;
-		final Multiset<String> values = HashMultiset.create();
-		for (int i = 0; i < NUM_TESTS; i++) {
-			final String generatedValue = this.valueGenerator.generateValue(this.setAttributeRule);
-			values.add(generatedValue);
-		}
+		// choose the discrete entries in order 2, 1, 3
+		when(this.rng.nextInt(3)).thenReturn(1, 0, 2);
 
-		final int totalDiscreteValueCount = values.count("42") + values.count("21") + values.count("84");
-		assertEquals(NUM_TESTS, totalDiscreteValueCount);
+		final String generatedValue1 = this.valueGenerator.generateValue(this.setAttributeRule);
+		assertEquals("21", generatedValue1);
+
+		final String generatedValue2 = this.valueGenerator.generateValue(this.setAttributeRule);
+		assertEquals("42", generatedValue2);
+
+		final String generatedValue3 = this.valueGenerator.generateValue(this.setAttributeRule);
+		assertEquals("84", generatedValue3);
+
+		// RNG may not have been queried whether to generate a discrete or a random value!
+		verify(this.rng, never()).nextDouble();
+		verifyNoInteractions(this.rtg);
 	}
 
 	/**
@@ -720,12 +785,11 @@ class ValueGeneratorTest {
 		prepareSetAttributeRule(true);
 		prepareAttributeForInteger(null, null);
 
-		// Generate a larger number of values and check only the requested value occurs
-		final int NUM_TESTS = 50;
-		for (int i = 0; i < NUM_TESTS; i++) {
-			final String generatedValue = this.valueGenerator.generateValue(this.setAttributeRule);
-			assertEquals(value, generatedValue);
-		}
+		final String generatedValue = this.valueGenerator.generateValue(this.setAttributeRule);
+		assertEquals(value, generatedValue);
+
+		// RNG and RTG may not have been queried
+		verifyNoInteractions(this.rng, this.rtg);
 	}
 
 	/**
@@ -740,10 +804,11 @@ class ValueGeneratorTest {
 		prepareSetAttributeRule(true);
 		prepareAttributeForInteger(null, null);
 
+		when(this.rng.nextInt(Integer.MIN_VALUE, Integer.MAX_VALUE)).thenReturn(123456);
+
 		// requested value must be ignored at this point
 		final String generatedString = this.valueGenerator.generateValue(this.setAttributeRule);
-		final Integer generatedInteger = Integer.parseInt(generatedString);
-		assertNotNull(generatedInteger);
+		assertEquals("123456", generatedString);
 		assertValueDescriptorPresent(this.attributeID, generatedString, false);
 	}
 
@@ -754,6 +819,7 @@ class ValueGeneratorTest {
 	@Test
 	void testGenerateValue_SetAttributeRule_IntegerRequestedValueTooLow() {
 		final int minValue = 100;
+		final int simulatedValue = 300;
 		final String value = "50";
 		when(this.requestedValue.getValue()).thenReturn(value);
 
@@ -762,12 +828,11 @@ class ValueGeneratorTest {
 
 		// requested value must be ignored at this point - all generated must be above
 		// the minValue
-		final int NUM_TESTS = 50;
-		for (int i = 0; i < NUM_TESTS; i++) {
-			final String generatedString = this.valueGenerator.generateValue(this.setAttributeRule);
-			final Integer generatedInteger = Integer.parseInt(generatedString);
-			assertTrue(generatedInteger >= minValue);
-		}
+		when(this.rng.nextInt(minValue, Integer.MAX_VALUE)).thenReturn(simulatedValue);
+
+		final String generatedString = this.valueGenerator.generateValue(this.setAttributeRule);
+		final Integer generatedInteger = Integer.parseInt(generatedString);
+		assertEquals(simulatedValue, generatedInteger);
 	}
 
 	/**
@@ -777,6 +842,7 @@ class ValueGeneratorTest {
 	@Test
 	void testGenerateValue_SetAttributeRule_IntegerRequestedValueTooHigh() {
 		final int maxValue = 10;
+		final int simulatedValue = 5;
 		final String value = "50";
 		when(this.requestedValue.getValue()).thenReturn(value);
 
@@ -785,12 +851,11 @@ class ValueGeneratorTest {
 
 		// requested value must be ignored at this point - all generated must be above
 		// the minValue
-		final int NUM_TESTS = 50;
-		for (int i = 0; i < NUM_TESTS; i++) {
-			final String generatedString = this.valueGenerator.generateValue(this.setAttributeRule);
-			final Integer generatedInteger = Integer.parseInt(generatedString);
-			assertTrue(generatedInteger <= maxValue);
-		}
+		when(this.rng.nextInt(Integer.MIN_VALUE, maxValue + 1)).thenReturn(simulatedValue);
+
+		final String generatedString = this.valueGenerator.generateValue(this.setAttributeRule);
+		final Integer generatedInteger = Integer.parseInt(generatedString);
+		assertEquals(simulatedValue, generatedInteger);
 	}
 
 	/**
@@ -805,15 +870,17 @@ class ValueGeneratorTest {
 		prepareAttributeForInteger(true, 42, 21, 84);
 
 		// requested value must be ignored - only fixed values may occur
-		final int NUM_TESTS = 50;
-		final Multiset<String> values = HashMultiset.create();
-		for (int i = 0; i < NUM_TESTS; i++) {
-			final String generatedValue = this.valueGenerator.generateValue(this.setAttributeRule);
-			values.add(generatedValue);
-		}
+		// choose the discrete entries in order 2, 1, 3
+		when(this.rng.nextInt(3)).thenReturn(1, 0, 2);
 
-		final int totalDiscreteValueCount = values.count("42") + values.count("21") + values.count("84");
-		assertEquals(NUM_TESTS, totalDiscreteValueCount);
+		final String generatedValue1 = this.valueGenerator.generateValue(this.setAttributeRule);
+		assertEquals("21", generatedValue1);
+
+		final String generatedValue2 = this.valueGenerator.generateValue(this.setAttributeRule);
+		assertEquals("42", generatedValue2);
+
+		final String generatedValue3 = this.valueGenerator.generateValue(this.setAttributeRule);
+		assertEquals("84", generatedValue3);
 	}
 
 	/**
@@ -838,7 +905,7 @@ class ValueGeneratorTest {
 	 */
 	void prepareElementForString(@Nullable Integer maxLength) {
 		lenient().when(this.element.getDataType()).thenReturn(XMLDataType.STRING);
-		lenient().when(this.element.getDiscreteValues()).thenReturn(Set.of());
+		lenient().when(this.element.getDiscreteValues()).thenReturn(List.of());
 		lenient().when(this.element.isFixedValueset()).thenReturn(Optional.empty());
 		lenient().when(this.element.getMaxLength()).thenReturn(Optional.ofNullable(maxLength));
 		lenient().when(this.element.getMinValue()).thenThrow(new IllegalStateException()); // n/a for string
@@ -852,7 +919,7 @@ class ValueGeneratorTest {
 		final List<XMLDiscreteValue> valueList = Arrays.stream(discreteValues)
 			.map(val -> XMLDiscreteValue.builder().withStringValue(val).build()).toList();
 		lenient().when(this.element.getDataType()).thenReturn(XMLDataType.STRING);
-		lenient().when(this.element.getDiscreteValues()).thenReturn(Set.copyOf(valueList));
+		lenient().when(this.element.getDiscreteValues()).thenReturn(List.copyOf(valueList));
 		lenient().when(this.element.isFixedValueset()).thenReturn(Optional.of(fixedValueset));
 		lenient().when(this.element.getMaxLength()).thenReturn(Optional.ofNullable(maxLength));
 		lenient().when(this.element.getMinValue()).thenThrow(new IllegalStateException()); // n/a for string
@@ -864,7 +931,7 @@ class ValueGeneratorTest {
 	 */
 	void prepareElementForBoolean() {
 		lenient().when(this.element.getDataType()).thenReturn(XMLDataType.BOOLEAN);
-		lenient().when(this.element.getDiscreteValues()).thenReturn(Set.of());
+		lenient().when(this.element.getDiscreteValues()).thenReturn(List.of());
 		lenient().when(this.element.isFixedValueset()).thenReturn(Optional.empty());
 		lenient().when(this.element.getMaxLength()).thenThrow(new IllegalStateException()); // n/a for boolean
 		lenient().when(this.element.getMinValue()).thenThrow(new IllegalStateException()); // n/a for boolean
@@ -876,7 +943,7 @@ class ValueGeneratorTest {
 	 */
 	void prepareElementForInteger(@Nullable Integer minValue, @Nullable Integer maxValue) {
 		lenient().when(this.element.getDataType()).thenReturn(XMLDataType.INTEGER);
-		lenient().when(this.element.getDiscreteValues()).thenReturn(Set.of());
+		lenient().when(this.element.getDiscreteValues()).thenReturn(List.of());
 		lenient().when(this.element.isFixedValueset()).thenReturn(Optional.empty());
 		lenient().when(this.element.getMaxLength()).thenThrow(new IllegalStateException()); // n/a for integer
 		lenient().when(this.element.getMinValue()).thenReturn(Optional.ofNullable(minValue));
@@ -890,7 +957,7 @@ class ValueGeneratorTest {
 		final List<XMLDiscreteValue> valueList = Arrays.stream(discreteValues)
 			.map(val -> XMLDiscreteValue.builder().withIntegerValue(val).build()).toList();
 		lenient().when(this.element.getDataType()).thenReturn(XMLDataType.INTEGER);
-		lenient().when(this.element.getDiscreteValues()).thenReturn(Set.copyOf(valueList));
+		lenient().when(this.element.getDiscreteValues()).thenReturn(List.copyOf(valueList));
 		lenient().when(this.element.isFixedValueset()).thenReturn(Optional.of(fixedValueset));
 		lenient().when(this.element.getMaxLength()).thenThrow(new IllegalStateException()); // n/a for integer
 		lenient().when(this.element.getMinValue()).thenReturn(Optional.empty());
@@ -906,8 +973,11 @@ class ValueGeneratorTest {
 		prepareAddDataContentRule(false);
 		prepareElementForString(null);
 
+		when(this.rtg.getWords(MIN_WORD_COUNT, MAX_WORD_COUNT)).thenReturn("Lorem Ipsum");
+
 		final String generatedValue = this.valueGenerator.generateValue(this.addDataContentRule);
 		assertTrue(generatedValue.startsWith(TEST_PREFIX), "generated value does not start with prefix");
+		assertTrue(generatedValue.endsWith("Lorem Ipsum"), "generated value does not end with expected value");
 		assertValueDescriptorPresent(this.elementID, generatedValue, false);
 	}
 
@@ -920,6 +990,8 @@ class ValueGeneratorTest {
 		final int maxLength = 42;
 		prepareAddDataContentRule(false);
 		prepareElementForString(maxLength);
+
+		when(this.rtg.getWords(MIN_WORD_COUNT, MAX_WORD_COUNT)).thenReturn("Lorem Ipsum 22222222333333333344444444444");
 
 		final String generatedValue = this.valueGenerator.generateValue(this.addDataContentRule);
 		assertTrue(generatedValue.startsWith(TEST_PREFIX), "generated value does not start with prefix");
@@ -936,6 +1008,8 @@ class ValueGeneratorTest {
 		final int maxLength = TEST_VAL_LENGTH - 1;
 		prepareAddDataContentRule(false);
 		prepareElementForString(maxLength);
+
+		when(this.rtg.getWords(MIN_WORD_COUNT, MAX_WORD_COUNT)).thenReturn("Lorem Ipsum");
 
 		final String generatedValue = this.valueGenerator.generateValue(this.addDataContentRule);
 		// generated value should still start with prefix
@@ -954,6 +1028,8 @@ class ValueGeneratorTest {
 		prepareAddDataContentRule(false);
 		prepareElementForString(maxLength);
 
+		when(this.rtg.getWords(MIN_WORD_COUNT, MAX_WORD_COUNT)).thenReturn("Lorem Ipsum");
+
 		final String generatedValue = this.valueGenerator.generateValue(this.addDataContentRule);
 		// can't do anything about the prefix, at least check the overall length
 		assertTrue(generatedValue.length() <= maxLength, "generated value too long");
@@ -969,17 +1045,23 @@ class ValueGeneratorTest {
 		prepareAddDataContentRule(false);
 		prepareElementForString(null, false, "xxxx1", "xxxx2", "xxxx3");
 
-		// There's a bit of randomness at play here - so just generate a larger number
-		// of values and check that at least some if the discrete values are present.
-		final int NUM_TESTS = 50;
-		final Multiset<String> values = HashMultiset.create();
-		for (int i = 0; i < NUM_TESTS; i++) {
-			final String generatedValue = this.valueGenerator.generateValue(this.addDataContentRule);
-			values.add(generatedValue);
-		}
+		// set the RNG to choose a discrete value on the first call, a random value on the second
+		when(this.rng.nextDouble()).thenReturn(DVSR_SEL_DISCRETE_VALUE, DVSR_SEL_RANDOM_VALUE);
 
-		final int totalDiscreteValueCount = values.count("xxxx1") + values.count("xxxx2") + values.count("xxxx3");
-		assertTrue(totalDiscreteValueCount > 0, "discrete values should have appeared in here somewhere");
+		// for the discrete value, choose the second entry
+		when(this.rng.nextInt(3)).thenReturn(1);
+
+		// for the random value, choose some text
+		when(this.rtg.getWords(MIN_WORD_COUNT, MAX_WORD_COUNT)).thenReturn("Lorem Ipsum");
+
+		// first generated value should be the discrete value
+		final String generatedValue1 = this.valueGenerator.generateValue(this.addDataContentRule);
+		assertEquals("xxxx2", generatedValue1);
+
+		// second generated value should be the random value
+		final String generatedValue2 = this.valueGenerator.generateValue(this.addDataContentRule);
+		assertTrue(generatedValue2.startsWith(TEST_PREFIX), "generated value does not start with prefix");
+		assertTrue(generatedValue2.endsWith("Lorem Ipsum"), "generated value does not end with expected value");
 	}
 
 	/**
@@ -991,18 +1073,21 @@ class ValueGeneratorTest {
 		prepareAddDataContentRule(false);
 		prepareElementForString(null, true, "xxxx1", "xxxx2", "xxxx3");
 
-		// There's a bit of randomness at play here - so just generate a larger number
-		// of values and check that the sum of all fixed values matches the number of
-		// iterations.
-		final int NUM_TESTS = 50;
-		final Multiset<String> values = HashMultiset.create();
-		for (int i = 0; i < NUM_TESTS; i++) {
-			final String generatedValue = this.valueGenerator.generateValue(this.addDataContentRule);
-			values.add(generatedValue);
-		}
+		// for the discrete value, choose the entries in order 2, 1, 3
+		when(this.rng.nextInt(3)).thenReturn(1, 0, 2);
 
-		final int totalDiscreteValueCount = values.count("xxxx1") + values.count("xxxx2") + values.count("xxxx3");
-		assertEquals(NUM_TESTS, totalDiscreteValueCount);
+		final String generatedValue1 = this.valueGenerator.generateValue(this.addDataContentRule);
+		assertEquals("xxxx2", generatedValue1);
+
+		final String generatedValue2 = this.valueGenerator.generateValue(this.addDataContentRule);
+		assertEquals("xxxx1", generatedValue2);
+
+		final String generatedValue3 = this.valueGenerator.generateValue(this.addDataContentRule);
+		assertEquals("xxxx3", generatedValue3);
+
+		// RNG may not have been queried whether to generate a discrete or a random value!
+		verify(this.rng, never()).nextDouble();
+		verifyNoInteractions(this.rtg);
 	}
 
 	/**
@@ -1019,6 +1104,9 @@ class ValueGeneratorTest {
 
 		assertEquals(value, this.valueGenerator.generateValue(this.addDataContentRule));
 		assertValueDescriptorPresent(this.elementID, value, true);
+
+		// RNG and RTG may not have been queried
+		verifyNoInteractions(this.rng, this.rtg);
 	}
 
 	/**
@@ -1052,21 +1140,27 @@ class ValueGeneratorTest {
 		prepareAddDataContentRule(true);
 		prepareElementForString(null, true, "xxxx1", "xxxx2", "xxxx3");
 
-		// the generated value may not be the requested value
-		assertNotEquals(value, this.valueGenerator.generateValue(this.addDataContentRule));
+		// for the discrete value, choose the second entry
+		when(this.rng.nextInt(3)).thenReturn(1);
+
+		// the generated value may not be the requested value, but must be the chosen value
+		assertEquals("xxxx2", this.valueGenerator.generateValue(this.addDataContentRule));
 	}
 
 	/**
 	 * Test method for {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IAddDataContentRule)}
 	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
-	@Test
-	void testGenerateValue_AddDataContentRule_Boolean() {
+	@ParameterizedTest
+	@CsvSource({ "true", "false" })
+	void testGenerateValue_AddDataContentRule_Boolean(boolean simulatedValue) {
 		prepareAddDataContentRule(false);
 		prepareElementForBoolean();
 
+		when(this.rng.nextBoolean()).thenReturn(simulatedValue);
+
 		final String generatedValue = this.valueGenerator.generateValue(this.addDataContentRule);
-		assertTrue(generatedValue.equals("true") || generatedValue.equals("false"));
+		assertEquals(Boolean.toString(simulatedValue), generatedValue);
 		assertValueDescriptorPresent(this.elementID, generatedValue, false);
 	}
 
@@ -1074,42 +1168,38 @@ class ValueGeneratorTest {
 	 * Test method for {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IAddDataContentRule)}
 	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
-	@Test
-	void testGenerateValue_AddDataContentRule_BooleanRequestedValue() {
-		final String value = "false";
-		when(this.requestedValue.getValue()).thenReturn(value);
-
-		prepareAddDataContentRule(true);
-		prepareElementForBoolean();
-
-		// to rule out random influence, generate a number of values and check they ALL
-		// match the requested value
-		final int NUM_TESTS = 50;
-		int requestedCount = 0;
-		for (int i = 0; i < NUM_TESTS; i++) {
-			final String generatedValue = this.valueGenerator.generateValue(this.addDataContentRule);
-			if (generatedValue.equals(value)) {
-				requestedCount++;
-			}
-		}
-
-		assertEquals(NUM_TESTS, requestedCount);
-	}
-
-	/**
-	 * Test method for {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IAddDataContentRule)}
-	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
-	 */
-	@Test
-	void testGenerateValue_AddDataContentRule_BooleanRequestedValueInvalidType() {
-		final String value = "rhubarb"; // not a valid boolean value
+	@ParameterizedTest
+	@CsvSource({"true", "false"})
+	void testGenerateValue_AddDataContentRule_BooleanRequestedValue(String value) {
 		when(this.requestedValue.getValue()).thenReturn(value);
 
 		prepareAddDataContentRule(true);
 		prepareElementForBoolean();
 
 		final String generatedValue = this.valueGenerator.generateValue(this.addDataContentRule);
-		assertTrue(generatedValue.equals("true") || generatedValue.equals("false"));
+		assertEquals(value, generatedValue);
+
+		// RNG and RTG may not have been queried
+		verifyNoInteractions(this.rng, this.rtg);
+	}
+
+	/**
+	 * Test method for {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IAddDataContentRule)}
+	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
+	 */
+	@ParameterizedTest
+	@CsvSource({ "true", "false" })
+	void testGenerateValue_AddDataContentRule_BooleanRequestedValueInvalidType(boolean simulatedValue) {
+		final String value = "rhubarb"; // not a valid boolean value
+		when(this.requestedValue.getValue()).thenReturn(value);
+
+		prepareAddDataContentRule(true);
+		prepareElementForBoolean();
+
+		when(this.rng.nextBoolean()).thenReturn(simulatedValue);
+
+		final String generatedValue = this.valueGenerator.generateValue(this.addDataContentRule);
+		assertEquals(Boolean.toString(simulatedValue), generatedValue);
 	}
 
 	/**
@@ -1121,9 +1211,11 @@ class ValueGeneratorTest {
 		prepareAddDataContentRule(false);
 		prepareElementForInteger(null, null);
 
+		final Integer simulatedValue = 42;
+		when(this.rng.nextInt(Integer.MIN_VALUE, Integer.MAX_VALUE)).thenReturn(simulatedValue);
+
 		final String generatedString = this.valueGenerator.generateValue(this.addDataContentRule);
-		final Integer generatedInteger = Integer.parseInt(generatedString);
-		assertNotNull(generatedInteger);
+		assertEquals("42", generatedString);
 		assertValueDescriptorPresent(this.elementID, generatedString, false);
 	}
 
@@ -1134,17 +1226,15 @@ class ValueGeneratorTest {
 	@Test
 	void testGenerateValue_AddDataContentRule_IntegerMin() {
 		final int minValue = 352416;
+		final int simulatedValue = 463527;
 		prepareAddDataContentRule(false);
 		prepareElementForInteger(minValue, null);
 
-		// The randomness makes it impossible to check this decisively. All we can do is
-		// generate a number of values and check they all comply.
-		final int NUM_TESTS = 50;
-		for (int i = 0; i < NUM_TESTS; i++) {
-			final String generatedString = this.valueGenerator.generateValue(this.addDataContentRule);
-			final Integer generatedInteger = Integer.parseInt(generatedString);
-			assertTrue(generatedInteger >= minValue);
-		}
+		when(this.rng.nextInt(minValue, Integer.MAX_VALUE)).thenReturn(simulatedValue);
+
+		final String generatedString = this.valueGenerator.generateValue(this.addDataContentRule);
+		final Integer generatedInteger = Integer.parseInt(generatedString);
+		assertEquals(simulatedValue, generatedInteger);
 	}
 
 	/**
@@ -1154,17 +1244,15 @@ class ValueGeneratorTest {
 	@Test
 	void testGenerateValue_AddDataContentRule_IntegerMax() {
 		final int maxValue = 625143;
+		final int simulatedValue = 514032;
 		prepareAddDataContentRule(false);
 		prepareElementForInteger(null, maxValue);
 
-		// The randomness makes it impossible to check this decisively. All we can do is
-		// generate a number of values and check they all comply.
-		final int NUM_TESTS = 50;
-		for (int i = 0; i < NUM_TESTS; i++) {
-			final String generatedString = this.valueGenerator.generateValue(this.addDataContentRule);
-			final Integer generatedInteger = Integer.parseInt(generatedString);
-			assertTrue(generatedInteger <= maxValue);
-		}
+		when(this.rng.nextInt(Integer.MIN_VALUE, maxValue + 1)).thenReturn(simulatedValue);
+
+		final String generatedString = this.valueGenerator.generateValue(this.addDataContentRule);
+		final Integer generatedInteger = Integer.parseInt(generatedString);
+		assertEquals(simulatedValue, generatedInteger);
 	}
 
 	/**
@@ -1174,19 +1262,16 @@ class ValueGeneratorTest {
 	@Test
 	void testGenerateValue_AddDataContentRule_IntegerMinMax() {
 		final int minValue = 352416;
+		final int simulatedValue = 463527;
 		final int maxValue = 625143;
 		prepareAddDataContentRule(false);
 		prepareElementForInteger(minValue, maxValue);
 
-		// The randomness makes it impossible to check this decisively. All we can do is
-		// generate a number of values and check they all comply.
-		final int NUM_TESTS = 50;
-		for (int i = 0; i < NUM_TESTS; i++) {
-			final String generatedString = this.valueGenerator.generateValue(this.addDataContentRule);
-			final Integer generatedInteger = Integer.parseInt(generatedString);
-			assertTrue(generatedInteger >= minValue);
-			assertTrue(generatedInteger <= maxValue);
-		}
+		when(this.rng.nextInt(minValue, maxValue + 1)).thenReturn(simulatedValue);
+
+		final String generatedString = this.valueGenerator.generateValue(this.addDataContentRule);
+		final Integer generatedInteger = Integer.parseInt(generatedString);
+		assertEquals(simulatedValue, generatedInteger);
 	}
 
 	/**
@@ -1198,17 +1283,22 @@ class ValueGeneratorTest {
 		prepareAddDataContentRule(false);
 		prepareElementForInteger(false, 42, 21, 84);
 
-		// There's a bit of randomness at play here - so just generate a larger number
-		// of values and check that at least some of the discrete values are present.
-		final int NUM_TESTS = 50;
-		final Multiset<String> values = HashMultiset.create();
-		for (int i = 0; i < NUM_TESTS; i++) {
-			final String generatedValue = this.valueGenerator.generateValue(this.addDataContentRule);
-			values.add(generatedValue);
-		}
+		// set the RNG to choose a discrete value on the first call, a random value on the second
+		when(this.rng.nextDouble()).thenReturn(DVSR_SEL_DISCRETE_VALUE, DVSR_SEL_RANDOM_VALUE);
 
-		final int totalDiscreteValueCount = values.count("42") + values.count("21") + values.count("84");
-		assertTrue(totalDiscreteValueCount > 0, "discrete values should have appeared in here somewhere");
+		// for the discrete value, choose the second entry
+		when(this.rng.nextInt(3)).thenReturn(1);
+
+		// for the random value, just choose something...
+		when(this.rng.nextInt(Integer.MIN_VALUE, Integer.MAX_VALUE)).thenReturn(123456);
+
+		// first value must be the selected value
+		final String generatedValue1 = this.valueGenerator.generateValue(this.addDataContentRule);
+		assertEquals("21", generatedValue1);
+
+		// second value must be the simulated random value
+		final String generatedValue2 = this.valueGenerator.generateValue(this.addDataContentRule);
+		assertEquals("123456", generatedValue2);
 	}
 
 	/**
@@ -1220,17 +1310,21 @@ class ValueGeneratorTest {
 		prepareAddDataContentRule(false);
 		prepareElementForInteger(true, 42, 21, 84);
 
-		// Again generate a larger number of values and check that the occurrence of all
-		// values sums up to the total number of values generated.
-		final int NUM_TESTS = 50;
-		final Multiset<String> values = HashMultiset.create();
-		for (int i = 0; i < NUM_TESTS; i++) {
-			final String generatedValue = this.valueGenerator.generateValue(this.addDataContentRule);
-			values.add(generatedValue);
-		}
+		// choose the discrete entries in order 2, 1, 3
+		when(this.rng.nextInt(3)).thenReturn(1, 0, 2);
 
-		final int totalDiscreteValueCount = values.count("42") + values.count("21") + values.count("84");
-		assertEquals(NUM_TESTS, totalDiscreteValueCount);
+		final String generatedValue1 = this.valueGenerator.generateValue(this.addDataContentRule);
+		assertEquals("21", generatedValue1);
+
+		final String generatedValue2 = this.valueGenerator.generateValue(this.addDataContentRule);
+		assertEquals("42", generatedValue2);
+
+		final String generatedValue3 = this.valueGenerator.generateValue(this.addDataContentRule);
+		assertEquals("84", generatedValue3);
+
+		// RNG may not have been queried whether to generate a discrete or a random value!
+		verify(this.rng, never()).nextDouble();
+		verifyNoInteractions(this.rtg);
 	}
 
 	/**
@@ -1245,12 +1339,11 @@ class ValueGeneratorTest {
 		prepareAddDataContentRule(true);
 		prepareElementForInteger(null, null);
 
-		// Generate a larger number of values and check only the requested value occurs
-		final int NUM_TESTS = 50;
-		for (int i = 0; i < NUM_TESTS; i++) {
-			final String generatedValue = this.valueGenerator.generateValue(this.addDataContentRule);
-			assertEquals(value, generatedValue);
-		}
+		final String generatedValue = this.valueGenerator.generateValue(this.addDataContentRule);
+		assertEquals(value, generatedValue);
+
+		// RNG and RTG may not have been queried
+		verifyNoInteractions(this.rng, this.rtg);
 	}
 
 	/**
@@ -1265,10 +1358,11 @@ class ValueGeneratorTest {
 		prepareAddDataContentRule(true);
 		prepareElementForInteger(null, null);
 
+		when(this.rng.nextInt(Integer.MIN_VALUE, Integer.MAX_VALUE)).thenReturn(123456);
+
 		// requested value must be ignored at this point
 		final String generatedString = this.valueGenerator.generateValue(this.addDataContentRule);
-		final Integer generatedInteger = Integer.parseInt(generatedString);
-		assertNotNull(generatedInteger);
+		assertEquals("123456", generatedString);
 		assertValueDescriptorPresent(this.elementID, generatedString, false);
 	}
 
@@ -1279,6 +1373,7 @@ class ValueGeneratorTest {
 	@Test
 	void testGenerateValue_AddDataContentRule_IntegerRequestedValueTooLow() {
 		final int minValue = 100;
+		final int simulatedValue = 200;
 		final String value = "50";
 		when(this.requestedValue.getValue()).thenReturn(value);
 
@@ -1287,12 +1382,11 @@ class ValueGeneratorTest {
 
 		// requested value must be ignored at this point - all generated must be above
 		// the minValue
-		final int NUM_TESTS = 50;
-		for (int i = 0; i < NUM_TESTS; i++) {
-			final String generatedString = this.valueGenerator.generateValue(this.addDataContentRule);
-			final Integer generatedInteger = Integer.parseInt(generatedString);
-			assertTrue(generatedInteger >= minValue);
-		}
+		when(this.rng.nextInt(minValue, Integer.MAX_VALUE)).thenReturn(simulatedValue);
+
+		final String generatedString = this.valueGenerator.generateValue(this.addDataContentRule);
+		final Integer generatedInteger = Integer.parseInt(generatedString);
+		assertEquals(simulatedValue, generatedInteger);
 	}
 
 	/**
@@ -1302,6 +1396,7 @@ class ValueGeneratorTest {
 	@Test
 	void testGenerateValue_AddDataContentRule_IntegerRequestedValueTooHigh() {
 		final int maxValue = 10;
+		final int simulatedValue = 5;
 		final String value = "50";
 		when(this.requestedValue.getValue()).thenReturn(value);
 
@@ -1310,12 +1405,11 @@ class ValueGeneratorTest {
 
 		// requested value must be ignored at this point - all generated must be above
 		// the minValue
-		final int NUM_TESTS = 50;
-		for (int i = 0; i < NUM_TESTS; i++) {
-			final String generatedString = this.valueGenerator.generateValue(this.addDataContentRule);
-			final Integer generatedInteger = Integer.parseInt(generatedString);
-			assertTrue(generatedInteger <= maxValue);
-		}
+		when(this.rng.nextInt(Integer.MIN_VALUE, maxValue + 1)).thenReturn(simulatedValue);
+
+		final String generatedString = this.valueGenerator.generateValue(this.addDataContentRule);
+		final Integer generatedInteger = Integer.parseInt(generatedString);
+		assertEquals(simulatedValue, generatedInteger);
 	}
 
 	/**
@@ -1330,15 +1424,17 @@ class ValueGeneratorTest {
 		prepareElementForInteger(true, 42, 21, 84);
 
 		// requested value must be ignored - only fixed values may occur
-		final int NUM_TESTS = 50;
-		final Multiset<String> values = HashMultiset.create();
-		for (int i = 0; i < NUM_TESTS; i++) {
-			final String generatedValue = this.valueGenerator.generateValue(this.addDataContentRule);
-			values.add(generatedValue);
-		}
+		// choose the discrete entries in order 2, 1, 3
+		when(this.rng.nextInt(3)).thenReturn(1, 0, 2);
 
-		final int totalDiscreteValueCount = values.count("42") + values.count("21") + values.count("84");
-		assertEquals(NUM_TESTS, totalDiscreteValueCount);
+		final String generatedValue1 = this.valueGenerator.generateValue(this.addDataContentRule);
+		assertEquals("21", generatedValue1);
+
+		final String generatedValue2 = this.valueGenerator.generateValue(this.addDataContentRule);
+		assertEquals("42", generatedValue2);
+
+		final String generatedValue3 = this.valueGenerator.generateValue(this.addDataContentRule);
+		assertEquals("84", generatedValue3);
 	}
 
 	/**
@@ -1359,14 +1455,23 @@ class ValueGeneratorTest {
 	 * Test method for {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IAddRawContentRule)}
 	 * and {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
-	@Test
-	void testGenerateValue_AddRawContentRule_MixedContentGenerationModeFull() {
+	@ParameterizedTest
+	@CsvSource({ "0", "1", "2", "3", "4", "5" })
+	void testGenerateValue_AddRawContentRule_MixedContentGenerationModeFull(int template) {
 		lenient().when(this.request.getMixedContentGenerationMode()).thenReturn(MixedContentGenerationMode.FULL);
+
+		// preselect the template to use
+		when(this.rng.nextInt(6)).thenReturn(template);
+
+		// set fixed text to generate
+		when(this.rtg.getWords(MIN_WORD_COUNT, MAX_WORD_COUNT)).thenReturn("Lorem ipsum");
+
 		prepareAddRawContentRule(false);
 		final String generatedValue = this.valueGenerator.generateValue(this.addRawContentRule);
 		assertTrue(Pattern.compile("<[^<>]+>").matcher(generatedValue).find(),
 				String.format("generated value \"%s\" should contain a bit of HTML markup", generatedValue));
-		assertTrue(generatedValue.contains(TEST_PREFIX), "generated value does not contain the prefix");
+		assertTrue(generatedValue.startsWith(TEST_PREFIX), "generated value does not contain the prefix");
+		assertTrue(generatedValue.endsWith("Lorem ipsum"));
 		assertValueDescriptorPresent(this.elementID, generatedValue, false);
 	}
 
@@ -1383,6 +1488,8 @@ class ValueGeneratorTest {
 		final String generatedValue = this.valueGenerator.generateValue(this.addRawContentRule);
 		assertEquals(value, generatedValue);
 		assertValueDescriptorPresent(this.elementID, generatedValue, true);
+		// RNG and RTG may not have been queried
+		verifyNoInteractions(this.rng, this.rtg);
 	}
 
 	/**
@@ -1392,11 +1499,16 @@ class ValueGeneratorTest {
 	@Test
 	void testGenerateValue_AddRawContentRule_MixedContentGenerationModeRestricted() {
 		lenient().when(this.request.getMixedContentGenerationMode()).thenReturn(MixedContentGenerationMode.RESTRICTED);
+
+		// set fixed text to generate
+		when(this.rtg.getWords(MIN_WORD_COUNT, MAX_WORD_COUNT)).thenReturn("Lorem ipsum");
+
 		prepareAddRawContentRule(false);
 		final String generatedValue = this.valueGenerator.generateValue(this.addRawContentRule);
 		assertFalse(Pattern.compile("<[^<>]+>").matcher(generatedValue).find(),
 				String.format("generated value \"%s\" should NOT contain HTML markup", generatedValue));
-		assertTrue(generatedValue.contains(TEST_PREFIX), "generated value does not contain the prefix");
+		assertTrue(generatedValue.startsWith(TEST_PREFIX), "generated value does not contain the prefix");
+		assertTrue(generatedValue.endsWith("Lorem ipsum"));
 		assertValueDescriptorPresent(this.elementID, generatedValue, false);
 	}
 
@@ -1413,6 +1525,8 @@ class ValueGeneratorTest {
 		final String generatedValue = this.valueGenerator.generateValue(this.addRawContentRule);
 		assertEquals(value, generatedValue);
 		assertValueDescriptorPresent(this.elementID, generatedValue, true);
+		// RNG and RTG may not have been queried
+		verifyNoInteractions(this.rng, this.rtg);
 	}
 
 	/**
@@ -1425,11 +1539,14 @@ class ValueGeneratorTest {
 		prepareExtensionFunctionRule(false);
 		prepareFunctionForString();
 
+		when(this.rtg.getWords(MIN_WORD_COUNT, MAX_WORD_COUNT)).thenReturn("Lorem Ipsum");
+
 		final IExtensionFunctionResult generatedValue = this.valueGenerator.generateValue(this.extensionFunctionRule);
 		assertEquals(this.functionID, generatedValue.getFunctionID());
 		final XdmValue xdmValue = generatedValue.getXDMValue();
 		assertFalse(xdmValue.isEmpty());
 		assertTrue(xdmValue.toString().startsWith(TEST_PREFIX), "generated value does not start with prefix");
+		assertTrue(xdmValue.toString().endsWith("Lorem Ipsum"), "generated value does not end with expected value");
 		assertValueDescriptorPresent(this.functionID, xdmValue.toString(), false);
 	}
 
@@ -1452,6 +1569,9 @@ class ValueGeneratorTest {
 		assertFalse(xdmValue.isEmpty());
 		assertEquals(value, xdmValue.toString());
 		assertValueDescriptorPresent(this.functionID, value, true);
+
+		// RNG and RTG may not have been queried
+		verifyNoInteractions(this.rng, this.rtg);
 	}
 
 	/**
@@ -1464,12 +1584,15 @@ class ValueGeneratorTest {
 		prepareExtensionFunctionRule(false);
 		prepareFunctionForInteger();
 
+		final Integer simulatedValue = 42;
+		when(this.rng.nextInt()).thenReturn(simulatedValue);
+
 		final IExtensionFunctionResult generatedValue = this.valueGenerator.generateValue(this.extensionFunctionRule);
 		assertEquals(this.functionID, generatedValue.getFunctionID());
 		final XdmValue xdmValue = generatedValue.getXDMValue();
 		assertFalse(xdmValue.isEmpty());
 		final Integer generatedInteger = Integer.parseInt(xdmValue.toString());
-		assertNotNull(generatedInteger);
+		assertEquals(simulatedValue, generatedInteger);
 		assertValueDescriptorPresent(this.functionID, xdmValue.toString(), false);
 	}
 
@@ -1484,7 +1607,7 @@ class ValueGeneratorTest {
 		when(this.requestedValue.getValue()).thenReturn(value);
 
 		prepareExtensionFunctionRule(true);
-		prepareFunctionForString();
+		prepareFunctionForInteger();
 
 		final IExtensionFunctionResult generatedValue = this.valueGenerator.generateValue(this.extensionFunctionRule);
 		assertEquals(this.functionID, generatedValue.getFunctionID());
@@ -1493,6 +1616,9 @@ class ValueGeneratorTest {
 		final Integer generatedInteger = Integer.parseInt(xdmValue.toString());
 		assertEquals(42, generatedInteger);
 		assertValueDescriptorPresent(this.functionID, value, true);
+
+		// RNG and RTG may not have been queried
+		verifyNoInteractions(this.rng, this.rtg);
 	}
 
 	/**
@@ -1501,15 +1627,19 @@ class ValueGeneratorTest {
 	 * {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
 	@Test
-	void testGenerateValue_ExtensionFunctionRule_Boolean() {
+	void testGenerateValue_ExtensionFunctionRule_Int() {
 		prepareExtensionFunctionRule(false);
-		prepareFunctionForBoolean();
+		prepareFunctionForInt();
+
+		final Integer simulatedValue = 42;
+		when(this.rng.nextInt()).thenReturn(simulatedValue);
 
 		final IExtensionFunctionResult generatedValue = this.valueGenerator.generateValue(this.extensionFunctionRule);
 		assertEquals(this.functionID, generatedValue.getFunctionID());
 		final XdmValue xdmValue = generatedValue.getXDMValue();
 		assertFalse(xdmValue.isEmpty());
-		assertTrue(xdmValue.toString().equals("true") || xdmValue.toString().equals("false"));
+		final Integer generatedInteger = Integer.parseInt(xdmValue.toString());
+		assertEquals(simulatedValue, generatedInteger);
 		assertValueDescriptorPresent(this.functionID, xdmValue.toString(), false);
 	}
 
@@ -1519,8 +1649,54 @@ class ValueGeneratorTest {
 	 * {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
 	@Test
-	void testGenerateValue_ExtensionFunctionRule_BooleanRequestedValue() {
-		final String value = "true";
+	void testGenerateValue_ExtensionFunctionRule_IntRequestedValue() {
+		final String value = "42";
+		when(this.requestedValue.getValue()).thenReturn(value);
+
+		prepareExtensionFunctionRule(true);
+		prepareFunctionForInt();
+
+		final IExtensionFunctionResult generatedValue = this.valueGenerator.generateValue(this.extensionFunctionRule);
+		assertEquals(this.functionID, generatedValue.getFunctionID());
+		final XdmValue xdmValue = generatedValue.getXDMValue();
+		assertFalse(xdmValue.isEmpty());
+		final Integer generatedInteger = Integer.parseInt(xdmValue.toString());
+		assertEquals(42, generatedInteger);
+		assertValueDescriptorPresent(this.functionID, value, true);
+
+		// RNG and RTG may not have been queried
+		verifyNoInteractions(this.rng, this.rtg);
+	}
+
+	/**
+	 * Test method for
+	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IExtensionFunctionRule)} and
+	 * {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
+	 */
+	@ParameterizedTest
+	@CsvSource({ "true", "false" })
+	void testGenerateValue_ExtensionFunctionRule_Boolean(boolean simulatedValue) {
+		prepareExtensionFunctionRule(false);
+		prepareFunctionForBoolean();
+
+		when(this.rng.nextBoolean()).thenReturn(simulatedValue);
+
+		final IExtensionFunctionResult generatedValue = this.valueGenerator.generateValue(this.extensionFunctionRule);
+		assertEquals(this.functionID, generatedValue.getFunctionID());
+		final XdmValue xdmValue = generatedValue.getXDMValue();
+		assertFalse(xdmValue.isEmpty());
+		assertEquals(Boolean.toString(simulatedValue), xdmValue.toString());
+		assertValueDescriptorPresent(this.functionID, xdmValue.toString(), false);
+	}
+
+	/**
+	 * Test method for
+	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IExtensionFunctionRule)} and
+	 * {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
+	 */
+	@ParameterizedTest
+	@CsvSource({"true", "false"})
+	void testGenerateValue_ExtensionFunctionRule_BooleanRequestedValue(String value) {
 		when(this.requestedValue.getValue()).thenReturn(value);
 
 		prepareExtensionFunctionRule(true);
@@ -1532,6 +1708,9 @@ class ValueGeneratorTest {
 		assertFalse(xdmValue.isEmpty());
 		assertEquals(value, xdmValue.toString());
 		assertValueDescriptorPresent(this.functionID, value, true);
+
+		// RNG and RTG may not have been queried
+		verifyNoInteractions(this.rng, this.rtg);
 	}
 
 	/**
@@ -1544,11 +1723,15 @@ class ValueGeneratorTest {
 		prepareStylesheetParameterRule(false);
 		prepareParameterForString();
 
-		final IStylesheetParameterValue generatedValue = this.valueGenerator.generateValue(this.StylesheetParameterRule);
+		when(this.rtg.getWords(MIN_WORD_COUNT, MAX_WORD_COUNT)).thenReturn("Lorem Ipsum");
+
+		final IStylesheetParameterValue generatedValue = this.valueGenerator
+			.generateValue(this.StylesheetParameterRule);
 		assertEquals(this.parameterID, generatedValue.getParameterID());
 		final XdmValue xdmValue = generatedValue.getXDMValue();
 		assertFalse(xdmValue.isEmpty());
 		assertTrue(xdmValue.toString().startsWith(TEST_PREFIX), "generated value does not start with prefix");
+		assertTrue(xdmValue.toString().endsWith("Lorem Ipsum"), "generated value does not end with expected value");
 		assertValueDescriptorPresent(this.parameterID, xdmValue.toString(), false);
 	}
 
@@ -1565,12 +1748,16 @@ class ValueGeneratorTest {
 		prepareStylesheetParameterRule(true);
 		prepareParameterForString();
 
-		final IStylesheetParameterValue generatedValue = this.valueGenerator.generateValue(this.StylesheetParameterRule);
+		final IStylesheetParameterValue generatedValue = this.valueGenerator
+			.generateValue(this.StylesheetParameterRule);
 		assertEquals(this.parameterID, generatedValue.getParameterID());
 		final XdmValue xdmValue = generatedValue.getXDMValue();
 		assertFalse(xdmValue.isEmpty());
 		assertEquals(value, xdmValue.toString());
 		assertValueDescriptorPresent(this.parameterID, value, true);
+
+		// RNG and RTG may not have been queried
+		verifyNoInteractions(this.rng, this.rtg);
 	}
 
 	/**
@@ -1583,12 +1770,16 @@ class ValueGeneratorTest {
 		prepareStylesheetParameterRule(false);
 		prepareParameterForInteger();
 
-		final IStylesheetParameterValue generatedValue = this.valueGenerator.generateValue(this.StylesheetParameterRule);
+		final Integer simulatedValue = 42;
+		when(this.rng.nextInt()).thenReturn(simulatedValue);
+
+		final IStylesheetParameterValue generatedValue = this.valueGenerator
+			.generateValue(this.StylesheetParameterRule);
 		assertEquals(this.parameterID, generatedValue.getParameterID());
 		final XdmValue xdmValue = generatedValue.getXDMValue();
 		assertFalse(xdmValue.isEmpty());
 		final Integer generatedInteger = Integer.parseInt(xdmValue.toString());
-		assertNotNull(generatedInteger);
+		assertEquals(simulatedValue, generatedInteger);
 		assertValueDescriptorPresent(this.parameterID, xdmValue.toString(), false);
 	}
 
@@ -1603,15 +1794,19 @@ class ValueGeneratorTest {
 		when(this.requestedValue.getValue()).thenReturn(value);
 
 		prepareStylesheetParameterRule(true);
-		prepareParameterForString();
+		prepareParameterForInteger();
 
-		final IStylesheetParameterValue generatedValue = this.valueGenerator.generateValue(this.StylesheetParameterRule);
+		final IStylesheetParameterValue generatedValue = this.valueGenerator
+			.generateValue(this.StylesheetParameterRule);
 		assertEquals(this.parameterID, generatedValue.getParameterID());
 		final XdmValue xdmValue = generatedValue.getXDMValue();
 		assertFalse(xdmValue.isEmpty());
 		final Integer generatedInteger = Integer.parseInt(xdmValue.toString());
 		assertEquals(42, generatedInteger);
 		assertValueDescriptorPresent(this.parameterID, value, true);
+
+		// RNG and RTG may not have been queried
+		verifyNoInteractions(this.rng, this.rtg);
 	}
 
 	/**
@@ -1620,15 +1815,20 @@ class ValueGeneratorTest {
 	 * {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
 	@Test
-	void testGenerateValue_StylesheetParameterRule_Boolean() {
+	void testGenerateValue_StylesheetParameterRule_Int() {
 		prepareStylesheetParameterRule(false);
-		prepareParameterForBoolean();
+		prepareParameterForInt();
 
-		final IStylesheetParameterValue generatedValue = this.valueGenerator.generateValue(this.StylesheetParameterRule);
+		final Integer simulatedValue = 42;
+		when(this.rng.nextInt()).thenReturn(simulatedValue);
+
+		final IStylesheetParameterValue generatedValue = this.valueGenerator
+			.generateValue(this.StylesheetParameterRule);
 		assertEquals(this.parameterID, generatedValue.getParameterID());
 		final XdmValue xdmValue = generatedValue.getXDMValue();
 		assertFalse(xdmValue.isEmpty());
-		assertTrue(xdmValue.toString().equals("true") || xdmValue.toString().equals("false"));
+		final Integer generatedInteger = Integer.parseInt(xdmValue.toString());
+		assertEquals(simulatedValue, generatedInteger);
 		assertValueDescriptorPresent(this.parameterID, xdmValue.toString(), false);
 	}
 
@@ -1638,19 +1838,71 @@ class ValueGeneratorTest {
 	 * {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
 	 */
 	@Test
-	void testGenerateValue_StylesheetParameterRule_BooleanRequestedValue() {
-		final String value = "true";
+	void testGenerateValue_StylesheetParameterRule_IntRequestedValue() {
+		final String value = "42";
+		when(this.requestedValue.getValue()).thenReturn(value);
+
+		prepareStylesheetParameterRule(true);
+		prepareParameterForInt();
+
+		final IStylesheetParameterValue generatedValue = this.valueGenerator
+			.generateValue(this.StylesheetParameterRule);
+		assertEquals(this.parameterID, generatedValue.getParameterID());
+		final XdmValue xdmValue = generatedValue.getXDMValue();
+		assertFalse(xdmValue.isEmpty());
+		final Integer generatedInteger = Integer.parseInt(xdmValue.toString());
+		assertEquals(42, generatedInteger);
+		assertValueDescriptorPresent(this.parameterID, value, true);
+
+		// RNG and RTG may not have been queried
+		verifyNoInteractions(this.rng, this.rtg);
+	}
+
+	/**
+	 * Test method for
+	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IStylesheetParameterRule)} and
+	 * {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
+	 */
+	@ParameterizedTest
+	@CsvSource({ "true", "false" })
+	void testGenerateValue_StylesheetParameterRule_Boolean(boolean simulatedValue) {
+		prepareStylesheetParameterRule(false);
+		prepareParameterForBoolean();
+
+		when(this.rng.nextBoolean()).thenReturn(simulatedValue);
+
+		final IStylesheetParameterValue generatedValue = this.valueGenerator
+			.generateValue(this.StylesheetParameterRule);
+		assertEquals(this.parameterID, generatedValue.getParameterID());
+		final XdmValue xdmValue = generatedValue.getXDMValue();
+		assertFalse(xdmValue.isEmpty());
+		assertEquals(Boolean.toString(simulatedValue), xdmValue.toString());
+		assertValueDescriptorPresent(this.parameterID, xdmValue.toString(), false);
+	}
+
+	/**
+	 * Test method for
+	 * {@link org.x2vc.xml.value.ValueGenerator#generateValue(org.x2vc.xml.request.IStylesheetParameterRule)} and
+	 * {@link org.x2vc.xml.value.ValueGenerator#getValueDescriptors()}.
+	 */
+	@ParameterizedTest
+	@CsvSource({"true", "false"})
+	void testGenerateValue_StylesheetParameterRule_BooleanRequestedValue(String value) {
 		when(this.requestedValue.getValue()).thenReturn(value);
 
 		prepareStylesheetParameterRule(true);
 		prepareParameterForBoolean();
 
-		final IStylesheetParameterValue generatedValue = this.valueGenerator.generateValue(this.StylesheetParameterRule);
+		final IStylesheetParameterValue generatedValue = this.valueGenerator
+			.generateValue(this.StylesheetParameterRule);
 		assertEquals(this.parameterID, generatedValue.getParameterID());
 		final XdmValue xdmValue = generatedValue.getXDMValue();
 		assertFalse(xdmValue.isEmpty());
 		assertEquals(value, xdmValue.toString());
 		assertValueDescriptorPresent(this.parameterID, value, true);
+
+		// RNG and RTG may not have been queried
+		verifyNoInteractions(this.rng, this.rtg);
 	}
 
 	/**

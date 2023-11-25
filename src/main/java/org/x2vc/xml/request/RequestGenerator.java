@@ -7,18 +7,13 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.xml.request;
 
-
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.*;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -45,17 +40,18 @@ public class RequestGenerator implements IRequestGenerator {
 
 	private static final Logger logger = LogManager.getLogger();
 
-	private int maxElements;
-
+	private Random rng;
 	private ISchemaManager schemaManager;
+	private int maxElements;
 
 	/**
 	 * @param schemaManager
 	 */
 	@Inject
-	RequestGenerator(ISchemaManager schemaManager,
+	RequestGenerator(Random rng, ISchemaManager schemaManager,
 			@TypesafeConfig("x2vc.xml.request.max_elements") Integer maxElements) {
 		super();
+		this.rng = rng;
 		this.schemaManager = schemaManager;
 		this.maxElements = maxElements;
 	}
@@ -68,12 +64,12 @@ public class RequestGenerator implements IRequestGenerator {
 		logger.traceEntry();
 		final IAddElementRule rootElementRule = generateRootElementRule(schema);
 		final Collection<IExtensionFunctionRule> extensionFunctionRules = generateExtensionFunctionRules(schema);
-		final Collection<IStylesheetParameterRule> StylesheetParameterRules = generateStylesheetParameterRules(schema);
+		final Collection<IStylesheetParameterRule> stylesheetParameterRules = generateStylesheetParameterRules(schema);
 		final DocumentRequest request = DocumentRequest
 			.builder(schema, rootElementRule)
 			.withMixedContentGenerationMode(mixedContentGenerationMode)
 			.addExtensionFunctionRules(extensionFunctionRules)
-			.addStylesheetParameterRules(StylesheetParameterRules)
+			.addStylesheetParameterRules(stylesheetParameterRules)
 			.build();
 		return logger.traceExit(request);
 	}
@@ -137,13 +133,12 @@ public class RequestGenerator implements IRequestGenerator {
 	private Optional<ISetAttributeRule> generateAttributeRule(IAttribute attrib) {
 		logger.traceEntry("attribute {}", attrib.getID());
 		if (attrib.isOptional()) {
-			if (ThreadLocalRandom.current().nextInt(2) > 0) {
+			if (this.rng.nextInt(2) > 0) {
+				logger.debug("optional attribute will be generated for this request");
+			} else {
 				logger.debug("optional attribute will NOT be generated for this request");
 				logger.traceExit();
 				return Optional.empty();
-			} else {
-				logger.debug("optional attribute will be generated for this request");
-
 			}
 		} else {
 			logger.debug("mandatory attribute will be generated for this request");
@@ -156,31 +151,23 @@ public class RequestGenerator implements IRequestGenerator {
 	 * Creates the rules to generate the content of an element.
 	 *
 	 * @param element the element
-	 * @return a list of {@link IContentGenerationRule} to generate the conten
+	 * @return a list of {@link IContentGenerationRule} to generate the content
 	 */
 	private List<IContentGenerationRule> generateElementContent(IElementType element) {
 		logger.traceEntry("element {}", element.getID());
-		List<IContentGenerationRule> result = Lists.newArrayList();
+		List<IContentGenerationRule> result = null;
 
 		if ((element.getContentType() == ContentType.ELEMENT)
 				&& (element.getElementArrangement() == ElementArrangement.CHOICE)) {
 			// choose one of the element references and generate exactly one
-			result.add(generateSingleRuleForElementReference(selectOneReferenceOf(element.getElements())));
+			result = Lists.newArrayList(
+					generateSingleRuleForElementReference(selectOneReferenceOf(element.getElements())));
 
 		} else {
 			// content type is ELEMENT or MIXED and element arrangement is ALL or SEQUENCE -
 			// first generate any number of element
 			// references within the multiplicity range
-
-			for (final IElementReference elementReference : element.getElements()) {
-				// determine number of element instances
-				final int elementCount = ThreadLocalRandom.current().nextInt(elementReference.getMinOccurrence(),
-						elementReference.getMaxOccurrence().orElse(this.maxElements) + 1);
-				logger.debug("generating {} instances of element reference {}", elementCount, elementReference.getID());
-				for (int i = 0; i < elementCount; i++) {
-					result.add(generateSingleRuleForElementReference(elementReference));
-				}
-			}
+			result = generateSubElementRules(element);
 
 			// for content type MIXED or content type ELEMENT and arrangement ALL shuffle
 			// the order
@@ -204,6 +191,30 @@ public class RequestGenerator implements IRequestGenerator {
 	}
 
 	/**
+	 * Creates the rules for the sub-element references.
+	 *
+	 * @param element the parent element
+	 * @return a list of sub-element rules
+	 * @see #generateElementContent(IElementType)
+	 */
+	protected List<IContentGenerationRule> generateSubElementRules(IElementType element) {
+		List<IContentGenerationRule> result;
+		result = Lists.newArrayList();
+		for (final IElementReference elementReference : element.getElements()) {
+			// determine number of element instances
+			final Integer minOccurrence = elementReference.getMinOccurrence();
+			final Integer maxOccurrence = elementReference.getMaxOccurrence().orElse(this.maxElements);
+			final int elementCount = (Objects.equals(minOccurrence, maxOccurrence)) ? minOccurrence
+					: this.rng.nextInt(minOccurrence, maxOccurrence + 1);
+			logger.debug("generating {} instances of element reference {}", elementCount, elementReference.getID());
+			for (int i = 0; i < elementCount; i++) {
+				result.add(generateSingleRuleForElementReference(elementReference));
+			}
+		}
+		return result;
+	}
+
+	/**
 	 * Adds random {@link IAddRawContentRule} to the rules to simulate mixed content.
 	 *
 	 * @param element       the parent element
@@ -215,7 +226,7 @@ public class RequestGenerator implements IRequestGenerator {
 		logger.traceEntry();
 		final List<IContentGenerationRule> newRules = Lists.newArrayList();
 		for (final IContentGenerationRule rule : originalRules) {
-			if (ThreadLocalRandom.current().nextInt(0, 2) > 0) {
+			if (this.rng.nextInt(0, 2) > 0) {
 				newRules.add(new AddRawContentRule(element.getID()));
 			}
 			newRules.add(rule);
@@ -226,7 +237,7 @@ public class RequestGenerator implements IRequestGenerator {
 			newRules.add(new AddRawContentRule(element.getID()));
 		} else {
 			// randomly add a raw content generation rule at the end
-			if (ThreadLocalRandom.current().nextInt(0, 2) > 0) {
+			if (this.rng.nextInt(0, 2) > 0) {
 				newRules.add(new AddRawContentRule(element.getID()));
 			}
 		}
@@ -247,7 +258,7 @@ public class RequestGenerator implements IRequestGenerator {
 			return logger.traceExit(references.iterator().next());
 		}
 		final IElementReference[] referenceArray = references.toArray(new IElementReference[0]);
-		final int index = ThreadLocalRandom.current().nextInt(0, referenceArray.length);
+		final int index = this.rng.nextInt(0, referenceArray.length);
 		logger.debug("aelected choice element reference {} out of {} options", index + 1, referenceArray.length);
 		return logger.traceExit(referenceArray[index]);
 	}
@@ -290,14 +301,15 @@ public class RequestGenerator implements IRequestGenerator {
 				originalRequest.getSchemaVersion());
 		IAddElementRule rootElementRule = null;
 		Collection<IExtensionFunctionRule> extensionFunctionRules = null;
-		Collection<IStylesheetParameterRule> StylesheetParameterRules = null;
+		Collection<IStylesheetParameterRule> stylesheetParameterRules = null;
 
 		// dispatch according to modifier type
 		if (modifier instanceof final IDocumentValueModifier valueModifier) {
 			rootElementRule = copyAndModifyAddElementRule(originalRequest.getRootElementRule(), valueModifier);
 			extensionFunctionRules = copyAndModifyExtensionFunctionRules(originalRequest.getExtensionFunctionRules(),
 					valueModifier);
-			StylesheetParameterRules = copyAndModifyStylesheetParameterRules(originalRequest.getStylesheetParameterRules(),
+			stylesheetParameterRules = copyAndModifyStylesheetParameterRules(
+					originalRequest.getStylesheetParameterRules(),
 					valueModifier);
 		} else {
 			throw logger.throwing(new IllegalArgumentException(
@@ -308,7 +320,7 @@ public class RequestGenerator implements IRequestGenerator {
 			.builder(schema, rootElementRule)
 			.withModifier(modifier)
 			.addExtensionFunctionRules(extensionFunctionRules)
-			.addStylesheetParameterRules(StylesheetParameterRules)
+			.addStylesheetParameterRules(stylesheetParameterRules)
 			.withMixedContentGenerationMode(mixedContentGenerationMode)
 			.build();
 		return logger.traceExit(request);

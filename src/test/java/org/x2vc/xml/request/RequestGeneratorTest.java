@@ -7,24 +7,23 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.xml.request;
 
-
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
-import java.util.Optional;
-import java.util.Set;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -33,6 +32,8 @@ import javax.xml.bind.Unmarshaller;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.x2vc.schema.ISchemaManager;
@@ -43,11 +44,17 @@ import org.x2vc.xml.document.IDocumentValueModifier;
 
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.UnmodifiableIterator;
 import com.google.common.io.Files;
 
 @ExtendWith(MockitoExtension.class)
 class RequestGeneratorTest {
+
+	private static final int MAX_ELEMENTS = 42;
+
+	@Mock
+	private Random rng;
 
 	@Mock
 	private ISchemaManager schemaManager;
@@ -64,7 +71,7 @@ class RequestGeneratorTest {
 	void setUp() throws Exception {
 		this.context = JAXBContext.newInstance(XMLSchema.class);
 		this.unmarshaller = this.context.createUnmarshaller();
-		this.requestGenerator = new RequestGenerator(this.schemaManager, 42);
+		this.requestGenerator = new RequestGenerator(this.rng, this.schemaManager, MAX_ELEMENTS);
 	}
 
 	@Test
@@ -86,8 +93,11 @@ class RequestGeneratorTest {
 	}
 
 	@Test
-	void testGenerateNewRequest_MultipleRootElements() throws URISyntaxException, FileNotFoundException, JAXBException {
+	void testGenerateNewRequest_MultipleRootElements_ElementA()
+			throws URISyntaxException, FileNotFoundException, JAXBException {
 		final IXMLSchema schema = loadSchema("MultipleRootElements.x2vc_schema");
+
+		when(this.rng.nextInt(0, 2)).thenReturn(0);
 
 		final IDocumentRequest request = this.requestGenerator.generateNewRequest(schema,
 				MixedContentGenerationMode.FULL);
@@ -95,11 +105,27 @@ class RequestGeneratorTest {
 		assertEquals(1, request.getSchemaVersion());
 		assertEquals(0, request.getRequestedValues().size()); // no requested values for new requests
 
-		final Set<UUID> rootElementReferenceIDs = Set.of(UUID.fromString("5a10a2f6-a5c4-42b1-8008-d0a6f8e10775"),
-				UUID.fromString("9bf54a0d-f72c-4d6e-a58b-3f7e0c6476f5"));
+		final IAddElementRule rootElementRule = request.getRootElementRule();
+		assertEquals(UUID.fromString("5a10a2f6-a5c4-42b1-8008-d0a6f8e10775"), rootElementRule.getElementReferenceID());
+
+		assertFalse(request.getModifier().isPresent());
+	}
+
+	@Test
+	void testGenerateNewRequest_MultipleRootElements_ElementB()
+			throws URISyntaxException, FileNotFoundException, JAXBException {
+		final IXMLSchema schema = loadSchema("MultipleRootElements.x2vc_schema");
+
+		when(this.rng.nextInt(0, 2)).thenReturn(1);
+
+		final IDocumentRequest request = this.requestGenerator.generateNewRequest(schema,
+				MixedContentGenerationMode.FULL);
+		assertEquals(new URI("memory:schema/bar"), request.getSchemaURI());
+		assertEquals(1, request.getSchemaVersion());
+		assertEquals(0, request.getRequestedValues().size()); // no requested values for new requests
 
 		final IAddElementRule rootElementRule = request.getRootElementRule();
-		assertTrue(rootElementReferenceIDs.contains(rootElementRule.getElementReferenceID()));
+		assertEquals(UUID.fromString("9bf54a0d-f72c-4d6e-a58b-3f7e0c6476f5"), rootElementRule.getElementReferenceID());
 
 		assertFalse(request.getModifier().isPresent());
 	}
@@ -128,63 +154,129 @@ class RequestGeneratorTest {
 	}
 
 	@Test
-	void testGenerateNewRequest_SingleEmptyElement_WithOptionalAttribute()
+	void testGenerateNewRequest_SingleEmptyElement_WithOptionalAttribute_Selected()
 			throws URISyntaxException, FileNotFoundException, JAXBException {
 		final IXMLSchema schema = loadSchema("SingleEmptyElement_WithOptionalAttribute.x2vc_schema");
 
-		// to test an optional argument, we generate a larger number of requests and
-		// check the number of times the attribute appeared - should be half of the time
-		// on average
-
-		final int NUM_REQUESTS = 20;
-		int attributesFound = 0;
-
-		for (int i = 0; i < NUM_REQUESTS; i++) {
-			final IDocumentRequest request = this.requestGenerator.generateNewRequest(schema,
-					MixedContentGenerationMode.FULL);
-			final IAddElementRule rootElementRule = request.getRootElementRule();
-			if (rootElementRule.getAttributeRules().size() == 1) {
-				final ISetAttributeRule rootAttributeRule = rootElementRule.getAttributeRules()
-					.toArray(new ISetAttributeRule[0])[0];
-				assertEquals(UUID.fromString("73a9b784-7a61-48c4-8110-9855cef81cef"),
-						rootAttributeRule.getAttributeID());
-				attributesFound += 1;
-			}
-			assertFalse(request.getModifier().isPresent());
-		}
-
-		final int MAX_ERROR = 5; // allow for random error
-		final int lowerBound = (int) Math.round(Math.floor((NUM_REQUESTS / 2) - MAX_ERROR));
-		final int upperBound = (int) Math.round(Math.ceil((NUM_REQUESTS / 2) + MAX_ERROR));
-
-		assertInRange("attributesFound", lowerBound, attributesFound, upperBound);
+		when(this.rng.nextInt(2)).thenReturn(1);
+		final IDocumentRequest request = this.requestGenerator.generateNewRequest(schema,
+				MixedContentGenerationMode.FULL);
+		final IAddElementRule rootElementRule = request.getRootElementRule();
+		assertEquals(1, rootElementRule.getAttributeRules().size());
+		final ISetAttributeRule rootAttributeRule = rootElementRule.getAttributeRules()
+			.toArray(new ISetAttributeRule[0])[0];
+		assertEquals(UUID.fromString("73a9b784-7a61-48c4-8110-9855cef81cef"),
+				rootAttributeRule.getAttributeID());
+		assertFalse(request.getModifier().isPresent());
 	}
 
 	@Test
-	void testGenerateNewRequest_SingleEmptyElement_WithMultipleAttributes()
+	void testGenerateNewRequest_SingleEmptyElement_WithOptionalAttribute_NotSelected()
+			throws URISyntaxException, FileNotFoundException, JAXBException {
+		final IXMLSchema schema = loadSchema("SingleEmptyElement_WithOptionalAttribute.x2vc_schema");
+
+		when(this.rng.nextInt(2)).thenReturn(0);
+		final IDocumentRequest request = this.requestGenerator.generateNewRequest(schema,
+				MixedContentGenerationMode.FULL);
+		final IAddElementRule rootElementRule = request.getRootElementRule();
+		assertEquals(0, rootElementRule.getAttributeRules().size());
+		assertFalse(request.getModifier().isPresent());
+	}
+
+	@Test
+	void testGenerateNewRequest_SingleEmptyElement_WithMultipleAttributes_00()
 			throws URISyntaxException, FileNotFoundException, JAXBException {
 		final IXMLSchema schema = loadSchema("SingleEmptyElement_WithMultipleAttributes.x2vc_schema");
 
-		// the schema allows for 2, 3 or 4 attributes - again generate a larger number
-		// of requests and check the number of attributes generated on average (should
-		// be 3 per request)
+		// intAttribute optional="false" id="73a9b784-7a61-48c4-8110-9855cef81cef" -- must exist
+		// stringAttribute optional="false" id="68a174ff-ef1d-48ae-aa09-accf2566f390" -- must exist
+		// intAttributeOptional optional="true" id="431c772d-4cc9-4074-a35d-509f2af92f07" -- NOT selected
+		// stringAttributeOptional optional="true" id="141c4641-47a7-4ff1-9b2c-859033fffd34" -- NOT selected
 
-		final int NUM_REQUESTS = 30;
-		int attributesFound = 0;
+		when(this.rng.nextInt(2)).thenReturn(0, 0);
 
-		for (int i = 0; i < NUM_REQUESTS; i++) {
-			final IDocumentRequest request = this.requestGenerator.generateNewRequest(schema,
-					MixedContentGenerationMode.FULL);
-			final IAddElementRule rootElementRule = request.getRootElementRule();
-			attributesFound += rootElementRule.getAttributeRules().size();
-			assertFalse(request.getModifier().isPresent());
-		}
+		final IDocumentRequest request = this.requestGenerator.generateNewRequest(schema,
+				MixedContentGenerationMode.FULL);
+		final IAddElementRule rootElementRule = request.getRootElementRule();
+		final ImmutableSet<ISetAttributeRule> attributeRules = rootElementRule.getAttributeRules();
+		assertEquals(
+				Set.of(UUID.fromString("73a9b784-7a61-48c4-8110-9855cef81cef"),
+						UUID.fromString("68a174ff-ef1d-48ae-aa09-accf2566f390")),
+				attributeRules.stream().map(rule -> rule.getAttributeID()).collect(Collectors.toSet()));
+		assertFalse(request.getModifier().isPresent());
+	}
 
-		final int MAX_ERROR = 10; // allow for random error
-		final int lowerBound = (int) Math.round(Math.floor((NUM_REQUESTS * 3) - MAX_ERROR));
-		final int upperBound = (int) Math.round(Math.ceil((NUM_REQUESTS * 3) + MAX_ERROR));
+	@Test
+	void testGenerateNewRequest_SingleEmptyElement_WithMultipleAttributes_01()
+			throws URISyntaxException, FileNotFoundException, JAXBException {
+		final IXMLSchema schema = loadSchema("SingleEmptyElement_WithMultipleAttributes.x2vc_schema");
 
-		assertInRange("attributesFound", lowerBound, attributesFound, upperBound);
+		// intAttribute optional="false" id="73a9b784-7a61-48c4-8110-9855cef81cef" -- must exist
+		// stringAttribute optional="false" id="68a174ff-ef1d-48ae-aa09-accf2566f390" -- must exist
+		// intAttributeOptional optional="true" id="431c772d-4cc9-4074-a35d-509f2af92f07" -- NOT selected
+		// stringAttributeOptional optional="true" id="141c4641-47a7-4ff1-9b2c-859033fffd34" -- selected
+
+		when(this.rng.nextInt(2)).thenReturn(0, 1);
+
+		final IDocumentRequest request = this.requestGenerator.generateNewRequest(schema,
+				MixedContentGenerationMode.FULL);
+		final IAddElementRule rootElementRule = request.getRootElementRule();
+		final ImmutableSet<ISetAttributeRule> attributeRules = rootElementRule.getAttributeRules();
+		assertEquals(
+				Set.of(UUID.fromString("73a9b784-7a61-48c4-8110-9855cef81cef"),
+						UUID.fromString("68a174ff-ef1d-48ae-aa09-accf2566f390"),
+						UUID.fromString("141c4641-47a7-4ff1-9b2c-859033fffd34")),
+				attributeRules.stream().map(rule -> rule.getAttributeID()).collect(Collectors.toSet()));
+		assertFalse(request.getModifier().isPresent());
+	}
+
+	@Test
+	void testGenerateNewRequest_SingleEmptyElement_WithMultipleAttributes_10()
+			throws URISyntaxException, FileNotFoundException, JAXBException {
+		final IXMLSchema schema = loadSchema("SingleEmptyElement_WithMultipleAttributes.x2vc_schema");
+
+		// intAttribute optional="false" id="73a9b784-7a61-48c4-8110-9855cef81cef" -- must exist
+		// stringAttribute optional="false" id="68a174ff-ef1d-48ae-aa09-accf2566f390" -- must exist
+		// intAttributeOptional optional="true" id="431c772d-4cc9-4074-a35d-509f2af92f07" -- selected
+		// stringAttributeOptional optional="true" id="141c4641-47a7-4ff1-9b2c-859033fffd34" -- NOT selected
+
+		when(this.rng.nextInt(2)).thenReturn(1, 0);
+
+		final IDocumentRequest request = this.requestGenerator.generateNewRequest(schema,
+				MixedContentGenerationMode.FULL);
+		final IAddElementRule rootElementRule = request.getRootElementRule();
+		final ImmutableSet<ISetAttributeRule> attributeRules = rootElementRule.getAttributeRules();
+		assertEquals(
+				Set.of(UUID.fromString("73a9b784-7a61-48c4-8110-9855cef81cef"),
+						UUID.fromString("68a174ff-ef1d-48ae-aa09-accf2566f390"),
+						UUID.fromString("431c772d-4cc9-4074-a35d-509f2af92f07")),
+				attributeRules.stream().map(rule -> rule.getAttributeID()).collect(Collectors.toSet()));
+		assertFalse(request.getModifier().isPresent());
+	}
+
+	@Test
+	void testGenerateNewRequest_SingleEmptyElement_WithMultipleAttributes_11()
+			throws URISyntaxException, FileNotFoundException, JAXBException {
+		final IXMLSchema schema = loadSchema("SingleEmptyElement_WithMultipleAttributes.x2vc_schema");
+
+		// intAttribute optional="false" id="73a9b784-7a61-48c4-8110-9855cef81cef" -- must exist
+		// stringAttribute optional="false" id="68a174ff-ef1d-48ae-aa09-accf2566f390" -- must exist
+		// intAttributeOptional optional="true" id="431c772d-4cc9-4074-a35d-509f2af92f07" -- selected
+		// stringAttributeOptional optional="true" id="141c4641-47a7-4ff1-9b2c-859033fffd34" -- selected
+
+		when(this.rng.nextInt(2)).thenReturn(1, 1);
+
+		final IDocumentRequest request = this.requestGenerator.generateNewRequest(schema,
+				MixedContentGenerationMode.FULL);
+		final IAddElementRule rootElementRule = request.getRootElementRule();
+		final ImmutableSet<ISetAttributeRule> attributeRules = rootElementRule.getAttributeRules();
+		assertEquals(
+				Set.of(UUID.fromString("73a9b784-7a61-48c4-8110-9855cef81cef"),
+						UUID.fromString("68a174ff-ef1d-48ae-aa09-accf2566f390"),
+						UUID.fromString("431c772d-4cc9-4074-a35d-509f2af92f07"),
+						UUID.fromString("141c4641-47a7-4ff1-9b2c-859033fffd34")),
+				attributeRules.stream().map(rule -> rule.getAttributeID()).collect(Collectors.toSet()));
+		assertFalse(request.getModifier().isPresent());
 	}
 
 	@Test
@@ -219,6 +311,9 @@ class RequestGeneratorTest {
 		final UUID textElementID = UUID.fromString("c90f6614-362f-4c50-a040-ebeb8f9eb113");
 		final UUID emptyElementID = UUID.fromString("dd7fa303-9fe6-49fb-8257-66608a7e434f");
 
+		final int numEmptyElements = 7;
+		when(this.rng.nextInt(1, 21)).thenReturn(numEmptyElements);
+
 		final IDocumentRequest request = this.requestGenerator.generateNewRequest(schema,
 				MixedContentGenerationMode.FULL);
 		assertEquals(new URI("memory:schema/bar"), request.getSchemaURI());
@@ -250,7 +345,7 @@ class RequestGeneratorTest {
 		}
 
 		assertEquals(1, textElementCount);
-		assertInRange("emptyElementCount", 1, emptyElementCount, 20);
+		assertEquals(numEmptyElements, emptyElementCount);
 
 		assertFalse(request.getModifier().isPresent());
 	}
@@ -286,6 +381,10 @@ class RequestGeneratorTest {
 		final UUID textElementReferenceID = UUID.fromString("c90f6614-362f-4c50-a040-ebeb8f9eb113");
 		final UUID emptyElementReferenceID = UUID.fromString("dd7fa303-9fe6-49fb-8257-66608a7e434f");
 
+		final int numTextElements = 6;
+		final int numEmptyElements = 4;
+		when(this.rng.nextInt(1, 11)).thenReturn(numTextElements, numEmptyElements);
+
 		final IDocumentRequest request = this.requestGenerator.generateNewRequest(schema,
 				MixedContentGenerationMode.FULL);
 		final IAddElementRule rootElementRule = request.getRootElementRule();
@@ -318,20 +417,34 @@ class RequestGeneratorTest {
 			}
 		}
 
-		assertInRange("textElementCount", 1, textElementCount, 10);
-		assertInRange("emptyElementCount", 1, emptyElementCount, 10);
+		assertEquals(numTextElements, textElementCount);
+		assertEquals(numEmptyElements, emptyElementCount);
 
 		assertFalse(request.getModifier().isPresent());
 	}
 
-	@Test
-	void testGenerateNewRequest_MixedContent_WithSubElements()
+	@ParameterizedTest
+	@CsvSource({
+			"5, 0, '1, 0, 1, 0, 1, 0, 1, 0, 1, 0'",
+			"6, 1, '0, 1, 0, 1, 0, 1, 0, 1, 0, 1'"
+	})
+	void testGenerateNewRequest_MixedContent_WithSubElements(int numRawContent, Integer firstRawSelection,
+			String remainingRawSelectionText)
 			throws URISyntaxException, FileNotFoundException, JAXBException {
 		final IXMLSchema schema = loadSchema("MixedContent_WithSubElements.x2vc_schema");
 
 		final UUID rootElementID = UUID.fromString("45023ac4-9c79-4247-bbe5-36f893bd7eaa");
 		final UUID textElementReferenceID = UUID.fromString("c90f6614-362f-4c50-a040-ebeb8f9eb113");
 		final UUID emptyElementReferenceID = UUID.fromString("dd7fa303-9fe6-49fb-8257-66608a7e434f");
+
+		final int numTextElements = 6;
+		final int numEmptyElements = 4;
+		when(this.rng.nextInt(1, 11)).thenReturn(numTextElements, numEmptyElements);
+		// set raw content rules to be inserted
+		final Integer[] remainingRawSelection = Arrays.stream(remainingRawSelectionText.split("\\s*,\\s*"))
+			.map(s -> Integer.parseInt(s))
+			.toArray(Integer[]::new);
+		when(this.rng.nextInt(0, 2)).thenReturn(firstRawSelection, remainingRawSelection);
 
 		final IDocumentRequest request = this.requestGenerator.generateNewRequest(schema,
 				MixedContentGenerationMode.FULL);
@@ -365,9 +478,9 @@ class RequestGeneratorTest {
 			}
 		}
 
-		assertInRange("textElementCount", 0, textElementCount, 10);
-		assertInRange("emptyElementCount", 1, emptyElementCount, 10);
-		assertInRange("rawContentCount", 0, rawContentCount, 121);
+		assertEquals(numTextElements, textElementCount);
+		assertEquals(numEmptyElements, emptyElementCount);
+		assertEquals(numRawContent, rawContentCount);
 
 		assertFalse(request.getModifier().isPresent());
 	}
@@ -599,12 +712,6 @@ class RequestGeneratorTest {
 
 		assertTrue(modifiedRequest.getModifier().isPresent());
 		assertSame(this.valueModifier, modifiedRequest.getModifier().get());
-	}
-
-	private void assertInRange(String valueName, int lowerBound, int value, int upperBound) {
-		if (!((lowerBound <= value) && (value <= upperBound))) {
-			fail(String.format("Value %s not within range: %d <= %d <= %d", valueName, lowerBound, value, upperBound));
-		}
 	}
 
 	private IXMLSchema loadSchema(String schemaFileName) throws FileNotFoundException, JAXBException {

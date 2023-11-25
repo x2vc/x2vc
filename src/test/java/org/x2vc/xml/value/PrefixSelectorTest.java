@@ -7,19 +7,20 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.xml.value;
 
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.when;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -44,6 +45,9 @@ class PrefixSelectorTest {
 	@Mock
 	private IStylesheetInformation stylesheetInformation;
 
+	@Mock
+	private Random rng;
+
 	private IPrefixSelector prefixSelector;
 
 	private URI stylesheetURI;
@@ -52,7 +56,7 @@ class PrefixSelectorTest {
 	void setUp() throws Exception {
 		this.stylesheetURI = URIUtilities.makeMemoryURI(ObjectType.STYLESHEET, "foobar");
 		when(this.stylesheetManager.get(this.stylesheetURI)).thenReturn(this.stylesheetInformation);
-		this.prefixSelector = new PrefixSelector(this.stylesheetManager);
+		this.prefixSelector = new PrefixSelector(this.rng, this.stylesheetManager);
 	}
 
 	@Test
@@ -66,6 +70,8 @@ class PrefixSelectorTest {
 									</xsl:stylesheet>
 									""";
 		when(this.stylesheetInformation.getPreparedStylesheet()).thenReturn(stylesheet);
+
+		when(this.rng.nextInt(anyInt())).thenReturn(0);
 
 		final PrefixData result = this.prefixSelector.selectPrefix(this.stylesheetURI);
 
@@ -105,6 +111,8 @@ class PrefixSelectorTest {
 								</xsl:stylesheet>
 								""";
 		when(this.stylesheetInformation.getPreparedStylesheet()).thenReturn(stylesheet);
+
+		when(this.rng.nextInt(anyInt())).thenReturn(0);
 
 		final PrefixData result = this.prefixSelector.selectPrefix(this.stylesheetURI);
 

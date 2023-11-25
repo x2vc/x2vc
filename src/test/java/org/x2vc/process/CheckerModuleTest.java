@@ -7,21 +7,23 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.process;
 
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.mock;
 
 import java.io.File;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -59,6 +61,7 @@ import com.github.racc.tscg.TypesafeConfigModule;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
+import com.thedeanda.lorem.LoremIpsum;
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 
@@ -137,6 +140,10 @@ class CheckerModuleTest {
 	private Provider<IPrefixSelector> prefixSelectorProvider;
 	@Inject
 	private Provider<IValueGeneratorFactory> valueGeneratorFactory;
+	@Inject
+	private Provider<Random> randomProvider;
+	@Inject
+	private Provider<LoremIpsum> loremIpsumProvider;
 
 	@BeforeEach
 	void setUp() throws Exception {
@@ -369,6 +376,20 @@ class CheckerModuleTest {
 		final IValueGeneratorFactory factory = this.valueGeneratorFactory.get();
 		assertNotNull(factory);
 		assertNotNull(factory.createValueGenerator(mock(IDocumentRequest.class)));
+	}
+
+	@Test
+	void testRandomProvider() {
+		final Random rng = this.randomProvider.get();
+		assertNotNull(rng);
+		assertInstanceOf(ThreadLocalRandom.class, rng);
+	}
+
+	@Test
+	void testLoremIpsumProvider() {
+		final LoremIpsum li = this.loremIpsumProvider.get();
+		assertNotNull(li);
+		assertInstanceOf(LoremIpsum.class, li);
 	}
 
 }
