@@ -50,6 +50,8 @@ import org.x2vc.stylesheet.IStylesheetPreprocessor;
 import org.x2vc.stylesheet.coverage.ICoverageTraceAnalyzer;
 import org.x2vc.stylesheet.structure.IStylesheetStructureExtractor;
 import org.x2vc.utilities.IDebugObjectWriter;
+import org.x2vc.utilities.xml.ILocationMapBuilder;
+import org.x2vc.utilities.xml.ILocationMapFactory;
 import org.x2vc.xml.document.IDocumentGenerator;
 import org.x2vc.xml.request.ICompletedRequestRegistry;
 import org.x2vc.xml.request.IDocumentRequest;
@@ -130,6 +132,10 @@ class CheckerModuleTest {
 	private Provider<ICoverageTraceAnalyzer> coverageTraceAnalyzerProvider;
 	@Inject
 	private Provider<IStylesheetStructureExtractor> stylesheetStructureExtractorProvider;
+	@Inject
+	private Provider<ILocationMapFactory> locationMapFactoryProvider;
+	@Inject
+	private Provider<ILocationMapBuilder> locationMapBuilderProvider;
 	@Inject
 	private Provider<IDocumentGenerator> documentGeneratorProvider;
 	@Inject
@@ -349,6 +355,18 @@ class CheckerModuleTest {
 	@Test
 	void testStylesheetStructureExtractor() {
 		assertNotNull(this.stylesheetStructureExtractorProvider.get());
+	}
+
+	@Test
+	void testLocationMapFactory() {
+		final ILocationMapFactory factory = this.locationMapFactoryProvider.get();
+		assertNotNull(factory);
+		assertNotNull(factory.create(42, new int[] { 1, 2, 3 }, new int[] { 0, 4, 5 }));
+	}
+
+	@Test
+	void testLocationMapBuilder() {
+		assertNotNull(this.locationMapBuilderProvider.get());
 	}
 
 	@Test

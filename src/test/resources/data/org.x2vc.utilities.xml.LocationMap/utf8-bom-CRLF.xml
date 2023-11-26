@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<!-- CAUTION WHITESPACE AND ENCODING MADNESS FOR TESTING PURPOSES -->
+<root>
+<!-- this line is not indented -->
+	<!-- there are tabs before this and the next lines -->
+	<someElement>
+		<otherElement />
+	</someElement>
+    <!-- there are spaces before this and the next lines  -->
+   <someElement>
+      <otherElement></otherElement>
+   </someElement>
+	<!--  let's add some multi-byte unicode characters to test stuff -->
+	<multibyte attrib="Ĥello"/>
+	<multibyte>Ňĩčĕ ŧō ŝėę ŷőů</multibyte>
+	<![CDATA[ 
+	  and some CDATA stuff for fun: 
+			Ňĩčĕ ŧō ŝėę ŷőů
+	]]>
+</root>

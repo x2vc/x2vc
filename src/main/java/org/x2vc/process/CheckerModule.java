@@ -45,6 +45,7 @@ import org.x2vc.stylesheet.structure.IStylesheetStructureExtractor;
 import org.x2vc.stylesheet.structure.StylesheetStructureExtractor;
 import org.x2vc.utilities.DebugObjectWriter;
 import org.x2vc.utilities.IDebugObjectWriter;
+import org.x2vc.utilities.xml.*;
 import org.x2vc.xml.document.DocumentGenerator;
 import org.x2vc.xml.document.IDocumentGenerator;
 import org.x2vc.xml.request.CompletedRequestRegistry;
@@ -151,6 +152,12 @@ public class CheckerModule extends AbstractModule {
 
 		// stylesheet structure
 		bind(IStylesheetStructureExtractor.class).to(StylesheetStructureExtractor.class);
+
+		// utilites - XML
+		install(new FactoryModuleBuilder()
+			.implement(ILocationMap.class, LocationMap.class)
+			.build(ILocationMapFactory.class));
+		bind(ILocationMapBuilder.class).to(LocationMapBuilder.class);
 
 		// xml document
 		bind(IDocumentGenerator.class).to(DocumentGenerator.class);
