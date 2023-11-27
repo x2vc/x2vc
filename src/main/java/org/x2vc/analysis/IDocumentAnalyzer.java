@@ -7,12 +7,11 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.analysis;
-
 
 import java.net.URI;
 import java.util.Set;
@@ -29,6 +28,7 @@ import org.x2vc.xml.document.IXMLDocumentDescriptor;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import com.google.inject.ImplementedBy;
 
 /**
  * This component processes the HTML document and examines each context that offers a potential for XSS injection.
@@ -40,6 +40,7 @@ import com.google.common.collect.ImmutableSet;
  * If a critical context contains data that can be influenced by user input, a set of possible XSS attack values are
  * generated in the form of input data requests.
  */
+@ImplementedBy(DocumentAnalyzer.class)
 public interface IDocumentAnalyzer {
 
 	/**

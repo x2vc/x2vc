@@ -7,22 +7,23 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.schema;
-
 
 import java.net.URI;
 
 import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.stylesheet.IStylesheetInformation;
 
+import com.google.inject.ImplementedBy;
+
 /**
- * Generates an initial version of a schema for a stylesheet. Used by the
- * {@link ISchemaManager} if no schema exists.
+ * Generates an initial version of a schema for a stylesheet. Used by the {@link ISchemaManager} if no schema exists.
  */
+@ImplementedBy(InitialSchemaGenerator.class)
 public interface IInitialSchemaGenerator {
 
 	/**

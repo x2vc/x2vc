@@ -7,16 +7,16 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.schema.evolution;
 
-
 import org.x2vc.processor.IHTMLDocumentContainer;
 
 import com.google.common.collect.ImmutableMultimap;
+import com.google.inject.ImplementedBy;
 
 import net.sf.saxon.expr.Expression;
 
@@ -24,6 +24,7 @@ import net.sf.saxon.expr.Expression;
  * This component filters and sorts the value trace events produced while processing a stylesheet to produce a format
  * that can be used to analyze the individual events.
  */
+@ImplementedBy(ValueTracePreprocessor.class)
 public interface IValueTracePreprocessor {
 
 	/**

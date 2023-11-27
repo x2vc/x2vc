@@ -7,50 +7,45 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.stylesheet;
 
-
 import java.net.URI;
 import java.util.Set;
 
 import com.google.common.collect.Multimap;
+import com.google.inject.ImplementedBy;
 
 /**
- * This component examines an XSLT program and produces a list of the namespace
- * prefixes used and - if possible - the namespace URIs they are associated
- * with. It is also able to find new unused namespace prefixes based on its
- * results.
+ * This component examines an XSLT program and produces a list of the namespace prefixes used and - if possible - the
+ * namespace URIs they are associated with. It is also able to find new unused namespace prefixes based on its results.
  */
+@ImplementedBy(NamespaceExtractor.class)
 public interface INamespaceExtractor {
 
 	/**
-	 * This is the namespace prefix used to identify the default namespace in the
-	 * result set of {@link #extractNamespaces(String)}.
+	 * This is the namespace prefix used to identify the default namespace in the result set of
+	 * {@link #extractNamespaces(String)}.
 	 */
 	public static final String DEFAULT_NAMESPACE = "#default";
 
 	/**
-	 * Examines an XSLT program and produces a list of the namespace prefixes used
-	 * and - if possible - the namespace URIs they are associated with. Since a
-	 * namespace alias may be associated with multiple different URIs in different
-	 * places, this has to be a multimap.
+	 * Examines an XSLT program and produces a list of the namespace prefixes used and - if possible - the namespace
+	 * URIs they are associated with. Since a namespace alias may be associated with multiple different URIs in
+	 * different places, this has to be a multimap.
 	 *
 	 * @param xslt
-	 * @return a map assigning namespace prefixes to the URIs they are associated
-	 *         with
+	 * @return a map assigning namespace prefixes to the URIs they are associated with
 	 */
 	public Multimap<String, URI> extractNamespaces(String xslt);
 
 	/**
-	 * Determines a new namespace prefix that is not contained in the set of
-	 * existing prefixes
+	 * Determines a new namespace prefix that is not contained in the set of existing prefixes
 	 *
-	 * @param existingPrefixes the prefixes already present in a document - see
-	 *                         {@link #extractNamespaces(String)}
+	 * @param existingPrefixes the prefixes already present in a document - see {@link #extractNamespaces(String)}
 	 * @param startsWith       the desired prefix of the prefix
 	 * @return the generated prefix
 	 */

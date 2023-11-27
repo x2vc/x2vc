@@ -7,26 +7,27 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.processor;
 
-
 import org.x2vc.xml.document.IXMLDocumentContainer;
 
+import com.google.inject.ImplementedBy;
+
 /**
- * A wrapper that encapsulates the XSLT processor and handles the input and
- * output processes as well as the message collection.
+ * A wrapper that encapsulates the XSLT processor and handles the input and output processes as well as the message
+ * collection.
  */
+@ImplementedBy(XSLTProcessor.class)
 public interface IXSLTProcessor {
 
 	/**
 	 * Process an XML document and attempt to produce a HTML document.
 	 *
-	 * @param xmlDocument the input document (also contains the schema and
-	 *                    stylesheet reference)
+	 * @param xmlDocument the input document (also contains the schema and stylesheet reference)
 	 * @return the resulting container with the HTML document or error information
 	 */
 	public IHTMLDocumentContainer processDocument(IXMLDocumentContainer xmlDocument);
