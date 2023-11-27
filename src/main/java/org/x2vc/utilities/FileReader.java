@@ -25,8 +25,11 @@ public class FileReader implements IFileReader {
 
 	private CharsetDetector detector;
 
+	/**
+	 * @param detector
+	 */
 	@Inject
-	FileReader(CharsetDetector detector) {
+	public FileReader(CharsetDetector detector) {
 		this.detector = detector;
 	}
 

@@ -20,6 +20,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Arrays;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -29,6 +30,9 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.x2vc.utilities.FileReader;
+
+import com.ibm.icu.text.CharsetDetector;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
 
@@ -40,16 +44,23 @@ class LocationMapBuilderTest {
 
 	private ILocationMapBuilder builder;
 
+	private FileReader reader;
+
 	/**
 	 * @throws java.lang.Exception
 	 */
 	@BeforeEach
 	void setUp() throws Exception {
+		// we use the existing FileReader to simplify the tests
+		this.reader = new FileReader(new CharsetDetector());
 		this.builder = new LocationMapBuilder(this.factory);
+
 	}
 
 	/**
 	 * Test method for {@link org.x2vc.utilities.xml.LocationMapBuilder#buildLocationMap(File)}.
+	 *
+	 * @throws IOException
 	 */
 	@ParameterizedTest
 	@CsvSource({
@@ -66,13 +77,14 @@ class LocationMapBuilderTest {
 			"win1252-CRLF.xml,      628, 45;69;6;34;55;14;18;15;61;16;35;17;63;28;39;11;33;18;4;7;0, 0;47;118;126;162;219;235;255;272;335;353;390;409;474;504;545;558;593;613;619;628",
 			"win1252-LF.xml,        608, 45;69;6;34;55;14;18;15;61;16;35;17;63;28;39;11;33;18;4;7;0, 0;46;116;123;158;214;229;248;264;326;343;379;397;461;490;530;542;576;595;600;608"
 	})
-	void testBuildLocationMap(String filename, int maxOffset, String lengths, String offsets) {
+	void testBuildLocationMap(String filename, int maxOffset, String lengths, String offsets) throws IOException {
 		final File inputFile = new File("src/test/resources/data/org.x2vc.utilities.xml.LocationMap/" + filename);
+		final String contents = this.reader.readFile(inputFile);
 		final int[] lineLengths = Arrays.stream(lengths.split(";")).mapToInt(Integer::parseInt).toArray();
 		final int[] lineOffsets = Arrays.stream(offsets.split(";")).mapToInt(Integer::parseInt).toArray();
 		final ILocationMap map = mock(ILocationMap.class);
 		when(this.factory.create(maxOffset, lineLengths, lineOffsets)).thenReturn(map);
-		assertSame(map, this.builder.buildLocationMap(inputFile));
+		assertSame(map, this.builder.buildLocationMap(contents));
 		verify(this.factory, times(1)).create(maxOffset, lineLengths, lineOffsets);
 	}
 

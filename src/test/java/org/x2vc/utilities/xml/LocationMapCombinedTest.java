@@ -5,10 +5,14 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
+import java.io.IOException;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvFileSource;
+import org.x2vc.utilities.FileReader;
+
+import com.ibm.icu.text.CharsetDetector;
 
 /**
  * These tests encompass both {@link LocationMap} and {@link LocationMapBuilder}.
@@ -17,12 +21,15 @@ class LocationMapCombinedTest {
 
 	private ILocationMapFactory factory;
 	private ILocationMapBuilder builder;
+	private FileReader reader;
 
 	/**
 	 * @throws java.lang.Exception
 	 */
 	@BeforeEach
 	void setUp() throws Exception {
+		// we use the existing FileReader to simplify the tests
+		this.reader = new FileReader(new CharsetDetector());
 		this.factory = new ILocationMapFactory() {
 			@Override
 			public ILocationMap create(int maxOffset, int[] lineLengths, int[] lineOffsets) {
@@ -33,25 +40,39 @@ class LocationMapCombinedTest {
 	}
 
 	/**
+	 * @param filename
+	 * @return
+	 * @throws IOException
+	 * @throws IllegalArgumentException
+	 */
+	private ILocationMap createMapFromFile(String filename) throws IOException, IllegalArgumentException {
+		final File inputFile = new File("src/test/resources/data/org.x2vc.utilities.xml.LocationMap/" + filename);
+		final String contents = this.reader.readFile(inputFile);
+		return this.builder.buildLocationMap(contents);
+	}
+
+	/**
 	 * Test method for {@link org.x2vc.utilities.xml.LocationMap#getOffset(int, int)}.
+	 *
+	 * @throws IOException
 	 */
 	@ParameterizedTest(name = "[{index}] {arguments}")
 	@CsvFileSource(resources = "/data/org.x2vc.utilities.xml.LocationMap/LocationTestData.csv", useHeadersInDisplayName = true)
-	void testGetOffset_IntInt(String filename, int line, int column, int offset) {
-		final File inputFile = new File("src/test/resources/data/org.x2vc.utilities.xml.LocationMap/" + filename);
-		final ILocationMap locationMap = this.builder.buildLocationMap(inputFile);
+	void testGetOffset_IntInt(String filename, int line, int column, int offset) throws IOException {
+		final ILocationMap locationMap = createMapFromFile(filename);
 		final int actualOffset = locationMap.getOffset(line, column);
 		assertEquals(offset, actualOffset, "offset");
 	}
 
 	/**
 	 * Test method for {@link org.x2vc.utilities.xml.LocationMap#getOffset(javax.xml.stream.Location)}.
+	 *
+	 * @throws IOException
 	 */
 	@ParameterizedTest(name = "[{index}] {arguments}")
 	@CsvFileSource(resources = "/data/org.x2vc.utilities.xml.LocationMap/LocationTestData.csv", useHeadersInDisplayName = true)
-	void testGetOffset_Location(String filename, int line, int column, int offset) {
-		final File inputFile = new File("src/test/resources/data/org.x2vc.utilities.xml.LocationMap/" + filename);
-		final ILocationMap locationMap = this.builder.buildLocationMap(inputFile);
+	void testGetOffset_Location(String filename, int line, int column, int offset) throws IOException {
+		final ILocationMap locationMap = createMapFromFile(filename);
 		final javax.xml.stream.Location location = mock(javax.xml.stream.Location.class);
 		when(location.getLineNumber()).thenReturn(line);
 		when(location.getColumnNumber()).thenReturn(column);
@@ -61,12 +82,13 @@ class LocationMapCombinedTest {
 
 	/**
 	 * Test method for {@link org.x2vc.utilities.xml.LocationMap#getOffset(javax.xml.transform.SourceLocator)}.
+	 *
+	 * @throws IOException
 	 */
 	@ParameterizedTest(name = "[{index}] {arguments}")
 	@CsvFileSource(resources = "/data/org.x2vc.utilities.xml.LocationMap/LocationTestData.csv", useHeadersInDisplayName = true)
-	void testGetOffset_SourceLocator(String filename, int line, int column, int offset) {
-		final File inputFile = new File("src/test/resources/data/org.x2vc.utilities.xml.LocationMap/" + filename);
-		final ILocationMap locationMap = this.builder.buildLocationMap(inputFile);
+	void testGetOffset_SourceLocator(String filename, int line, int column, int offset) throws IOException {
+		final ILocationMap locationMap = createMapFromFile(filename);
 		final javax.xml.transform.SourceLocator locator = mock(javax.xml.transform.SourceLocator.class);
 		when(locator.getLineNumber()).thenReturn(line);
 		when(locator.getColumnNumber()).thenReturn(column);
@@ -76,12 +98,13 @@ class LocationMapCombinedTest {
 
 	/**
 	 * Test method for {@link org.x2vc.utilities.xml.LocationMap#getLocation(int, int)}.
+	 *
+	 * @throws IOException
 	 */
 	@ParameterizedTest(name = "[{index}] {arguments}")
 	@CsvFileSource(resources = "/data/org.x2vc.utilities.xml.LocationMap/LocationTestData.csv", useHeadersInDisplayName = true)
-	void testGetLocation_IntInt(String filename, int line, int column, int offset) {
-		final File inputFile = new File("src/test/resources/data/org.x2vc.utilities.xml.LocationMap/" + filename);
-		final ILocationMap locationMap = this.builder.buildLocationMap(inputFile);
+	void testGetLocation_IntInt(String filename, int line, int column, int offset) throws IOException {
+		final ILocationMap locationMap = createMapFromFile(filename);
 		final PolymorphLocation location = locationMap.getLocation(line, column);
 		assertEquals(offset, location.getCharacterOffset(), "offset");
 		assertEquals(line, location.getLineNumber(), "line number");
@@ -90,12 +113,13 @@ class LocationMapCombinedTest {
 
 	/**
 	 * Test method for {@link org.x2vc.utilities.xml.LocationMap#getLocation(int)}.
+	 *
+	 * @throws IOException
 	 */
 	@ParameterizedTest(name = "[{index}] {arguments}")
 	@CsvFileSource(resources = "/data/org.x2vc.utilities.xml.LocationMap/LocationTestData.csv", useHeadersInDisplayName = true)
-	void testGetLocation_Int(String filename, int line, int column, int offset) {
-		final File inputFile = new File("src/test/resources/data/org.x2vc.utilities.xml.LocationMap/" + filename);
-		final ILocationMap locationMap = this.builder.buildLocationMap(inputFile);
+	void testGetLocation_Int(String filename, int line, int column, int offset) throws IOException {
+		final ILocationMap locationMap = createMapFromFile(filename);
 		final PolymorphLocation location = locationMap.getLocation(offset);
 		assertEquals(offset, location.getCharacterOffset(), "offset");
 		assertEquals(line, location.getLineNumber(), "line number");
@@ -104,12 +128,14 @@ class LocationMapCombinedTest {
 
 	/**
 	 * Test method for {@link org.x2vc.utilities.xml.LocationMap#getLocationByLineColumn(javax.xml.stream.Location)}.
+	 *
+	 * @throws IOException
 	 */
 	@ParameterizedTest(name = "[{index}] {arguments}")
 	@CsvFileSource(resources = "/data/org.x2vc.utilities.xml.LocationMap/LocationTestData.csv", useHeadersInDisplayName = true)
-	void testGetLocationByLineColumn_Location_LineColumn(String filename, int line, int column, int offset) {
-		final File inputFile = new File("src/test/resources/data/org.x2vc.utilities.xml.LocationMap/" + filename);
-		final ILocationMap locationMap = this.builder.buildLocationMap(inputFile);
+	void testGetLocationByLineColumn_Location_LineColumn(String filename, int line, int column, int offset)
+			throws IOException {
+		final ILocationMap locationMap = createMapFromFile(filename);
 		final javax.xml.stream.Location location = mock(javax.xml.stream.Location.class);
 		when(location.getLineNumber()).thenReturn(line);
 		when(location.getColumnNumber()).thenReturn(column);
@@ -121,12 +147,13 @@ class LocationMapCombinedTest {
 
 	/**
 	 * Test method for {@link org.x2vc.utilities.xml.LocationMap#getLocationByOffset(javax.xml.stream.Location)}.
+	 *
+	 * @throws IOException
 	 */
 	@ParameterizedTest(name = "[{index}] {arguments}")
 	@CsvFileSource(resources = "/data/org.x2vc.utilities.xml.LocationMap/LocationTestData.csv", useHeadersInDisplayName = true)
-	void testGetLocationByOffset_Location(String filename, int line, int column, int offset) {
-		final File inputFile = new File("src/test/resources/data/org.x2vc.utilities.xml.LocationMap/" + filename);
-		final ILocationMap locationMap = this.builder.buildLocationMap(inputFile);
+	void testGetLocationByOffset_Location(String filename, int line, int column, int offset) throws IOException {
+		final ILocationMap locationMap = createMapFromFile(filename);
 		final javax.xml.stream.Location location = mock(javax.xml.stream.Location.class);
 		when(location.getCharacterOffset()).thenReturn(offset);
 		final PolymorphLocation newLocation = locationMap.getLocationByOffset(location);
@@ -137,12 +164,13 @@ class LocationMapCombinedTest {
 
 	/**
 	 * Test method for {@link org.x2vc.utilities.xml.LocationMap#getLocation(javax.xml.transform.SourceLocator)}.
+	 *
+	 * @throws IOException
 	 */
 	@ParameterizedTest(name = "[{index}] {arguments}")
 	@CsvFileSource(resources = "/data/org.x2vc.utilities.xml.LocationMap/LocationTestData.csv", useHeadersInDisplayName = true)
-	void testGetLocation_SourceLocator(String filename, int line, int column, int offset) {
-		final File inputFile = new File("src/test/resources/data/org.x2vc.utilities.xml.LocationMap/" + filename);
-		final ILocationMap locationMap = this.builder.buildLocationMap(inputFile);
+	void testGetLocation_SourceLocator(String filename, int line, int column, int offset) throws IOException {
+		final ILocationMap locationMap = createMapFromFile(filename);
 		final javax.xml.transform.SourceLocator locator = mock(javax.xml.transform.SourceLocator.class);
 		when(locator.getLineNumber()).thenReturn(line);
 		when(locator.getColumnNumber()).thenReturn(column);
