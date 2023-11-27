@@ -7,12 +7,11 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.stylesheet;
-
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -20,6 +19,7 @@ import java.net.URI;
 import java.util.Objects;
 
 import org.x2vc.stylesheet.structure.IStylesheetStructure;
+import org.x2vc.utilities.xml.ILocationMap;
 
 import com.google.common.collect.Multimap;
 
@@ -29,17 +29,19 @@ import com.google.common.collect.Multimap;
  *
  * This object can be serialized and deserialized to create a local copy.
  */
-public class StylesheetInformation implements IStylesheetInformation {
+public final class StylesheetInformation implements IStylesheetInformation {
 
-	private URI uri;
-	private String originalStylesheet;
-	private String preparedStylesheet;
-	private Multimap<String, URI> namespacePrefixes;
-	private String traceNamespacePrefix;
-	private IStylesheetStructure structure;
+	private final URI uri;
+	private final String originalStylesheet;
+	private final String preparedStylesheet;
+	private final Multimap<String, URI> namespacePrefixes;
+	private final String traceNamespacePrefix;
+	private final IStylesheetStructure structure;
+	private final ILocationMap locationMap;
 
 	StylesheetInformation(URI uri, String originalStylesheet, String preparedStylesheet,
-			Multimap<String, URI> namespacePrefixes, String traceNamespacePrefix, IStylesheetStructure structure) {
+			Multimap<String, URI> namespacePrefixes, String traceNamespacePrefix, IStylesheetStructure structure,
+			ILocationMap locationMap) {
 		checkNotNull(uri);
 		checkNotNull(originalStylesheet);
 		checkNotNull(preparedStylesheet);
@@ -51,26 +53,7 @@ public class StylesheetInformation implements IStylesheetInformation {
 		this.namespacePrefixes = namespacePrefixes;
 		this.traceNamespacePrefix = traceNamespacePrefix;
 		this.structure = structure;
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(this.uri, this.originalStylesheet);
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		final StylesheetInformation other = (StylesheetInformation) obj;
-		return Objects.equals(this.uri, other.uri) && Objects.equals(this.originalStylesheet, other.originalStylesheet);
+		this.locationMap = locationMap;
 	}
 
 	@Override
@@ -101,6 +84,36 @@ public class StylesheetInformation implements IStylesheetInformation {
 	@Override
 	public IStylesheetStructure getStructure() {
 		return this.structure;
+	}
+
+	@Override
+	public ILocationMap getLocationMap() {
+		return this.locationMap;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(this.locationMap, this.namespacePrefixes, this.originalStylesheet, this.preparedStylesheet,
+				this.structure,
+				this.traceNamespacePrefix, this.uri);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!(obj instanceof StylesheetInformation)) {
+			return false;
+		}
+		final StylesheetInformation other = (StylesheetInformation) obj;
+		return Objects.equals(this.locationMap, other.locationMap)
+				&& Objects.equals(this.namespacePrefixes, other.namespacePrefixes)
+				&& Objects.equals(this.originalStylesheet, other.originalStylesheet)
+				&& Objects.equals(this.preparedStylesheet, other.preparedStylesheet)
+				&& Objects.equals(this.structure, other.structure)
+				&& Objects.equals(this.traceNamespacePrefix, other.traceNamespacePrefix)
+				&& Objects.equals(this.uri, other.uri);
 	}
 
 }

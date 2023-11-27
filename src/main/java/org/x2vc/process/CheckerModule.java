@@ -38,14 +38,19 @@ import org.x2vc.schema.evolution.*;
 import org.x2vc.schema.evolution.items.EvaluationTreeItemFactory;
 import org.x2vc.schema.evolution.items.IEvaluationTreeItemFactory;
 import org.x2vc.schema.evolution.items.IEvaluationTreeItemFactoryFactory;
-import org.x2vc.stylesheet.*;
+import org.x2vc.stylesheet.INamespaceExtractor;
+import org.x2vc.stylesheet.IStylesheetPreprocessor;
+import org.x2vc.stylesheet.NamespaceExtractor;
+import org.x2vc.stylesheet.StylesheetPreprocessor;
 import org.x2vc.stylesheet.coverage.CoverageTraceAnalyzer;
 import org.x2vc.stylesheet.coverage.ICoverageTraceAnalyzer;
 import org.x2vc.stylesheet.structure.IStylesheetStructureExtractor;
 import org.x2vc.stylesheet.structure.StylesheetStructureExtractor;
 import org.x2vc.utilities.DebugObjectWriter;
 import org.x2vc.utilities.IDebugObjectWriter;
-import org.x2vc.utilities.xml.*;
+import org.x2vc.utilities.xml.ILocationMap;
+import org.x2vc.utilities.xml.ILocationMapFactory;
+import org.x2vc.utilities.xml.LocationMap;
 import org.x2vc.xml.document.DocumentGenerator;
 import org.x2vc.xml.document.IDocumentGenerator;
 import org.x2vc.xml.request.CompletedRequestRegistry;
@@ -143,7 +148,6 @@ public class CheckerModule extends AbstractModule {
 		bind(IInitialSchemaGenerator.class).to(InitialSchemaGenerator.class);
 
 		// stylesheet
-		bind(IStylesheetManager.class).to(StylesheetManager.class);
 		bind(IStylesheetPreprocessor.class).to(StylesheetPreprocessor.class);
 		bind(INamespaceExtractor.class).to(NamespaceExtractor.class);
 
@@ -157,7 +161,6 @@ public class CheckerModule extends AbstractModule {
 		install(new FactoryModuleBuilder()
 			.implement(ILocationMap.class, LocationMap.class)
 			.build(ILocationMapFactory.class));
-		bind(ILocationMapBuilder.class).to(LocationMapBuilder.class);
 
 		// xml document
 		bind(IDocumentGenerator.class).to(DocumentGenerator.class);

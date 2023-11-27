@@ -1,1 +1,0 @@
-<!-- this is not a stylesheet, but the mocked components don't really care -->

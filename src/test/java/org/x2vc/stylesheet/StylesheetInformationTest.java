@@ -7,22 +7,23 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.stylesheet;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import java.net.URI;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.x2vc.stylesheet.structure.IStylesheetStructure;
+import org.x2vc.utilities.xml.ILocationMap;
 
 import com.google.common.collect.Multimap;
 
@@ -37,6 +38,9 @@ class StylesheetInformationTest {
 	@Mock
 	Multimap<String, URI> namespacePrefixes;
 
+	@Mock
+	ILocationMap mockLocationMap;
+
 	URI testURI = URI.create("foo");
 
 	String traceNamespacePrefix = "https://foo.bar";
@@ -45,7 +49,7 @@ class StylesheetInformationTest {
 	void testConstructor_whenLocationNull() {
 		assertThrows(NullPointerException.class, () -> {
 			new StylesheetInformation(null, "a", "b", this.namespacePrefixes, this.traceNamespacePrefix,
-					this.mockStructure);
+					this.mockStructure, this.mockLocationMap);
 		});
 	}
 
@@ -53,7 +57,7 @@ class StylesheetInformationTest {
 	void testConstructor_whenOriginalContentNull() {
 		assertThrows(NullPointerException.class, () -> {
 			new StylesheetInformation(this.testURI, null, "b", this.namespacePrefixes, this.traceNamespacePrefix,
-					this.mockStructure);
+					this.mockStructure, this.mockLocationMap);
 		});
 	}
 
@@ -61,21 +65,22 @@ class StylesheetInformationTest {
 	void testConstructor_whenPreparedContentNull() {
 		assertThrows(NullPointerException.class, () -> {
 			new StylesheetInformation(this.testURI, "a", null, this.namespacePrefixes, this.traceNamespacePrefix,
-					this.mockStructure);
+					this.mockStructure, this.mockLocationMap);
 		});
 	}
 
 	@Test
 	void testConstructor_whenStructureNull() {
 		assertThrows(NullPointerException.class, () -> {
-			new StylesheetInformation(this.testURI, "a", "b", this.namespacePrefixes, this.traceNamespacePrefix, null);
+			new StylesheetInformation(this.testURI, "a", "b", this.namespacePrefixes, this.traceNamespacePrefix, null,
+					this.mockLocationMap);
 		});
 	}
 
 	@Test
 	void testGetOriginalLocation() {
 		final IStylesheetInformation si = new StylesheetInformation(this.testURI, "a", "b", this.namespacePrefixes,
-				this.traceNamespacePrefix, this.mockStructure);
+				this.traceNamespacePrefix, this.mockStructure, this.mockLocationMap);
 		assertEquals(this.testURI, si.getURI());
 	}
 
@@ -83,7 +88,6 @@ class StylesheetInformationTest {
 	 * Test method for {@link org.x2vc.stylesheet.StylesheetInformation#equals(java.lang.Object)}.
 	 */
 	@Test
-	@Disabled("implementation needs to be adjusted") // TODO #26 check equals() and hashCode()
 	void testEqualsObject() {
 		EqualsVerifier.forClass(StylesheetInformation.class).verify();
 	}

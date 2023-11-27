@@ -45,7 +45,6 @@ import org.x2vc.schema.evolution.*;
 import org.x2vc.schema.evolution.items.IEvaluationTreeItemFactoryFactory;
 import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.stylesheet.INamespaceExtractor;
-import org.x2vc.stylesheet.IStylesheetManager;
 import org.x2vc.stylesheet.IStylesheetPreprocessor;
 import org.x2vc.stylesheet.coverage.ICoverageTraceAnalyzer;
 import org.x2vc.stylesheet.structure.IStylesheetStructureExtractor;
@@ -121,8 +120,6 @@ class CheckerModuleTest {
 	private Provider<ISchemaManager> schemaManagerProvider;
 	@Inject
 	private Provider<IInitialSchemaGenerator> initialSchemaGeneratorProvider;
-	@Inject
-	private Provider<IStylesheetManager> stylesheetManagerProvider;
 	@Inject
 	private Provider<IStylesheetPreprocessor> stylesheetPreprocessorProvider;
 	@Inject
@@ -327,11 +324,6 @@ class CheckerModuleTest {
 	@Test
 	void testInitialSchemaGenerator() {
 		assertNotNull(this.initialSchemaGeneratorProvider.get());
-	}
-
-	@Test
-	void testStylesheetManager() {
-		assertNotNull(this.stylesheetManagerProvider.get());
 	}
 
 	@Test
