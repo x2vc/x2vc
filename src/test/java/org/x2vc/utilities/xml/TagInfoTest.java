@@ -7,7 +7,7 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
@@ -75,6 +75,44 @@ class TagInfoTest {
 		final PolymorphLocation endTagEndLocation = mock(PolymorphLocation.class);
 		when(endTagStartLocation.compareTo(endTagEndLocation)).thenReturn(-1);
 		when(startTagEndLocation.compareTo(endTagStartLocation)).thenReturn(-1);
+
+		final ITagInfo.Pair pair = TagInfo.createTagPair(startTagStartLocation, startTagEndLocation,
+				endTagStartLocation, endTagEndLocation);
+
+		assertSame(startTagStartLocation, pair.start().getStartLocation());
+		assertSame(startTagEndLocation, pair.start().getEndLocation());
+		assertEquals(TagType.START, pair.start().getType());
+		assertFalse(pair.start().isEmptyElement());
+		assertTrue(pair.start().isStartTag());
+		assertFalse(pair.start().isEndTag());
+		assertTrue(pair.start().getStartTag().isEmpty());
+		assertSame(pair.end(), pair.start().getEndTag().orElseThrow());
+
+		assertSame(endTagStartLocation, pair.end().getStartLocation());
+		assertSame(endTagEndLocation, pair.end().getEndLocation());
+		assertEquals(TagType.END, pair.end().getType());
+		assertFalse(pair.end().isEmptyElement());
+		assertFalse(pair.end().isStartTag());
+		assertTrue(pair.end().isEndTag());
+		assertSame(pair.start(), pair.end().getStartTag().orElseThrow());
+		assertTrue(pair.end().getEndTag().isEmpty());
+	}
+
+	/**
+	 * Test method for
+	 * {@link org.x2vc.utilities.xml.TagInfo#createTagPair(org.x2vc.utilities.xml.PolymorphLocation, org.x2vc.utilities.xml.PolymorphLocation, org.x2vc.utilities.xml.PolymorphLocation, org.x2vc.utilities.xml.PolymorphLocation)}.
+	 */
+	@Test
+	void testCreateTagPair_NoContent() {
+		final PolymorphLocation startTagStartLocation = mock(PolymorphLocation.class);
+		final PolymorphLocation startTagEndLocation = mock(PolymorphLocation.class);
+		when(startTagStartLocation.compareTo(startTagEndLocation)).thenReturn(-1);
+		final PolymorphLocation endTagStartLocation = mock(PolymorphLocation.class);
+		final PolymorphLocation endTagEndLocation = mock(PolymorphLocation.class);
+		when(endTagStartLocation.compareTo(endTagEndLocation)).thenReturn(-1);
+		// this simulates an empty tag, like <foo></foo> - here the startTagEndLocation and endTagStartLocation are
+		// identical
+		when(startTagEndLocation.compareTo(endTagStartLocation)).thenReturn(0);
 
 		final ITagInfo.Pair pair = TagInfo.createTagPair(startTagStartLocation, startTagEndLocation,
 				endTagStartLocation, endTagEndLocation);

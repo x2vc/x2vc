@@ -7,7 +7,7 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
@@ -59,11 +59,14 @@ public final class TagInfo implements ITagInfo {
 			PolymorphLocation startTagEndLocation, PolymorphLocation endTagStartLocation,
 			PolymorphLocation endTagEndLocation) {
 		checkArgument(startTagStartLocation.compareTo(startTagEndLocation) < 0,
-				"start location of start tag must lie before end location of start tag");
+				String.format("start location of start tag (%s) must lie before end location of start tag (%s)",
+						startTagStartLocation, startTagEndLocation));
 		checkArgument(endTagStartLocation.compareTo(endTagEndLocation) < 0,
-				"start location of end tag must lie before end location of end tag");
-		checkArgument(startTagEndLocation.compareTo(endTagStartLocation) < 0,
-				"end location of end tag must lie before start location of end tag");
+				String.format("start location of end tag (%s) must lie before end location of end tag (%s)",
+						endTagStartLocation, endTagEndLocation));
+		checkArgument(startTagEndLocation.compareTo(endTagStartLocation) <= 0,
+				String.format("end location of end tag (%s) must lie before start location of end tag (%s)",
+						startTagEndLocation, endTagStartLocation));
 		final TagInfo startTag = new TagInfo(TagType.START, startTagStartLocation, startTagEndLocation);
 		final TagInfo endTag = new TagInfo(TagType.END, endTagStartLocation, endTagEndLocation);
 		startTag.correspondingTag = endTag;
