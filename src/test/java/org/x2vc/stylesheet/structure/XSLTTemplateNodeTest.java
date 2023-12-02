@@ -25,6 +25,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.x2vc.stylesheet.XSLTConstants;
+import org.x2vc.utilities.xml.ITagInfo;
 import org.x2vc.utilities.xml.PolymorphLocation;
 
 import net.sf.saxon.om.NamespaceUri;
@@ -36,13 +37,16 @@ class XSLTTemplateNodeTest {
 	@Mock
 	private IStylesheetStructure parentStructure;
 
+	@Mock
+	private ITagInfo tagInfo;
+
 	/**
 	 * Test method for {@link org.x2vc.stylesheet.structure.XSLTTemplateNode#getMatchPattern()}.
 	 */
 	@Test
 	void testGetMatchPattern_Present() {
 		final IXSLTDirectiveNode directive = XSLTDirectiveNode
-			.builder(this.parentStructure, XSLTConstants.Elements.TEMPLATE)
+			.builder(this.parentStructure, this.tagInfo, XSLTConstants.Elements.TEMPLATE)
 			.addXSLTAttribute("match", "foobar")
 			.build();
 		assertInstanceOf(IXSLTTemplateNode.class, directive);
@@ -58,7 +62,7 @@ class XSLTTemplateNodeTest {
 	@Test
 	void testGetMatchPattern_Absent() {
 		final IXSLTDirectiveNode directive = XSLTDirectiveNode
-			.builder(this.parentStructure, XSLTConstants.Elements.TEMPLATE)
+			.builder(this.parentStructure, this.tagInfo, XSLTConstants.Elements.TEMPLATE)
 			.build();
 		assertInstanceOf(IXSLTTemplateNode.class, directive);
 		final IXSLTTemplateNode template = (IXSLTTemplateNode) directive;
@@ -72,7 +76,7 @@ class XSLTTemplateNodeTest {
 	@Test
 	void testGetTemplateName_Present() {
 		final IXSLTDirectiveNode directive = XSLTDirectiveNode
-			.builder(this.parentStructure, XSLTConstants.Elements.TEMPLATE)
+			.builder(this.parentStructure, this.tagInfo, XSLTConstants.Elements.TEMPLATE)
 			.addXSLTAttribute("name", "foobar")
 			.build();
 		assertInstanceOf(IXSLTTemplateNode.class, directive);
@@ -88,7 +92,7 @@ class XSLTTemplateNodeTest {
 	@Test
 	void testGetTemplateName_Absent() {
 		final IXSLTDirectiveNode directive = XSLTDirectiveNode
-			.builder(this.parentStructure, XSLTConstants.Elements.TEMPLATE)
+			.builder(this.parentStructure, this.tagInfo, XSLTConstants.Elements.TEMPLATE)
 			.build();
 		assertInstanceOf(IXSLTTemplateNode.class, directive);
 		final IXSLTTemplateNode template = (IXSLTTemplateNode) directive;
@@ -102,7 +106,7 @@ class XSLTTemplateNodeTest {
 	@Test
 	void testGetPriority_Present() {
 		final IXSLTDirectiveNode directive = XSLTDirectiveNode
-			.builder(this.parentStructure, XSLTConstants.Elements.TEMPLATE)
+			.builder(this.parentStructure, this.tagInfo, XSLTConstants.Elements.TEMPLATE)
 			.addXSLTAttribute("priority", "-1.25")
 			.build();
 		assertInstanceOf(IXSLTTemplateNode.class, directive);
@@ -118,7 +122,7 @@ class XSLTTemplateNodeTest {
 	@Test
 	void testGetPriority_Absent() {
 		final IXSLTDirectiveNode directive = XSLTDirectiveNode
-			.builder(this.parentStructure, XSLTConstants.Elements.TEMPLATE)
+			.builder(this.parentStructure, this.tagInfo, XSLTConstants.Elements.TEMPLATE)
 			.build();
 		assertInstanceOf(IXSLTTemplateNode.class, directive);
 		final IXSLTTemplateNode template = (IXSLTTemplateNode) directive;
@@ -132,7 +136,7 @@ class XSLTTemplateNodeTest {
 	@Test
 	void testGetMode_Present() {
 		final IXSLTDirectiveNode directive = XSLTDirectiveNode
-			.builder(this.parentStructure, XSLTConstants.Elements.TEMPLATE)
+			.builder(this.parentStructure, this.tagInfo, XSLTConstants.Elements.TEMPLATE)
 			.addXSLTAttribute("mode", "foobar")
 			.build();
 		assertInstanceOf(IXSLTTemplateNode.class, directive);
@@ -148,7 +152,7 @@ class XSLTTemplateNodeTest {
 	@Test
 	void testGetMode_Absent() {
 		final IXSLTDirectiveNode directive = XSLTDirectiveNode
-			.builder(this.parentStructure, XSLTConstants.Elements.TEMPLATE)
+			.builder(this.parentStructure, this.tagInfo, XSLTConstants.Elements.TEMPLATE)
 			.build();
 		assertInstanceOf(IXSLTTemplateNode.class, directive);
 		final IXSLTTemplateNode template = (IXSLTTemplateNode) directive;
@@ -162,7 +166,7 @@ class XSLTTemplateNodeTest {
 	@Test
 	void testGetShortText_Match() {
 		final IXSLTDirectiveNode directive = XSLTDirectiveNode
-			.builder(this.parentStructure, XSLTConstants.Elements.TEMPLATE)
+			.builder(this.parentStructure, this.tagInfo, XSLTConstants.Elements.TEMPLATE)
 			.addXSLTAttribute("match", "foobar")
 			.build();
 		assertInstanceOf(IXSLTTemplateNode.class, directive);
@@ -176,7 +180,7 @@ class XSLTTemplateNodeTest {
 	@Test
 	void testGetShortText_Name() {
 		final IXSLTDirectiveNode directive = XSLTDirectiveNode
-			.builder(this.parentStructure, XSLTConstants.Elements.TEMPLATE)
+			.builder(this.parentStructure, this.tagInfo, XSLTConstants.Elements.TEMPLATE)
 			.addXSLTAttribute("name", "foobar")
 			.build();
 		assertInstanceOf(IXSLTTemplateNode.class, directive);
@@ -190,7 +194,7 @@ class XSLTTemplateNodeTest {
 	@Test
 	void testGetShortText_MatchName() {
 		final IXSLTDirectiveNode directive = XSLTDirectiveNode
-			.builder(this.parentStructure, XSLTConstants.Elements.TEMPLATE)
+			.builder(this.parentStructure, this.tagInfo, XSLTConstants.Elements.TEMPLATE)
 			.addXSLTAttribute("match", "foobar")
 			.addXSLTAttribute("name", "boofar")
 			.build();
@@ -205,7 +209,7 @@ class XSLTTemplateNodeTest {
 	@Test
 	void testGetShortText_Mode() {
 		final IXSLTDirectiveNode directive = XSLTDirectiveNode
-			.builder(this.parentStructure, XSLTConstants.Elements.TEMPLATE)
+			.builder(this.parentStructure, this.tagInfo, XSLTConstants.Elements.TEMPLATE)
 			.addXSLTAttribute("match", "foobar")
 			.addXSLTAttribute("mode", "DontModeMe")
 			.build();
@@ -220,7 +224,7 @@ class XSLTTemplateNodeTest {
 	@Test
 	void testGetShortText_Priority() {
 		final IXSLTDirectiveNode directive = XSLTDirectiveNode
-			.builder(this.parentStructure, XSLTConstants.Elements.TEMPLATE)
+			.builder(this.parentStructure, this.tagInfo, XSLTConstants.Elements.TEMPLATE)
 			.addXSLTAttribute("match", "foobar")
 			.addXSLTAttribute("priority", "-4.2")
 			.build();
@@ -237,7 +241,7 @@ class XSLTTemplateNodeTest {
 	@Test
 	void testGetShortText_ModePriority() {
 		final IXSLTDirectiveNode directive = XSLTDirectiveNode
-			.builder(this.parentStructure, XSLTConstants.Elements.TEMPLATE)
+			.builder(this.parentStructure, this.tagInfo, XSLTConstants.Elements.TEMPLATE)
 			.addXSLTAttribute("match", "foobar")
 			.addXSLTAttribute("mode", "DontModeMe")
 			.addXSLTAttribute("priority", "-4.2")
@@ -256,7 +260,7 @@ class XSLTTemplateNodeTest {
 	@Test
 	void testGetShortText_LineNumber() {
 		final IXSLTDirectiveNode directive = XSLTDirectiveNode
-			.builder(this.parentStructure, XSLTConstants.Elements.TEMPLATE)
+			.builder(this.parentStructure, this.tagInfo, XSLTConstants.Elements.TEMPLATE)
 			.addXSLTAttribute("match", "foobar")
 			.withStartLocation(PolymorphLocation.builder().withLineNumber(42).build())
 			.build();

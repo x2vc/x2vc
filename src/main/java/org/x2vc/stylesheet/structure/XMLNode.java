@@ -19,6 +19,7 @@ import java.util.*;
 
 import javax.xml.namespace.QName;
 
+import org.x2vc.utilities.xml.ITagInfo;
 import org.x2vc.utilities.xml.PolymorphLocation;
 
 import com.google.common.collect.ImmutableList;
@@ -35,7 +36,7 @@ public final class XMLNode extends AbstractElementNode implements IXMLNode {
 	private final ImmutableMap<QName, String> attributes;
 
 	private XMLNode(Builder builder) {
-		super(builder.parentStructure, ImmutableList.copyOf(builder.childElements));
+		super(builder.parentStructure, builder.tagInfo, ImmutableList.copyOf(builder.childElements));
 		this.name = builder.name;
 		this.startLocation = builder.startLocation;
 		this.endLocation = builder.endLocation;
@@ -66,11 +67,12 @@ public final class XMLNode extends AbstractElementNode implements IXMLNode {
 	 * Creates a new builder instance.
 	 *
 	 * @param parentStructure the {@link IStylesheetStructure} the node belongs to
+	 * @param tagInfo         the tag information
 	 * @param name            the name of the element
 	 * @return the builder
 	 */
-	public static Builder builder(IStylesheetStructure parentStructure, QName name) {
-		return new Builder(parentStructure, name);
+	public static Builder builder(IStylesheetStructure parentStructure, ITagInfo tagInfo, QName name) {
+		return new Builder(parentStructure, tagInfo, name);
 	}
 
 	/**
@@ -78,6 +80,7 @@ public final class XMLNode extends AbstractElementNode implements IXMLNode {
 	 */
 	public static final class Builder implements INodeBuilder {
 		private IStylesheetStructure parentStructure;
+		private ITagInfo tagInfo;
 		private QName name;
 		private PolymorphLocation startLocation;
 		private PolymorphLocation endLocation;
@@ -90,10 +93,12 @@ public final class XMLNode extends AbstractElementNode implements IXMLNode {
 		 * @param parentStructure the {@link IStylesheetStructure} the node belongs to
 		 * @param name            the name of the element
 		 */
-		private Builder(IStylesheetStructure parentStructure, QName name) {
+		private Builder(IStylesheetStructure parentStructure, ITagInfo tagInfo, QName name) {
 			checkNotNull(parentStructure);
+			checkNotNull(tagInfo);
 			checkNotNull(name);
 			this.parentStructure = parentStructure;
+			this.tagInfo = tagInfo;
 			this.name = name;
 		}
 

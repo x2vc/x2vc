@@ -14,9 +14,11 @@
 package org.x2vc.stylesheet.structure;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.mock;
 
 import org.junit.jupiter.api.Test;
 import org.x2vc.stylesheet.XSLTConstants;
+import org.x2vc.utilities.xml.ITagInfo;
 
 import com.google.common.collect.ImmutableList;
 
@@ -31,16 +33,16 @@ class StylesheetStructureTest {
 	@Test
 	void testGetTemplates() {
 		final StylesheetStructure structure = new StylesheetStructure();
-		final XSLTParameterNode param1 = XSLTParameterNode.builder(structure, "param1").build();
-		final XSLTParameterNode param2 = XSLTParameterNode.builder(structure, "param2").build();
+		final XSLTParameterNode param1 = XSLTParameterNode.builder(structure, mock(ITagInfo.class), "param1").build();
+		final XSLTParameterNode param2 = XSLTParameterNode.builder(structure, mock(ITagInfo.class), "param2").build();
 		final IXSLTDirectiveNode template1 = XSLTDirectiveNode
-			.builder(structure, XSLTConstants.Elements.TEMPLATE)
+			.builder(structure, mock(ITagInfo.class), XSLTConstants.Elements.TEMPLATE)
 			.addXSLTAttribute("name", "template1").build();
 		final IXSLTDirectiveNode template2 = XSLTDirectiveNode
-			.builder(structure, XSLTConstants.Elements.TEMPLATE)
+			.builder(structure, mock(ITagInfo.class), XSLTConstants.Elements.TEMPLATE)
 			.addXSLTAttribute("name", "template2").build();
 		final IXSLTDirectiveNode rootNode = XSLTDirectiveNode
-			.builder(structure, XSLTConstants.Elements.STYLESHEET)
+			.builder(structure, mock(ITagInfo.class), XSLTConstants.Elements.STYLESHEET)
 			.addChildElement(param1).addChildElement(param2).addChildElement(template1).addChildElement(template2)
 			.build();
 		structure.setRootNode(rootNode);
@@ -57,18 +59,18 @@ class StylesheetStructureTest {
 	@Test
 	void testGetStylesheetParameters() {
 		final StylesheetStructure structure = new StylesheetStructure();
-		final XSLTParameterNode param1 = XSLTParameterNode.builder(structure, "param1").build();
-		final XSLTParameterNode param2 = XSLTParameterNode.builder(structure, "param2").build();
+		final XSLTParameterNode param1 = XSLTParameterNode.builder(structure, mock(ITagInfo.class), "param1").build();
+		final XSLTParameterNode param2 = XSLTParameterNode.builder(structure, mock(ITagInfo.class), "param2").build();
 		final IXSLTDirectiveNode template1 = XSLTDirectiveNode
-			.builder(structure, XSLTConstants.Elements.TEMPLATE)
+			.builder(structure, mock(ITagInfo.class), XSLTConstants.Elements.TEMPLATE)
 			.addXSLTAttribute("name", "template1")
 			.build();
 		final IXSLTDirectiveNode template2 = XSLTDirectiveNode
-			.builder(structure, XSLTConstants.Elements.TEMPLATE)
+			.builder(structure, mock(ITagInfo.class), XSLTConstants.Elements.TEMPLATE)
 			.addXSLTAttribute("name", "template2")
 			.build();
 		final IXSLTDirectiveNode rootNode = XSLTDirectiveNode
-			.builder(structure, XSLTConstants.Elements.STYLESHEET)
+			.builder(structure, mock(ITagInfo.class), XSLTConstants.Elements.STYLESHEET)
 			.addFormalParameter(param1)
 			.addFormalParameter(param2)
 			.addChildElement(template1)

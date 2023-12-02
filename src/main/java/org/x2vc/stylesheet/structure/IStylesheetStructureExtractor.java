@@ -13,6 +13,9 @@
  */
 package org.x2vc.stylesheet.structure;
 
+import org.x2vc.utilities.xml.ILocationMap;
+import org.x2vc.utilities.xml.ITagMap;
+
 import com.google.inject.ImplementedBy;
 
 /**
@@ -24,8 +27,10 @@ import com.google.inject.ImplementedBy;
 public interface IStylesheetStructureExtractor {
 
 	/**
-	 * @param source the extended source of the stylesheet
+	 * @param source      the extended source of the stylesheet
+	 * @param locationMap the {@link ILocationMap} instance for the source code
+	 * @param tagMap      the {@link ITagMap} instance for the source code
 	 * @return the structure information
 	 */
-	IStylesheetStructure extractStructure(String source);
+	IStylesheetStructure extractStructure(String source, ILocationMap locationMap, ITagMap tagMap);
 }

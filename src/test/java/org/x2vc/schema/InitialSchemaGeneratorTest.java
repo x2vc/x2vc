@@ -7,15 +7,15 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.schema;
 
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.net.URI;
@@ -37,6 +37,7 @@ import org.x2vc.stylesheet.structure.IXSLTTemplateNode;
 import org.x2vc.stylesheet.structure.XSLTDirectiveNode;
 import org.x2vc.utilities.URIUtilities;
 import org.x2vc.utilities.URIUtilities.ObjectType;
+import org.x2vc.utilities.xml.ITagInfo;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
@@ -118,9 +119,10 @@ class InitialSchemaGeneratorTest {
 	void testSingleLevel(String matches, String rootElementNames) {
 		final List<IXSLTTemplateNode> templates = Lists.newArrayList();
 		Splitter.on(',').split(matches).iterator().forEachRemaining(match -> {
-			templates.add((IXSLTTemplateNode) XSLTDirectiveNode.builder(this.structure, "template")
-				.addXSLTAttribute("match", match)
-				.build());
+			templates
+				.add((IXSLTTemplateNode) XSLTDirectiveNode.builder(this.structure, mock(ITagInfo.class), "template")
+					.addXSLTAttribute("match", match)
+					.build());
 		});
 		when(this.structure.getTemplates()).thenReturn(ImmutableList.copyOf(templates));
 		final IXMLSchema schema = this.generator.generateSchema(this.stylesheet, this.schemaURI);
@@ -141,7 +143,7 @@ class InitialSchemaGeneratorTest {
 	})
 	void testMultiLevelPath(String matches) {
 		final List<IXSLTTemplateNode> templates = Lists.newArrayList();
-		templates.add((IXSLTTemplateNode) XSLTDirectiveNode.builder(this.structure, "template")
+		templates.add((IXSLTTemplateNode) XSLTDirectiveNode.builder(this.structure, mock(ITagInfo.class), "template")
 			.addXSLTAttribute("match", matches)
 			.build());
 		when(this.structure.getTemplates()).thenReturn(ImmutableList.copyOf(templates));

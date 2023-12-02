@@ -7,7 +7,7 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
@@ -26,34 +26,21 @@ import com.google.common.collect.ImmutableList;
  */
 public abstract class AbstractElementNode extends AbstractStructureTreeNode implements IElementNode {
 
-	private final ImmutableList<IStructureTreeNode> childElements;
 	private final ITagInfo tagInformation;
+	private final ImmutableList<IStructureTreeNode> childElements;
 
 	/**
 	 * @param parentStructure
-	 * @param childElements
 	 * @param tagInformation
-	 */
-	protected AbstractElementNode(IStylesheetStructure parentStructure, ImmutableList<IStructureTreeNode> childElements,
-			ITagInfo tagInformation) {
-		super(parentStructure);
-		checkNotNull(childElements);
-		checkNotNull(tagInformation);
-		this.childElements = childElements;
-		this.tagInformation = tagInformation;
-	}
-
-	/**
-	 * @param parentStructure
 	 * @param childElements
-	 * @param tagInformation
 	 */
-	protected AbstractElementNode(IStylesheetStructure parentStructure,
+	protected AbstractElementNode(IStylesheetStructure parentStructure, ITagInfo tagInformation,
 			ImmutableList<IStructureTreeNode> childElements) {
 		super(parentStructure);
 		checkNotNull(childElements);
+		checkNotNull(tagInformation);
+		this.tagInformation = tagInformation;
 		this.childElements = childElements;
-		this.tagInformation = null;
 	}
 
 	@Override

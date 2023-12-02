@@ -7,11 +7,12 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.stylesheet.coverage;
+
 import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.lenient;
@@ -26,6 +27,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.x2vc.process.CheckerModule;
 import org.x2vc.processor.IExecutionTraceEvent;
 import org.x2vc.processor.IExecutionTraceEvent.ExecutionEventType;
 import org.x2vc.processor.IHTMLDocumentContainer;
@@ -35,13 +37,17 @@ import org.x2vc.stylesheet.IStylesheetManager;
 import org.x2vc.stylesheet.structure.IStylesheetStructure;
 import org.x2vc.stylesheet.structure.IStylesheetStructureExtractor;
 import org.x2vc.stylesheet.structure.IXSLTDirectiveNode;
-import org.x2vc.stylesheet.structure.StylesheetStructureExtractor;
 import org.x2vc.utilities.URIUtilities;
 import org.x2vc.utilities.URIUtilities.ObjectType;
-import org.x2vc.utilities.xml.PolymorphLocation;
+import org.x2vc.utilities.xml.*;
 import org.x2vc.xml.document.IXMLDocumentContainer;
 
+import com.github.racc.tscg.TypesafeConfigModule;
 import com.google.common.collect.ImmutableList;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
 
 @ExtendWith(MockitoExtension.class)
 class CoverageTraceAnalyzerTest {
@@ -55,6 +61,8 @@ class CoverageTraceAnalyzerTest {
 	private IStylesheetInformation stylesheetInfo;
 
 	private IStylesheetStructureExtractor extractor;
+	private ILocationMapBuilder locationMapBuilder;
+	private ITagMapBuilder tagMapBuilder;
 
 	private IStylesheetStructure stylesheetStructure;
 
@@ -82,7 +90,14 @@ class CoverageTraceAnalyzerTest {
 
 		// TODO #32 CoverageTraceAnalyzer: replace actual instance of StylesheetStructureExtractor with mock
 		// (requires mocking of the entire stylesheet structure, which is A LOT of work)
-		this.extractor = new StylesheetStructureExtractor();
+
+		final Config config = ConfigFactory.load();
+		final Injector injector = Guice.createInjector(new CheckerModule(config),
+				TypesafeConfigModule.fromConfigWithPackage(config, "org.x2vc"));
+		this.extractor = injector.getInstance(IStylesheetStructureExtractor.class);
+		this.locationMapBuilder = injector.getInstance(ILocationMapBuilder.class);
+		this.tagMapBuilder = injector.getInstance(ITagMapBuilder.class);
+
 		when(this.stylesheetInfo.getStructure()).thenAnswer(a -> this.stylesheetStructure);
 
 		this.analyzer = new CoverageTraceAnalyzer(this.stylesheetManager);
@@ -107,7 +122,10 @@ class CoverageTraceAnalyzerTest {
 							</xsl:template>
 							</xsl:stylesheet>
 							""";
-		this.stylesheetStructure = this.extractor.extractStructure(in);
+		// TPDP #32 CoverageTraceAnalyzer: mock all of this as well
+		final ILocationMap locationMap = this.locationMapBuilder.buildLocationMap(in);
+		final ITagMap tagMap = this.tagMapBuilder.buildTagMap(in, locationMap);
+		this.stylesheetStructure = this.extractor.extractStructure(in, locationMap, tagMap);
 		// REMEMBER:
 		// ENTER and LEAVE elements both refer to the STARTING position of the directive.
 		// The choose-when elements always are reported with reference to the "when" location.

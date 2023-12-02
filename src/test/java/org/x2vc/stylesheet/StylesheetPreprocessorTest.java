@@ -84,7 +84,8 @@ class StylesheetPreprocessorTest {
 		lenient().when(this.tagMapFactory.buildTagMap(anyString(), eq(this.locationMap))).thenAnswer(a -> this.tagMap);
 		this.preprocessor = new StylesheetPreprocessor(this.xsltProcessor, this.namespaceExtractor,
 				this.structureExtractor, this.locationMapFactory, this.tagMapFactory, false);
-		lenient().when(this.structureExtractor.extractStructure(anyString())).thenReturn(this.structure);
+		lenient().when(this.structureExtractor.extractStructure(anyString(), eq(this.locationMap), eq(this.tagMap)))
+			.thenReturn(this.structure);
 	}
 
 	@Test

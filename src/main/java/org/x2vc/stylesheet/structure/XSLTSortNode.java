@@ -18,6 +18,7 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.x2vc.utilities.xml.ITagInfo;
 import org.x2vc.utilities.xml.PolymorphLocation;
 
 import com.google.common.collect.ImmutableList;
@@ -25,15 +26,15 @@ import com.google.common.collect.ImmutableList;
 /**
  * Standard implementation of {@link IXSLTSortNode}.
  */
-public class XSLTSortNode extends AbstractElementNode implements IXSLTSortNode {
+public final class XSLTSortNode extends AbstractElementNode implements IXSLTSortNode {
 
-	private PolymorphLocation startLocation;
-	private PolymorphLocation endLocation;
-	private String sortingExpression;
-	private String language;
-	private String dataType;
-	private String sortOrder;
-	private String caseOrder;
+	private final PolymorphLocation startLocation;
+	private final PolymorphLocation endLocation;
+	private final String sortingExpression;
+	private final String language;
+	private final String dataType;
+	private final String sortOrder;
+	private final String caseOrder;
 
 	/**
 	 * Private constructor to be used with the builder.
@@ -42,7 +43,7 @@ public class XSLTSortNode extends AbstractElementNode implements IXSLTSortNode {
 	 */
 	@SuppressWarnings("java:S4738") // type required here
 	private XSLTSortNode(Builder builder) {
-		super(builder.parentStructure, ImmutableList.of());
+		super(builder.parentStructure, builder.tagInfo, ImmutableList.of());
 		this.startLocation = builder.startLocation;
 		this.endLocation = builder.endLocation;
 		this.sortingExpression = builder.sortingExpression;
@@ -91,10 +92,11 @@ public class XSLTSortNode extends AbstractElementNode implements IXSLTSortNode {
 	 * Creates a new builder instance.
 	 *
 	 * @param parentStructure the {@link IStylesheetStructure} the node belongs to
+	 * @param tagInfo         the tag information
 	 * @return the builder
 	 */
-	public static Builder builder(IStylesheetStructure parentStructure) {
-		return new Builder(parentStructure);
+	public static Builder builder(IStylesheetStructure parentStructure, ITagInfo tagInfo) {
+		return new Builder(parentStructure, tagInfo);
 	}
 
 	/**
@@ -102,6 +104,7 @@ public class XSLTSortNode extends AbstractElementNode implements IXSLTSortNode {
 	 */
 	public static final class Builder implements INodeBuilder {
 		private IStylesheetStructure parentStructure;
+		private ITagInfo tagInfo;
 		private PolymorphLocation startLocation;
 		private PolymorphLocation endLocation;
 		private String sortingExpression;
@@ -114,9 +117,13 @@ public class XSLTSortNode extends AbstractElementNode implements IXSLTSortNode {
 		 * Creates a new builder instance.
 		 *
 		 * @param parentStructure the {@link IStylesheetStructure} the node belongs to
+		 * @param tagInfo         the tag information
 		 */
-		private Builder(IStylesheetStructure parentStructure) {
+		private Builder(IStylesheetStructure parentStructure, ITagInfo tagInfo) {
+			checkNotNull(parentStructure);
+			checkNotNull(tagInfo);
 			this.parentStructure = parentStructure;
+			this.tagInfo = tagInfo;
 		}
 
 		/**

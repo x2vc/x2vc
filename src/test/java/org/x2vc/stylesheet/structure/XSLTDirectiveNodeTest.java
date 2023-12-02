@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.x2vc.utilities.xml.ITagInfo;
 
 import com.google.common.collect.ImmutableList;
 
@@ -36,6 +37,9 @@ class XSLTDirectiveNodeTest {
 	@Mock
 	private IStylesheetStructure parentStructure;
 
+	@Mock
+	private ITagInfo tagInfo;
+
 	/**
 	 * Test method for {@link org.x2vc.stylesheet.structure.XSLTDirectiveNode#getChildDirectives()}.
 	 */
@@ -47,7 +51,7 @@ class XSLTDirectiveNodeTest {
 		when(nonDirective2.getChildElements()).thenReturn(ImmutableList.of());
 
 		final IXSLTDirectiveNode node = XSLTDirectiveNode
-			.builder(this.parentStructure, "someName")
+			.builder(this.parentStructure, this.tagInfo, "someName")
 			.addChildElement(nonDirective1)
 			.addChildElement(nonDirective2)
 			.build();
@@ -67,7 +71,7 @@ class XSLTDirectiveNodeTest {
 		when(nonDirective2.getChildElements()).thenReturn(ImmutableList.of());
 
 		final IXSLTDirectiveNode node = XSLTDirectiveNode
-			.builder(this.parentStructure, "someName")
+			.builder(this.parentStructure, this.tagInfo, "someName")
 			.addChildElement(nonDirective1)
 			.addChildElement(directive1)
 			.addChildElement(nonDirective2)
@@ -94,7 +98,7 @@ class XSLTDirectiveNodeTest {
 		when(nonDirective3.getChildElements()).thenReturn(ImmutableList.of(directive3b));
 
 		final IXSLTDirectiveNode node = XSLTDirectiveNode
-			.builder(this.parentStructure, "someName")
+			.builder(this.parentStructure, this.tagInfo, "someName")
 			.addChildElement(nonDirective1)
 			.addChildElement(directive2)
 			.addChildElement(nonDirective3)

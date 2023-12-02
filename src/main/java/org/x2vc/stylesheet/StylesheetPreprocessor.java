@@ -90,9 +90,9 @@ public class StylesheetPreprocessor implements IStylesheetPreprocessor {
 				TRACE_NAMESPACE_PFREIX);
 
 		// extract the stylesheet structure and prepare the location map
-		final IStylesheetStructure structure = this.extractor.extractStructure(formattedSource);
 		final ILocationMap locationMap = this.locationMapBuilder.buildLocationMap(formattedSource);
 		final ITagMap tagMap = this.tagMapBuilder.buildTagMap(formattedSource, locationMap);
+		final IStylesheetStructure structure = this.extractor.extractStructure(formattedSource, locationMap, tagMap);
 
 		return new StylesheetInformation(uri, originalSource, formattedSource, namespacePrefixes, traceNamespacePrefix,
 				structure, locationMap, tagMap);

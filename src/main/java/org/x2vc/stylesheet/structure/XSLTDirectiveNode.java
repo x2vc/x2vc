@@ -22,6 +22,7 @@ import javax.xml.namespace.QName;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.x2vc.stylesheet.XSLTConstants;
+import org.x2vc.utilities.xml.ITagInfo;
 import org.x2vc.utilities.xml.PolymorphLocation;
 
 import com.google.common.base.Supplier;
@@ -50,7 +51,7 @@ public class XSLTDirectiveNode extends AbstractElementNode implements IXSLTDirec
 	private final ImmutableList<IXSLTSortNode> sorting;
 
 	protected XSLTDirectiveNode(Builder builder) {
-		super(builder.parentStructure, ImmutableList.copyOf(builder.childElements));
+		super(builder.parentStructure, builder.tagInfo, ImmutableList.copyOf(builder.childElements));
 		this.name = builder.name;
 		this.startLocation = builder.startLocation;
 		this.endLocation = builder.endLocation;
@@ -144,11 +145,12 @@ public class XSLTDirectiveNode extends AbstractElementNode implements IXSLTDirec
 	 * Create a builder instance.
 	 *
 	 * @param parentStructure the parent {@link IStylesheetStructure}
+	 * @param tagInfo         the tag information
 	 * @param name            the name of the directive
 	 * @return the builder
 	 */
-	public static Builder builder(IStylesheetStructure parentStructure, String name) {
-		return new Builder(parentStructure, name);
+	public static Builder builder(IStylesheetStructure parentStructure, ITagInfo tagInfo, String name) {
+		return new Builder(parentStructure, tagInfo, name);
 	}
 
 	/**
@@ -156,6 +158,7 @@ public class XSLTDirectiveNode extends AbstractElementNode implements IXSLTDirec
 	 */
 	public static final class Builder implements INodeBuilder {
 		private IStylesheetStructure parentStructure;
+		private ITagInfo tagInfo;
 		private String name;
 		private PolymorphLocation startLocation;
 		private PolymorphLocation endLocation;
@@ -173,10 +176,12 @@ public class XSLTDirectiveNode extends AbstractElementNode implements IXSLTDirec
 		 * @param parentStructure the parent {@link IStylesheetStructure}
 		 * @param name            the name of the directive
 		 */
-		private Builder(IStylesheetStructure parentStructure, String name) {
+		private Builder(IStylesheetStructure parentStructure, ITagInfo tagInfo, String name) {
 			checkNotNull(parentStructure);
+			checkNotNull(tagInfo);
 			checkNotNull(name);
 			this.parentStructure = parentStructure;
+			this.tagInfo = tagInfo;
 			this.name = name;
 		}
 

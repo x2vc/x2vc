@@ -22,6 +22,7 @@ import java.util.Optional;
 
 import javax.xml.bind.annotation.XmlTransient;
 
+import org.x2vc.utilities.xml.ITagInfo;
 import org.x2vc.utilities.xml.PolymorphLocation;
 
 import com.google.common.base.Supplier;
@@ -47,7 +48,7 @@ public final class XSLTParameterNode extends AbstractElementNode implements IXSL
 	 * @param builder
 	 */
 	private XSLTParameterNode(Builder builder) {
-		super(builder.parentStructure, ImmutableList.copyOf(builder.childElements));
+		super(builder.parentStructure, builder.tagInfo, ImmutableList.copyOf(builder.childElements));
 		checkNotNull(builder.localName);
 		this.namespaceURI = builder.namespaceURI;
 		this.localName = builder.localName;
@@ -105,11 +106,12 @@ public final class XSLTParameterNode extends AbstractElementNode implements IXSL
 	 * Creates a new builder
 	 *
 	 * @param parentStructure the {@link IStylesheetStructure} the node belongs to
+	 * @param tagInfo         the tag information
 	 * @param localName       the name of the element
 	 * @return the builder
 	 */
-	public static Builder builder(IStylesheetStructure parentStructure, String localName) {
-		return new Builder(parentStructure, localName);
+	public static Builder builder(IStylesheetStructure parentStructure, ITagInfo tagInfo, String localName) {
+		return new Builder(parentStructure, tagInfo, localName);
 	}
 
 	/**
@@ -117,6 +119,7 @@ public final class XSLTParameterNode extends AbstractElementNode implements IXSL
 	 */
 	public static final class Builder implements INodeBuilder {
 		private IStylesheetStructure parentStructure;
+		private ITagInfo tagInfo;
 		private String namespaceURI;
 		private String localName;
 		private PolymorphLocation startLocation;
@@ -128,12 +131,15 @@ public final class XSLTParameterNode extends AbstractElementNode implements IXSL
 		 * Creates a new builder
 		 *
 		 * @param parentStructure the {@link IStylesheetStructure} the node belongs to
+		 * @param tagInfo         the tag information
 		 * @param name            the name of the element
 		 */
-		private Builder(IStylesheetStructure parentStructure, String localName) {
+		private Builder(IStylesheetStructure parentStructure, ITagInfo tagInfo, String localName) {
 			checkNotNull(parentStructure);
+			checkNotNull(tagInfo);
 			checkNotNull(localName);
 			this.parentStructure = parentStructure;
+			this.tagInfo = tagInfo;
 			this.localName = localName;
 		}
 
