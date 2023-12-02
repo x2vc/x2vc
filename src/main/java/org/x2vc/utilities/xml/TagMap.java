@@ -7,7 +7,7 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
@@ -45,7 +45,12 @@ public final class TagMap implements ITagMap {
 
 	@Override
 	public Optional<ITagInfo> getTag(PolymorphLocation location) {
-		final int offset = location.getCharacterOffset();
+		return getTag(location, 0);
+	}
+
+	@Override
+	public Optional<ITagInfo> getTag(PolymorphLocation location, int offsetCorrection) {
+		final int offset = location.getCharacterOffset() + offsetCorrection;
 		return this.entries.stream().filter(e -> e.offsetRange.contains(offset)).map(e -> e.tag).findFirst();
 	}
 
