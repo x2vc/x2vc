@@ -7,17 +7,15 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.stylesheet.coverage;
 
-
 import java.util.Objects;
 
 import org.x2vc.stylesheet.structure.IXSLTDirectiveNode;
-import org.x2vc.utilities.xml.PolymorphLocation;
 
 /**
  * Standard implementation of {@link IDirectiveCoverage}.
@@ -39,16 +37,6 @@ public final class DirectiveCoverage implements IDirectiveCoverage {
 		this.directive = directive;
 		this.executionCount = executionCount;
 		this.coverage = coverage;
-	}
-
-	@Override
-	public PolymorphLocation getStartLocation() {
-		return this.directive.getStartLocation().orElseThrow();
-	}
-
-	@Override
-	public PolymorphLocation getEndLocation() {
-		return this.directive.getEndLocation().orElseThrow();
 	}
 
 	@Override

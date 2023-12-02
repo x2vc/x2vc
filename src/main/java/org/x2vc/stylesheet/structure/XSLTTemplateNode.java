@@ -20,7 +20,6 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.x2vc.utilities.xml.PolymorphLocation;
 
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
@@ -140,12 +139,9 @@ public final class XSLTTemplateNode extends XSLTDirectiveNode implements IXSLTTe
 			result.append(String.format(" with priority %s", priorityFormat.format(oPriority.get())));
 		}
 
-		final Optional<PolymorphLocation> start = getStartLocation();
-		if (start.isPresent()) {
-			final int line = start.get().getLineNumber();
-			// TODO #20 add file name
-			result.append(String.format(" defined in line %d", line));
-		}
+		final int lineNumber = getTagInformation().getStartLocation().getLineNumber();
+		// TODO #20 add file name
+		result.append(String.format(" defined in line %d", lineNumber));
 		return result.toString();
 	}
 

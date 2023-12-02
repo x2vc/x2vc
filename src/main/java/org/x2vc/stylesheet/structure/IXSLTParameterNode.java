@@ -15,8 +15,6 @@ package org.x2vc.stylesheet.structure;
 
 import java.util.Optional;
 
-import org.x2vc.utilities.xml.PolymorphLocation;
-
 import net.sf.saxon.s9api.QName;
 
 /**
@@ -39,16 +37,6 @@ public interface IXSLTParameterNode extends IElementNode {
 	 *
 	 */
 	QName getQualifiedName();
-
-	/**
-	 * @return the location the starting element was found
-	 */
-	Optional<PolymorphLocation> getStartLocation();
-
-	/**
-	 * @return the location the closing element was found
-	 */
-	Optional<PolymorphLocation> getEndLocation();
 
 	/**
 	 * @return the value of the select attribute if it exists

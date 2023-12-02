@@ -280,7 +280,6 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 			if (namespaceURI != null) {
 				paramBuilder.withNamespaceURI(namespaceURI);
 			}
-			paramBuilder.withStartLocation(element.getLocation());
 			if (attribSelect.isPresent()) {
 				paramBuilder.withSelection(attribSelect.get());
 			}
@@ -303,7 +302,6 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 			final Optional<String> attribOrder = getAttributeValue(element, "order");
 			final Optional<String> attribCaseOrder = getAttributeValue(element, "case-order");
 			final XSLTSortNode.Builder sortBuilder = XSLTSortNode.builder(this.structure, tagInfo);
-			sortBuilder.withStartLocation(element.getLocation());
 			if (attribSelect.isPresent()) {
 				sortBuilder.withSortingExpression(attribSelect.get());
 			}
@@ -336,7 +334,6 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 			final ITagInfo tagInfo = lookupTagForElement(element.getLocation());
 			final XSLTDirectiveNode.Builder directiveBuilder = XSLTDirectiveNode.builder(this.structure, tagInfo,
 					elementName);
-			directiveBuilder.withStartLocation(element.getLocation());
 
 			// add the namespaces defined up to this element
 			final NamespaceContext namespaceContext = element.getNamespaceContext();
@@ -371,7 +368,6 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 
 			final ITagInfo tagInfo = lookupTagForElement(element.getLocation());
 			final XMLNode.Builder nodeBuilder = XMLNode.builder(this.structure, tagInfo, element.getName());
-			nodeBuilder.withStartLocation(element.getLocation());
 			for (final Iterator<Attribute> iterator = element.getAttributes(); iterator.hasNext();) {
 				final Attribute attrib = iterator.next();
 				nodeBuilder.addAttribute(attrib.getName(), attrib.getValue());
@@ -398,14 +394,14 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 					processEndOfParameter(element);
 					break;
 				case XSLTConstants.Elements.SORT:
-					processEndOfSort(element);
+					processEndOfSort();
 					break;
 				default:
-					processEndOfDirective(element);
+					processEndOfDirective();
 				}
 			} else {
 				// no - another XML element
-				processEndOfXMLNode(element);
+				processEndOfXMLNode();
 			}
 			logger.traceExit();
 		}
@@ -418,7 +414,6 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 		private void processEndOfParameter(EndElement element) {
 			logger.traceEntry();
 			final XSLTParameterNode.Builder paramBuilder = (XSLTParameterNode.Builder) this.builderChain.removeLast();
-			paramBuilder.withEndLocation(element.getLocation());
 			final XSLTParameterNode paramNode = paramBuilder.build();
 			logger.trace("end of parameter {}", paramNode.getQualifiedName());
 
@@ -437,10 +432,9 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 		 *
 		 * @param element
 		 */
-		private void processEndOfSort(EndElement element) {
+		private void processEndOfSort() {
 			logger.traceEntry();
 			final XSLTSortNode.Builder sortBuilder = (XSLTSortNode.Builder) this.builderChain.removeLast();
-			sortBuilder.withEndLocation(element.getLocation());
 			final XSLTSortNode sortNode = sortBuilder.build();
 
 			final INodeBuilder parentBuilder = this.builderChain.getLast();
@@ -454,22 +448,16 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 		 *
 		 * @param element
 		 */
-		private void processEndOfDirective(EndElement element) {
+		private void processEndOfDirective() {
 			logger.traceEntry();
 			if (this.builderChain.size() > 1) {
 				final XSLTDirectiveNode.Builder directiveBuilder = (XSLTDirectiveNode.Builder) this.builderChain
 					.removeLast();
-				directiveBuilder.withEndLocation(element.getLocation());
 				final IXSLTDirectiveNode directiveNode = directiveBuilder.build();
 				logger.trace("end of XSLT directive {}", directiveNode.getName());
 				addChildNodeToLastBuilder(directiveNode);
 			} else {
-				// store the end location, but leave the last builder in the queue to be
-				// processed during the end-of-document event
-				final XSLTDirectiveNode.Builder directiveBuilder = (XSLTDirectiveNode.Builder) this.builderChain
-					.getLast();
-				directiveBuilder.withEndLocation(element.getLocation());
-
+				// leave the last builder in the queue to be processed during the end-of-document event
 			}
 			logger.traceExit();
 		}
@@ -479,10 +467,9 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 		 *
 		 * @param element
 		 */
-		private void processEndOfXMLNode(EndElement element) {
+		private void processEndOfXMLNode() {
 			logger.traceEntry();
 			final XMLNode.Builder nodeBuilder = (XMLNode.Builder) this.builderChain.removeLast();
-			nodeBuilder.withEndLocation(element.getLocation());
 			final XMLNode node = nodeBuilder.build();
 			addChildNodeToLastBuilder(node);
 			logger.traceExit();

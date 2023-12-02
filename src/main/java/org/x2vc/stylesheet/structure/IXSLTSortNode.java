@@ -15,22 +15,10 @@ package org.x2vc.stylesheet.structure;
 
 import java.util.Optional;
 
-import org.x2vc.utilities.xml.PolymorphLocation;
-
 /**
  * A sorting instruction (xsl:sort) within the XSLT structure information.
  */
 public interface IXSLTSortNode extends IElementNode {
-
-	/**
-	 * @return the location the starting element was found
-	 */
-	Optional<PolymorphLocation> getStartLocation();
-
-	/**
-	 * @return the location the closing element was found
-	 */
-	Optional<PolymorphLocation> getEndLocation();
 
 	/**
 	 * @return the expression used to sort the elements by (attribute select of xsl:sort)

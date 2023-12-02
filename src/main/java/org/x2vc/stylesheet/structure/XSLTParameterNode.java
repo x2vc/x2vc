@@ -23,7 +23,6 @@ import java.util.Optional;
 import javax.xml.bind.annotation.XmlTransient;
 
 import org.x2vc.utilities.xml.ITagInfo;
-import org.x2vc.utilities.xml.PolymorphLocation;
 
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
@@ -38,8 +37,6 @@ public final class XSLTParameterNode extends AbstractElementNode implements IXSL
 
 	private final String namespaceURI;
 	private final String localName;
-	private final PolymorphLocation startLocation;
-	private final PolymorphLocation endLocation;
 	private final String selection;
 
 	/**
@@ -52,8 +49,6 @@ public final class XSLTParameterNode extends AbstractElementNode implements IXSL
 		checkNotNull(builder.localName);
 		this.namespaceURI = builder.namespaceURI;
 		this.localName = builder.localName;
-		this.startLocation = builder.startLocation;
-		this.endLocation = builder.endLocation;
 		this.selection = builder.selection;
 	}
 
@@ -88,16 +83,6 @@ public final class XSLTParameterNode extends AbstractElementNode implements IXSL
 	}
 
 	@Override
-	public Optional<PolymorphLocation> getStartLocation() {
-		return Optional.ofNullable(this.startLocation);
-	}
-
-	@Override
-	public Optional<PolymorphLocation> getEndLocation() {
-		return Optional.ofNullable(this.endLocation);
-	}
-
-	@Override
 	public Optional<String> getSelection() {
 		return Optional.ofNullable(this.selection);
 	}
@@ -122,8 +107,6 @@ public final class XSLTParameterNode extends AbstractElementNode implements IXSL
 		private ITagInfo tagInfo;
 		private String namespaceURI;
 		private String localName;
-		private PolymorphLocation startLocation;
-		private PolymorphLocation endLocation;
 		private String selection;
 		private List<IStructureTreeNode> childElements = new ArrayList<>();
 
@@ -151,72 +134,6 @@ public final class XSLTParameterNode extends AbstractElementNode implements IXSL
 		 */
 		public Builder withNamespaceURI(String namespaceURI) {
 			this.namespaceURI = namespaceURI;
-			return this;
-		}
-
-		/**
-		 * Adds an start location to the builder.
-		 *
-		 * @param startLocation the location
-		 * @return builder
-		 */
-		public Builder withStartLocation(PolymorphLocation startLocation) {
-			this.startLocation = startLocation;
-			return this;
-		}
-
-		/**
-		 * Adds an start location to the builder.
-		 *
-		 * @param startLocation the location
-		 * @return builder
-		 */
-		public Builder withStartLocation(javax.xml.stream.Location startLocation) {
-			this.startLocation = PolymorphLocation.from(startLocation);
-			return this;
-		}
-
-		/**
-		 * Adds an start location to the builder.
-		 *
-		 * @param startLocation the location
-		 * @return builder
-		 */
-		public Builder withStartLocation(javax.xml.transform.SourceLocator startLocation) {
-			this.startLocation = PolymorphLocation.from(startLocation);
-			return this;
-		}
-
-		/**
-		 * Adds an end location to the builder.
-		 *
-		 * @param endLocation the location
-		 * @return builder
-		 */
-		public Builder withEndLocation(PolymorphLocation endLocation) {
-			this.endLocation = endLocation;
-			return this;
-		}
-
-		/**
-		 * Adds an end location to the builder.
-		 *
-		 * @param endLocation the location
-		 * @return builder
-		 */
-		public Builder withEndLocation(javax.xml.stream.Location endLocation) {
-			this.endLocation = PolymorphLocation.from(endLocation);
-			return this;
-		}
-
-		/**
-		 * Adds an end location to the builder.
-		 *
-		 * @param endLocation the location
-		 * @return builder
-		 */
-		public Builder withEndLocation(javax.xml.transform.SourceLocator endLocation) {
-			this.endLocation = PolymorphLocation.from(endLocation);
 			return this;
 		}
 
@@ -258,8 +175,7 @@ public final class XSLTParameterNode extends AbstractElementNode implements IXSL
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result
-				+ Objects.hash(this.endLocation, this.localName, this.namespaceURI, this.selection, this.startLocation);
+		result = prime * result + Objects.hash(this.localName, this.namespaceURI, this.selection);
 		return result;
 	}
 
@@ -275,10 +191,8 @@ public final class XSLTParameterNode extends AbstractElementNode implements IXSL
 			return false;
 		}
 		final XSLTParameterNode other = (XSLTParameterNode) obj;
-		return Objects.equals(this.endLocation, other.endLocation) && Objects.equals(this.localName, other.localName)
-				&& Objects.equals(this.namespaceURI, other.namespaceURI)
-				&& Objects.equals(this.selection, other.selection)
-				&& Objects.equals(this.startLocation, other.startLocation);
+		return Objects.equals(this.localName, other.localName) && Objects.equals(this.namespaceURI, other.namespaceURI)
+				&& Objects.equals(this.selection, other.selection);
 	}
 
 }

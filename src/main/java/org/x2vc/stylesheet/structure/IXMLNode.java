@@ -13,11 +13,7 @@
  */
 package org.x2vc.stylesheet.structure;
 
-import java.util.Optional;
-
 import javax.xml.namespace.QName;
-
-import org.x2vc.utilities.xml.PolymorphLocation;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -30,16 +26,6 @@ public interface IXMLNode extends IElementNode {
 	 * @return the qualified name of the non-XSLT XML element
 	 */
 	QName getName();
-
-	/**
-	 * @return the location the starting element was found
-	 */
-	Optional<PolymorphLocation> getStartLocation();
-
-	/**
-	 * @return the location the closing element was found
-	 */
-	Optional<PolymorphLocation> getEndLocation();
 
 	/**
 	 * @return the attributes of the non-XSLT XML element

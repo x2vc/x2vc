@@ -23,7 +23,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.x2vc.stylesheet.XSLTConstants;
 import org.x2vc.utilities.xml.ITagInfo;
-import org.x2vc.utilities.xml.PolymorphLocation;
 
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
@@ -41,8 +40,6 @@ public class XSLTDirectiveNode extends AbstractElementNode implements IXSLTDirec
 	private static final Logger logger = LogManager.getLogger();
 
 	private final String name;
-	private final PolymorphLocation startLocation;
-	private final PolymorphLocation endLocation;
 	private final ImmutableMap<String, NamespaceUri> namespaces;
 	private final ImmutableMap<String, String> xsltAttributes;
 	private final ImmutableMap<QName, String> otherAttributes;
@@ -53,8 +50,6 @@ public class XSLTDirectiveNode extends AbstractElementNode implements IXSLTDirec
 	protected XSLTDirectiveNode(Builder builder) {
 		super(builder.parentStructure, builder.tagInfo, ImmutableList.copyOf(builder.childElements));
 		this.name = builder.name;
-		this.startLocation = builder.startLocation;
-		this.endLocation = builder.endLocation;
 		this.namespaces = ImmutableMap.copyOf(builder.namespaces);
 		this.xsltAttributes = ImmutableMap.copyOf(builder.xsltAttributes);
 		this.otherAttributes = ImmutableMap.copyOf(builder.otherAttributes);
@@ -66,16 +61,6 @@ public class XSLTDirectiveNode extends AbstractElementNode implements IXSLTDirec
 	@Override
 	public String getName() {
 		return this.name;
-	}
-
-	@Override
-	public Optional<PolymorphLocation> getStartLocation() {
-		return Optional.ofNullable(this.startLocation);
-	}
-
-	@Override
-	public Optional<PolymorphLocation> getEndLocation() {
-		return Optional.ofNullable(this.endLocation);
 	}
 
 	@Override
@@ -160,8 +145,6 @@ public class XSLTDirectiveNode extends AbstractElementNode implements IXSLTDirec
 		private IStylesheetStructure parentStructure;
 		private ITagInfo tagInfo;
 		private String name;
-		private PolymorphLocation startLocation;
-		private PolymorphLocation endLocation;
 		private Map<String, NamespaceUri> namespaces = new HashMap<>();
 		private Map<String, String> xsltAttributes = new HashMap<>();
 		private Map<QName, String> otherAttributes = new HashMap<>();
@@ -183,72 +166,6 @@ public class XSLTDirectiveNode extends AbstractElementNode implements IXSLTDirec
 			this.parentStructure = parentStructure;
 			this.tagInfo = tagInfo;
 			this.name = name;
-		}
-
-		/**
-		 * Adds an start location to the builder.
-		 *
-		 * @param startLocation the location
-		 * @return builder
-		 */
-		public Builder withStartLocation(PolymorphLocation startLocation) {
-			this.startLocation = startLocation;
-			return this;
-		}
-
-		/**
-		 * Adds an start location to the builder.
-		 *
-		 * @param startLocation the location
-		 * @return builder
-		 */
-		public Builder withStartLocation(javax.xml.stream.Location startLocation) {
-			this.startLocation = PolymorphLocation.from(startLocation);
-			return this;
-		}
-
-		/**
-		 * Adds an start location to the builder.
-		 *
-		 * @param startLocation the location
-		 * @return builder
-		 */
-		public Builder withStartLocation(javax.xml.transform.SourceLocator startLocation) {
-			this.startLocation = PolymorphLocation.from(startLocation);
-			return this;
-		}
-
-		/**
-		 * Adds an end location to the builder.
-		 *
-		 * @param endLocation the location
-		 * @return builder
-		 */
-		public Builder withEndLocation(PolymorphLocation endLocation) {
-			this.endLocation = endLocation;
-			return this;
-		}
-
-		/**
-		 * Adds an end location to the builder.
-		 *
-		 * @param endLocation the location
-		 * @return builder
-		 */
-		public Builder withEndLocation(javax.xml.stream.Location endLocation) {
-			this.endLocation = PolymorphLocation.from(endLocation);
-			return this;
-		}
-
-		/**
-		 * Adds an end location to the builder.
-		 *
-		 * @param endLocation the location
-		 * @return builder
-		 */
-		public Builder withEndLocation(javax.xml.transform.SourceLocator endLocation) {
-			this.endLocation = PolymorphLocation.from(endLocation);
-			return this;
 		}
 
 		/**
@@ -356,9 +273,9 @@ public class XSLTDirectiveNode extends AbstractElementNode implements IXSLTDirec
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + Objects.hash(this.actualParameters, this.endLocation, this.formalParameters,
-				this.name, this.namespaces,
-				this.otherAttributes, this.sorting, this.startLocation, this.xsltAttributes);
+		result = prime * result + Objects.hash(this.actualParameters, this.formalParameters, this.name, this.namespaces,
+				this.otherAttributes,
+				this.sorting, this.xsltAttributes);
 		return result;
 	}
 
@@ -375,13 +292,11 @@ public class XSLTDirectiveNode extends AbstractElementNode implements IXSLTDirec
 		}
 		final XSLTDirectiveNode other = (XSLTDirectiveNode) obj;
 		return Objects.equals(this.actualParameters, other.actualParameters)
-				&& Objects.equals(this.endLocation, other.endLocation)
 				&& Objects.equals(this.formalParameters, other.formalParameters)
 				&& Objects.equals(this.name, other.name)
 				&& Objects.equals(this.namespaces, other.namespaces)
 				&& Objects.equals(this.otherAttributes, other.otherAttributes)
 				&& Objects.equals(this.sorting, other.sorting)
-				&& Objects.equals(this.startLocation, other.startLocation)
 				&& Objects.equals(this.xsltAttributes, other.xsltAttributes);
 	}
 

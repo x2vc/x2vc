@@ -82,10 +82,6 @@ class StylesheetStructureExtractorTest {
 		assertEquals("stylesheet", rootNode.getName());
 		assertSame(tagInfoStylesheet, rootNode.getTagInformation());
 		assertEquals(1, rootNode.getChildElements().size());
-		assertEquals(2, rootNode.getStartLocation().orElseThrow().getLineNumber());
-		assertEquals(6, rootNode.getEndLocation().orElseThrow().getLineNumber());
-		assertEquals(80, rootNode.getStartLocation().orElseThrow().getColumnNumber());
-		assertEquals(18, rootNode.getEndLocation().orElseThrow().getColumnNumber());
 
 		final IStructureTreeNode templateNode = rootNode.getChildElements().get(0);
 		assertInstanceOf(IXSLTDirectiveNode.class, templateNode);
@@ -94,16 +90,12 @@ class StylesheetStructureExtractorTest {
 		assertSame(tagInfoTemplate, templateNodeAsDirective.getTagInformation());
 		assertEquals("bar", templateNodeAsDirective.getXSLTAttributes().get("name"));
 		assertEquals(1, templateNodeAsDirective.getChildElements().size());
-		assertEquals(3, templateNodeAsDirective.getStartLocation().orElseThrow().getLineNumber());
-		assertEquals(5, templateNodeAsDirective.getEndLocation().orElseThrow().getLineNumber());
 
 		final IStructureTreeNode spanNode = templateNodeAsDirective.getChildElements().get(0);
 		assertInstanceOf(IXMLNode.class, spanNode);
 		final IXMLNode spanNodeAsXML = (IXMLNode) spanNode;
 		assertEquals("span", spanNodeAsXML.getName().getLocalPart());
 		assertSame(tagInfoSpan, spanNodeAsXML.getTagInformation());
-		assertEquals(4, spanNodeAsXML.getStartLocation().orElseThrow().getLineNumber());
-		assertEquals(4, spanNodeAsXML.getEndLocation().orElseThrow().getLineNumber());
 	}
 
 	/**
@@ -132,10 +124,6 @@ class StylesheetStructureExtractorTest {
 		assertEquals("stylesheet", rootNode.getName());
 		assertSame(tagInfoStylesheet, rootNode.getTagInformation());
 		assertEquals(1, rootNode.getChildElements().size());
-		assertEquals(2, rootNode.getStartLocation().orElseThrow().getLineNumber());
-		assertEquals(6, rootNode.getEndLocation().orElseThrow().getLineNumber());
-		assertEquals(80, rootNode.getStartLocation().orElseThrow().getColumnNumber());
-		assertEquals(18, rootNode.getEndLocation().orElseThrow().getColumnNumber());
 
 		final IStructureTreeNode templateNode = rootNode.getChildElements().get(0);
 		assertInstanceOf(IXSLTDirectiveNode.class, templateNode);
@@ -144,16 +132,12 @@ class StylesheetStructureExtractorTest {
 		assertSame(tagInfoTemplate, templateNodeAsDirective.getTagInformation());
 		assertEquals("bar", templateNodeAsDirective.getXSLTAttributes().get("name"));
 		assertEquals(1, templateNodeAsDirective.getChildElements().size());
-		assertEquals(3, templateNodeAsDirective.getStartLocation().orElseThrow().getLineNumber());
-		assertEquals(5, templateNodeAsDirective.getEndLocation().orElseThrow().getLineNumber());
 
 		final IStructureTreeNode spanNode = templateNodeAsDirective.getChildElements().get(0);
 		assertInstanceOf(IXMLNode.class, spanNode);
 		final IXMLNode spanNodeAsXML = (IXMLNode) spanNode;
 		assertEquals("span", spanNodeAsXML.getName().getLocalPart());
 		assertSame(tagInfoSpan, spanNodeAsXML.getTagInformation());
-		assertEquals(4, spanNodeAsXML.getStartLocation().orElseThrow().getLineNumber());
-		assertEquals(4, spanNodeAsXML.getEndLocation().orElseThrow().getLineNumber());
 
 		final ImmutableList<IStructureTreeNode> spanChildren = spanNodeAsXML.getChildElements();
 		assertEquals(3, spanChildren.size());
@@ -168,8 +152,6 @@ class StylesheetStructureExtractorTest {
 		assertEquals("value-of", spanChild2AsDirective.getName());
 		assertSame(tagInfoValueOf, spanChild2AsDirective.getTagInformation());
 		assertEquals("bar", spanChild2AsDirective.getXSLTAttributes().get("select"));
-		assertEquals(4, spanChild2AsDirective.getStartLocation().orElseThrow().getLineNumber());
-		assertEquals(4, spanChild2AsDirective.getEndLocation().orElseThrow().getLineNumber());
 
 		final IStructureTreeNode spanChild3 = spanChildren.get(2);
 		assertInstanceOf(ITextNode.class, spanChild3);
@@ -205,10 +187,6 @@ class StylesheetStructureExtractorTest {
 		assertEquals("stylesheet", rootNode.getName());
 		assertSame(tagInfoStylesheet, rootNode.getTagInformation());
 		assertEquals(1, rootNode.getChildElements().size());
-		assertEquals(2, rootNode.getStartLocation().orElseThrow().getLineNumber());
-		assertEquals(7, rootNode.getEndLocation().orElseThrow().getLineNumber());
-		assertEquals(80, rootNode.getStartLocation().orElseThrow().getColumnNumber());
-		assertEquals(18, rootNode.getEndLocation().orElseThrow().getColumnNumber());
 
 		final ImmutableList<IXSLTParameterNode> params = rootNode.getFormalParameters();
 		assertEquals(1, params.size());
@@ -216,8 +194,6 @@ class StylesheetStructureExtractorTest {
 		assertSame(tagInfoParam, param.getTagInformation());
 		assertEquals("foo", param.getLocalName());
 		assertFalse(param.getNamespaceURI().isPresent());
-		assertEquals(3, param.getStartLocation().orElseThrow().getLineNumber());
-		assertEquals(3, param.getEndLocation().orElseThrow().getLineNumber());
 	}
 
 	/**
@@ -249,10 +225,6 @@ class StylesheetStructureExtractorTest {
 		assertEquals("stylesheet", rootNode.getName());
 		assertSame(tagInfoStylesheet, rootNode.getTagInformation());
 		assertEquals(1, rootNode.getChildElements().size());
-		assertEquals(2, rootNode.getStartLocation().orElseThrow().getLineNumber());
-		assertEquals(7, rootNode.getEndLocation().orElseThrow().getLineNumber());
-		assertEquals(80, rootNode.getStartLocation().orElseThrow().getColumnNumber());
-		assertEquals(18, rootNode.getEndLocation().orElseThrow().getColumnNumber());
 
 		final ImmutableList<IXSLTParameterNode> params = rootNode.getFormalParameters();
 		assertEquals(1, params.size());
@@ -261,8 +233,6 @@ class StylesheetStructureExtractorTest {
 		assertEquals("bar", param.getLocalName());
 		assertTrue(param.getNamespaceURI().isPresent());
 		assertEquals("http://foo.bar.baz", param.getNamespaceURI().orElseThrow());
-		assertEquals(3, param.getStartLocation().orElseThrow().getLineNumber());
-		assertEquals(3, param.getEndLocation().orElseThrow().getLineNumber());
 	}
 
 	/**
@@ -294,10 +264,6 @@ class StylesheetStructureExtractorTest {
 		assertEquals("stylesheet", rootNode.getName());
 		assertSame(tagInfoStylesheet, rootNode.getTagInformation());
 		assertEquals(1, rootNode.getChildElements().size());
-		assertEquals(2, rootNode.getStartLocation().orElseThrow().getLineNumber());
-		assertEquals(7, rootNode.getEndLocation().orElseThrow().getLineNumber());
-		assertEquals(111, rootNode.getStartLocation().orElseThrow().getColumnNumber());
-		assertEquals(18, rootNode.getEndLocation().orElseThrow().getColumnNumber());
 
 		final ImmutableList<IXSLTParameterNode> params = rootNode.getFormalParameters();
 		assertEquals(1, params.size());
@@ -306,8 +272,6 @@ class StylesheetStructureExtractorTest {
 		assertEquals("bar", param.getLocalName());
 		assertTrue(param.getNamespaceURI().isPresent());
 		assertEquals("http://foo.bar.baz", param.getNamespaceURI().orElseThrow());
-		assertEquals(3, param.getStartLocation().orElseThrow().getLineNumber());
-		assertEquals(3, param.getEndLocation().orElseThrow().getLineNumber());
 	}
 
 	/**
@@ -338,26 +302,18 @@ class StylesheetStructureExtractorTest {
 		assertEquals("stylesheet", rootNode.getName());
 		assertSame(tagInfoStylesheet, rootNode.getTagInformation());
 		assertEquals(1, rootNode.getChildElements().size());
-		assertEquals(2, rootNode.getStartLocation().orElseThrow().getLineNumber());
-		assertEquals(7, rootNode.getEndLocation().orElseThrow().getLineNumber());
-		assertEquals(80, rootNode.getStartLocation().orElseThrow().getColumnNumber());
-		assertEquals(18, rootNode.getEndLocation().orElseThrow().getColumnNumber());
 
 		final IStructureTreeNode child1 = rootNode.getChildElements().get(0);
 		assertInstanceOf(IXSLTDirectiveNode.class, child1);
 		final IXSLTDirectiveNode child1d = (IXSLTDirectiveNode) child1;
 		assertEquals("template", child1d.getName());
 		assertSame(tagInfoTemplate, child1d.getTagInformation());
-		assertEquals(3, child1d.getStartLocation().orElseThrow().getLineNumber());
-		assertEquals(6, child1d.getEndLocation().orElseThrow().getLineNumber());
 
 		final ImmutableList<IXSLTParameterNode> params = child1d.getFormalParameters();
 		assertEquals(1, params.size());
 		final IXSLTParameterNode param = params.get(0);
 		assertSame(tagInfoParam, param.getTagInformation());
 		assertEquals("foo", param.getLocalName());
-		assertEquals(4, param.getStartLocation().orElseThrow().getLineNumber());
-		assertEquals(4, param.getEndLocation().orElseThrow().getLineNumber());
 	}
 
 	/**
@@ -391,26 +347,18 @@ class StylesheetStructureExtractorTest {
 		assertEquals("stylesheet", rootNode.getName());
 		assertSame(tagInfoStylesheet, rootNode.getTagInformation());
 		assertEquals(1, rootNode.getChildElements().size());
-		assertEquals(2, rootNode.getStartLocation().orElseThrow().getLineNumber());
-		assertEquals(9, rootNode.getEndLocation().orElseThrow().getLineNumber());
-		assertEquals(80, rootNode.getStartLocation().orElseThrow().getColumnNumber());
-		assertEquals(18, rootNode.getEndLocation().orElseThrow().getColumnNumber());
 
 		final IStructureTreeNode child1 = rootNode.getChildElements().get(0);
 		assertInstanceOf(IXSLTDirectiveNode.class, child1);
 		final IXSLTDirectiveNode child1d = (IXSLTDirectiveNode) child1;
 		assertEquals("template", child1d.getName());
 		assertSame(tagInfoTemplate, child1d.getTagInformation());
-		assertEquals(3, child1d.getStartLocation().orElseThrow().getLineNumber());
-		assertEquals(8, child1d.getEndLocation().orElseThrow().getLineNumber());
 
 		final IStructureTreeNode child1_1 = child1d.getChildElements().get(0);
 		assertInstanceOf(IXSLTDirectiveNode.class, child1_1);
 		final IXSLTDirectiveNode child1_1d = (IXSLTDirectiveNode) child1_1;
 		assertEquals("call-template", child1_1d.getName());
 		assertSame(tagInfoCallTemplate, child1_1d.getTagInformation());
-		assertEquals(5, child1_1d.getStartLocation().orElseThrow().getLineNumber());
-		assertEquals(7, child1_1d.getEndLocation().orElseThrow().getLineNumber());
 
 		final ImmutableList<IXSLTParameterNode> params = child1_1d.getActualParameters();
 		assertEquals(1, params.size());
@@ -419,8 +367,6 @@ class StylesheetStructureExtractorTest {
 		assertEquals("foo", param.getLocalName());
 		assertTrue(param.getSelection().isPresent());
 		assertEquals("baz", param.getSelection().get());
-		assertEquals(6, param.getStartLocation().orElseThrow().getLineNumber());
-		assertEquals(6, param.getEndLocation().orElseThrow().getLineNumber());
 	}
 
 	/**
@@ -454,26 +400,18 @@ class StylesheetStructureExtractorTest {
 		assertEquals("stylesheet", rootNode.getName());
 		assertSame(tagInfoStylesheet, rootNode.getTagInformation());
 		assertEquals(1, rootNode.getChildElements().size());
-		assertEquals(2, rootNode.getStartLocation().orElseThrow().getLineNumber());
-		assertEquals(9, rootNode.getEndLocation().orElseThrow().getLineNumber());
-		assertEquals(80, rootNode.getStartLocation().orElseThrow().getColumnNumber());
-		assertEquals(18, rootNode.getEndLocation().orElseThrow().getColumnNumber());
 
 		final IStructureTreeNode child1 = rootNode.getChildElements().get(0);
 		assertInstanceOf(IXSLTDirectiveNode.class, child1);
 		final IXSLTDirectiveNode child1d = (IXSLTDirectiveNode) child1;
 		assertEquals("template", child1d.getName());
 		assertSame(tagInfoTemplate, child1d.getTagInformation());
-		assertEquals(3, child1d.getStartLocation().orElseThrow().getLineNumber());
-		assertEquals(8, child1d.getEndLocation().orElseThrow().getLineNumber());
 
 		final IStructureTreeNode child1_1 = child1d.getChildElements().get(0);
 		assertInstanceOf(IXSLTDirectiveNode.class, child1_1);
 		final IXSLTDirectiveNode child1_1d = (IXSLTDirectiveNode) child1_1;
 		assertEquals("call-template", child1_1d.getName());
 		assertSame(tagInfoCallTemplate, child1_1d.getTagInformation());
-		assertEquals(5, child1_1d.getStartLocation().orElseThrow().getLineNumber());
-		assertEquals(7, child1_1d.getEndLocation().orElseThrow().getLineNumber());
 
 		final ImmutableList<IXSLTParameterNode> params = child1_1d.getActualParameters();
 		assertEquals(1, params.size());
@@ -484,8 +422,6 @@ class StylesheetStructureExtractorTest {
 		assertEquals(1, param.getChildElements().size());
 		assertInstanceOf(ITextNode.class, param.getChildElements().get(0));
 		assertEquals("baz", ((ITextNode) param.getChildElements().get(0)).getText());
-		assertEquals(6, param.getStartLocation().orElseThrow().getLineNumber());
-		assertEquals(6, param.getEndLocation().orElseThrow().getLineNumber());
 	}
 
 	/**
@@ -519,18 +455,12 @@ class StylesheetStructureExtractorTest {
 		assertEquals("stylesheet", rootNode.getName());
 		assertSame(tagInfoStylesheet, rootNode.getTagInformation());
 		assertEquals(1, rootNode.getChildElements().size());
-		assertEquals(2, rootNode.getStartLocation().orElseThrow().getLineNumber());
-		assertEquals(9, rootNode.getEndLocation().orElseThrow().getLineNumber());
-		assertEquals(80, rootNode.getStartLocation().orElseThrow().getColumnNumber());
-		assertEquals(18, rootNode.getEndLocation().orElseThrow().getColumnNumber());
 
 		final IStructureTreeNode child1 = rootNode.getChildElements().get(0);
 		assertInstanceOf(IXSLTDirectiveNode.class, child1);
 		final IXSLTDirectiveNode child1d = (IXSLTDirectiveNode) child1;
 		assertEquals("template", child1d.getName());
 		assertSame(tagInfoTemplate, child1d.getTagInformation());
-		assertEquals(3, child1d.getStartLocation().orElseThrow().getLineNumber());
-		assertEquals(8, child1d.getEndLocation().orElseThrow().getLineNumber());
 
 		final IStructureTreeNode child1_1 = child1d.getChildElements().get(0);
 		assertInstanceOf(IXSLTDirectiveNode.class, child1_1);
@@ -538,8 +468,6 @@ class StylesheetStructureExtractorTest {
 		assertEquals("for-each", child1_1d.getName());
 		assertSame(tagInfoForEach, child1_1d.getTagInformation());
 		assertEquals("bar", child1_1d.getXSLTAttributes().get("select"));
-		assertEquals(4, child1_1d.getStartLocation().orElseThrow().getLineNumber());
-		assertEquals(7, child1_1d.getEndLocation().orElseThrow().getLineNumber());
 
 		final ImmutableList<IXSLTSortNode> sortNodes = child1_1d.getSorting();
 		assertEquals(1, sortNodes.size());
@@ -555,8 +483,6 @@ class StylesheetStructureExtractorTest {
 		assertEquals("descending", sortNode.getSortOrder().get());
 		assertTrue(sortNode.getCaseOrder().isPresent());
 		assertEquals("lower-first", sortNode.getCaseOrder().get());
-		assertEquals(5, sortNode.getStartLocation().orElseThrow().getLineNumber());
-		assertEquals(5, sortNode.getEndLocation().orElseThrow().getLineNumber());
 	}
 
 	private ITagInfo mockTagInfo(int line, int column, int offset) {

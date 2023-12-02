@@ -14,12 +14,16 @@
 package org.x2vc.stylesheet.structure;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.text.DecimalFormat;
 import java.util.Optional;
 
 import javax.xml.namespace.QName;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -39,6 +43,13 @@ class XSLTTemplateNodeTest {
 
 	@Mock
 	private ITagInfo tagInfo;
+
+	@BeforeEach
+	void setUp() {
+		final PolymorphLocation startLocation = mock(PolymorphLocation.class, "tag start location");
+		lenient().when(startLocation.getLineNumber()).thenReturn(42);
+		lenient().when(this.tagInfo.getStartLocation()).thenReturn(startLocation);
+	}
 
 	/**
 	 * Test method for {@link org.x2vc.stylesheet.structure.XSLTTemplateNode#getMatchPattern()}.
@@ -171,7 +182,7 @@ class XSLTTemplateNodeTest {
 			.build();
 		assertInstanceOf(IXSLTTemplateNode.class, directive);
 		final IXSLTTemplateNode template = (IXSLTTemplateNode) directive;
-		assertContains("template matching 'foobar'", template.getShortText());
+		assertEquals("template matching 'foobar' defined in line 42", template.getShortText());
 	}
 
 	/**
@@ -259,10 +270,12 @@ class XSLTTemplateNodeTest {
 	 */
 	@Test
 	void testGetShortText_LineNumber() {
+		final PolymorphLocation startLocation = mock(PolymorphLocation.class, "start location");
+		when(startLocation.getLineNumber()).thenReturn(42);
+		when(this.tagInfo.getStartLocation()).thenReturn(startLocation);
 		final IXSLTDirectiveNode directive = XSLTDirectiveNode
 			.builder(this.parentStructure, this.tagInfo, XSLTConstants.Elements.TEMPLATE)
 			.addXSLTAttribute("match", "foobar")
-			.withStartLocation(PolymorphLocation.builder().withLineNumber(42).build())
 			.build();
 		assertInstanceOf(IXSLTTemplateNode.class, directive);
 		final IXSLTTemplateNode template = (IXSLTTemplateNode) directive;

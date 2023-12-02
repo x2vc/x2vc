@@ -38,6 +38,7 @@ import org.x2vc.stylesheet.structure.XSLTDirectiveNode;
 import org.x2vc.utilities.URIUtilities;
 import org.x2vc.utilities.URIUtilities.ObjectType;
 import org.x2vc.utilities.xml.ITagInfo;
+import org.x2vc.utilities.xml.PolymorphLocation;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
@@ -117,10 +118,15 @@ class InitialSchemaGeneratorTest {
 			"'foo|bar|baz|boo', 'bar,baz,boo,foo'"
 	})
 	void testSingleLevel(String matches, String rootElementNames) {
+		final PolymorphLocation startLocation = mock(PolymorphLocation.class, "template tag start location");
+		when(startLocation.getLineNumber()).thenReturn(42);
+		final ITagInfo tagInfo = mock(ITagInfo.class, "template tag info");
+		when(tagInfo.getStartLocation()).thenReturn(startLocation);
+
 		final List<IXSLTTemplateNode> templates = Lists.newArrayList();
 		Splitter.on(',').split(matches).iterator().forEachRemaining(match -> {
 			templates
-				.add((IXSLTTemplateNode) XSLTDirectiveNode.builder(this.structure, mock(ITagInfo.class), "template")
+				.add((IXSLTTemplateNode) XSLTDirectiveNode.builder(this.structure, tagInfo, "template")
 					.addXSLTAttribute("match", match)
 					.build());
 		});
@@ -142,8 +148,13 @@ class InitialSchemaGeneratorTest {
 			"/foo/bar/baz"
 	})
 	void testMultiLevelPath(String matches) {
+		final PolymorphLocation startLocation = mock(PolymorphLocation.class, "template tag start location");
+		when(startLocation.getLineNumber()).thenReturn(42);
+		final ITagInfo tagInfo = mock(ITagInfo.class, "template tag info");
+		when(tagInfo.getStartLocation()).thenReturn(startLocation);
+
 		final List<IXSLTTemplateNode> templates = Lists.newArrayList();
-		templates.add((IXSLTTemplateNode) XSLTDirectiveNode.builder(this.structure, mock(ITagInfo.class), "template")
+		templates.add((IXSLTTemplateNode) XSLTDirectiveNode.builder(this.structure, tagInfo, "template")
 			.addXSLTAttribute("match", matches)
 			.build());
 		when(this.structure.getTemplates()).thenReturn(ImmutableList.copyOf(templates));

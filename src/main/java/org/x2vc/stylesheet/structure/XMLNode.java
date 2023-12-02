@@ -20,7 +20,6 @@ import java.util.*;
 import javax.xml.namespace.QName;
 
 import org.x2vc.utilities.xml.ITagInfo;
-import org.x2vc.utilities.xml.PolymorphLocation;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -31,31 +30,17 @@ import com.google.common.collect.ImmutableMap;
 public final class XMLNode extends AbstractElementNode implements IXMLNode {
 
 	private final QName name;
-	private final PolymorphLocation startLocation;
-	private final PolymorphLocation endLocation;
 	private final ImmutableMap<QName, String> attributes;
 
 	private XMLNode(Builder builder) {
 		super(builder.parentStructure, builder.tagInfo, ImmutableList.copyOf(builder.childElements));
 		this.name = builder.name;
-		this.startLocation = builder.startLocation;
-		this.endLocation = builder.endLocation;
 		this.attributes = ImmutableMap.copyOf(builder.attributes);
 	}
 
 	@Override
 	public QName getName() {
 		return this.name;
-	}
-
-	@Override
-	public Optional<PolymorphLocation> getStartLocation() {
-		return Optional.ofNullable(this.startLocation);
-	}
-
-	@Override
-	public Optional<PolymorphLocation> getEndLocation() {
-		return Optional.ofNullable(this.endLocation);
 	}
 
 	@Override
@@ -82,8 +67,6 @@ public final class XMLNode extends AbstractElementNode implements IXMLNode {
 		private IStylesheetStructure parentStructure;
 		private ITagInfo tagInfo;
 		private QName name;
-		private PolymorphLocation startLocation;
-		private PolymorphLocation endLocation;
 		private Map<QName, String> attributes = new HashMap<>();
 		private List<IStructureTreeNode> childElements = new ArrayList<>();
 
@@ -100,72 +83,6 @@ public final class XMLNode extends AbstractElementNode implements IXMLNode {
 			this.parentStructure = parentStructure;
 			this.tagInfo = tagInfo;
 			this.name = name;
-		}
-
-		/**
-		 * Adds an start location to the builder.
-		 *
-		 * @param startLocation the location
-		 * @return builder
-		 */
-		public Builder withStartLocation(PolymorphLocation startLocation) {
-			this.startLocation = startLocation;
-			return this;
-		}
-
-		/**
-		 * Adds an start location to the builder.
-		 *
-		 * @param startLocation the location
-		 * @return builder
-		 */
-		public Builder withStartLocation(javax.xml.stream.Location startLocation) {
-			this.startLocation = PolymorphLocation.from(startLocation);
-			return this;
-		}
-
-		/**
-		 * Adds an start location to the builder.
-		 *
-		 * @param startLocation the location
-		 * @return builder
-		 */
-		public Builder withStartLocation(javax.xml.transform.SourceLocator startLocation) {
-			this.startLocation = PolymorphLocation.from(startLocation);
-			return this;
-		}
-
-		/**
-		 * Adds an end location to the builder.
-		 *
-		 * @param endLocation the location
-		 * @return builder
-		 */
-		public Builder withEndLocation(PolymorphLocation endLocation) {
-			this.endLocation = endLocation;
-			return this;
-		}
-
-		/**
-		 * Adds an end location to the builder.
-		 *
-		 * @param endLocation the location
-		 * @return builder
-		 */
-		public Builder withEndLocation(javax.xml.stream.Location endLocation) {
-			this.endLocation = PolymorphLocation.from(endLocation);
-			return this;
-		}
-
-		/**
-		 * Adds an end location to the builder.
-		 *
-		 * @param endLocation the location
-		 * @return builder
-		 */
-		public Builder withEndLocation(javax.xml.transform.SourceLocator endLocation) {
-			this.endLocation = PolymorphLocation.from(endLocation);
-			return this;
 		}
 
 		/**
@@ -208,7 +125,7 @@ public final class XMLNode extends AbstractElementNode implements IXMLNode {
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result + Objects.hash(this.attributes, this.endLocation, this.name, this.startLocation);
+		result = prime * result + Objects.hash(this.attributes, this.name);
 		return result;
 	}
 
@@ -224,8 +141,7 @@ public final class XMLNode extends AbstractElementNode implements IXMLNode {
 			return false;
 		}
 		final XMLNode other = (XMLNode) obj;
-		return Objects.equals(this.attributes, other.attributes) && Objects.equals(this.endLocation, other.endLocation)
-				&& Objects.equals(this.name, other.name) && Objects.equals(this.startLocation, other.startLocation);
+		return Objects.equals(this.attributes, other.attributes) && Objects.equals(this.name, other.name);
 	}
 
 }

@@ -238,8 +238,6 @@ class CoverageTraceAnalyzerTest {
 	private void assertDirectiveEquals(final String directiveName, final int startLine, final int endLine,
 			final int executionCount, CoverageStatus coverage, final IDirectiveCoverage entry) {
 		assertEquals(directiveName, entry.getDirective().getName());
-		assertEquals(startLine, entry.getStartLocation().getLineNumber());
-		assertEquals(endLine, entry.getEndLocation().getLineNumber());
 		assertEquals(executionCount, entry.getExecutionCount());
 		assertEquals(coverage, entry.getCoverage());
 	}

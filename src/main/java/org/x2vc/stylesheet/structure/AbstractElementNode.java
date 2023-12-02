@@ -18,8 +18,12 @@ import static com.google.common.base.Preconditions.checkNotNull;
 import java.util.Objects;
 
 import org.x2vc.utilities.xml.ITagInfo;
+import org.x2vc.utilities.xml.PolymorphLocation;
 
+import com.google.common.base.Supplier;
+import com.google.common.base.Suppliers;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Range;
 
 /**
  * Standard implementation of {@link IElementNode}.
@@ -51,6 +55,33 @@ public abstract class AbstractElementNode extends AbstractStructureTreeNode impl
 	@Override
 	public ITagInfo getTagInformation() {
 		return this.tagInformation;
+	}
+
+	@SuppressWarnings({
+			"java:S2065", // transient is used to mark the field as irrelevant for equals()/hashCode()
+			"java:S4738" // Java supplier does not support memoization
+	})
+	private transient Supplier<Range<PolymorphLocation>> tagSourceRangeSupplier = Suppliers.memoize(() -> {
+		final ITagInfo tagInfo = getTagInformation();
+		if (tagInfo.isEmptyElement()) {
+			return Range.closedOpen(tagInfo.getStartLocation(), tagInfo.getEndLocation());
+		} else {
+			ITagInfo startInfo;
+			ITagInfo endInfo;
+			if (tagInfo.isStartTag()) {
+				startInfo = tagInfo;
+				endInfo = tagInfo.getEndTag().get();
+			} else {
+				startInfo = tagInfo.getStartTag().get();
+				endInfo = tagInfo;
+			}
+			return Range.closedOpen(startInfo.getStartLocation(), endInfo.getEndLocation());
+		}
+	});
+
+	@Override
+	public Range<PolymorphLocation> getTagSourceRange() {
+		return this.tagSourceRangeSupplier.get();
 	}
 
 	@Override

@@ -7,15 +7,17 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.stylesheet.structure;
 
 import org.x2vc.utilities.xml.ITagInfo;
+import org.x2vc.utilities.xml.PolymorphLocation;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Range;
 
 /**
  * An XML element node contained in an {@link IStylesheetStructure} tree. This can either be a non-XSLT {@link IXMLNode}
@@ -37,5 +39,12 @@ public interface IElementNode extends IStructureTreeNode {
 	 * @return the information about the corresponding tag
 	 */
 	ITagInfo getTagInformation();
+
+	/**
+	 * Returns a {@link Range} object that describes the area this element covers in the source code.
+	 *
+	 * @return the source code range covered by the element
+	 */
+	Range<PolymorphLocation> getTagSourceRange();
 
 }
