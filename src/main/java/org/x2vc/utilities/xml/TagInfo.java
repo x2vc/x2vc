@@ -144,7 +144,7 @@ public final class TagInfo implements ITagInfo {
 
 	@Override
 	public String toString() {
-		return this.tagType + "tag from " + this.startLocation + " to " + this.endLocation;
+		return this.tagType + " tag from " + this.startLocation + " to " + this.endLocation;
 	}
 
 }
