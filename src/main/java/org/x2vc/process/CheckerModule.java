@@ -30,9 +30,7 @@ import org.x2vc.schema.evolution.ModifierCreationCoordinator;
 import org.x2vc.schema.evolution.items.EvaluationTreeItemFactory;
 import org.x2vc.schema.evolution.items.IEvaluationTreeItemFactory;
 import org.x2vc.schema.evolution.items.IEvaluationTreeItemFactoryFactory;
-import org.x2vc.utilities.xml.ILocationMap;
-import org.x2vc.utilities.xml.ILocationMapFactory;
-import org.x2vc.utilities.xml.LocationMap;
+import org.x2vc.utilities.xml.*;
 import org.x2vc.xml.value.IValueGenerator;
 import org.x2vc.xml.value.IValueGeneratorFactory;
 import org.x2vc.xml.value.ValueGenerator;
@@ -135,6 +133,9 @@ public class CheckerModule extends AbstractModule {
 		install(new FactoryModuleBuilder()
 			.implement(ILocationMap.class, LocationMap.class)
 			.build(ILocationMapFactory.class));
+		install(new FactoryModuleBuilder()
+			.implement(ITagMap.class, TagMap.class)
+			.build(ITagMapFactory.class));
 
 		// xml value
 		install(new FactoryModuleBuilder()

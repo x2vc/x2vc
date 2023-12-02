@@ -40,10 +40,12 @@ import org.x2vc.schema.evolution.ISchemaModifierCollector;
 import org.x2vc.schema.evolution.items.IEvaluationTreeItemFactoryFactory;
 import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.utilities.xml.ILocationMapFactory;
+import org.x2vc.utilities.xml.ITagMapFactory;
 import org.x2vc.xml.request.IDocumentRequest;
 import org.x2vc.xml.value.IValueGeneratorFactory;
 
 import com.github.racc.tscg.TypesafeConfigModule;
+import com.google.common.collect.Lists;
 import com.google.inject.Guice;
 import com.google.inject.Inject;
 import com.google.inject.Provider;
@@ -79,6 +81,8 @@ class CheckerModuleTest {
 	private Provider<IModifierCreationCoordinatorFactory> modifierCreationCoordinatorFactoryProvider;
 	@Inject
 	private Provider<ILocationMapFactory> locationMapFactoryProvider;
+	@Inject
+	private Provider<ITagMapFactory> tagMapFactoryProvider;
 	@Inject
 	private Provider<IValueGeneratorFactory> valueGeneratorFactory;
 	@Inject
@@ -200,6 +204,13 @@ class CheckerModuleTest {
 		final ILocationMapFactory factory = this.locationMapFactoryProvider.get();
 		assertNotNull(factory);
 		assertNotNull(factory.create(42, new int[] { 1, 2, 3 }, new int[] { 0, 4, 5 }));
+	}
+
+	@Test
+	void testTagMapFactory() {
+		final ITagMapFactory factory = this.tagMapFactoryProvider.get();
+		assertNotNull(factory);
+		assertNotNull(factory.create(Lists.newArrayList()));
 	}
 
 	@Test
