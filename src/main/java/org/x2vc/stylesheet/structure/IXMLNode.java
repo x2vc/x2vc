@@ -7,12 +7,11 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.stylesheet.structure;
-
 
 import java.util.Optional;
 
@@ -20,13 +19,12 @@ import javax.xml.namespace.QName;
 
 import org.x2vc.utilities.xml.PolymorphLocation;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
 /**
  * A non-XSLT XML element contained in an {@link IStylesheetStructure} tree.
  */
-public interface IXMLNode extends IStructureTreeNode {
+public interface IXMLNode extends IElementNode {
 
 	/**
 	 * @return the qualified name of the non-XSLT XML element
@@ -48,8 +46,4 @@ public interface IXMLNode extends IStructureTreeNode {
 	 */
 	ImmutableMap<QName, String> getAttributes();
 
-	/**
-	 * @return the child elements of the non-XSLT XML element
-	 */
-	ImmutableList<IStructureTreeNode> getChildElements();
 }

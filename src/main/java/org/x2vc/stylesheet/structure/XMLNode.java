@@ -7,12 +7,11 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.stylesheet.structure;
-
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -28,21 +27,19 @@ import com.google.common.collect.ImmutableMap;
 /**
  * Standard implementation of {@link IXMLNode}.
  */
-public class XMLNode extends AbstractStructureTreeNode implements IXMLNode {
+public final class XMLNode extends AbstractElementNode implements IXMLNode {
 
-	private QName name;
-	private PolymorphLocation startLocation;
-	private PolymorphLocation endLocation;
-	private ImmutableMap<QName, String> attributes;
-	private ImmutableList<IStructureTreeNode> childElements;
+	private final QName name;
+	private final PolymorphLocation startLocation;
+	private final PolymorphLocation endLocation;
+	private final ImmutableMap<QName, String> attributes;
 
 	private XMLNode(Builder builder) {
-		super(builder.parentStructure);
+		super(builder.parentStructure, ImmutableList.copyOf(builder.childElements));
 		this.name = builder.name;
 		this.startLocation = builder.startLocation;
 		this.endLocation = builder.endLocation;
 		this.attributes = ImmutableMap.copyOf(builder.attributes);
-		this.childElements = ImmutableList.copyOf(builder.childElements);
 	}
 
 	@Override
@@ -63,11 +60,6 @@ public class XMLNode extends AbstractStructureTreeNode implements IXMLNode {
 	@Override
 	public ImmutableMap<QName, String> getAttributes() {
 		return this.attributes;
-	}
-
-	@Override
-	public ImmutableList<IStructureTreeNode> getChildElements() {
-		return this.childElements;
 	}
 
 	/**
@@ -211,8 +203,7 @@ public class XMLNode extends AbstractStructureTreeNode implements IXMLNode {
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result
-				+ Objects.hash(this.attributes, this.childElements, this.endLocation, this.name, this.startLocation);
+		result = prime * result + Objects.hash(this.attributes, this.endLocation, this.name, this.startLocation);
 		return result;
 	}
 
@@ -224,14 +215,12 @@ public class XMLNode extends AbstractStructureTreeNode implements IXMLNode {
 		if (!super.equals(obj)) {
 			return false;
 		}
-		if (getClass() != obj.getClass()) {
+		if (!(obj instanceof XMLNode)) {
 			return false;
 		}
 		final XMLNode other = (XMLNode) obj;
-		return Objects.equals(this.attributes, other.attributes)
-				&& Objects.equals(this.childElements, other.childElements)
-				&& Objects.equals(this.endLocation, other.endLocation) && Objects.equals(this.name, other.name)
-				&& Objects.equals(this.startLocation, other.startLocation);
+		return Objects.equals(this.attributes, other.attributes) && Objects.equals(this.endLocation, other.endLocation)
+				&& Objects.equals(this.name, other.name) && Objects.equals(this.startLocation, other.startLocation);
 	}
 
 }

@@ -7,12 +7,11 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.stylesheet.structure;
-
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -34,14 +33,13 @@ import net.sf.saxon.s9api.QName;
 /**
  * Standard implementation of {@link IXSLTParameterNode}.
  */
-public final class XSLTParameterNode extends AbstractStructureTreeNode implements IXSLTParameterNode {
+public final class XSLTParameterNode extends AbstractElementNode implements IXSLTParameterNode {
 
 	private final String namespaceURI;
 	private final String localName;
 	private final PolymorphLocation startLocation;
 	private final PolymorphLocation endLocation;
 	private final String selection;
-	private final ImmutableList<IStructureTreeNode> childElements;
 
 	/**
 	 * Private constructor to be used with the builder.
@@ -49,14 +47,13 @@ public final class XSLTParameterNode extends AbstractStructureTreeNode implement
 	 * @param builder
 	 */
 	private XSLTParameterNode(Builder builder) {
-		super(builder.parentStructure);
+		super(builder.parentStructure, ImmutableList.copyOf(builder.childElements));
 		checkNotNull(builder.localName);
 		this.namespaceURI = builder.namespaceURI;
 		this.localName = builder.localName;
 		this.startLocation = builder.startLocation;
 		this.endLocation = builder.endLocation;
 		this.selection = builder.selection;
-		this.childElements = ImmutableList.copyOf(builder.childElements);
 	}
 
 	@Override
@@ -69,7 +66,10 @@ public final class XSLTParameterNode extends AbstractStructureTreeNode implement
 		return this.localName;
 	}
 
-	@SuppressWarnings("java:S4738") // Java supplier does not support memoization
+	@SuppressWarnings({
+			"java:S2065", // transient is used to mark the field as irrelevant for equals()/hashCode()
+			"java:S4738" // Java supplier does not support memoization
+	})
 	private transient Supplier<QName> qualifiedNameSupplier = Suppliers
 		.memoize(() -> {
 			final Optional<String> oNamespace = getNamespaceURI();
@@ -99,11 +99,6 @@ public final class XSLTParameterNode extends AbstractStructureTreeNode implement
 	@Override
 	public Optional<String> getSelection() {
 		return Optional.ofNullable(this.selection);
-	}
-
-	@Override
-	public ImmutableList<IStructureTreeNode> getChildElements() {
-		return this.childElements;
 	}
 
 	/**
@@ -258,8 +253,7 @@ public final class XSLTParameterNode extends AbstractStructureTreeNode implement
 		final int prime = 31;
 		int result = super.hashCode();
 		result = prime * result
-				+ Objects.hash(this.childElements, this.endLocation, this.localName, this.namespaceURI, this.selection,
-						this.startLocation);
+				+ Objects.hash(this.endLocation, this.localName, this.namespaceURI, this.selection, this.startLocation);
 		return result;
 	}
 
@@ -275,9 +269,7 @@ public final class XSLTParameterNode extends AbstractStructureTreeNode implement
 			return false;
 		}
 		final XSLTParameterNode other = (XSLTParameterNode) obj;
-		return Objects.equals(this.childElements, other.childElements)
-				&& Objects.equals(this.endLocation, other.endLocation)
-				&& Objects.equals(this.localName, other.localName)
+		return Objects.equals(this.endLocation, other.endLocation) && Objects.equals(this.localName, other.localName)
 				&& Objects.equals(this.namespaceURI, other.namespaceURI)
 				&& Objects.equals(this.selection, other.selection)
 				&& Objects.equals(this.startLocation, other.startLocation);

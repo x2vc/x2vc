@@ -7,12 +7,11 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.stylesheet.structure;
-
 
 import java.util.Optional;
 
@@ -31,7 +30,7 @@ import net.sf.saxon.om.NamespaceUri;
  * are not part of the tree structure but kept in separate collections like attributes. Also note that for
  * <code>xsl:template</code> elements, a specialized interface {@link IXSLTTemplateNode} exists.
  */
-public interface IXSLTDirectiveNode extends IStructureTreeNode {
+public interface IXSLTDirectiveNode extends IElementNode {
 
 	/**
 	 * @return the name of the element, like "apply-templates"
@@ -70,10 +69,12 @@ public interface IXSLTDirectiveNode extends IStructureTreeNode {
 	ImmutableMap<QName, String> getOtherAttributes();
 
 	/**
-	 * @return the elements contained within the current element. May be empty. Note that xsl:param, xsl:sort and
-	 *         xsl:with-param elements are not part of the tree structure but kept in separate collections like
-	 *         attributes.
+	 * Returns the child elements of the XML element. This list may be empty. Note that xsl:param, xsl:sort and
+	 * xsl:with-param elements are not part of the tree structure but kept in separate collections like attributes.
+	 *
+	 * @return the child elements of the XML element
 	 */
+	@Override
 	ImmutableList<IStructureTreeNode> getChildElements();
 
 	/**

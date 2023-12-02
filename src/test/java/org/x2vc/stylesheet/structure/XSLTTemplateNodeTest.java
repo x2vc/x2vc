@@ -7,17 +7,18 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.stylesheet.structure;
 
-
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.text.DecimalFormat;
 import java.util.Optional;
+
+import javax.xml.namespace.QName;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,6 +26,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.x2vc.stylesheet.XSLTConstants;
 import org.x2vc.utilities.xml.PolymorphLocation;
+
+import net.sf.saxon.om.NamespaceUri;
+import nl.jqno.equalsverifier.EqualsVerifier;
 
 @ExtendWith(MockitoExtension.class)
 class XSLTTemplateNodeTest {
@@ -259,6 +263,20 @@ class XSLTTemplateNodeTest {
 		assertInstanceOf(IXSLTTemplateNode.class, directive);
 		final IXSLTTemplateNode template = (IXSLTTemplateNode) directive;
 		assertContains("defined in line 42", template.getShortText());
+	}
+
+	/**
+	 * Test method for {@link org.x2vc.stylesheet.structure.XSLTTemplateNode#equals(java.lang.Object)} and
+	 * {@link org.x2vc.stylesheet.structure.XSLTTemplateNode#hashCode()}.
+	 */
+	@Test
+	void testEqualsObject() {
+		EqualsVerifier
+			.forClass(XSLTTemplateNode.class)
+			.usingGetClass()
+			.withPrefabValues(QName.class, new QName("foo"), new QName("bar"))
+			.withPrefabValues(NamespaceUri.class, NamespaceUri.of("http://foo"), NamespaceUri.of("bar"))
+			.verify();
 	}
 
 	private void assertContains(String expected, String actual) {

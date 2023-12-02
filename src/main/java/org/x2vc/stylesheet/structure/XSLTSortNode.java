@@ -7,12 +7,11 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.stylesheet.structure;
-
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -21,10 +20,12 @@ import java.util.Optional;
 
 import org.x2vc.utilities.xml.PolymorphLocation;
 
+import com.google.common.collect.ImmutableList;
+
 /**
  * Standard implementation of {@link IXSLTSortNode}.
  */
-public class XSLTSortNode extends AbstractStructureTreeNode implements IXSLTSortNode {
+public class XSLTSortNode extends AbstractElementNode implements IXSLTSortNode {
 
 	private PolymorphLocation startLocation;
 	private PolymorphLocation endLocation;
@@ -39,8 +40,9 @@ public class XSLTSortNode extends AbstractStructureTreeNode implements IXSLTSort
 	 *
 	 * @param builder
 	 */
+	@SuppressWarnings("java:S4738") // type required here
 	private XSLTSortNode(Builder builder) {
-		super(builder.parentStructure);
+		super(builder.parentStructure, ImmutableList.of());
 		this.startLocation = builder.startLocation;
 		this.endLocation = builder.endLocation;
 		this.sortingExpression = builder.sortingExpression;
