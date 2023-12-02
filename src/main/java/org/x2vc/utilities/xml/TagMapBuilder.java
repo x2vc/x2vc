@@ -7,7 +7,7 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
@@ -42,16 +42,16 @@ public class TagMapBuilder implements ITagMapBuilder {
 		logger.traceEntry();
 		final List<ITagInfo> tags = Lists.newArrayList();
 
-		logger.debug("a {}", xmlSource);
+		logger.trace("TMB in {}", xmlSource);
 
 		// kill all CDATA sections to make life a bit easier
 		String workingSource = xmlSource;
 		workingSource = removeCDataSections(workingSource);
-		logger.debug("b {}", workingSource);
+		logger.trace("TMB nc {}", workingSource);
 
 		// pick out the empty-element tags
 		workingSource = extractEmptyElementTags(workingSource, locationMap, tags);
-		logger.debug("c {}", workingSource);
+		logger.trace("TMB ee {}", workingSource);
 
 		// extract the remaining tags
 		extractSplitTags(workingSource, locationMap, tags);
@@ -112,17 +112,18 @@ public class TagMapBuilder implements ITagMapBuilder {
 	 * @param tagList
 	 */
 	private void extractSplitTags(String xmlSource, ILocationMap locationMap, List<ITagInfo> tagList) {
-		final Pattern tagPairPattern = Pattern.compile("<([^>]+)>.*?</\\1>");
+		final Pattern tagPairPattern = Pattern.compile("<([^> ]+)( [^>]+)?>.*?(</\\1>)", Pattern.DOTALL);
 		boolean matchFound = true;
 
 		while (matchFound) {
 			final Matcher tagPairMatcher = tagPairPattern.matcher(xmlSource);
 			matchFound = tagPairMatcher.find();
 			if (matchFound) {
-				final int startTagLength = tagPairMatcher.group(1).length() + 2;
+				final int startTagLength = (tagPairMatcher.group(2) == null) ? (tagPairMatcher.group(1).length() + 2)
+						: (tagPairMatcher.group(1).length() + tagPairMatcher.group(2).length() + 2);
 				final int startTagStartPosition = tagPairMatcher.start();
 				final int startTagEndPosition = +startTagStartPosition + startTagLength;
-				final int endTagLength = startTagLength + 1;
+				final int endTagLength = tagPairMatcher.group(3).length();
 				final int endTagEndPosition = tagPairMatcher.end();
 				final int endTagStartPosition = endTagEndPosition - endTagLength;
 				final ITagInfo.Pair tagPair = TagInfo.createTagPair(
@@ -137,7 +138,7 @@ public class TagMapBuilder implements ITagMapBuilder {
 						+ xmlSource.substring(startTagEndPosition, endTagStartPosition)
 						+ "Z".repeat(endTagLength)
 						+ xmlSource.substring(endTagEndPosition);
-				logger.debug("d {}", xmlSource);
+				logger.trace("TB st {}", xmlSource);
 			}
 		}
 
