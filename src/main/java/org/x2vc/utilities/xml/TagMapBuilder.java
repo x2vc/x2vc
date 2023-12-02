@@ -90,7 +90,9 @@ public class TagMapBuilder implements ITagMapBuilder {
 	 */
 	private String extractEmptyElementTags(String xmlSource, ILocationMap locationMap, final List<ITagInfo> tagList)
 			throws IllegalArgumentException {
-		final Pattern emptyElementPattern = Pattern.compile("<[^/>]+/>");
+		final Pattern emptyElementPattern = Pattern.compile(
+				"<([a-z][\\w:-]*)(?: [a-z][\\w:-]+=\"[^\"]*\")*\\s*/>",
+				Pattern.CASE_INSENSITIVE);
 		final Matcher emptyElementMatcher = emptyElementPattern.matcher(xmlSource);
 		while (emptyElementMatcher.find()) {
 			final int startIndex = emptyElementMatcher.start();
@@ -112,7 +114,9 @@ public class TagMapBuilder implements ITagMapBuilder {
 	 * @param tagList
 	 */
 	private void extractSplitTags(String xmlSource, ILocationMap locationMap, List<ITagInfo> tagList) {
-		final Pattern tagPairPattern = Pattern.compile("<([^> ]+)( [^>]+)?>.*?(</\\1>)", Pattern.DOTALL);
+		final Pattern tagPairPattern = Pattern.compile(
+				"<([a-z][\\w:-]*)((?: [a-z][\\w:-]+=\"[^\"]*\")*)\\s*>.*?<(/\\1)>",
+				Pattern.DOTALL | Pattern.CASE_INSENSITIVE);
 		boolean matchFound = true;
 
 		while (matchFound) {
@@ -123,7 +127,7 @@ public class TagMapBuilder implements ITagMapBuilder {
 						: (tagPairMatcher.group(1).length() + tagPairMatcher.group(2).length() + 2);
 				final int startTagStartPosition = tagPairMatcher.start();
 				final int startTagEndPosition = +startTagStartPosition + startTagLength;
-				final int endTagLength = tagPairMatcher.group(3).length();
+				final int endTagLength = tagPairMatcher.group(3).length() + 2;
 				final int endTagEndPosition = tagPairMatcher.end();
 				final int endTagStartPosition = endTagEndPosition - endTagLength;
 				final ITagInfo.Pair tagPair = TagInfo.createTagPair(
@@ -138,7 +142,7 @@ public class TagMapBuilder implements ITagMapBuilder {
 						+ xmlSource.substring(startTagEndPosition, endTagStartPosition)
 						+ "Z".repeat(endTagLength)
 						+ xmlSource.substring(endTagEndPosition);
-				logger.trace("TB st {}", xmlSource);
+				logger.trace("TMB st {}", xmlSource);
 			}
 		}
 

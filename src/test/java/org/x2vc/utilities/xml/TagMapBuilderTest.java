@@ -124,7 +124,7 @@ class TagMapBuilderTest {
 							<p>test B</p>
 							</xsl:when>
 							<xsl:otherwise>
-							<p>test O</p>
+							<foo bar="baz" />
 							</xsl:otherwise>
 							</xsl:choose>
 							</xsl:template>
@@ -140,7 +140,7 @@ class TagMapBuilderTest {
 		verify(this.factory).create(this.tagListCaptor.capture());
 		final List<ITagInfo> tagList = this.tagListCaptor.getValue();
 		assertNotNull(tagList);
-		assertEquals(18, tagList.size());
+		assertEquals(17, tagList.size());
 
 		final ITagInfo tag0 = tagList.get(0);
 		final ITagInfo tag1 = tagList.get(1);
@@ -159,7 +159,6 @@ class TagMapBuilderTest {
 		final ITagInfo tag14 = tagList.get(14);
 		final ITagInfo tag15 = tagList.get(15);
 		final ITagInfo tag16 = tagList.get(16);
-		final ITagInfo tag17 = tagList.get(17);
 
 		assertTypeAndLocation(ITagInfo.TagType.START, 22, 101, tag0, "starting tag <xsl:stylesheet...>");
 		assertTypeAndLocation(ITagInfo.TagType.START, 102, 127, tag1, "starting tag <xsl:template name=\"foo\">");
@@ -173,22 +172,102 @@ class TagMapBuilderTest {
 		assertTypeAndLocation(ITagInfo.TagType.END, 222, 226, tag9, "ending tag </p>");
 		assertTypeAndLocation(ITagInfo.TagType.END, 227, 238, tag10, "ending tag </xsl:when>");
 		assertTypeAndLocation(ITagInfo.TagType.START, 239, 254, tag11, "starting tag <xsl:otherwise>");
-		assertTypeAndLocation(ITagInfo.TagType.START, 255, 258, tag12, "starting tag <p>");
-		assertTypeAndLocation(ITagInfo.TagType.END, 264, 268, tag13, "ending tag </p>");
-		assertTypeAndLocation(ITagInfo.TagType.END, 269, 285, tag14, "ending tag </xsl:otherwise>");
-		assertTypeAndLocation(ITagInfo.TagType.END, 286, 299, tag15, "ending tag </xsl:choose>");
-		assertTypeAndLocation(ITagInfo.TagType.END, 300, 315, tag16, "ending tag </xsl:template>");
-		assertTypeAndLocation(ITagInfo.TagType.END, 316, 333, tag17, "ending tag </xsl:stylesheet>");
+		assertTypeAndLocation(ITagInfo.TagType.EMPTY, 255, 272, tag12, "empty-element tag <foo bar=\"baz\" />");
+		assertTypeAndLocation(ITagInfo.TagType.END, 273, 289, tag13, "ending tag </xsl:otherwise>");
+		assertTypeAndLocation(ITagInfo.TagType.END, 290, 303, tag14, "ending tag </xsl:choose>");
+		assertTypeAndLocation(ITagInfo.TagType.END, 304, 319, tag15, "ending tag </xsl:template>");
+		assertTypeAndLocation(ITagInfo.TagType.END, 320, 337, tag16, "ending tag </xsl:stylesheet>");
 
-		assertTagsAssigned(tag0, tag17, "<xsl:stylesheet...>");
-		assertTagsAssigned(tag1, tag16, "<xsl:template name=\"foo\">");
-		assertTagsAssigned(tag2, tag15, "<xsl:choose>");
+		assertTagsAssigned(tag0, tag16, "<xsl:stylesheet...>");
+		assertTagsAssigned(tag1, tag15, "<xsl:template name=\"foo\">");
+		assertTagsAssigned(tag2, tag14, "<xsl:choose>");
 		assertTagsAssigned(tag3, tag6, "<xsl:when test=\"fooA\">");
 		assertTagsAssigned(tag4, tag5, "<p>");
 		assertTagsAssigned(tag7, tag10, "<xsl:when test=\"fooB\">");
 		assertTagsAssigned(tag8, tag9, "<p>");
-		assertTagsAssigned(tag11, tag14, "<xsl:otherwise>");
-		assertTagsAssigned(tag12, tag13, "<p>");
+		assertTagsAssigned(tag11, tag13, "<xsl:otherwise>");
+	}
+
+	/**
+	 * Test method for {@link org.x2vc.utilities.xml.TagMapBuilder#buildTagMap(java.lang.String)}.
+	 */
+	@Test
+	void testBuildTagMap_XMLInAttribute() {
+		// offset...........00000000001111.1111112222222222.3333333333444.4444444555555555.5666666666677777777778
+		// offset:..........01234567890123.4567890123456789.0123456789012.3456789012345678.9012345678901234567890
+		final String xml = "<aaa><bbb ccc=\"ddd<eee/fff>ggg\" /><hhh iii=\"jjj<kkk/lll>mmm\">nnn</hhh></aaa>";
+		// tag_index:.........0....1..............................2................................3.....4
+
+		final ITagMap mockedMap = mock(ITagMap.class);
+		when(this.factory.create(any())).thenReturn(mockedMap);
+
+		final ITagMap actualMap = this.builder.buildTagMap(xml, this.locationMap);
+		assertSame(mockedMap, actualMap);
+
+		verify(this.factory).create(this.tagListCaptor.capture());
+		final List<ITagInfo> tagList = this.tagListCaptor.getValue();
+		assertNotNull(tagList);
+		assertEquals(5, tagList.size());
+
+		final ITagInfo tag0 = tagList.get(0);
+		final ITagInfo tag1 = tagList.get(1);
+		final ITagInfo tag2 = tagList.get(2);
+		final ITagInfo tag3 = tagList.get(3);
+		final ITagInfo tag4 = tagList.get(4);
+
+		assertTypeAndLocation(ITagInfo.TagType.START, 0, 5, tag0, "starting tag <aaa>");
+		assertTypeAndLocation(ITagInfo.TagType.EMPTY, 5, 34, tag1, "empty-element tag <bbb.../>");
+		assertTypeAndLocation(ITagInfo.TagType.START, 34, 61, tag2, "starting tag <hhh>");
+		assertTypeAndLocation(ITagInfo.TagType.END, 64, 70, tag3, "ending tag </hhh>");
+		assertTypeAndLocation(ITagInfo.TagType.END, 70, 76, tag4, "ending tag </aaa>");
+
+		assertTagsAssigned(tag0, tag4, "<aaa>");
+		assertTagsAssigned(tag2, tag3, "<hhh>");
+	}
+
+	/**
+	 * Test method for {@link org.x2vc.utilities.xml.TagMapBuilder#buildTagMap(java.lang.String)}.
+	 */
+	@Test
+	void testBuildTagMap_AdjacentTags() {
+		// offset...........00000000001111.1111.1122222222223333333333.4444.4444445555555555666666666677777777778
+		// offset:..........01234567890123.4567.8901234567890123456789.0123.4567890123456789012345678901234567890
+		final String xml = "<aaa><bbb ccc=\"eee\"></bbb><xxx><bbb ccc=\"ggg\"></bbb></xxx></aaa>";
+		// tag_index:.........0....1.................2....3....4.................5.....6.....7
+
+		final ITagMap mockedMap = mock(ITagMap.class);
+		when(this.factory.create(any())).thenReturn(mockedMap);
+
+		final ITagMap actualMap = this.builder.buildTagMap(xml, this.locationMap);
+		assertSame(mockedMap, actualMap);
+
+		verify(this.factory).create(this.tagListCaptor.capture());
+		final List<ITagInfo> tagList = this.tagListCaptor.getValue();
+		assertNotNull(tagList);
+		assertEquals(8, tagList.size());
+
+		final ITagInfo tag0 = tagList.get(0);
+		final ITagInfo tag1 = tagList.get(1);
+		final ITagInfo tag2 = tagList.get(2);
+		final ITagInfo tag3 = tagList.get(3);
+		final ITagInfo tag4 = tagList.get(4);
+		final ITagInfo tag5 = tagList.get(5);
+		final ITagInfo tag6 = tagList.get(6);
+		final ITagInfo tag7 = tagList.get(7);
+
+		assertTypeAndLocation(ITagInfo.TagType.START, 0, 5, tag0, "starting tag <aaa>");
+		assertTypeAndLocation(ITagInfo.TagType.START, 5, 20, tag1, "starting tag <bbb...>");
+		assertTypeAndLocation(ITagInfo.TagType.END, 20, 26, tag2, "ending tag </bbb>");
+		assertTypeAndLocation(ITagInfo.TagType.START, 26, 31, tag3, "starting tag <xxx>");
+		assertTypeAndLocation(ITagInfo.TagType.START, 31, 46, tag4, "starting tag <bbb...>");
+		assertTypeAndLocation(ITagInfo.TagType.END, 46, 52, tag5, "ending tag </bbb>");
+		assertTypeAndLocation(ITagInfo.TagType.END, 52, 58, tag6, "ending tag </xxx>");
+		assertTypeAndLocation(ITagInfo.TagType.END, 58, 64, tag7, "ending tag </aaa>");
+
+		assertTagsAssigned(tag0, tag7, "<aaa>");
+		assertTagsAssigned(tag1, tag2, "<bbb>");
+		assertTagsAssigned(tag3, tag6, "<xxx>");
+		assertTagsAssigned(tag4, tag5, "<bbb>");
 	}
 
 	private void assertTypeAndLocation(TagType tagType, int startOffset, int endOffset, ITagInfo tag, String info) {
