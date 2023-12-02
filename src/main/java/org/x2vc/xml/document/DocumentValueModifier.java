@@ -7,12 +7,11 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.xml.document;
-
 
 import java.util.Objects;
 import java.util.Optional;
@@ -29,27 +28,27 @@ import org.x2vc.xml.value.IValueDescriptor;
 /**
  * Standard implementation of {@link IDocumentValueModifier}.
  */
-public class DocumentValueModifier implements IDocumentValueModifier {
+public final class DocumentValueModifier implements IDocumentValueModifier {
 
 	@XmlElements({
 			@XmlElement(name = "analyzerRulePayload", type = AnalyzerRulePayload.class)
 	})
-	private IModifierPayload payload;
+	private final IModifierPayload payload;
 
 	@XmlAttribute
-	private UUID schemaObjectID;
+	private final UUID schemaObjectID;
 
 	@XmlAttribute
-	private UUID generationRuleID;
+	private final UUID generationRuleID;
 
 	@XmlElement
-	private String originalValue;
+	private final String originalValue;
 
 	@XmlElement
-	private String replacementValue;
+	private final String replacementValue;
 
 	@XmlAttribute
-	private String analyzerRuleID;
+	private final String analyzerRuleID;
 
 	private DocumentValueModifier(Builder builder) {
 		this.payload = builder.payload;

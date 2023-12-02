@@ -7,20 +7,21 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.stylesheet.structure;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.x2vc.stylesheet.XSLTConstants;
 
 import com.google.common.collect.ImmutableList;
 
 import nl.jqno.equalsverifier.EqualsVerifier;
+import nl.jqno.equalsverifier.Warning;
 
 class StylesheetStructureTest {
 
@@ -82,12 +83,15 @@ class StylesheetStructureTest {
 	}
 
 	/**
-	 * Test method for {@link org.x2vc.stylesheet.structure.StylesheetStructure#equals(java.lang.Object)}.
+	 * Test method for {@link org.x2vc.stylesheet.structure.StylesheetStructure#equals(java.lang.Object)} and
+	 * {@link org.x2vc.stylesheet.structure.StylesheetStructure#hashCode()}.
 	 */
 	@Test
-	@Disabled("implementation needs to be adjusted") // TODO #26 check equals() and hashCode()
 	void testEqualsObject() {
-		EqualsVerifier.forClass(StylesheetStructure.class).verify();
+		EqualsVerifier
+			.forClass(StylesheetStructure.class)
+			.suppress(Warning.NONFINAL_FIELDS)
+			.verify();
 	}
 
 }

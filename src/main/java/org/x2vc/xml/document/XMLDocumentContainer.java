@@ -7,12 +7,11 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.xml.document;
-
 
 import java.net.URI;
 import java.util.Objects;
@@ -22,11 +21,11 @@ import org.x2vc.xml.request.IDocumentRequest;
 /**
  * Standard implementation of {@link IXMLDocumentContainer}.
  */
-public class XMLDocumentContainer implements IXMLDocumentContainer {
+public final class XMLDocumentContainer implements IXMLDocumentContainer {
 
-	private IDocumentRequest request;
-	private IXMLDocumentDescriptor descriptor;
-	private String document;
+	private final IDocumentRequest request;
+	private final IXMLDocumentDescriptor descriptor;
+	private final String document;
 
 	/**
 	 * Creates a new document container.
