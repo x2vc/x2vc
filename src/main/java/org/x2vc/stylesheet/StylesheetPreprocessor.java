@@ -25,9 +25,7 @@ import org.apache.logging.log4j.Logger;
 import org.x2vc.stylesheet.structure.IStylesheetStructure;
 import org.x2vc.stylesheet.structure.IStylesheetStructureExtractor;
 import org.x2vc.utilities.SaxonLoggerAdapter;
-import org.x2vc.utilities.xml.ILocationMap;
-import org.x2vc.utilities.xml.ILocationMapBuilder;
-import org.x2vc.utilities.xml.XMLUtilities;
+import org.x2vc.utilities.xml.*;
 
 import com.github.racc.tscg.TypesafeConfig;
 import com.google.common.collect.Multimap;
@@ -50,18 +48,21 @@ public class StylesheetPreprocessor implements IStylesheetPreprocessor {
 	private Processor processor;
 	private INamespaceExtractor namespaceExtractor;
 	private IStylesheetStructureExtractor extractor;
-	private ILocationMapBuilder locationMapFactory;
+	private ILocationMapBuilder locationMapBuilder;
+	private ITagMapBuilder tagMapBuilder;
 
 	private Boolean prettyPrinterEnabled;
 
 	@Inject
 	StylesheetPreprocessor(Processor processor, INamespaceExtractor namespaceExtractor,
-			IStylesheetStructureExtractor extractor, ILocationMapBuilder locationMapFactory,
+			IStylesheetStructureExtractor extractor, ILocationMapBuilder locationMapBuilder,
+			ITagMapBuilder tagMapBuilder,
 			@TypesafeConfig("x2vc.stylesheet.pretty_print") Boolean prettyPrinterEnabled) {
 		this.processor = processor;
 		this.namespaceExtractor = namespaceExtractor;
 		this.extractor = extractor;
-		this.locationMapFactory = locationMapFactory;
+		this.locationMapBuilder = locationMapBuilder;
+		this.tagMapBuilder = tagMapBuilder;
 		this.prettyPrinterEnabled = prettyPrinterEnabled;
 	}
 
@@ -90,10 +91,11 @@ public class StylesheetPreprocessor implements IStylesheetPreprocessor {
 
 		// extract the stylesheet structure and prepare the location map
 		final IStylesheetStructure structure = this.extractor.extractStructure(formattedSource);
-		final ILocationMap locationMap = this.locationMapFactory.buildLocationMap(formattedSource);
+		final ILocationMap locationMap = this.locationMapBuilder.buildLocationMap(formattedSource);
+		final ITagMap tagMap = this.tagMapBuilder.buildTagMap(formattedSource, locationMap);
 
 		return new StylesheetInformation(uri, originalSource, formattedSource, namespacePrefixes, traceNamespacePrefix,
-				structure, locationMap);
+				structure, locationMap, tagMap);
 	}
 
 	/**

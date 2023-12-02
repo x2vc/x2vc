@@ -16,6 +16,7 @@ package org.x2vc.stylesheet;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
@@ -33,6 +34,8 @@ import org.x2vc.stylesheet.structure.IStylesheetStructure;
 import org.x2vc.stylesheet.structure.IStylesheetStructureExtractor;
 import org.x2vc.utilities.xml.ILocationMap;
 import org.x2vc.utilities.xml.ILocationMapBuilder;
+import org.x2vc.utilities.xml.ITagMap;
+import org.x2vc.utilities.xml.ITagMapBuilder;
 
 import com.google.common.collect.Multimap;
 
@@ -64,6 +67,12 @@ class StylesheetPreprocessorTest {
 	ILocationMap locationMap;
 
 	@Mock
+	ITagMapBuilder tagMapFactory;
+
+	@Mock
+	ITagMap tagMap;
+
+	@Mock
 	IStylesheetStructure structure;
 
 	StylesheetPreprocessor preprocessor;
@@ -72,8 +81,9 @@ class StylesheetPreprocessorTest {
 	void prepareInstances() {
 		this.xsltProcessor = new Processor();
 		lenient().when(this.locationMapFactory.buildLocationMap(any())).thenAnswer(a -> this.locationMap);
+		lenient().when(this.tagMapFactory.buildTagMap(anyString(), eq(this.locationMap))).thenAnswer(a -> this.tagMap);
 		this.preprocessor = new StylesheetPreprocessor(this.xsltProcessor, this.namespaceExtractor,
-				this.structureExtractor, this.locationMapFactory, false);
+				this.structureExtractor, this.locationMapFactory, this.tagMapFactory, false);
 		lenient().when(this.structureExtractor.extractStructure(anyString())).thenReturn(this.structure);
 	}
 
@@ -183,7 +193,7 @@ class StylesheetPreprocessorTest {
 	@Test
 	void testStylesheetContents_WithFormatterEnabled() throws SaxonApiException {
 		this.preprocessor = new StylesheetPreprocessor(this.xsltProcessor, this.namespaceExtractor,
-				this.structureExtractor, this.locationMapFactory, true);
+				this.structureExtractor, this.locationMapFactory, this.tagMapFactory, true);
 		when(this.namespaceExtractor
 			.extractNamespaces(argThat(Matchers.equalToCompressingWhiteSpace(this.minimalStylesheet_Formatted))))
 			.thenReturn(this.namespacePrefixes);
@@ -198,6 +208,7 @@ class StylesheetPreprocessorTest {
 		assertSame(this.namespacePrefixes, info.getNamespacePrefixes());
 		assertEquals("trace1234", info.getTraceNamespacePrefix());
 		assertSame(this.locationMap, info.getLocationMap());
+		assertSame(this.tagMap, info.getTagMap());
 	}
 
 	@Test
@@ -215,6 +226,7 @@ class StylesheetPreprocessorTest {
 		assertSame(this.namespacePrefixes, info.getNamespacePrefixes());
 		assertEquals("trace1234", info.getTraceNamespacePrefix());
 		assertSame(this.locationMap, info.getLocationMap());
+		assertSame(this.tagMap, info.getTagMap());
 	}
 
 }

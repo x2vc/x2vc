@@ -24,6 +24,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.x2vc.stylesheet.structure.IStylesheetStructure;
 import org.x2vc.utilities.xml.ILocationMap;
+import org.x2vc.utilities.xml.ITagMap;
 
 import com.google.common.collect.Multimap;
 
@@ -41,6 +42,9 @@ class StylesheetInformationTest {
 	@Mock
 	ILocationMap mockLocationMap;
 
+	@Mock
+	ITagMap mockTagMap;
+
 	URI testURI = URI.create("foo");
 
 	String traceNamespacePrefix = "https://foo.bar";
@@ -49,7 +53,7 @@ class StylesheetInformationTest {
 	void testConstructor_whenLocationNull() {
 		assertThrows(NullPointerException.class, () -> {
 			new StylesheetInformation(null, "a", "b", this.namespacePrefixes, this.traceNamespacePrefix,
-					this.mockStructure, this.mockLocationMap);
+					this.mockStructure, this.mockLocationMap, this.mockTagMap);
 		});
 	}
 
@@ -57,7 +61,7 @@ class StylesheetInformationTest {
 	void testConstructor_whenOriginalContentNull() {
 		assertThrows(NullPointerException.class, () -> {
 			new StylesheetInformation(this.testURI, null, "b", this.namespacePrefixes, this.traceNamespacePrefix,
-					this.mockStructure, this.mockLocationMap);
+					this.mockStructure, this.mockLocationMap, this.mockTagMap);
 		});
 	}
 
@@ -65,7 +69,7 @@ class StylesheetInformationTest {
 	void testConstructor_whenPreparedContentNull() {
 		assertThrows(NullPointerException.class, () -> {
 			new StylesheetInformation(this.testURI, "a", null, this.namespacePrefixes, this.traceNamespacePrefix,
-					this.mockStructure, this.mockLocationMap);
+					this.mockStructure, this.mockLocationMap, this.mockTagMap);
 		});
 	}
 
@@ -73,14 +77,14 @@ class StylesheetInformationTest {
 	void testConstructor_whenStructureNull() {
 		assertThrows(NullPointerException.class, () -> {
 			new StylesheetInformation(this.testURI, "a", "b", this.namespacePrefixes, this.traceNamespacePrefix, null,
-					this.mockLocationMap);
+					this.mockLocationMap, this.mockTagMap);
 		});
 	}
 
 	@Test
 	void testGetOriginalLocation() {
 		final IStylesheetInformation si = new StylesheetInformation(this.testURI, "a", "b", this.namespacePrefixes,
-				this.traceNamespacePrefix, this.mockStructure, this.mockLocationMap);
+				this.traceNamespacePrefix, this.mockStructure, this.mockLocationMap, this.mockTagMap);
 		assertEquals(this.testURI, si.getURI());
 	}
 

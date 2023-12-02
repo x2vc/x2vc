@@ -17,6 +17,7 @@ import java.net.URI;
 
 import org.x2vc.stylesheet.structure.IStylesheetStructure;
 import org.x2vc.utilities.xml.ILocationMap;
+import org.x2vc.utilities.xml.ITagMap;
 
 import com.google.common.collect.Multimap;
 
@@ -71,5 +72,10 @@ public interface IStylesheetInformation {
 	 * @return the {@link ILocationMap} for the stylesheet
 	 */
 	ILocationMap getLocationMap();
+
+	/**
+	 * @return the {@link ITagMap} for the stylesheet
+	 */
+	ITagMap getTagMap();
 
 }

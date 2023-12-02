@@ -20,6 +20,7 @@ import java.util.Objects;
 
 import org.x2vc.stylesheet.structure.IStylesheetStructure;
 import org.x2vc.utilities.xml.ILocationMap;
+import org.x2vc.utilities.xml.ITagMap;
 
 import com.google.common.collect.Multimap;
 
@@ -38,10 +39,12 @@ public final class StylesheetInformation implements IStylesheetInformation {
 	private final String traceNamespacePrefix;
 	private final IStylesheetStructure structure;
 	private final ILocationMap locationMap;
+	private final ITagMap tagMap;
 
+	@SuppressWarnings("java:S107") // large number of parameters because this is a final data transfer object
 	StylesheetInformation(URI uri, String originalStylesheet, String preparedStylesheet,
 			Multimap<String, URI> namespacePrefixes, String traceNamespacePrefix, IStylesheetStructure structure,
-			ILocationMap locationMap) {
+			ILocationMap locationMap, ITagMap tagMap) {
 		checkNotNull(uri);
 		checkNotNull(originalStylesheet);
 		checkNotNull(preparedStylesheet);
@@ -54,6 +57,7 @@ public final class StylesheetInformation implements IStylesheetInformation {
 		this.traceNamespacePrefix = traceNamespacePrefix;
 		this.structure = structure;
 		this.locationMap = locationMap;
+		this.tagMap = tagMap;
 	}
 
 	@Override
@@ -92,9 +96,14 @@ public final class StylesheetInformation implements IStylesheetInformation {
 	}
 
 	@Override
+	public ITagMap getTagMap() {
+		return this.tagMap;
+	}
+
+	@Override
 	public int hashCode() {
 		return Objects.hash(this.locationMap, this.namespacePrefixes, this.originalStylesheet, this.preparedStylesheet,
-				this.structure,
+				this.structure, this.tagMap,
 				this.traceNamespacePrefix, this.uri);
 	}
 
@@ -111,7 +120,7 @@ public final class StylesheetInformation implements IStylesheetInformation {
 				&& Objects.equals(this.namespacePrefixes, other.namespacePrefixes)
 				&& Objects.equals(this.originalStylesheet, other.originalStylesheet)
 				&& Objects.equals(this.preparedStylesheet, other.preparedStylesheet)
-				&& Objects.equals(this.structure, other.structure)
+				&& Objects.equals(this.structure, other.structure) && Objects.equals(this.tagMap, other.tagMap)
 				&& Objects.equals(this.traceNamespacePrefix, other.traceNamespacePrefix)
 				&& Objects.equals(this.uri, other.uri);
 	}
