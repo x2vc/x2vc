@@ -7,7 +7,7 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
@@ -20,6 +20,7 @@ import static org.mockito.Mockito.when;
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.UnsupportedCharsetException;
+import java.util.HexFormat;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -69,7 +70,11 @@ class FileReaderTest {
 		when(this.match.getName()).thenReturn(charsetName);
 		final String actualContents = this.reader.readFile(inputFile);
 		final String expectedContents = maskedExpectedContents.replace("~r", "\r").replace("~n", "\n");
-		assertEquals(expectedContents, actualContents);
+
+		// convert the strings to hex representation to make it easier to spot the differences
+		final HexFormat hexFormat = HexFormat.ofDelimiter(" ");
+
+		assertEquals(hexFormat.formatHex(expectedContents.getBytes()), hexFormat.formatHex(actualContents.getBytes()));
 	}
 
 }
