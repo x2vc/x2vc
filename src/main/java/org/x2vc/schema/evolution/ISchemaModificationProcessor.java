@@ -7,22 +7,24 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.schema.evolution;
 
-
 import java.util.Collection;
 
 import org.x2vc.schema.structure.IXMLSchema;
+
+import com.google.inject.ImplementedBy;
 
 /**
  * This component applies a set of {@link ISchemaModifier}s to an {@link IXMLSchema} to generate a new version of the
  * schema.
  *
  */
+@ImplementedBy(SchemaModificationProcessor.class)
 public interface ISchemaModificationProcessor {
 
 	/**

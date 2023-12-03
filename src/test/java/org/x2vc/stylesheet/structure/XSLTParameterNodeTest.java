@@ -7,12 +7,11 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.stylesheet.structure;
-
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -24,6 +23,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.x2vc.utilities.xml.ITagInfo;
 
 import net.sf.saxon.s9api.QName;
 import nl.jqno.equalsverifier.EqualsVerifier;
@@ -34,12 +34,15 @@ class XSLTParameterNodeTest {
 	@Mock
 	IStylesheetStructure parentStructure;
 
+	@Mock
+	ITagInfo tagInfo;
+
 	/**
 	 * Test method for {@link org.x2vc.stylesheet.structure.XSLTParameterNode#getNamespaceURI()}.
 	 */
 	@Test
 	void testGetNamespaceURI() {
-		final XSLTParameterNode param = XSLTParameterNode.builder(this.parentStructure, "myParam")
+		final XSLTParameterNode param = XSLTParameterNode.builder(this.parentStructure, this.tagInfo, "myParam")
 			.withNamespaceURI("http://foo.bar")
 			.build();
 		final Optional<String> oNamespace = param.getNamespaceURI();
@@ -52,7 +55,7 @@ class XSLTParameterNodeTest {
 	 */
 	@Test
 	void testGetNamespaceURIInitial() {
-		final XSLTParameterNode param = XSLTParameterNode.builder(this.parentStructure, "myParam")
+		final XSLTParameterNode param = XSLTParameterNode.builder(this.parentStructure, this.tagInfo, "myParam")
 			.build();
 		final Optional<String> oNamespace = param.getNamespaceURI();
 		assertFalse(oNamespace.isPresent());
@@ -63,7 +66,7 @@ class XSLTParameterNodeTest {
 	 */
 	@Test
 	void testGetLocalName() {
-		final XSLTParameterNode param = XSLTParameterNode.builder(this.parentStructure, "myParam")
+		final XSLTParameterNode param = XSLTParameterNode.builder(this.parentStructure, this.tagInfo, "myParam")
 			.build();
 		assertEquals("myParam", param.getLocalName());
 	}
@@ -73,7 +76,7 @@ class XSLTParameterNodeTest {
 	 */
 	@Test
 	void testGetQualifiedName() {
-		final XSLTParameterNode param = XSLTParameterNode.builder(this.parentStructure, "myParam")
+		final XSLTParameterNode param = XSLTParameterNode.builder(this.parentStructure, this.tagInfo, "myParam")
 			.withNamespaceURI("http://foo.bar")
 			.build();
 		final QName qName = param.getQualifiedName();
@@ -85,7 +88,7 @@ class XSLTParameterNodeTest {
 	 */
 	@Test
 	void testGetQualifiedNameLocalOnly() {
-		final XSLTParameterNode param = XSLTParameterNode.builder(this.parentStructure, "myParam")
+		final XSLTParameterNode param = XSLTParameterNode.builder(this.parentStructure, this.tagInfo, "myParam")
 			.build();
 		final QName qName = param.getQualifiedName();
 		assertEquals("myParam", qName.getClarkName());

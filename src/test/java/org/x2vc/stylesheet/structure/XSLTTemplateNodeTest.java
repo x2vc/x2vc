@@ -7,24 +7,33 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.stylesheet.structure;
 
-
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 import java.text.DecimalFormat;
 import java.util.Optional;
 
+import javax.xml.namespace.QName;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.x2vc.stylesheet.XSLTConstants;
-import org.x2vc.utilities.PolymorphLocation;
+import org.x2vc.utilities.xml.ITagInfo;
+import org.x2vc.utilities.xml.PolymorphLocation;
+
+import net.sf.saxon.om.NamespaceUri;
+import nl.jqno.equalsverifier.EqualsVerifier;
 
 @ExtendWith(MockitoExtension.class)
 class XSLTTemplateNodeTest {
@@ -32,13 +41,23 @@ class XSLTTemplateNodeTest {
 	@Mock
 	private IStylesheetStructure parentStructure;
 
+	@Mock
+	private ITagInfo tagInfo;
+
+	@BeforeEach
+	void setUp() {
+		final PolymorphLocation startLocation = mock(PolymorphLocation.class, "tag start location");
+		lenient().when(startLocation.getLineNumber()).thenReturn(42);
+		lenient().when(this.tagInfo.getStartLocation()).thenReturn(startLocation);
+	}
+
 	/**
 	 * Test method for {@link org.x2vc.stylesheet.structure.XSLTTemplateNode#getMatchPattern()}.
 	 */
 	@Test
 	void testGetMatchPattern_Present() {
 		final IXSLTDirectiveNode directive = XSLTDirectiveNode
-			.builder(this.parentStructure, XSLTConstants.Elements.TEMPLATE)
+			.builder(this.parentStructure, this.tagInfo, XSLTConstants.Elements.TEMPLATE)
 			.addXSLTAttribute("match", "foobar")
 			.build();
 		assertInstanceOf(IXSLTTemplateNode.class, directive);
@@ -54,7 +73,7 @@ class XSLTTemplateNodeTest {
 	@Test
 	void testGetMatchPattern_Absent() {
 		final IXSLTDirectiveNode directive = XSLTDirectiveNode
-			.builder(this.parentStructure, XSLTConstants.Elements.TEMPLATE)
+			.builder(this.parentStructure, this.tagInfo, XSLTConstants.Elements.TEMPLATE)
 			.build();
 		assertInstanceOf(IXSLTTemplateNode.class, directive);
 		final IXSLTTemplateNode template = (IXSLTTemplateNode) directive;
@@ -68,7 +87,7 @@ class XSLTTemplateNodeTest {
 	@Test
 	void testGetTemplateName_Present() {
 		final IXSLTDirectiveNode directive = XSLTDirectiveNode
-			.builder(this.parentStructure, XSLTConstants.Elements.TEMPLATE)
+			.builder(this.parentStructure, this.tagInfo, XSLTConstants.Elements.TEMPLATE)
 			.addXSLTAttribute("name", "foobar")
 			.build();
 		assertInstanceOf(IXSLTTemplateNode.class, directive);
@@ -84,7 +103,7 @@ class XSLTTemplateNodeTest {
 	@Test
 	void testGetTemplateName_Absent() {
 		final IXSLTDirectiveNode directive = XSLTDirectiveNode
-			.builder(this.parentStructure, XSLTConstants.Elements.TEMPLATE)
+			.builder(this.parentStructure, this.tagInfo, XSLTConstants.Elements.TEMPLATE)
 			.build();
 		assertInstanceOf(IXSLTTemplateNode.class, directive);
 		final IXSLTTemplateNode template = (IXSLTTemplateNode) directive;
@@ -98,7 +117,7 @@ class XSLTTemplateNodeTest {
 	@Test
 	void testGetPriority_Present() {
 		final IXSLTDirectiveNode directive = XSLTDirectiveNode
-			.builder(this.parentStructure, XSLTConstants.Elements.TEMPLATE)
+			.builder(this.parentStructure, this.tagInfo, XSLTConstants.Elements.TEMPLATE)
 			.addXSLTAttribute("priority", "-1.25")
 			.build();
 		assertInstanceOf(IXSLTTemplateNode.class, directive);
@@ -114,7 +133,7 @@ class XSLTTemplateNodeTest {
 	@Test
 	void testGetPriority_Absent() {
 		final IXSLTDirectiveNode directive = XSLTDirectiveNode
-			.builder(this.parentStructure, XSLTConstants.Elements.TEMPLATE)
+			.builder(this.parentStructure, this.tagInfo, XSLTConstants.Elements.TEMPLATE)
 			.build();
 		assertInstanceOf(IXSLTTemplateNode.class, directive);
 		final IXSLTTemplateNode template = (IXSLTTemplateNode) directive;
@@ -128,7 +147,7 @@ class XSLTTemplateNodeTest {
 	@Test
 	void testGetMode_Present() {
 		final IXSLTDirectiveNode directive = XSLTDirectiveNode
-			.builder(this.parentStructure, XSLTConstants.Elements.TEMPLATE)
+			.builder(this.parentStructure, this.tagInfo, XSLTConstants.Elements.TEMPLATE)
 			.addXSLTAttribute("mode", "foobar")
 			.build();
 		assertInstanceOf(IXSLTTemplateNode.class, directive);
@@ -144,7 +163,7 @@ class XSLTTemplateNodeTest {
 	@Test
 	void testGetMode_Absent() {
 		final IXSLTDirectiveNode directive = XSLTDirectiveNode
-			.builder(this.parentStructure, XSLTConstants.Elements.TEMPLATE)
+			.builder(this.parentStructure, this.tagInfo, XSLTConstants.Elements.TEMPLATE)
 			.build();
 		assertInstanceOf(IXSLTTemplateNode.class, directive);
 		final IXSLTTemplateNode template = (IXSLTTemplateNode) directive;
@@ -158,12 +177,12 @@ class XSLTTemplateNodeTest {
 	@Test
 	void testGetShortText_Match() {
 		final IXSLTDirectiveNode directive = XSLTDirectiveNode
-			.builder(this.parentStructure, XSLTConstants.Elements.TEMPLATE)
+			.builder(this.parentStructure, this.tagInfo, XSLTConstants.Elements.TEMPLATE)
 			.addXSLTAttribute("match", "foobar")
 			.build();
 		assertInstanceOf(IXSLTTemplateNode.class, directive);
 		final IXSLTTemplateNode template = (IXSLTTemplateNode) directive;
-		assertContains("template matching 'foobar'", template.getShortText());
+		assertEquals("template matching 'foobar' defined in line 42", template.getShortText());
 	}
 
 	/**
@@ -172,7 +191,7 @@ class XSLTTemplateNodeTest {
 	@Test
 	void testGetShortText_Name() {
 		final IXSLTDirectiveNode directive = XSLTDirectiveNode
-			.builder(this.parentStructure, XSLTConstants.Elements.TEMPLATE)
+			.builder(this.parentStructure, this.tagInfo, XSLTConstants.Elements.TEMPLATE)
 			.addXSLTAttribute("name", "foobar")
 			.build();
 		assertInstanceOf(IXSLTTemplateNode.class, directive);
@@ -186,7 +205,7 @@ class XSLTTemplateNodeTest {
 	@Test
 	void testGetShortText_MatchName() {
 		final IXSLTDirectiveNode directive = XSLTDirectiveNode
-			.builder(this.parentStructure, XSLTConstants.Elements.TEMPLATE)
+			.builder(this.parentStructure, this.tagInfo, XSLTConstants.Elements.TEMPLATE)
 			.addXSLTAttribute("match", "foobar")
 			.addXSLTAttribute("name", "boofar")
 			.build();
@@ -201,7 +220,7 @@ class XSLTTemplateNodeTest {
 	@Test
 	void testGetShortText_Mode() {
 		final IXSLTDirectiveNode directive = XSLTDirectiveNode
-			.builder(this.parentStructure, XSLTConstants.Elements.TEMPLATE)
+			.builder(this.parentStructure, this.tagInfo, XSLTConstants.Elements.TEMPLATE)
 			.addXSLTAttribute("match", "foobar")
 			.addXSLTAttribute("mode", "DontModeMe")
 			.build();
@@ -216,7 +235,7 @@ class XSLTTemplateNodeTest {
 	@Test
 	void testGetShortText_Priority() {
 		final IXSLTDirectiveNode directive = XSLTDirectiveNode
-			.builder(this.parentStructure, XSLTConstants.Elements.TEMPLATE)
+			.builder(this.parentStructure, this.tagInfo, XSLTConstants.Elements.TEMPLATE)
 			.addXSLTAttribute("match", "foobar")
 			.addXSLTAttribute("priority", "-4.2")
 			.build();
@@ -233,7 +252,7 @@ class XSLTTemplateNodeTest {
 	@Test
 	void testGetShortText_ModePriority() {
 		final IXSLTDirectiveNode directive = XSLTDirectiveNode
-			.builder(this.parentStructure, XSLTConstants.Elements.TEMPLATE)
+			.builder(this.parentStructure, this.tagInfo, XSLTConstants.Elements.TEMPLATE)
 			.addXSLTAttribute("match", "foobar")
 			.addXSLTAttribute("mode", "DontModeMe")
 			.addXSLTAttribute("priority", "-4.2")
@@ -251,14 +270,30 @@ class XSLTTemplateNodeTest {
 	 */
 	@Test
 	void testGetShortText_LineNumber() {
+		final PolymorphLocation startLocation = mock(PolymorphLocation.class, "start location");
+		when(startLocation.getLineNumber()).thenReturn(42);
+		when(this.tagInfo.getStartLocation()).thenReturn(startLocation);
 		final IXSLTDirectiveNode directive = XSLTDirectiveNode
-			.builder(this.parentStructure, XSLTConstants.Elements.TEMPLATE)
+			.builder(this.parentStructure, this.tagInfo, XSLTConstants.Elements.TEMPLATE)
 			.addXSLTAttribute("match", "foobar")
-			.withStartLocation(PolymorphLocation.builder().withLineNumber(42).build())
 			.build();
 		assertInstanceOf(IXSLTTemplateNode.class, directive);
 		final IXSLTTemplateNode template = (IXSLTTemplateNode) directive;
 		assertContains("defined in line 42", template.getShortText());
+	}
+
+	/**
+	 * Test method for {@link org.x2vc.stylesheet.structure.XSLTTemplateNode#equals(java.lang.Object)} and
+	 * {@link org.x2vc.stylesheet.structure.XSLTTemplateNode#hashCode()}.
+	 */
+	@Test
+	void testEqualsObject() {
+		EqualsVerifier
+			.forClass(XSLTTemplateNode.class)
+			.usingGetClass()
+			.withPrefabValues(QName.class, new QName("foo"), new QName("bar"))
+			.withPrefabValues(NamespaceUri.class, NamespaceUri.of("http://foo"), NamespaceUri.of("bar"))
+			.verify();
 	}
 
 	private void assertContains(String expected, String actual) {

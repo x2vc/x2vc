@@ -7,13 +7,16 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.stylesheet;
+
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.when;
 import static org.mockito.hamcrest.MockitoHamcrest.argThat;
@@ -29,6 +32,10 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.x2vc.stylesheet.structure.IStylesheetStructure;
 import org.x2vc.stylesheet.structure.IStylesheetStructureExtractor;
+import org.x2vc.utilities.xml.ILocationMap;
+import org.x2vc.utilities.xml.ILocationMapBuilder;
+import org.x2vc.utilities.xml.ITagMap;
+import org.x2vc.utilities.xml.ITagMapBuilder;
 
 import com.google.common.collect.Multimap;
 
@@ -54,6 +61,18 @@ class StylesheetPreprocessorTest {
 	IStylesheetStructureExtractor structureExtractor;
 
 	@Mock
+	ILocationMapBuilder locationMapFactory;
+
+	@Mock
+	ILocationMap locationMap;
+
+	@Mock
+	ITagMapBuilder tagMapFactory;
+
+	@Mock
+	ITagMap tagMap;
+
+	@Mock
 	IStylesheetStructure structure;
 
 	StylesheetPreprocessor preprocessor;
@@ -61,9 +80,12 @@ class StylesheetPreprocessorTest {
 	@BeforeEach
 	void prepareInstances() {
 		this.xsltProcessor = new Processor();
+		lenient().when(this.locationMapFactory.buildLocationMap(any())).thenAnswer(a -> this.locationMap);
+		lenient().when(this.tagMapFactory.buildTagMap(anyString(), eq(this.locationMap))).thenAnswer(a -> this.tagMap);
 		this.preprocessor = new StylesheetPreprocessor(this.xsltProcessor, this.namespaceExtractor,
-				this.structureExtractor, false);
-		lenient().when(this.structureExtractor.extractStructure(anyString())).thenReturn(this.structure);
+				this.structureExtractor, this.locationMapFactory, this.tagMapFactory, false);
+		lenient().when(this.structureExtractor.extractStructure(anyString(), eq(this.locationMap), eq(this.tagMap)))
+			.thenReturn(this.structure);
 	}
 
 	@Test
@@ -172,7 +194,7 @@ class StylesheetPreprocessorTest {
 	@Test
 	void testStylesheetContents_WithFormatterEnabled() throws SaxonApiException {
 		this.preprocessor = new StylesheetPreprocessor(this.xsltProcessor, this.namespaceExtractor,
-				this.structureExtractor, true);
+				this.structureExtractor, this.locationMapFactory, this.tagMapFactory, true);
 		when(this.namespaceExtractor
 			.extractNamespaces(argThat(Matchers.equalToCompressingWhiteSpace(this.minimalStylesheet_Formatted))))
 			.thenReturn(this.namespacePrefixes);
@@ -186,18 +208,26 @@ class StylesheetPreprocessorTest {
 			.matches(info.getPreparedStylesheet()));
 		assertSame(this.namespacePrefixes, info.getNamespacePrefixes());
 		assertEquals("trace1234", info.getTraceNamespacePrefix());
+		assertSame(this.locationMap, info.getLocationMap());
+		assertSame(this.tagMap, info.getTagMap());
 	}
 
 	@Test
 	void testStylesheetContents_WithFormatterDisabled() throws SaxonApiException {
-		when(this.namespaceExtractor.extractNamespaces(argThat(Matchers.equalToCompressingWhiteSpace(this.minimalStylesheet)))).thenReturn(this.namespacePrefixes);
-		when(this.namespaceExtractor.findUnusedPrefix(this.namespacePrefixes.keySet(), "trace")).thenReturn("trace1234");
-		final IStylesheetInformation info = this.preprocessor.prepareStylesheet(URI.create("foobar"), this.minimalStylesheet);
+		when(this.namespaceExtractor
+			.extractNamespaces(argThat(Matchers.equalToCompressingWhiteSpace(this.minimalStylesheet))))
+			.thenReturn(this.namespacePrefixes);
+		when(this.namespaceExtractor.findUnusedPrefix(this.namespacePrefixes.keySet(), "trace"))
+			.thenReturn("trace1234");
+		final IStylesheetInformation info = this.preprocessor.prepareStylesheet(URI.create("foobar"),
+				this.minimalStylesheet);
 		assertEquals(URI.create("foobar"), info.getURI());
 		assertEquals(this.minimalStylesheet, info.getOriginalStylesheet());
 		assertTrue(Matchers.equalToCompressingWhiteSpace(this.minimalStylesheet).matches(info.getPreparedStylesheet()));
 		assertSame(this.namespacePrefixes, info.getNamespacePrefixes());
 		assertEquals("trace1234", info.getTraceNamespacePrefix());
+		assertSame(this.locationMap, info.getLocationMap());
+		assertSame(this.tagMap, info.getTagMap());
 	}
 
 }

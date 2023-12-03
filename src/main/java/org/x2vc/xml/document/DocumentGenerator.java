@@ -31,7 +31,7 @@ import org.x2vc.schema.structure.IElementReference;
 import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.stylesheet.IStylesheetInformation;
 import org.x2vc.stylesheet.IStylesheetManager;
-import org.x2vc.utilities.XMLUtilities;
+import org.x2vc.utilities.xml.XMLUtilities;
 import org.x2vc.xml.document.XMLDocumentDescriptor.Builder;
 import org.x2vc.xml.request.*;
 import org.x2vc.xml.value.IValueGenerator;

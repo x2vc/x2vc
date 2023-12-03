@@ -11,7 +11,7 @@
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
-package org.x2vc.utilities;
+package org.x2vc.utilities.xml;
 
 
 import java.io.StringWriter;

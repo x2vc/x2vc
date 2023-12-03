@@ -7,11 +7,12 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.stylesheet.coverage;
+
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -20,7 +21,7 @@ import java.util.stream.Collectors;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.x2vc.stylesheet.structure.IXSLTDirectiveNode;
-import org.x2vc.utilities.PolymorphLocation;
+import org.x2vc.utilities.xml.PolymorphLocation;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Range;
@@ -40,8 +41,7 @@ class CoverageTreeNode {
 	CoverageTreeNode(IXSLTDirectiveNode directiveNode) {
 		super();
 		this.directiveNode = directiveNode;
-		this.area = Range.closed(directiveNode.getStartLocation().orElseThrow(),
-				directiveNode.getEndLocation().orElseThrow());
+		this.area = directiveNode.getTagSourceRange();
 		logger.trace("added node for {} at {}", directiveNode.getName(), this.area);
 
 		this.children = directiveNode.getChildDirectives()
@@ -51,21 +51,12 @@ class CoverageTreeNode {
 	}
 
 	protected Optional<CoverageTreeNode> findNode(PolymorphLocation location) {
-		List<CoverageTreeNode> matchingChildren = this.children
+		final List<CoverageTreeNode> matchingChildren = this.children
 			.stream()
 			.map(c -> c.findNode(location))
 			.filter(Optional<CoverageTreeNode>::isPresent)
 			.map(Optional<CoverageTreeNode>::get)
 			.toList();
-		if (matchingChildren.isEmpty()) {
-			// temporary workaround for the issue that some elements are reported with a length of zero
-			// TODO #18 remove workaround
-			matchingChildren = this.children
-				.stream()
-				.filter(c -> c.isZeroLength())
-				.filter(c -> c.getStartLine() == location.getLineNumber())
-				.toList();
-		}
 		if (matchingChildren.isEmpty()) {
 			if (this.area.contains(location)) {
 				return Optional.of(this);
@@ -125,9 +116,10 @@ class CoverageTreeNode {
 	}
 
 	private boolean spansLine(int lineNumber) {
-		return ((this.directiveNode.getStartLocation().orElseThrow().getLineNumber() <= lineNumber)
+		final Range<PolymorphLocation> range = this.directiveNode.getTagSourceRange();
+		return ((range.lowerEndpoint().getLineNumber() <= lineNumber)
 				&&
-				(this.directiveNode.getEndLocation().orElseThrow().getLineNumber() >= lineNumber));
+				(range.upperEndpoint().getLineNumber() >= lineNumber));
 	}
 
 	public CoverageStatus getCoverageStatusAtLine(int lineNumber) {
@@ -176,23 +168,18 @@ class CoverageTreeNode {
 		return logger.traceExit(result);
 	}
 
-	public boolean isZeroLength() {
-		return this.directiveNode.getStartLocation().orElseThrow()
-			.equals(this.directiveNode.getEndLocation().orElseThrow());
-	}
-
 	/**
 	 * @return the first line number
 	 */
 	public int getStartLine() {
-		return this.directiveNode.getStartLocation().orElseThrow().getLineNumber();
+		return this.area.lowerEndpoint().getLineNumber();
 	}
 
 	/**
 	 * @return the last line number
 	 */
 	public int getEndLine() {
-		return this.directiveNode.getEndLocation().orElseThrow().getLineNumber();
+		return this.area.upperEndpoint().getLineNumber();
 	}
 
 }

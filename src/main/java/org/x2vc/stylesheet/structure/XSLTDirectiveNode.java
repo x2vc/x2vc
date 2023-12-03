@@ -7,12 +7,11 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.stylesheet.structure;
-
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -23,7 +22,7 @@ import javax.xml.namespace.QName;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.x2vc.stylesheet.XSLTConstants;
-import org.x2vc.utilities.PolymorphLocation;
+import org.x2vc.utilities.xml.ITagInfo;
 
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
@@ -36,30 +35,24 @@ import net.sf.saxon.om.NamespaceUri;
 /**
  * Standard implementation of {@link IXSLTDirectiveNode}.
  */
-public class XSLTDirectiveNode extends AbstractStructureTreeNode implements IXSLTDirectiveNode {
+public class XSLTDirectiveNode extends AbstractElementNode implements IXSLTDirectiveNode {
 
 	private static final Logger logger = LogManager.getLogger();
 
-	private String name;
-	private PolymorphLocation startLocation;
-	private PolymorphLocation endLocation;
-	private ImmutableMap<String, NamespaceUri> namespaces;
-	private ImmutableMap<String, String> xsltAttributes;
-	private ImmutableMap<QName, String> otherAttributes;
-	private ImmutableList<IStructureTreeNode> childElements;
-	private ImmutableList<IXSLTParameterNode> formalParameters;
-	private ImmutableList<IXSLTParameterNode> actualParameters;
-	private ImmutableList<IXSLTSortNode> sorting;
+	private final String name;
+	private final ImmutableMap<String, NamespaceUri> namespaces;
+	private final ImmutableMap<String, String> xsltAttributes;
+	private final ImmutableMap<QName, String> otherAttributes;
+	private final ImmutableList<IXSLTParameterNode> formalParameters;
+	private final ImmutableList<IXSLTParameterNode> actualParameters;
+	private final ImmutableList<IXSLTSortNode> sorting;
 
 	protected XSLTDirectiveNode(Builder builder) {
-		super(builder.parentStructure);
+		super(builder.parentStructure, builder.tagInfo, ImmutableList.copyOf(builder.childElements));
 		this.name = builder.name;
-		this.startLocation = builder.startLocation;
-		this.endLocation = builder.endLocation;
 		this.namespaces = ImmutableMap.copyOf(builder.namespaces);
 		this.xsltAttributes = ImmutableMap.copyOf(builder.xsltAttributes);
 		this.otherAttributes = ImmutableMap.copyOf(builder.otherAttributes);
-		this.childElements = ImmutableList.copyOf(builder.childElements);
 		this.formalParameters = ImmutableList.copyOf(builder.formalParameters);
 		this.actualParameters = ImmutableList.copyOf(builder.actualParameters);
 		this.sorting = ImmutableList.copyOf(builder.sorting);
@@ -68,16 +61,6 @@ public class XSLTDirectiveNode extends AbstractStructureTreeNode implements IXSL
 	@Override
 	public String getName() {
 		return this.name;
-	}
-
-	@Override
-	public Optional<PolymorphLocation> getStartLocation() {
-		return Optional.ofNullable(this.startLocation);
-	}
-
-	@Override
-	public Optional<PolymorphLocation> getEndLocation() {
-		return Optional.ofNullable(this.endLocation);
 	}
 
 	@Override
@@ -104,16 +87,14 @@ public class XSLTDirectiveNode extends AbstractStructureTreeNode implements IXSL
 		return this.otherAttributes;
 	}
 
-	@Override
-	public ImmutableList<IStructureTreeNode> getChildElements() {
-		return this.childElements;
-	}
-
-	@SuppressWarnings("java:S4738") // Java supplier does not support memoization
+	@SuppressWarnings({
+			"java:S2065", // transient is used to mark the field as irrelevant for equals()/hashCode()
+			"java:S4738" // Java supplier does not support memoization
+	})
 	private transient Supplier<ImmutableList<IXSLTDirectiveNode>> childDirectivesSupplier = Suppliers.memoize(() -> {
 		logger.traceEntry();
 		final List<IXSLTDirectiveNode> childDirectives = Lists.newArrayList();
-		this.childElements.forEach(e -> collectChildDirectives(e, childDirectives));
+		this.getChildElements().forEach(e -> collectChildDirectives(e, childDirectives));
 		return logger.traceExit(ImmutableList.copyOf(childDirectives));
 	});
 
@@ -149,11 +130,12 @@ public class XSLTDirectiveNode extends AbstractStructureTreeNode implements IXSL
 	 * Create a builder instance.
 	 *
 	 * @param parentStructure the parent {@link IStylesheetStructure}
+	 * @param tagInfo         the tag information
 	 * @param name            the name of the directive
 	 * @return the builder
 	 */
-	public static Builder builder(IStylesheetStructure parentStructure, String name) {
-		return new Builder(parentStructure, name);
+	public static Builder builder(IStylesheetStructure parentStructure, ITagInfo tagInfo, String name) {
+		return new Builder(parentStructure, tagInfo, name);
 	}
 
 	/**
@@ -161,9 +143,8 @@ public class XSLTDirectiveNode extends AbstractStructureTreeNode implements IXSL
 	 */
 	public static final class Builder implements INodeBuilder {
 		private IStylesheetStructure parentStructure;
+		private ITagInfo tagInfo;
 		private String name;
-		private PolymorphLocation startLocation;
-		private PolymorphLocation endLocation;
 		private Map<String, NamespaceUri> namespaces = new HashMap<>();
 		private Map<String, String> xsltAttributes = new HashMap<>();
 		private Map<QName, String> otherAttributes = new HashMap<>();
@@ -178,77 +159,13 @@ public class XSLTDirectiveNode extends AbstractStructureTreeNode implements IXSL
 		 * @param parentStructure the parent {@link IStylesheetStructure}
 		 * @param name            the name of the directive
 		 */
-		private Builder(IStylesheetStructure parentStructure, String name) {
+		private Builder(IStylesheetStructure parentStructure, ITagInfo tagInfo, String name) {
 			checkNotNull(parentStructure);
+			checkNotNull(tagInfo);
 			checkNotNull(name);
 			this.parentStructure = parentStructure;
+			this.tagInfo = tagInfo;
 			this.name = name;
-		}
-
-		/**
-		 * Adds an start location to the builder.
-		 *
-		 * @param startLocation the location
-		 * @return builder
-		 */
-		public Builder withStartLocation(PolymorphLocation startLocation) {
-			this.startLocation = startLocation;
-			return this;
-		}
-
-		/**
-		 * Adds an start location to the builder.
-		 *
-		 * @param startLocation the location
-		 * @return builder
-		 */
-		public Builder withStartLocation(javax.xml.stream.Location startLocation) {
-			this.startLocation = PolymorphLocation.from(startLocation);
-			return this;
-		}
-
-		/**
-		 * Adds an start location to the builder.
-		 *
-		 * @param startLocation the location
-		 * @return builder
-		 */
-		public Builder withStartLocation(javax.xml.transform.SourceLocator startLocation) {
-			this.startLocation = PolymorphLocation.from(startLocation);
-			return this;
-		}
-
-		/**
-		 * Adds an end location to the builder.
-		 *
-		 * @param endLocation the location
-		 * @return builder
-		 */
-		public Builder withEndLocation(PolymorphLocation endLocation) {
-			this.endLocation = endLocation;
-			return this;
-		}
-
-		/**
-		 * Adds an end location to the builder.
-		 *
-		 * @param endLocation the location
-		 * @return builder
-		 */
-		public Builder withEndLocation(javax.xml.stream.Location endLocation) {
-			this.endLocation = PolymorphLocation.from(endLocation);
-			return this;
-		}
-
-		/**
-		 * Adds an end location to the builder.
-		 *
-		 * @param endLocation the location
-		 * @return builder
-		 */
-		public Builder withEndLocation(javax.xml.transform.SourceLocator endLocation) {
-			this.endLocation = PolymorphLocation.from(endLocation);
-			return this;
 		}
 
 		/**
@@ -356,10 +273,9 @@ public class XSLTDirectiveNode extends AbstractStructureTreeNode implements IXSL
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result
-				+ Objects.hash(this.actualParameters, this.childElements, this.endLocation,
-						this.formalParameters, this.name, this.otherAttributes, this.sorting, this.startLocation,
-						this.xsltAttributes);
+		result = prime * result + Objects.hash(this.actualParameters, this.formalParameters, this.name, this.namespaces,
+				this.otherAttributes,
+				this.sorting, this.xsltAttributes);
 		return result;
 	}
 
@@ -371,18 +287,16 @@ public class XSLTDirectiveNode extends AbstractStructureTreeNode implements IXSL
 		if (!super.equals(obj)) {
 			return false;
 		}
-		if (getClass() != obj.getClass()) {
+		if (!(obj instanceof XSLTDirectiveNode)) {
 			return false;
 		}
 		final XSLTDirectiveNode other = (XSLTDirectiveNode) obj;
 		return Objects.equals(this.actualParameters, other.actualParameters)
-				&& Objects.equals(this.childElements, other.childElements)
-				&& Objects.equals(this.endLocation, other.endLocation)
 				&& Objects.equals(this.formalParameters, other.formalParameters)
 				&& Objects.equals(this.name, other.name)
+				&& Objects.equals(this.namespaces, other.namespaces)
 				&& Objects.equals(this.otherAttributes, other.otherAttributes)
 				&& Objects.equals(this.sorting, other.sorting)
-				&& Objects.equals(this.startLocation, other.startLocation)
 				&& Objects.equals(this.xsltAttributes, other.xsltAttributes);
 	}
 

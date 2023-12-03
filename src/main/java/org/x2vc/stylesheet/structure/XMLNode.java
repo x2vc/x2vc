@@ -7,12 +7,11 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.stylesheet.structure;
-
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -20,7 +19,7 @@ import java.util.*;
 
 import javax.xml.namespace.QName;
 
-import org.x2vc.utilities.PolymorphLocation;
+import org.x2vc.utilities.xml.ITagInfo;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -28,21 +27,15 @@ import com.google.common.collect.ImmutableMap;
 /**
  * Standard implementation of {@link IXMLNode}.
  */
-public class XMLNode extends AbstractStructureTreeNode implements IXMLNode {
+public final class XMLNode extends AbstractElementNode implements IXMLNode {
 
-	private QName name;
-	private PolymorphLocation startLocation;
-	private PolymorphLocation endLocation;
-	private ImmutableMap<QName, String> attributes;
-	private ImmutableList<IStructureTreeNode> childElements;
+	private final QName name;
+	private final ImmutableMap<QName, String> attributes;
 
 	private XMLNode(Builder builder) {
-		super(builder.parentStructure);
+		super(builder.parentStructure, builder.tagInfo, ImmutableList.copyOf(builder.childElements));
 		this.name = builder.name;
-		this.startLocation = builder.startLocation;
-		this.endLocation = builder.endLocation;
 		this.attributes = ImmutableMap.copyOf(builder.attributes);
-		this.childElements = ImmutableList.copyOf(builder.childElements);
 	}
 
 	@Override
@@ -51,34 +44,20 @@ public class XMLNode extends AbstractStructureTreeNode implements IXMLNode {
 	}
 
 	@Override
-	public Optional<PolymorphLocation> getStartLocation() {
-		return Optional.ofNullable(this.startLocation);
-	}
-
-	@Override
-	public Optional<PolymorphLocation> getEndLocation() {
-		return Optional.ofNullable(this.endLocation);
-	}
-
-	@Override
 	public ImmutableMap<QName, String> getAttributes() {
 		return this.attributes;
-	}
-
-	@Override
-	public ImmutableList<IStructureTreeNode> getChildElements() {
-		return this.childElements;
 	}
 
 	/**
 	 * Creates a new builder instance.
 	 *
 	 * @param parentStructure the {@link IStylesheetStructure} the node belongs to
+	 * @param tagInfo         the tag information
 	 * @param name            the name of the element
 	 * @return the builder
 	 */
-	public static Builder builder(IStylesheetStructure parentStructure, QName name) {
-		return new Builder(parentStructure, name);
+	public static Builder builder(IStylesheetStructure parentStructure, ITagInfo tagInfo, QName name) {
+		return new Builder(parentStructure, tagInfo, name);
 	}
 
 	/**
@@ -86,9 +65,8 @@ public class XMLNode extends AbstractStructureTreeNode implements IXMLNode {
 	 */
 	public static final class Builder implements INodeBuilder {
 		private IStylesheetStructure parentStructure;
+		private ITagInfo tagInfo;
 		private QName name;
-		private PolymorphLocation startLocation;
-		private PolymorphLocation endLocation;
 		private Map<QName, String> attributes = new HashMap<>();
 		private List<IStructureTreeNode> childElements = new ArrayList<>();
 
@@ -98,77 +76,13 @@ public class XMLNode extends AbstractStructureTreeNode implements IXMLNode {
 		 * @param parentStructure the {@link IStylesheetStructure} the node belongs to
 		 * @param name            the name of the element
 		 */
-		private Builder(IStylesheetStructure parentStructure, QName name) {
+		private Builder(IStylesheetStructure parentStructure, ITagInfo tagInfo, QName name) {
 			checkNotNull(parentStructure);
+			checkNotNull(tagInfo);
 			checkNotNull(name);
 			this.parentStructure = parentStructure;
+			this.tagInfo = tagInfo;
 			this.name = name;
-		}
-
-		/**
-		 * Adds an start location to the builder.
-		 *
-		 * @param startLocation the location
-		 * @return builder
-		 */
-		public Builder withStartLocation(PolymorphLocation startLocation) {
-			this.startLocation = startLocation;
-			return this;
-		}
-
-		/**
-		 * Adds an start location to the builder.
-		 *
-		 * @param startLocation the location
-		 * @return builder
-		 */
-		public Builder withStartLocation(javax.xml.stream.Location startLocation) {
-			this.startLocation = PolymorphLocation.from(startLocation);
-			return this;
-		}
-
-		/**
-		 * Adds an start location to the builder.
-		 *
-		 * @param startLocation the location
-		 * @return builder
-		 */
-		public Builder withStartLocation(javax.xml.transform.SourceLocator startLocation) {
-			this.startLocation = PolymorphLocation.from(startLocation);
-			return this;
-		}
-
-		/**
-		 * Adds an end location to the builder.
-		 *
-		 * @param endLocation the location
-		 * @return builder
-		 */
-		public Builder withEndLocation(PolymorphLocation endLocation) {
-			this.endLocation = endLocation;
-			return this;
-		}
-
-		/**
-		 * Adds an end location to the builder.
-		 *
-		 * @param endLocation the location
-		 * @return builder
-		 */
-		public Builder withEndLocation(javax.xml.stream.Location endLocation) {
-			this.endLocation = PolymorphLocation.from(endLocation);
-			return this;
-		}
-
-		/**
-		 * Adds an end location to the builder.
-		 *
-		 * @param endLocation the location
-		 * @return builder
-		 */
-		public Builder withEndLocation(javax.xml.transform.SourceLocator endLocation) {
-			this.endLocation = PolymorphLocation.from(endLocation);
-			return this;
 		}
 
 		/**
@@ -211,8 +125,7 @@ public class XMLNode extends AbstractStructureTreeNode implements IXMLNode {
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result
-				+ Objects.hash(this.attributes, this.childElements, this.endLocation, this.name, this.startLocation);
+		result = prime * result + Objects.hash(this.attributes, this.name);
 		return result;
 	}
 
@@ -224,14 +137,11 @@ public class XMLNode extends AbstractStructureTreeNode implements IXMLNode {
 		if (!super.equals(obj)) {
 			return false;
 		}
-		if (getClass() != obj.getClass()) {
+		if (!(obj instanceof XMLNode)) {
 			return false;
 		}
 		final XMLNode other = (XMLNode) obj;
-		return Objects.equals(this.attributes, other.attributes)
-				&& Objects.equals(this.childElements, other.childElements)
-				&& Objects.equals(this.endLocation, other.endLocation) && Objects.equals(this.name, other.name)
-				&& Objects.equals(this.startLocation, other.startLocation);
+		return Objects.equals(this.attributes, other.attributes) && Objects.equals(this.name, other.name);
 	}
 
 }

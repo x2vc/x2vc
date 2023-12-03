@@ -7,7 +7,7 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
@@ -17,10 +17,13 @@ import java.io.File;
 
 import org.x2vc.process.tasks.ProcessingMode;
 
+import com.google.inject.ImplementedBy;
+
 /**
  * This component controls the overall schema evolution and vulnerability check process by coordinating multiple
  * {@link IProcessDirector} instances.
  */
+@ImplementedBy(ProcessDirectorManager.class)
 public interface IProcessDirectorManager {
 
 	/**

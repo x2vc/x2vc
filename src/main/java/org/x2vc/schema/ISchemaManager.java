@@ -7,18 +7,19 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.schema;
-
 
 import java.net.URI;
 import java.util.Collection;
 
 import org.x2vc.schema.evolution.ISchemaModifier;
 import org.x2vc.schema.structure.IXMLSchema;
+
+import com.google.inject.ImplementedBy;
 
 /**
  * This component handles the XML schema objects. It is able to provide the current (most recent) version of the schema.
@@ -33,6 +34,7 @@ import org.x2vc.schema.structure.IXMLSchema;
  * and same evolution log.
  *
  */
+@ImplementedBy(SchemaManager.class)
 public interface ISchemaManager {
 
 	/**

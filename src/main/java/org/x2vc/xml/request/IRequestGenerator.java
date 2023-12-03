@@ -7,20 +7,22 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.xml.request;
 
-
 import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.xml.document.IDocumentModifier;
+
+import com.google.inject.ImplementedBy;
 
 /**
  * Generates new {@link IDocumentRequest} objects by randomly exploring a schema or adjusting a previous request
  * according to modifier specifications.
  */
+@ImplementedBy(RequestGenerator.class)
 public interface IRequestGenerator {
 
 	/**

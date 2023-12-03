@@ -7,11 +7,12 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.stylesheet.structure;
+
 import java.text.DecimalFormat;
 import java.util.Optional;
 
@@ -19,7 +20,6 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.x2vc.utilities.PolymorphLocation;
 
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
@@ -27,7 +27,7 @@ import com.google.common.base.Suppliers;
 /**
  * Standard implementation of {@link IXSLTTemplateNode}
  */
-public class XSLTTemplateNode extends XSLTDirectiveNode implements IXSLTTemplateNode {
+public final class XSLTTemplateNode extends XSLTDirectiveNode implements IXSLTTemplateNode {
 
 	private static final Logger logger = LogManager.getLogger();
 
@@ -36,8 +36,12 @@ public class XSLTTemplateNode extends XSLTDirectiveNode implements IXSLTTemplate
 	}
 
 	@XmlTransient
-	@SuppressWarnings("java:S4738") // Java supplier does not support memoization
-	Supplier<Optional<String>> matchPatternSupplier = Suppliers.memoize(() -> getXSLTAttribute("match"));
+	@SuppressWarnings({
+			"java:S2065", // transient is used to mark the field as irrelevant for equals()/hashCode()
+			"java:S4738" // Java supplier does not support memoization
+	})
+	private transient Supplier<Optional<String>> matchPatternSupplier = Suppliers
+		.memoize(() -> getXSLTAttribute("match"));
 
 	@Override
 	public Optional<String> getMatchPattern() {
@@ -45,8 +49,12 @@ public class XSLTTemplateNode extends XSLTDirectiveNode implements IXSLTTemplate
 	}
 
 	@XmlTransient
-	@SuppressWarnings("java:S4738") // Java supplier does not support memoization
-	Supplier<Optional<String>> templateNameSupplier = Suppliers.memoize(() -> getXSLTAttribute("name"));
+	@SuppressWarnings({
+			"java:S2065", // transient is used to mark the field as irrelevant for equals()/hashCode()
+			"java:S4738" // Java supplier does not support memoization
+	})
+	private transient Supplier<Optional<String>> templateNameSupplier = Suppliers
+		.memoize(() -> getXSLTAttribute("name"));
 
 	@Override
 	public Optional<String> getTemplateName() {
@@ -54,8 +62,11 @@ public class XSLTTemplateNode extends XSLTDirectiveNode implements IXSLTTemplate
 	}
 
 	@XmlTransient
-	@SuppressWarnings("java:S4738") // Java supplier does not support memoization
-	Supplier<Optional<Double>> prioritySupplier = Suppliers.memoize(() -> {
+	@SuppressWarnings({
+			"java:S2065", // transient is used to mark the field as irrelevant for equals()/hashCode()
+			"java:S4738" // Java supplier does not support memoization
+	})
+	private transient Supplier<Optional<Double>> prioritySupplier = Suppliers.memoize(() -> {
 		final Optional<String> priorityString = this.getXSLTAttribute("priority");
 		if (priorityString.isPresent()) {
 			try {
@@ -76,8 +87,11 @@ public class XSLTTemplateNode extends XSLTDirectiveNode implements IXSLTTemplate
 	}
 
 	@XmlTransient
-	@SuppressWarnings("java:S4738") // Java supplier does not support memoization
-	Supplier<Optional<String>> modeSupplier = Suppliers.memoize(() -> getXSLTAttribute("mode"));
+	@SuppressWarnings({
+			"java:S2065", // transient is used to mark the field as irrelevant for equals()/hashCode()
+			"java:S4738" // Java supplier does not support memoization
+	})
+	private transient Supplier<Optional<String>> modeSupplier = Suppliers.memoize(() -> getXSLTAttribute("mode"));
 
 	@Override
 	public Optional<String> getMode() {
@@ -125,12 +139,9 @@ public class XSLTTemplateNode extends XSLTDirectiveNode implements IXSLTTemplate
 			result.append(String.format(" with priority %s", priorityFormat.format(oPriority.get())));
 		}
 
-		final Optional<PolymorphLocation> start = getStartLocation();
-		if (start.isPresent()) {
-			final int line = start.get().getLineNumber();
-			// TODO #20 add file name
-			result.append(String.format(" defined in line %d", line));
-		}
+		final int lineNumber = getTagInformation().getStartLocation().getLineNumber();
+		// TODO #20 add file name
+		result.append(String.format(" defined in line %d", lineNumber));
 		return result.toString();
 	}
 

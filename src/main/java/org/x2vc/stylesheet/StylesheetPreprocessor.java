@@ -7,11 +7,12 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.stylesheet;
+
 import static com.google.common.base.Preconditions.checkNotNull;
 
 import java.io.StringReader;
@@ -24,7 +25,7 @@ import org.apache.logging.log4j.Logger;
 import org.x2vc.stylesheet.structure.IStylesheetStructure;
 import org.x2vc.stylesheet.structure.IStylesheetStructureExtractor;
 import org.x2vc.utilities.SaxonLoggerAdapter;
-import org.x2vc.utilities.XMLUtilities;
+import org.x2vc.utilities.xml.*;
 
 import com.github.racc.tscg.TypesafeConfig;
 import com.google.common.collect.Multimap;
@@ -47,16 +48,21 @@ public class StylesheetPreprocessor implements IStylesheetPreprocessor {
 	private Processor processor;
 	private INamespaceExtractor namespaceExtractor;
 	private IStylesheetStructureExtractor extractor;
+	private ILocationMapBuilder locationMapBuilder;
+	private ITagMapBuilder tagMapBuilder;
 
 	private Boolean prettyPrinterEnabled;
 
 	@Inject
 	StylesheetPreprocessor(Processor processor, INamespaceExtractor namespaceExtractor,
-			IStylesheetStructureExtractor extractor,
+			IStylesheetStructureExtractor extractor, ILocationMapBuilder locationMapBuilder,
+			ITagMapBuilder tagMapBuilder,
 			@TypesafeConfig("x2vc.stylesheet.pretty_print") Boolean prettyPrinterEnabled) {
 		this.processor = processor;
 		this.namespaceExtractor = namespaceExtractor;
 		this.extractor = extractor;
+		this.locationMapBuilder = locationMapBuilder;
+		this.tagMapBuilder = tagMapBuilder;
 		this.prettyPrinterEnabled = prettyPrinterEnabled;
 	}
 
@@ -83,11 +89,13 @@ public class StylesheetPreprocessor implements IStylesheetPreprocessor {
 		final String traceNamespacePrefix = this.namespaceExtractor.findUnusedPrefix(namespacePrefixes.keySet(),
 				TRACE_NAMESPACE_PFREIX);
 
-		// extract the stylesheet structure
-		final IStylesheetStructure structure = this.extractor.extractStructure(formattedSource);
+		// extract the stylesheet structure and prepare the location map
+		final ILocationMap locationMap = this.locationMapBuilder.buildLocationMap(formattedSource);
+		final ITagMap tagMap = this.tagMapBuilder.buildTagMap(formattedSource, locationMap);
+		final IStylesheetStructure structure = this.extractor.extractStructure(formattedSource, locationMap, tagMap);
 
 		return new StylesheetInformation(uri, originalSource, formattedSource, namespacePrefixes, traceNamespacePrefix,
-				structure);
+				structure, locationMap, tagMap);
 	}
 
 	/**

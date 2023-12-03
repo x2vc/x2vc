@@ -7,12 +7,11 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.stylesheet.structure;
-
 
 import static com.google.common.base.Preconditions.checkArgument;
 import static com.google.common.base.Preconditions.checkNotNull;
@@ -33,7 +32,7 @@ import com.google.common.collect.ImmutableList;
  * Standard implementation of {@link IStylesheetStructure}. Use the {@link IStylesheetStructureExtractor}
  * implementations to instantiate this object.
  */
-public class StylesheetStructure implements IStylesheetStructure {
+public final class StylesheetStructure implements IStylesheetStructure {
 
 	private static final Logger logger = LogManager.getLogger();
 	private IXSLTDirectiveNode rootNode;
@@ -43,26 +42,6 @@ public class StylesheetStructure implements IStylesheetStructure {
 	 */
 	StylesheetStructure() {
 		// empty default constructor, requires completion via setRootNode
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(this.rootNode);
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null) {
-			return false;
-		}
-		if (getClass() != obj.getClass()) {
-			return false;
-		}
-		final StylesheetStructure other = (StylesheetStructure) obj;
-		return Objects.equals(this.rootNode, other.rootNode);
 	}
 
 	/**
@@ -95,8 +74,11 @@ public class StylesheetStructure implements IStylesheetStructure {
 	}
 
 	@XmlTransient
-	@SuppressWarnings("java:S4738") // Java supplier does not support memoization
-	Supplier<ImmutableList<IXSLTTemplateNode>> templateSupplier = Suppliers.memoize(() -> {
+	@SuppressWarnings({
+			"java:S2065", // transient is used to mark the field as irrelevant for equals()/hashCode()
+			"java:S4738" // Java supplier does not support memoization
+	})
+	private transient Supplier<ImmutableList<IXSLTTemplateNode>> templateSupplier = Suppliers.memoize(() -> {
 		logger.traceEntry();
 		final ImmutableList<IXSLTTemplateNode> result = ImmutableList.copyOf(
 				this.rootNode.getChildDirectives().stream()
@@ -119,4 +101,20 @@ public class StylesheetStructure implements IStylesheetStructure {
 		return this.rootNode.getFormalParameters();
 	}
 
+	@Override
+	public int hashCode() {
+		return Objects.hash(this.rootNode);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!(obj instanceof StylesheetStructure)) {
+			return false;
+		}
+		final StylesheetStructure other = (StylesheetStructure) obj;
+		return Objects.equals(this.rootNode, other.rootNode);
+	}
 }

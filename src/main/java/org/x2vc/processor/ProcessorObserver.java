@@ -22,7 +22,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.x2vc.processor.IExecutionTraceEvent.ExecutionEventType;
 import org.x2vc.processor.ValueAccessTraceEvent.Builder;
-import org.x2vc.utilities.PolymorphLocation;
+import org.x2vc.utilities.xml.PolymorphLocation;
 import org.x2vc.xml.document.IDocumentGenerator;
 
 import com.google.common.base.Strings;

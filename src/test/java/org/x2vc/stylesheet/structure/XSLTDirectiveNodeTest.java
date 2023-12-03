@@ -7,24 +7,28 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.stylesheet.structure;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import org.junit.jupiter.api.Disabled;
+import javax.xml.namespace.QName;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.x2vc.utilities.xml.ITagInfo;
 
 import com.google.common.collect.ImmutableList;
 
+import net.sf.saxon.om.NamespaceUri;
 import nl.jqno.equalsverifier.EqualsVerifier;
 
 @ExtendWith(MockitoExtension.class)
@@ -32,6 +36,9 @@ class XSLTDirectiveNodeTest {
 
 	@Mock
 	private IStylesheetStructure parentStructure;
+
+	@Mock
+	private ITagInfo tagInfo;
 
 	/**
 	 * Test method for {@link org.x2vc.stylesheet.structure.XSLTDirectiveNode#getChildDirectives()}.
@@ -44,7 +51,7 @@ class XSLTDirectiveNodeTest {
 		when(nonDirective2.getChildElements()).thenReturn(ImmutableList.of());
 
 		final IXSLTDirectiveNode node = XSLTDirectiveNode
-			.builder(this.parentStructure, "someName")
+			.builder(this.parentStructure, this.tagInfo, "someName")
 			.addChildElement(nonDirective1)
 			.addChildElement(nonDirective2)
 			.build();
@@ -64,7 +71,7 @@ class XSLTDirectiveNodeTest {
 		when(nonDirective2.getChildElements()).thenReturn(ImmutableList.of());
 
 		final IXSLTDirectiveNode node = XSLTDirectiveNode
-			.builder(this.parentStructure, "someName")
+			.builder(this.parentStructure, this.tagInfo, "someName")
 			.addChildElement(nonDirective1)
 			.addChildElement(directive1)
 			.addChildElement(nonDirective2)
@@ -91,7 +98,7 @@ class XSLTDirectiveNodeTest {
 		when(nonDirective3.getChildElements()).thenReturn(ImmutableList.of(directive3b));
 
 		final IXSLTDirectiveNode node = XSLTDirectiveNode
-			.builder(this.parentStructure, "someName")
+			.builder(this.parentStructure, this.tagInfo, "someName")
 			.addChildElement(nonDirective1)
 			.addChildElement(directive2)
 			.addChildElement(nonDirective3)
@@ -105,12 +112,18 @@ class XSLTDirectiveNodeTest {
 	}
 
 	/**
-	 * Test method for {@link org.x2vc.stylesheet.structure.XSLTDirectiveNode#equals(java.lang.Object)}.
+	 * Test method for {@link org.x2vc.stylesheet.structure.XSLTDirectiveNode#equals(java.lang.Object)} and
+	 * {@link org.x2vc.stylesheet.structure.XSLTDirectiveNode#hashCode()}.
 	 */
 	@Test
-	@Disabled("implementation needs to be adjusted") // TODO #26 check equals() and hashCode()
 	void testEqualsObject() {
-		EqualsVerifier.forClass(XSLTDirectiveNode.class).verify();
+		EqualsVerifier
+			.forClass(XSLTDirectiveNode.class)
+			.withRedefinedSuperclass()
+			.usingGetClass()
+			.withPrefabValues(QName.class, new QName("foo"), new QName("bar"))
+			.withPrefabValues(NamespaceUri.class, NamespaceUri.of("http://foo"), NamespaceUri.of("bar"))
+			.verify();
 	}
 
 }

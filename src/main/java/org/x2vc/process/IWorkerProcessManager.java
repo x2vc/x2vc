@@ -7,19 +7,21 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.process;
 
-
 import org.x2vc.process.tasks.ITask;
+
+import com.google.inject.ImplementedBy;
 
 /**
  * This component controls the main worker thread pool, reports on its usage periodically, ensures that it is properly
  * terminated when the JVM is shut down and provides a method to wait for the completion of all tasks.
  */
+@ImplementedBy(WorkerProcessManager.class)
 public interface IWorkerProcessManager {
 
 	/**

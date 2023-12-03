@@ -7,12 +7,11 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.stylesheet.structure;
-
 
 import static com.google.common.base.Preconditions.checkNotNull;
 
@@ -23,7 +22,7 @@ import java.util.Optional;
 
 import javax.xml.bind.annotation.XmlTransient;
 
-import org.x2vc.utilities.PolymorphLocation;
+import org.x2vc.utilities.xml.ITagInfo;
 
 import com.google.common.base.Supplier;
 import com.google.common.base.Suppliers;
@@ -34,14 +33,11 @@ import net.sf.saxon.s9api.QName;
 /**
  * Standard implementation of {@link IXSLTParameterNode}.
  */
-public final class XSLTParameterNode extends AbstractStructureTreeNode implements IXSLTParameterNode {
+public final class XSLTParameterNode extends AbstractElementNode implements IXSLTParameterNode {
 
 	private final String namespaceURI;
 	private final String localName;
-	private final PolymorphLocation startLocation;
-	private final PolymorphLocation endLocation;
 	private final String selection;
-	private final ImmutableList<IStructureTreeNode> childElements;
 
 	/**
 	 * Private constructor to be used with the builder.
@@ -49,14 +45,11 @@ public final class XSLTParameterNode extends AbstractStructureTreeNode implement
 	 * @param builder
 	 */
 	private XSLTParameterNode(Builder builder) {
-		super(builder.parentStructure);
+		super(builder.parentStructure, builder.tagInfo, ImmutableList.copyOf(builder.childElements));
 		checkNotNull(builder.localName);
 		this.namespaceURI = builder.namespaceURI;
 		this.localName = builder.localName;
-		this.startLocation = builder.startLocation;
-		this.endLocation = builder.endLocation;
 		this.selection = builder.selection;
-		this.childElements = ImmutableList.copyOf(builder.childElements);
 	}
 
 	@Override
@@ -69,7 +62,10 @@ public final class XSLTParameterNode extends AbstractStructureTreeNode implement
 		return this.localName;
 	}
 
-	@SuppressWarnings("java:S4738") // Java supplier does not support memoization
+	@SuppressWarnings({
+			"java:S2065", // transient is used to mark the field as irrelevant for equals()/hashCode()
+			"java:S4738" // Java supplier does not support memoization
+	})
 	private transient Supplier<QName> qualifiedNameSupplier = Suppliers
 		.memoize(() -> {
 			final Optional<String> oNamespace = getNamespaceURI();
@@ -87,34 +83,20 @@ public final class XSLTParameterNode extends AbstractStructureTreeNode implement
 	}
 
 	@Override
-	public Optional<PolymorphLocation> getStartLocation() {
-		return Optional.ofNullable(this.startLocation);
-	}
-
-	@Override
-	public Optional<PolymorphLocation> getEndLocation() {
-		return Optional.ofNullable(this.endLocation);
-	}
-
-	@Override
 	public Optional<String> getSelection() {
 		return Optional.ofNullable(this.selection);
-	}
-
-	@Override
-	public ImmutableList<IStructureTreeNode> getChildElements() {
-		return this.childElements;
 	}
 
 	/**
 	 * Creates a new builder
 	 *
 	 * @param parentStructure the {@link IStylesheetStructure} the node belongs to
+	 * @param tagInfo         the tag information
 	 * @param localName       the name of the element
 	 * @return the builder
 	 */
-	public static Builder builder(IStylesheetStructure parentStructure, String localName) {
-		return new Builder(parentStructure, localName);
+	public static Builder builder(IStylesheetStructure parentStructure, ITagInfo tagInfo, String localName) {
+		return new Builder(parentStructure, tagInfo, localName);
 	}
 
 	/**
@@ -122,10 +104,9 @@ public final class XSLTParameterNode extends AbstractStructureTreeNode implement
 	 */
 	public static final class Builder implements INodeBuilder {
 		private IStylesheetStructure parentStructure;
+		private ITagInfo tagInfo;
 		private String namespaceURI;
 		private String localName;
-		private PolymorphLocation startLocation;
-		private PolymorphLocation endLocation;
 		private String selection;
 		private List<IStructureTreeNode> childElements = new ArrayList<>();
 
@@ -133,12 +114,15 @@ public final class XSLTParameterNode extends AbstractStructureTreeNode implement
 		 * Creates a new builder
 		 *
 		 * @param parentStructure the {@link IStylesheetStructure} the node belongs to
+		 * @param tagInfo         the tag information
 		 * @param name            the name of the element
 		 */
-		private Builder(IStylesheetStructure parentStructure, String localName) {
+		private Builder(IStylesheetStructure parentStructure, ITagInfo tagInfo, String localName) {
 			checkNotNull(parentStructure);
+			checkNotNull(tagInfo);
 			checkNotNull(localName);
 			this.parentStructure = parentStructure;
+			this.tagInfo = tagInfo;
 			this.localName = localName;
 		}
 
@@ -150,72 +134,6 @@ public final class XSLTParameterNode extends AbstractStructureTreeNode implement
 		 */
 		public Builder withNamespaceURI(String namespaceURI) {
 			this.namespaceURI = namespaceURI;
-			return this;
-		}
-
-		/**
-		 * Adds an start location to the builder.
-		 *
-		 * @param startLocation the location
-		 * @return builder
-		 */
-		public Builder withStartLocation(PolymorphLocation startLocation) {
-			this.startLocation = startLocation;
-			return this;
-		}
-
-		/**
-		 * Adds an start location to the builder.
-		 *
-		 * @param startLocation the location
-		 * @return builder
-		 */
-		public Builder withStartLocation(javax.xml.stream.Location startLocation) {
-			this.startLocation = PolymorphLocation.from(startLocation);
-			return this;
-		}
-
-		/**
-		 * Adds an start location to the builder.
-		 *
-		 * @param startLocation the location
-		 * @return builder
-		 */
-		public Builder withStartLocation(javax.xml.transform.SourceLocator startLocation) {
-			this.startLocation = PolymorphLocation.from(startLocation);
-			return this;
-		}
-
-		/**
-		 * Adds an end location to the builder.
-		 *
-		 * @param endLocation the location
-		 * @return builder
-		 */
-		public Builder withEndLocation(PolymorphLocation endLocation) {
-			this.endLocation = endLocation;
-			return this;
-		}
-
-		/**
-		 * Adds an end location to the builder.
-		 *
-		 * @param endLocation the location
-		 * @return builder
-		 */
-		public Builder withEndLocation(javax.xml.stream.Location endLocation) {
-			this.endLocation = PolymorphLocation.from(endLocation);
-			return this;
-		}
-
-		/**
-		 * Adds an end location to the builder.
-		 *
-		 * @param endLocation the location
-		 * @return builder
-		 */
-		public Builder withEndLocation(javax.xml.transform.SourceLocator endLocation) {
-			this.endLocation = PolymorphLocation.from(endLocation);
 			return this;
 		}
 
@@ -257,9 +175,7 @@ public final class XSLTParameterNode extends AbstractStructureTreeNode implement
 	public int hashCode() {
 		final int prime = 31;
 		int result = super.hashCode();
-		result = prime * result
-				+ Objects.hash(this.childElements, this.endLocation, this.localName, this.namespaceURI, this.selection,
-						this.startLocation);
+		result = prime * result + Objects.hash(this.localName, this.namespaceURI, this.selection);
 		return result;
 	}
 
@@ -275,12 +191,8 @@ public final class XSLTParameterNode extends AbstractStructureTreeNode implement
 			return false;
 		}
 		final XSLTParameterNode other = (XSLTParameterNode) obj;
-		return Objects.equals(this.childElements, other.childElements)
-				&& Objects.equals(this.endLocation, other.endLocation)
-				&& Objects.equals(this.localName, other.localName)
-				&& Objects.equals(this.namespaceURI, other.namespaceURI)
-				&& Objects.equals(this.selection, other.selection)
-				&& Objects.equals(this.startLocation, other.startLocation);
+		return Objects.equals(this.localName, other.localName) && Objects.equals(this.namespaceURI, other.namespaceURI)
+				&& Objects.equals(this.selection, other.selection);
 	}
 
 }

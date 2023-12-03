@@ -7,26 +7,30 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.stylesheet.structure;
+
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import java.io.StringReader;
 import java.util.*;
 
 import javax.xml.XMLConstants;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.namespace.QName;
-import javax.xml.stream.XMLEventReader;
-import javax.xml.stream.XMLInputFactory;
-import javax.xml.stream.XMLStreamConstants;
-import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.*;
 import javax.xml.stream.events.*;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.x2vc.stylesheet.XSLTConstants;
+import org.x2vc.utilities.xml.ILocationMap;
+import org.x2vc.utilities.xml.ITagInfo;
+import org.x2vc.utilities.xml.ITagMap;
+import org.x2vc.utilities.xml.PolymorphLocation;
 
 import com.google.common.base.Splitter;
 import com.google.common.base.Strings;
@@ -40,6 +44,13 @@ import net.sf.saxon.om.NamespaceUri;
  */
 public class StylesheetStructureExtractor implements IStylesheetStructureExtractor {
 
+	/**
+	 * How to convert the location from the StaX parser to our internal location. <code>true</code> = use
+	 * {@link ILocationMap#getLocationByOffset(Location)}, <code>false</code> = use
+	 * {@link ILocationMap#getLocationByLineColumn(Location)}
+	 */
+	private static final boolean LOOKUP_LOCATION_BY_OFFSET = false;
+
 	private static final Logger logger = LogManager.getLogger();
 	private XMLInputFactory inputFactory;
 
@@ -52,7 +63,7 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 	}
 
 	@Override
-	public IStylesheetStructure extractStructure(String source) {
+	public IStylesheetStructure extractStructure(String source, ILocationMap locationMap, ITagMap tagMap) {
 		logger.traceEntry();
 		if (this.inputFactory == null) {
 			this.inputFactory = XMLInputFactory.newFactory();
@@ -62,7 +73,7 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 		try {
 			final StylesheetStructure structure = new StylesheetStructure();
 			final XMLEventReader xmlReader = this.inputFactory.createXMLEventReader(new StringReader(source));
-			structure.setRootNode(new Worker(structure).process(xmlReader));
+			structure.setRootNode(new Worker(structure, locationMap, tagMap).process(xmlReader));
 			return logger.traceExit(structure);
 		} catch (final XMLStreamException e) {
 			throw new IllegalArgumentException("Unable to analyze stylesheet structure.", e);
@@ -75,17 +86,25 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 	private class Worker {
 
 		private static final Logger logger = LogManager.getLogger();
-		private Deque<INodeBuilder> builderChain = new ArrayDeque<>();
+
 		private StylesheetStructure structure;
+		private ILocationMap locationMap;
+		private ITagMap tagMap;
+
+		private Deque<INodeBuilder> builderChain = new ArrayDeque<>();
 		private Set<String> namespacePrefixes = Sets.newHashSet();
 
 		/**
 		 * Creates a new worker instance.
 		 *
-		 * @param structure the structure object to populate
+		 * @param structure   the structure object to populate
+		 * @param locationMap the {@link ILocationMap} instance for the source code
+		 * @param tagMap      the {@link ITagMap} instance for the source code
 		 */
-		public Worker(StylesheetStructure structure) {
+		public Worker(StylesheetStructure structure, ILocationMap locationMap, ITagMap tagMap) {
 			this.structure = structure;
+			this.locationMap = locationMap;
+			this.tagMap = tagMap;
 		}
 
 		/**
@@ -255,12 +274,12 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 
 			final Optional<String> attribSelect = getAttributeValue(element, "select");
 			logger.trace("start of parameter ({}) {}", element.getName().getLocalPart(), localName);
+			final ITagInfo tagInfo = lookupTagForElement(element.getLocation());
 			final XSLTParameterNode.Builder paramBuilder = XSLTParameterNode.builder(this.structure,
-					localName);
+					tagInfo, localName);
 			if (namespaceURI != null) {
 				paramBuilder.withNamespaceURI(namespaceURI);
 			}
-			paramBuilder.withStartLocation(element.getLocation());
 			if (attribSelect.isPresent()) {
 				paramBuilder.withSelection(attribSelect.get());
 			}
@@ -276,13 +295,13 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 		private void processStartOfSort(StartElement element) {
 			logger.traceEntry();
 			logger.trace("start of sort specification ({})", element.getName().getLocalPart());
+			final ITagInfo tagInfo = lookupTagForElement(element.getLocation());
 			final Optional<String> attribSelect = getAttributeValue(element, "select");
 			final Optional<String> attribLang = getAttributeValue(element, "lang");
 			final Optional<String> attribDataType = getAttributeValue(element, "data-type");
 			final Optional<String> attribOrder = getAttributeValue(element, "order");
 			final Optional<String> attribCaseOrder = getAttributeValue(element, "case-order");
-			final XSLTSortNode.Builder sortBuilder = XSLTSortNode.builder(this.structure);
-			sortBuilder.withStartLocation(element.getLocation());
+			final XSLTSortNode.Builder sortBuilder = XSLTSortNode.builder(this.structure, tagInfo);
 			if (attribSelect.isPresent()) {
 				sortBuilder.withSortingExpression(attribSelect.get());
 			}
@@ -311,9 +330,10 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 			logger.traceEntry();
 			final String elementName = element.getName().getLocalPart();
 			logger.trace("start of XSLT directive {}", elementName);
-			final XSLTDirectiveNode.Builder directiveBuilder = XSLTDirectiveNode.builder(this.structure,
+
+			final ITagInfo tagInfo = lookupTagForElement(element.getLocation());
+			final XSLTDirectiveNode.Builder directiveBuilder = XSLTDirectiveNode.builder(this.structure, tagInfo,
 					elementName);
-			directiveBuilder.withStartLocation(element.getLocation());
 
 			// add the namespaces defined up to this element
 			final NamespaceContext namespaceContext = element.getNamespaceContext();
@@ -345,8 +365,9 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 		private void processStartOfXMLNode(StartElement element) {
 			logger.traceEntry();
 			logger.trace("start of XML node {}", element.getName());
-			final XMLNode.Builder nodeBuilder = XMLNode.builder(this.structure, element.getName());
-			nodeBuilder.withStartLocation(element.getLocation());
+
+			final ITagInfo tagInfo = lookupTagForElement(element.getLocation());
+			final XMLNode.Builder nodeBuilder = XMLNode.builder(this.structure, tagInfo, element.getName());
 			for (final Iterator<Attribute> iterator = element.getAttributes(); iterator.hasNext();) {
 				final Attribute attrib = iterator.next();
 				nodeBuilder.addAttribute(attrib.getName(), attrib.getValue());
@@ -373,14 +394,14 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 					processEndOfParameter(element);
 					break;
 				case XSLTConstants.Elements.SORT:
-					processEndOfSort(element);
+					processEndOfSort();
 					break;
 				default:
-					processEndOfDirective(element);
+					processEndOfDirective();
 				}
 			} else {
 				// no - another XML element
-				processEndOfXMLNode(element);
+				processEndOfXMLNode();
 			}
 			logger.traceExit();
 		}
@@ -393,7 +414,6 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 		private void processEndOfParameter(EndElement element) {
 			logger.traceEntry();
 			final XSLTParameterNode.Builder paramBuilder = (XSLTParameterNode.Builder) this.builderChain.removeLast();
-			paramBuilder.withEndLocation(element.getLocation());
 			final XSLTParameterNode paramNode = paramBuilder.build();
 			logger.trace("end of parameter {}", paramNode.getQualifiedName());
 
@@ -412,10 +432,9 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 		 *
 		 * @param element
 		 */
-		private void processEndOfSort(EndElement element) {
+		private void processEndOfSort() {
 			logger.traceEntry();
 			final XSLTSortNode.Builder sortBuilder = (XSLTSortNode.Builder) this.builderChain.removeLast();
-			sortBuilder.withEndLocation(element.getLocation());
 			final XSLTSortNode sortNode = sortBuilder.build();
 
 			final INodeBuilder parentBuilder = this.builderChain.getLast();
@@ -429,22 +448,16 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 		 *
 		 * @param element
 		 */
-		private void processEndOfDirective(EndElement element) {
+		private void processEndOfDirective() {
 			logger.traceEntry();
 			if (this.builderChain.size() > 1) {
 				final XSLTDirectiveNode.Builder directiveBuilder = (XSLTDirectiveNode.Builder) this.builderChain
 					.removeLast();
-				directiveBuilder.withEndLocation(element.getLocation());
 				final IXSLTDirectiveNode directiveNode = directiveBuilder.build();
 				logger.trace("end of XSLT directive {}", directiveNode.getName());
 				addChildNodeToLastBuilder(directiveNode);
 			} else {
-				// store the end location, but leave the last builder in the queue to be
-				// processed during the end-of-document event
-				final XSLTDirectiveNode.Builder directiveBuilder = (XSLTDirectiveNode.Builder) this.builderChain
-					.getLast();
-				directiveBuilder.withEndLocation(element.getLocation());
-
+				// leave the last builder in the queue to be processed during the end-of-document event
 			}
 			logger.traceExit();
 		}
@@ -454,10 +467,9 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 		 *
 		 * @param element
 		 */
-		private void processEndOfXMLNode(EndElement element) {
+		private void processEndOfXMLNode() {
 			logger.traceEntry();
 			final XMLNode.Builder nodeBuilder = (XMLNode.Builder) this.builderChain.removeLast();
-			nodeBuilder.withEndLocation(element.getLocation());
 			final XMLNode node = nodeBuilder.build();
 			addChildNodeToLastBuilder(node);
 			logger.traceExit();
@@ -518,6 +530,46 @@ public class StylesheetStructureExtractor implements IStylesheetStructureExtract
 			} else {
 				return Optional.ofNullable(attrib.getValue());
 			}
+		}
+
+		/**
+		 * Converts the raw {@link Location} issued by the StaX parser into our complete an normalized
+		 * {@link PolymorphLocation}.
+		 *
+		 * @param elementLocation
+		 * @return
+		 */
+		private PolymorphLocation convertLocation(Location elementLocation) {
+			logger.traceEntry("for location {}", elementLocation.toString().replace("\n", ", "));
+			PolymorphLocation tagLocation;
+			if (LOOKUP_LOCATION_BY_OFFSET) {
+				tagLocation = this.locationMap.getLocationByOffset(elementLocation);
+			} else {
+				tagLocation = this.locationMap.getLocationByLineColumn(elementLocation);
+			}
+			return logger.traceExit(tagLocation);
+		}
+
+		/**
+		 * Determines the tag at the location specified.
+		 *
+		 * @param elementLocation
+		 * @return
+		 * @throws IllegalArgumentException
+		 */
+		private ITagInfo lookupTagForElement(final Location elementLocation) throws IllegalArgumentException {
+			logger.traceEntry("for location {}", elementLocation.toString().replace("\n", ", "));
+			final PolymorphLocation tagLocation = convertLocation(elementLocation);
+			// should only occur with faulty test cases - broken stubs and such
+			checkNotNull(tagLocation, "location lookup failed for %s", elementLocation.toString().replace("\n", ", "));
+
+			// Try to identify the tag. The location returned by the StaX parser points to the first character after the
+			// closing bracket, so we have to move back one character.
+			final Optional<ITagInfo> oTagInfo = this.tagMap.getTag(tagLocation, -1);
+			if (oTagInfo.isEmpty()) {
+				throw new IllegalArgumentException(String.format("Unable to locate XML element at %s", tagLocation));
+			}
+			return logger.traceExit(oTagInfo.get());
 		}
 
 	}
