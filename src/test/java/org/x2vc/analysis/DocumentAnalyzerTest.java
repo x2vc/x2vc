@@ -7,12 +7,11 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.analysis;
-
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -50,8 +49,8 @@ import org.x2vc.xml.document.IDocumentModifier;
 import org.x2vc.xml.document.IXMLDocumentContainer;
 import org.x2vc.xml.document.IXMLDocumentDescriptor;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
 
 @ExtendWith(MockitoExtension.class)
 class DocumentAnalyzerTest {
@@ -340,7 +339,7 @@ class DocumentAnalyzerTest {
 
 		final DocumentAnalyzer analyzer = new DocumentAnalyzer(Sets.newSet(rule1, rule2, rule3), this.schemaManager);
 
-		final ImmutableList<ILineCoverage> codeCoverage = mock();
+		final List<ILineCoverage> codeCoverage = Lists.newArrayList();
 		final IVulnerabilityReport report = analyzer.consolidateResults(this.stylesheetURI, candidates,
 				mock(ICoverageStatistics.class), codeCoverage);
 

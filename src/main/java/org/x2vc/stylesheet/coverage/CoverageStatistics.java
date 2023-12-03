@@ -7,12 +7,11 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.stylesheet.coverage;
-
 
 import java.util.Objects;
 
@@ -28,6 +27,14 @@ public final class CoverageStatistics implements ICoverageStatistics {
 
 	@XmlElement(name = "byLine")
 	private final LineStatistics lineStatistics;
+
+	/**
+	 * Default constructor required for JAXB operation.
+	 */
+	private CoverageStatistics() {
+		this.directiveStatistics = new DirectiveStatistics();
+		this.lineStatistics = new LineStatistics();
+	}
 
 	private CoverageStatistics(Builder builder) {
 		this.directiveStatistics = new DirectiveStatistics(
@@ -130,6 +137,13 @@ public final class CoverageStatistics implements ICoverageStatistics {
 	 */
 	public static Builder builder() {
 		return new Builder();
+	}
+
+	@Override
+	public String toString() {
+		return "CoverageStatistics [directiveStatistics=" + this.directiveStatistics + ", lineStatistics="
+				+ this.lineStatistics
+				+ "]";
 	}
 
 	@Override
@@ -293,6 +307,19 @@ public final class CoverageStatistics implements ICoverageStatistics {
 		@XmlElement
 		protected final double noCoveragePercentage;
 
+		/**
+		 * Default constructor required for JAXB operation.
+		 */
+		protected DirectiveStatistics() {
+			this.totalCount = 0;
+			this.fullCoverageCount = 0;
+			this.partialCoverageCount = 0;
+			this.noCoverageCount = 0;
+			this.fullCoveragePercentage = 0;
+			this.partialCoveragePercentage = 0;
+			this.noCoveragePercentage = 0;
+		}
+
 		protected DirectiveStatistics(long totalCount, long fullCoverageCount, long partialCoverageCount,
 				long noCoverageCount) {
 			super();
@@ -310,6 +337,16 @@ public final class CoverageStatistics implements ICoverageStatistics {
 				this.partialCoveragePercentage = (partialCoverageCount * 100f) / totalCount;
 				this.noCoveragePercentage = (noCoverageCount * 100f) / totalCount;
 			}
+		}
+
+		@Override
+		public String toString() {
+			return "DirectiveStatistics [totalCount=" + this.totalCount + ", fullCoverageCount="
+					+ this.fullCoverageCount
+					+ ", partialCoverageCount=" + this.partialCoverageCount + ", noCoverageCount="
+					+ this.noCoverageCount
+					+ ", fullCoveragePercentage=" + this.fullCoveragePercentage + ", partialCoveragePercentage="
+					+ this.partialCoveragePercentage + ", noCoveragePercentage=" + this.noCoveragePercentage + "]";
 		}
 
 		@Override
@@ -362,6 +399,21 @@ public final class CoverageStatistics implements ICoverageStatistics {
 		@XmlElement
 		protected final double noCoveragePercentage;
 
+		/**
+		 * Default constructor required for JAXB operation.
+		 */
+		protected LineStatistics() {
+			this.totalCount = 0;
+			this.emptyCount = 0;
+			this.fullCoverageCount = 0;
+			this.partialCoverageCount = 0;
+			this.noCoverageCount = 0;
+			this.emptyPercentage = 0;
+			this.fullCoveragePercentage = 0;
+			this.partialCoveragePercentage = 0;
+			this.noCoveragePercentage = 0;
+		}
+
 		protected LineStatistics(long totalCount, long emptyCount, long fullCoverageCount, long partialCoverageCount,
 				long noCoverageCount) {
 			super();
@@ -383,6 +435,17 @@ public final class CoverageStatistics implements ICoverageStatistics {
 				this.noCoveragePercentage = (noCoverageCount * 100f) / totalCount;
 			}
 
+		}
+
+		@Override
+		public String toString() {
+			return "LineStatistics [totalCount=" + this.totalCount + ", emptyCount=" + this.emptyCount
+					+ ", fullCoverageCount="
+					+ this.fullCoverageCount + ", partialCoverageCount=" + this.partialCoverageCount
+					+ ", noCoverageCount="
+					+ this.noCoverageCount + ", emptyPercentage=" + this.emptyPercentage + ", fullCoveragePercentage="
+					+ this.fullCoveragePercentage + ", partialCoveragePercentage=" + this.partialCoveragePercentage
+					+ ", noCoveragePercentage=" + this.noCoveragePercentage + "]";
 		}
 
 		@Override

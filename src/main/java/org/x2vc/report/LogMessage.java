@@ -7,37 +7,44 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.report;
 
-
 import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlValue;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import org.apache.logging.log4j.Level;
+import org.x2vc.utilities.jaxb.Log4jLevelAdapter;
 
 /**
  * Standard implementation of {@link ILogMessage}.
  */
 public final class LogMessage implements ILogMessage {
 
-	@XmlTransient
-	private final Level level;
-
 	@XmlAttribute(name = "level")
-	private final String levelString;
+	@XmlJavaTypeAdapter(Log4jLevelAdapter.class)
+	private final Level level;
 
 	@XmlAttribute(name = "thread")
 	private final String threadName;
 
 	@XmlValue
 	private final String message;
+
+	/**
+	 * Default constructor required for JAXB operation.
+	 */
+	protected LogMessage() {
+		this.level = Level.TRACE;
+		this.threadName = "";
+		this.message = "";
+	}
 
 	/**
 	 * Create new log message.
@@ -49,7 +56,6 @@ public final class LogMessage implements ILogMessage {
 	public LogMessage(Level level, String threadName, String message) {
 		super();
 		this.level = level;
-		this.levelString = level.name();
 		this.threadName = threadName;
 		this.message = message
 			.replace("&", "&amp;")
@@ -72,6 +78,12 @@ public final class LogMessage implements ILogMessage {
 	@Override
 	public String getMessage() {
 		return this.message;
+	}
+
+	@Override
+	public String toString() {
+		return "LogMessage [level=" + this.level + ", threadName=" + this.threadName + ", message=" + this.message
+				+ "]";
 	}
 
 	@Override
