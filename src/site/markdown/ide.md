@@ -7,7 +7,7 @@ No system-wide installation required, but it needs to be usable from within the 
 
 ## Eclipse
 
-The author recommends using the most recent version of [Eclipse](https://www.eclipse.org/) (at least 2023-06). The following
+The author recommends using the most recent version of [Eclipse](https://www.eclipse.org/) (at least 2023-09). The following
 documentation assumes you are starting with the pre-packaged
 [Eclipse IDE for Java Developers](https://www.eclipse.org/downloads/packages/).
 When using a different installation, additional steps may be necessary.

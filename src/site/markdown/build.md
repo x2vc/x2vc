@@ -8,7 +8,7 @@ is required. Assuming the prerequisites are met, the build and installation can 
 ```
 $ git clone https://github.com/x2vc/x2vc.git
 $ cd x2vc
-$ mvn clean install
+$ mvn clean verify
 ```
 
 The installation package then resides in the `target` folder and can be extracted from there and
@@ -16,7 +16,9 @@ The installation package then resides in the `target` folder and can be extracte
 
 **Note on test failures:** At the time of this writing, some of the automated tests that cover random value generation use
 an averaging approach to verify the correct function of the implementations under test. Due to the random nature of the
-test data generated, this approach is prone to fail every now and then (see [issue 64](https://github.com/x2vc/x2vc/issues/64)). This results in the build process terminating with an error message during the testing phase. Until this issue is addressed, a simple repetition of the `mvn clean install` command shown above will usually complete successfully.
+test data generated, this approach is prone to fail every now and then (see [issue 64](https://github.com/x2vc/x2vc/issues/64)).
+This results in the build process terminating with an error message during the testing phase. Until this issue is addressed, a
+simple repetition of the `mvn clean verify` command shown above will usually complete successfully.
 
 ## Using Eclipse as IDE
 
