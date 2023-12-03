@@ -13,23 +13,25 @@
  */
 package org.x2vc.utilities.jaxb;
 
+import java.time.LocalDateTime;
+
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
-import com.google.common.html.HtmlEscapers;
+import org.apache.logging.log4j.Level;
 
 /**
- * JAXT adapter to selectively perform HTML escaping.
+ * JAXB adapter for {@link LocalDateTime}.
  */
-public class HTMLEscapingAdapter extends XmlAdapter<String, String> {
+public class Log4jLevelAdapter extends XmlAdapter<String, Level> {
 
 	@Override
-	public String unmarshal(String v) throws Exception {
-		return v;
+	public Level unmarshal(String v) throws Exception {
+		return Level.getLevel(v);
 	}
 
 	@Override
-	public String marshal(String v) throws Exception {
-		return HtmlEscapers.htmlEscaper().escape(v);
+	public String marshal(Level v) throws Exception {
+		return v.name();
 	}
 
 }
