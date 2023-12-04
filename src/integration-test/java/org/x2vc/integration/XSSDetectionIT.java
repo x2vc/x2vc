@@ -159,6 +159,7 @@ class XSSDetectionIT {
 		command.add(testCaseStylesheet.getName());
 		command.add("-D");
 		command.add("x2vc.report.source.write_to_file=true");
+		logger.info("Using command line " + String.join(" ", command));
 
 		builder.command(command);
 		final Process process = builder.start();
