@@ -7,12 +7,11 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.utilities.jaxb;
-
 
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
@@ -25,7 +24,7 @@ public class HTMLEscapingAdapter extends XmlAdapter<String, String> {
 
 	@Override
 	public String unmarshal(String v) throws Exception {
-		throw new UnsupportedOperationException("This adapter is only intended for output escaping.");
+		return v;
 	}
 
 	@Override

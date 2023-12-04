@@ -7,11 +7,12 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.analysis;
+
 import static com.google.common.base.Preconditions.checkArgument;
 
 import java.net.URI;
@@ -41,7 +42,6 @@ import org.x2vc.utilities.ReportCollectorAppender;
 import org.x2vc.xml.document.IDocumentModifier;
 import org.x2vc.xml.document.IXMLDocumentContainer;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Multimap;
 import com.google.common.collect.MultimapBuilder;
@@ -189,7 +189,7 @@ public class DocumentAnalyzer implements IDocumentAnalyzer {
 
 	@Override
 	public IVulnerabilityReport consolidateResults(URI stylesheetURI, Set<IVulnerabilityCandidate> candidates,
-			ICoverageStatistics coverageStatistics, ImmutableList<ILineCoverage> codeCoverage) {
+			ICoverageStatistics coverageStatistics, List<ILineCoverage> codeCoverage) {
 		logger.traceEntry();
 
 		// obtain the schema reference
@@ -213,7 +213,7 @@ public class DocumentAnalyzer implements IDocumentAnalyzer {
 			try {
 				final IAnalyzerRule rule = filterRuleByID(ruleID);
 				builder.addSections(rule.consolidateResults(schema, Set.copyOf(candidatesByRuleID.get(ruleID))));
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				logger.error("error occurred consolidating results for rule {}, report may be incomplete", ruleID);
 				logger.trace("error details", e);
 			}

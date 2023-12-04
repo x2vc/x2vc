@@ -7,12 +7,11 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.stylesheet.coverage;
-
 
 import java.util.Objects;
 
@@ -33,7 +32,23 @@ public final class LineCoverage implements ILineCoverage {
 	@XmlAttribute
 	private final CoverageStatus coverage;
 
-	protected LineCoverage(int lineNumber, String contents, CoverageStatus coverage) {
+	/**
+	 * Default constructor required for JAXB operation.
+	 */
+	protected LineCoverage() {
+		this.lineNumber = 0;
+		this.contents = "";
+		this.coverage = CoverageStatus.EMPTY;
+	}
+
+	/**
+	 * Creates a new coverage entry.
+	 *
+	 * @param lineNumber
+	 * @param contents
+	 * @param coverage
+	 */
+	public LineCoverage(int lineNumber, String contents, CoverageStatus coverage) {
 		super();
 		this.lineNumber = lineNumber;
 		this.contents = contents
@@ -58,6 +73,11 @@ public final class LineCoverage implements ILineCoverage {
 	@Override
 	public CoverageStatus getCoverage() {
 		return this.coverage;
+	}
+
+	@Override
+	public String toString() {
+		return "coverage of line " + this.lineNumber + " (" + this.contents + "): " + this.coverage;
 	}
 
 	@Override

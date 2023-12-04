@@ -14,6 +14,7 @@
 package org.x2vc.analysis;
 
 import java.net.URI;
+import java.util.List;
 import java.util.Set;
 import java.util.UUID;
 import java.util.function.Consumer;
@@ -26,7 +27,6 @@ import org.x2vc.stylesheet.coverage.ILineCoverage;
 import org.x2vc.xml.document.IDocumentModifier;
 import org.x2vc.xml.document.IXMLDocumentDescriptor;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import com.google.inject.ImplementedBy;
 
@@ -72,6 +72,6 @@ public interface IDocumentAnalyzer {
 	 * @return a consolidated vulnerability report
 	 */
 	IVulnerabilityReport consolidateResults(URI stylesheetURI, Set<IVulnerabilityCandidate> candidates,
-			ICoverageStatistics coverageStatistics, ImmutableList<ILineCoverage> codeCoverage);
+			ICoverageStatistics coverageStatistics, List<ILineCoverage> codeCoverage);
 
 }

@@ -7,11 +7,12 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.analysis.rules;
+
 import static com.google.common.base.Preconditions.checkArgument;
 
 import java.util.*;
@@ -330,6 +331,8 @@ public abstract class AbstractRule implements IAnalyzerRule {
 			.addAffectingInputElements(schema.getObjectPaths(cell.getColumnKey()))
 			.addExample(cell.getValue().getInputSample(), cell.getValue().getOutputSample())
 			.build()));
+		// order by output element for now to at least ensure a stable sorting order
+		result.sort((issue1, issue2) -> issue1.getAffectedOutputElement().compareTo(issue2.getAffectedOutputElement()));
 		return result;
 	}
 
