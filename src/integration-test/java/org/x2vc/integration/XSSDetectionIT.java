@@ -145,21 +145,21 @@ class XSSDetectionIT {
 		builder.directory(testCaseFolder);
 		builder.environment().put("JAVA_HOME", javaHome.getPath());
 		builder.environment().put("JAVACMD", javaExecutable.getPath());
-		final List<String> command = Lists.newArrayList();
 
-		if (isWindows) {
-			command.add("cmd.exe");
-			command.add("/c");
-		} else {
-			command.add("sh");
-			command.add("-c");
-		}
+		final List<String> command = Lists.newArrayList();
 		command.add(launchScript.getPath());
 		command.add("xss");
 		command.add(testCaseStylesheet.getName());
 		command.add("-D");
 		command.add("x2vc.report.source.write_to_file=true");
+		final String scriptCommand = String.join(" ", command);
+		logger.info("Using script invocation " + scriptCommand);
 
+		if (isWindows) {
+			builder.command("cmd.exe", "/c", scriptCommand);
+		} else {
+			builder.command("sh", "-c", "\"" + scriptCommand + "\"");
+		}
 		builder.command(command);
 		final Process process = builder.start();
 		final StreamRedirector outputRedirector = new StreamRedirector(process.getInputStream(), false);
