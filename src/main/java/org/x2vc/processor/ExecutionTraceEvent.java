@@ -7,17 +7,16 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.processor;
 
-
 import java.util.Objects;
 import java.util.Optional;
 
-import org.x2vc.utilities.xml.PolymorphLocation;
+import javax.xml.transform.SourceLocator;
 
 /**
  * Standard implementation of {@link IExecutionTraceEvent}.
@@ -26,7 +25,7 @@ public final class ExecutionTraceEvent implements IExecutionTraceEvent {
 
 	private final ExecutionEventType eventType;
 	private final String executedElement;
-	private final PolymorphLocation elementLocation;
+	private final SourceLocator elementLocation;
 
 	private ExecutionTraceEvent(Builder builder) {
 		this.eventType = builder.eventType;
@@ -50,7 +49,7 @@ public final class ExecutionTraceEvent implements IExecutionTraceEvent {
 	}
 
 	@Override
-	public PolymorphLocation getElementLocation() {
+	public SourceLocator getElementLocation() {
 		return this.elementLocation;
 	}
 
@@ -74,7 +73,7 @@ public final class ExecutionTraceEvent implements IExecutionTraceEvent {
 	public static final class Builder {
 		private ExecutionEventType eventType;
 		private String executedElement;
-		private PolymorphLocation elementLocation;
+		private SourceLocator elementLocation;
 
 		private Builder() {
 		}
@@ -107,7 +106,7 @@ public final class ExecutionTraceEvent implements IExecutionTraceEvent {
 		 * @param elementLocation field to set
 		 * @return builder
 		 */
-		public Builder withElementLocation(PolymorphLocation elementLocation) {
+		public Builder withElementLocation(SourceLocator elementLocation) {
 			this.elementLocation = elementLocation;
 			return this;
 		}
@@ -124,9 +123,9 @@ public final class ExecutionTraceEvent implements IExecutionTraceEvent {
 
 	@Override
 	public String toString() {
-		return String.format("Execution trace: %s of %s at [%s]",
+		return String.format("Execution trace: %s of %s at [l%d/c%d]",
 				this.eventType, this.executedElement,
-				this.elementLocation.toString().replace("\n", ", "));
+				this.elementLocation.getLineNumber(), this.elementLocation.getColumnNumber());
 	}
 
 	@Override

@@ -7,12 +7,11 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.processor;
-
 
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -44,6 +43,7 @@ import com.google.common.collect.Maps;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 
+import net.sf.saxon.lib.Feature;
 import net.sf.saxon.s9api.*;
 
 /**
@@ -194,6 +194,7 @@ public class XSLTProcessor implements IXSLTProcessor {
 			// because the extension functions are registered on a processor level, we
 			// need to acquire a new processor instance for each schema version
 			final Processor processor = new Processor();
+			processor.setConfigurationProperty(Feature.LINE_NUMBERING, true);
 
 			// create and register the extension handler
 			final IExtensionFunctionHandler functionHandler = new ExtensionFunctionHandler(schema);
