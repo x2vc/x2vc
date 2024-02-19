@@ -7,12 +7,11 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.processor;
-
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
@@ -28,6 +27,7 @@ import org.apache.logging.log4j.Logger;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 
+import net.sf.saxon.lib.Feature;
 import net.sf.saxon.s9api.*;
 
 /**
@@ -36,7 +36,6 @@ import net.sf.saxon.s9api.*;
 public abstract class ProcessorObserverTestBase {
 
 	private static final Logger logger = LogManager.getLogger();
-	protected final Processor processor = new Processor();
 
 	protected record TransformResult(UUID documentTraceID, ImmutableList<ITraceEvent> events) {
 	}
@@ -47,9 +46,11 @@ public abstract class ProcessorObserverTestBase {
 		final File xslt = new File(fileBase + ".xslt");
 		final File xml = new File(fileBase + ".xml");
 		final StringWriter outputWriter = new StringWriter();
-		final Serializer out = this.processor.newSerializer(outputWriter);
+		final Processor processor = new Processor();
+		processor.setConfigurationProperty(Feature.LINE_NUMBERING, true);
+		final Serializer out = processor.newSerializer(outputWriter);
 		final ProcessorObserver observer = new ProcessorObserver();
-		final XsltCompiler compiler = this.processor.newXsltCompiler();
+		final XsltCompiler compiler = processor.newXsltCompiler();
 		compiler.setCompileWithTracing(true);
 		final XsltExecutable stylesheet = compiler.compile(xslt);
 		final Xslt30Transformer transformer = stylesheet.load30();
@@ -65,15 +66,17 @@ public abstract class ProcessorObserverTestBase {
 		logger.debug("===== file {}: collected {} events =====", fileName, traceEvents.size());
 		traceEvents.forEach(event -> logger.debug(event.toString()));
 
-		final boolean generateExecutionAssertions = false;
+		final boolean generateExecutionAssertions = true;
 		if (generateExecutionAssertions) {
 			traceEvents.stream()
 				.filter(IExecutionTraceEvent.class::isInstance)
 				.map(IExecutionTraceEvent.class::cast)
 				.forEach(event -> logger
-					.trace(String.format("assertEventRecorded(result.events(), ExecutionEventType.%s, \"%s\", %d);",
-							event.getEventType(), event.getExecutedElement().orElse(""),
-							event.getElementLocation().getLineNumber())));
+					.trace(String.format("assertEventRecorded(result.events(), ExecutionEventType.%s, \"%s\", %d, %d);",
+							event.getEventType(),
+							event.getExecutedElement().orElse(""),
+							event.getElementLocation().getLineNumber(),
+							event.getElementLocation().getColumnNumber())));
 		}
 
 		final boolean generateValueTraceAssertions = true;
@@ -82,9 +85,11 @@ public abstract class ProcessorObserverTestBase {
 				.filter(IValueAccessTraceEvent.class::isInstance)
 				.map(IValueAccessTraceEvent.class::cast)
 				.forEach(event -> logger
-					.trace(String.format("assertEventRecorded(result.events(), \"%s\", \"%s\", %d);",
-							event.getExpression().toString(), event.getContextElementID().get(),
-							event.getLocation().getLineNumber())));
+					.trace(String.format("assertEventRecorded(result.events(), \"%s\", \"%s\", %d, %d);",
+							event.getExpression().toString(),
+							event.getContextElementID().get(),
+							event.getLocation().getLineNumber(),
+							event.getLocation().getColumnNumber())));
 		}
 
 		return new TransformResult(observer.getDocumentTraceID(), traceEvents);

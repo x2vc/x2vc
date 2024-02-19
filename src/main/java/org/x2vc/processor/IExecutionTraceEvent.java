@@ -7,16 +7,15 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.processor;
 
-
 import java.util.Optional;
 
-import org.x2vc.utilities.xml.PolymorphLocation;
+import javax.xml.transform.SourceLocator;
 
 /**
  * An event that tracks the execution (or evaluation) of an XSLT directive.
@@ -53,7 +52,7 @@ public interface IExecutionTraceEvent extends ITraceEvent {
 	 *
 	 * @return the location of the element within the stylesheet
 	 */
-	PolymorphLocation getElementLocation();
+	SourceLocator getElementLocation();
 
 	/**
 	 * Determines the name of the directive as reported by the processor. Caution: This might not be the actual element

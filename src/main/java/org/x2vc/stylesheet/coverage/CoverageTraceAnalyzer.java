@@ -26,6 +26,7 @@ import org.x2vc.processor.IHTMLDocumentContainer;
 import org.x2vc.processor.ITraceEvent;
 import org.x2vc.stylesheet.IStylesheetInformation;
 import org.x2vc.stylesheet.IStylesheetManager;
+import org.x2vc.utilities.xml.PolymorphLocation;
 
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
@@ -56,9 +57,11 @@ public class CoverageTraceAnalyzer implements ICoverageTraceAnalyzer {
 	@SuppressWarnings("java:S4738") // type required here
 	public void analyzeDocument(IHTMLDocumentContainer htmlContainer) {
 		logger.traceEntry();
+		final URI stylesheetURI = htmlContainer.getSource().getStylesheeURI();
+		final IStylesheetInformation stylesheetInfo = this.stylesheetManager.get(stylesheetURI);
 		final CoverageTreeNode treeRoot = this.coverageTrees
-			.computeIfAbsent(htmlContainer.getSource().getStylesheeURI(), this::initializeCoverageTree);
-		processTraceEvents(treeRoot, htmlContainer.getTraceEvents().orElse(ImmutableList.of()));
+			.computeIfAbsent(stylesheetURI, this::initializeCoverageTree);
+		processTraceEvents(treeRoot, stylesheetInfo, htmlContainer.getTraceEvents().orElse(ImmutableList.of()));
 		logger.traceExit();
 	}
 
@@ -78,9 +81,11 @@ public class CoverageTraceAnalyzer implements ICoverageTraceAnalyzer {
 
 	/**
 	 * @param treeRoot
+	 * @param stylesheetInfo
 	 * @param traceEvents
 	 */
-	private void processTraceEvents(CoverageTreeNode treeRoot, ImmutableList<ITraceEvent> traceEvents) {
+	private void processTraceEvents(CoverageTreeNode treeRoot, IStylesheetInformation stylesheetInfo,
+			ImmutableList<ITraceEvent> traceEvents) {
 		logger.traceEntry();
 		final List<IExecutionTraceEvent> filteredEvents = traceEvents.stream()
 			.filter(IExecutionTraceEvent.class::isInstance)
@@ -91,18 +96,21 @@ public class CoverageTraceAnalyzer implements ICoverageTraceAnalyzer {
 			logger.warn("No execution trace events available for coverage analysis");
 		} else {
 			logger.debug("processing {} execution trace events", filteredEvents.size());
-			filteredEvents.forEach(ev -> processTraceEvent(treeRoot, ev));
+			filteredEvents.forEach(ev -> processTraceEvent(treeRoot, stylesheetInfo, ev));
 		}
 		logger.traceExit();
 	}
 
 	/**
 	 * @param treeRoot
+	 * @param stylesheetInfo
 	 * @param event
 	 */
-	private void processTraceEvent(CoverageTreeNode treeRoot, IExecutionTraceEvent event) {
+	private void processTraceEvent(CoverageTreeNode treeRoot, IStylesheetInformation stylesheetInfo,
+			IExecutionTraceEvent event) {
 		logger.traceEntry("for event {}", event);
-		final Optional<CoverageTreeNode> oNode = treeRoot.findNode(event.getElementLocation());
+		final PolymorphLocation location = stylesheetInfo.getLocationMap().getLocation(event.getElementLocation());
+		final Optional<CoverageTreeNode> oNode = treeRoot.findNode(location);
 		if (oNode.isPresent()) {
 			final CoverageTreeNode node = oNode.get();
 			logger.trace("identified node {}", node);

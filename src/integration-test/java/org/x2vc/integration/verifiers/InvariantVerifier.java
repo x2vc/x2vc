@@ -2,9 +2,13 @@ package org.x2vc.integration.verifiers;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.List;
+
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.x2vc.integration.IReportVerifier;
+import org.x2vc.report.ILogMessage;
 import org.x2vc.report.IVulnerabilityReport;
 import org.x2vc.report.IVulnerabilityReportIssue;
 import org.x2vc.report.IVulnerabilityReportSection;
@@ -63,7 +67,22 @@ public abstract class InvariantVerifier implements IReportVerifier {
 
 		assertEquals(report.getCoverageStatistics().getTotalLineCount(), report.getCodeCoverage().size(),
 				"number of lines in coverage analysis must equal total number of lines");
+
 		assertFalse(report.getMessages().isEmpty(), "some messages must have been recorded");
+		// With the exception of some expected error messages recorded by the XSLT processor, no
+		// errors should have been recorded.
+		final List<ILogMessage> errorMessages = report.getMessages().stream()
+			.filter(msg -> msg.getLevel().equals(Level.ERROR))
+			.filter(msg -> !(msg.getMessage().contains("XTDE0820")))
+			.filter(msg -> !(msg.getMessage().contains("XTDE0850")))
+			.filter(msg -> !(msg.getMessage().contains("invoked by")))
+			.filter(msg -> !(msg.getMessage().contains("template rule with match")))
+			.toList();
+		if (!errorMessages.isEmpty()) {
+			assertEquals(0, errorMessages.size(),
+					String.format("no error messages should have been recorded (like \"%s\")",
+							errorMessages.getFirst().getMessage()));
+		}
 	}
 
 	/**

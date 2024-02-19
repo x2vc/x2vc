@@ -7,20 +7,17 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.processor;
-
 
 import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
 import javax.xml.transform.SourceLocator;
-
-import org.x2vc.utilities.xml.PolymorphLocation;
 
 import net.sf.saxon.expr.Expression;
 
@@ -29,7 +26,7 @@ import net.sf.saxon.expr.Expression;
  */
 public final class ValueAccessTraceEvent implements IValueAccessTraceEvent {
 
-	private final PolymorphLocation location;
+	private final SourceLocator location;
 	private final Expression expression;
 	private final UUID contextElementID;
 
@@ -40,7 +37,7 @@ public final class ValueAccessTraceEvent implements IValueAccessTraceEvent {
 	}
 
 	@Override
-	public PolymorphLocation getLocation() {
+	public SourceLocator getLocation() {
 		return this.location;
 	}
 
@@ -67,7 +64,7 @@ public final class ValueAccessTraceEvent implements IValueAccessTraceEvent {
 	 * Builder to build {@link ValueAccessTraceEvent}.
 	 */
 	public static final class Builder {
-		private PolymorphLocation location;
+		private SourceLocator location;
 		private Expression expression;
 		private UUID contextElementID;
 
@@ -80,19 +77,8 @@ public final class ValueAccessTraceEvent implements IValueAccessTraceEvent {
 		 * @param location field to set
 		 * @return builder
 		 */
-		public Builder withLocation(PolymorphLocation location) {
+		public Builder withLocation(SourceLocator location) {
 			this.location = location;
-			return this;
-		}
-
-		/**
-		 * Builder method for location parameter.
-		 *
-		 * @param locator field to set
-		 * @return builder
-		 */
-		public Builder withLocation(SourceLocator locator) {
-			this.location = PolymorphLocation.from(locator);
 			return this;
 		}
 
@@ -130,9 +116,9 @@ public final class ValueAccessTraceEvent implements IValueAccessTraceEvent {
 
 	@Override
 	public String toString() {
-		return String.format("Value access trace: %s of element %s at [%s]",
+		return String.format("Value access trace: %s of element %s at [l%d/c%d]",
 				this.expression, this.contextElementID == null ? "unknown" : this.contextElementID,
-				this.location.toString().replace("\n", ", "));
+				this.location.getLineNumber(), this.location.getColumnNumber());
 	}
 
 	@Override

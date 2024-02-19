@@ -7,11 +7,12 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.processor;
+
 import java.util.*;
 import java.util.function.Consumer;
 
@@ -22,7 +23,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.x2vc.processor.IExecutionTraceEvent.ExecutionEventType;
 import org.x2vc.processor.ValueAccessTraceEvent.Builder;
-import org.x2vc.utilities.xml.PolymorphLocation;
 import org.x2vc.xml.document.IDocumentGenerator;
 
 import com.google.common.base.Strings;
@@ -174,7 +174,7 @@ class ProcessorObserver implements Consumer<Message>, ErrorListener, TraceListen
 		this.traceEvents.add(ExecutionTraceEvent.builder()
 			.withEventType(eventType)
 			.withExecutedElement(executedElement)
-			.withElementLocation(PolymorphLocation.from(traceable.getLocation()))
+			.withElementLocation(traceable.getLocation())
 			.build());
 		logger.traceExit();
 	}
