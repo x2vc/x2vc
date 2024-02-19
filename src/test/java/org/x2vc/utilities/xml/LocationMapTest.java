@@ -7,7 +7,7 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
@@ -86,8 +86,9 @@ class LocationMapTest {
 				arguments(MapTestData.Default, 4, 3, 38),
 				arguments(MapTestData.Default, 5, 1, 42),
 				arguments(MapTestData.Default, 5, 3, 44),
+				// auto-correction of column 0 to 1
+				arguments(MapTestData.Default, 1, 0, 0),
 				// error cases: negative positions
-				arguments(MapTestData.Default, 1, 0, -1),
 				arguments(MapTestData.Default, 1, -1, -1),
 				arguments(MapTestData.Default, 0, 1, -1),
 				arguments(MapTestData.Default, -1, 1, -1),

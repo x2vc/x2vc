@@ -21,6 +21,9 @@ import java.util.Objects;
 import javax.xml.stream.Location;
 import javax.xml.transform.SourceLocator;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 
@@ -28,6 +31,8 @@ import com.google.inject.assistedinject.Assisted;
  * Default implementation of {@link ILocationMap}.
  */
 public final class LocationMap implements ILocationMap {
+
+	private static final Logger logger = LogManager.getLogger();
 
 	private final int maxOffset;
 	private final int[] lineLengths;
@@ -63,8 +68,11 @@ public final class LocationMap implements ILocationMap {
 		if (line <= 0) {
 			throw new IllegalArgumentException("Negative or zero line numbers are not possible");
 		}
-		if (column <= 0) {
-			throw new IllegalArgumentException("Negative or zero column numbers are not possible");
+		if (column < 0) {
+			throw new IllegalArgumentException("Negative column numbers are not possible");
+		} else if (column == 0) {
+			logger.debug("Column number 0 corrected to 1");
+			column = 1;
 		}
 		if (line > this.lineOffsets.length) {
 			throw new IllegalArgumentException(String.format("Line number %d exceeds number of lines in file (%d)",
