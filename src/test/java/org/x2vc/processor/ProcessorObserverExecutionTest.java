@@ -60,8 +60,8 @@ class ProcessorObserverExecutionTest extends ProcessorObserverTestBase {
 		assertEventRecorded(result.events(), ExecutionEventType.ENTER, "param", 12, 8); // name="param1"
 		assertEventRecorded(result.events(), ExecutionEventType.LEAVE, "param", 12, 8); // name="param1"
 		assertEventRecorded(result.events(), ExecutionEventType.ENTER, "element", 13, 9); // body
-		assertEventRecorded(result.events(), ExecutionEventType.ENTER, "value-of", 14, 0); // select="$param1"
-		assertEventRecorded(result.events(), ExecutionEventType.LEAVE, "value-of", 14, 0); // select="$param1"
+		assertEventRecorded(result.events(), ExecutionEventType.ENTER, "value-of", 14, 37); // select="$param1"
+		assertEventRecorded(result.events(), ExecutionEventType.LEAVE, "value-of", 14, 37); // select="$param1"
 		assertEventRecorded(result.events(), ExecutionEventType.LEAVE, "element", 13, 9); // body
 		assertEventRecorded(result.events(), ExecutionEventType.LEAVE, "template", 11, 30); // name="foobar"
 		assertEventRecorded(result.events(), ExecutionEventType.LEAVE, "call-template", 6, 37); // name="foobar"
@@ -71,12 +71,12 @@ class ProcessorObserverExecutionTest extends ProcessorObserverTestBase {
 	void test_Execution_ValueOf() throws SaxonApiException {
 		final TransformResult result = transformAndObserve("Execution_ValueOf");
 		assertEventRecorded(result.events(), ExecutionEventType.ENTER, "element", 6, 7); // p
-		assertEventRecorded(result.events(), ExecutionEventType.ENTER, "value-of", 6, 7); // select="@attrib"
-		assertEventRecorded(result.events(), ExecutionEventType.LEAVE, "value-of", 6, 7); // select="@attrib"
+		assertEventRecorded(result.events(), ExecutionEventType.ENTER, "value-of", 6, 39); // select="@attrib"
+		assertEventRecorded(result.events(), ExecutionEventType.LEAVE, "value-of", 6, 39); // select="@attrib"
 		assertEventRecorded(result.events(), ExecutionEventType.LEAVE, "element", 6, 7); // p
 		assertEventRecorded(result.events(), ExecutionEventType.ENTER, "element", 7, 7); // p
-		assertEventRecorded(result.events(), ExecutionEventType.ENTER, "value-of", 7, 1); // select="."
-		assertEventRecorded(result.events(), ExecutionEventType.LEAVE, "value-of", 7, 1); // select="."
+		assertEventRecorded(result.events(), ExecutionEventType.ENTER, "value-of", 7, 33); // select="."
+		assertEventRecorded(result.events(), ExecutionEventType.LEAVE, "value-of", 7, 33); // select="."
 		assertEventRecorded(result.events(), ExecutionEventType.LEAVE, "element", 7, 7); // p
 	}
 
@@ -100,46 +100,46 @@ class ProcessorObserverExecutionTest extends ProcessorObserverTestBase {
 	void test_Execution_If() throws SaxonApiException {
 		final TransformResult result = transformAndObserve("Execution_If");
 		// if statements are recorded as choose statements
-		assertEventRecorded(result.events(), ExecutionEventType.ENTER, "choose", 6, 8); // if test="@attribA='foo'"
+		assertEventRecorded(result.events(), ExecutionEventType.ENTER, "choose", 6, 34); // if test="@attribA='foo'"
 		assertEventRecorded(result.events(), ExecutionEventType.ENTER, "text", 6, 34); // A is foo.
 		assertEventRecorded(result.events(), ExecutionEventType.LEAVE, "text", 6, 34); // A is foo.
-		assertEventRecorded(result.events(), ExecutionEventType.LEAVE, "choose", 6, 8); // if test="@attribA='foo'"
-		assertEventRecorded(result.events(), ExecutionEventType.ENTER, "choose", 9, 8); // if test="@attribB='foo'"
-		assertEventRecorded(result.events(), ExecutionEventType.LEAVE, "choose", 9, 8); // if test="@attribB='foo'"
+		assertEventRecorded(result.events(), ExecutionEventType.LEAVE, "choose", 6, 34); // if test="@attribA='foo'"
+		assertEventRecorded(result.events(), ExecutionEventType.ENTER, "choose", 9, 34); // if test="@attribB='foo'"
+		assertEventRecorded(result.events(), ExecutionEventType.LEAVE, "choose", 9, 34); // if test="@attribB='foo'"
 	}
 
 	@Test
 	void test_Execution_Choose_01() throws SaxonApiException {
 		final TransformResult result = transformAndObserve("Execution_Choose_01");
-		assertEventRecorded(result.events(), ExecutionEventType.ENTER, "choose", 7, 7); // when test=...
+		assertEventRecorded(result.events(), ExecutionEventType.ENTER, "choose", 6, 16); // choose
 		assertEventRecorded(result.events(), ExecutionEventType.ENTER, "text", 7, 36); // Value 1 is foo.
 		assertEventRecorded(result.events(), ExecutionEventType.LEAVE, "text", 7, 36); // Value 1 is foo.
-		assertEventRecorded(result.events(), ExecutionEventType.LEAVE, "choose", 7, 7); // when test=...
+		assertEventRecorded(result.events(), ExecutionEventType.LEAVE, "choose", 6, 16); // choose
 	}
 
 	@Test
 	void test_Execution_Choose_02() throws SaxonApiException {
 		final TransformResult result = transformAndObserve("Execution_Choose_02");
-		assertEventRecorded(result.events(), ExecutionEventType.ENTER, "choose", 7, 7); // when test=...
+		assertEventRecorded(result.events(), ExecutionEventType.ENTER, "choose", 6, 16); // choose
 		assertEventRecorded(result.events(), ExecutionEventType.ENTER, "text", 10, 36); // Value 2 is foo.
 		assertEventRecorded(result.events(), ExecutionEventType.LEAVE, "text", 10, 36); // Value 2 is foo.
-		assertEventRecorded(result.events(), ExecutionEventType.LEAVE, "choose", 7, 7); // when test=...
+		assertEventRecorded(result.events(), ExecutionEventType.LEAVE, "choose", 6, 16); // choose
 	}
 
 	@Test
 	void test_Execution_Choose_03() throws SaxonApiException {
 		final TransformResult result = transformAndObserve("Execution_Choose_03");
-		assertEventRecorded(result.events(), ExecutionEventType.ENTER, "choose", 7, 7); // when test=...
+		assertEventRecorded(result.events(), ExecutionEventType.ENTER, "choose", 6, 16); // choose
 		assertEventRecorded(result.events(), ExecutionEventType.ENTER, "text", 13, 20); // None of the values is foo.
 		assertEventRecorded(result.events(), ExecutionEventType.LEAVE, "text", 13, 20); // None of the values is foo.
-		assertEventRecorded(result.events(), ExecutionEventType.LEAVE, "choose", 7, 7); // when test=...
+		assertEventRecorded(result.events(), ExecutionEventType.LEAVE, "choose", 6, 16); // choose
 	}
 
 	@Test
 	void test_Execution_ApplyTemplates() throws SaxonApiException {
 		final TransformResult result = transformAndObserve("Execution_ApplyTemplates");
 		assertEventRecorded(result.events(), ExecutionEventType.ENTER, "element", 6, 10); // body
-		assertEventRecorded(result.events(), ExecutionEventType.ENTER, "apply-templates", 7, 4);
+		assertEventRecorded(result.events(), ExecutionEventType.ENTER, "apply-templates", 7, 41);
 		assertEventRecorded(result.events(), ExecutionEventType.ENTER, "template", 11, 29); // match="elem"
 		assertEventRecorded(result.events(), ExecutionEventType.ENTER, "element", 12, 6); // p
 		assertEventRecorded(result.events(), ExecutionEventType.ENTER, "text", 12, 6); // Some Content.
@@ -158,7 +158,7 @@ class ProcessorObserverExecutionTest extends ProcessorObserverTestBase {
 		assertEventRecorded(result.events(), ExecutionEventType.LEAVE, "text", 12, 6); // Some Content.
 		assertEventRecorded(result.events(), ExecutionEventType.LEAVE, "element", 12, 6); // p
 		assertEventRecorded(result.events(), ExecutionEventType.LEAVE, "template", 11, 29); // match="elem"
-		assertEventRecorded(result.events(), ExecutionEventType.LEAVE, "apply-templates", 7, 4);
+		assertEventRecorded(result.events(), ExecutionEventType.LEAVE, "apply-templates", 7, 41);
 		assertEventRecorded(result.events(), ExecutionEventType.LEAVE, "element", 6, 10); // body
 	}
 
@@ -167,18 +167,18 @@ class ProcessorObserverExecutionTest extends ProcessorObserverTestBase {
 		final TransformResult result = transformAndObserve("Execution_ForEach");
 		assertEventRecorded(result.events(), ExecutionEventType.ENTER, "forEach", 6, 47); // select="elem[@attrib='foo']"
 		assertEventRecorded(result.events(), ExecutionEventType.ENTER, "element", 7, 8); // p
-		assertEventRecorded(result.events(), ExecutionEventType.ENTER, "value-of", 8, 1); // select="."
-		assertEventRecorded(result.events(), ExecutionEventType.LEAVE, "value-of", 8, 1); // select="."
+		assertEventRecorded(result.events(), ExecutionEventType.ENTER, "value-of", 8, 33); // select="."
+		assertEventRecorded(result.events(), ExecutionEventType.LEAVE, "value-of", 8, 33); // select="."
 		assertEventRecorded(result.events(), ExecutionEventType.LEAVE, "element", 7, 8); // p
 		assertEventRecorded(result.events(), ExecutionEventType.ENTER, "element", 7, 8); // p
-		assertEventRecorded(result.events(), ExecutionEventType.ENTER, "value-of", 8, 1); // select="."
-		assertEventRecorded(result.events(), ExecutionEventType.LEAVE, "value-of", 8, 1); // select="."
+		assertEventRecorded(result.events(), ExecutionEventType.ENTER, "value-of", 8, 33); // select="."
+		assertEventRecorded(result.events(), ExecutionEventType.LEAVE, "value-of", 8, 33); // select="."
 		assertEventRecorded(result.events(), ExecutionEventType.LEAVE, "element", 7, 8); // p
 		assertEventRecorded(result.events(), ExecutionEventType.LEAVE, "forEach", 6, 47); // select="elem[@attrib='foo']"
 		assertEventRecorded(result.events(), ExecutionEventType.ENTER, "forEach", 11, 47); // select="elem[@attrib='bar']"
 		assertEventRecorded(result.events(), ExecutionEventType.ENTER, "element", 12, 10); // div
-		assertEventRecorded(result.events(), ExecutionEventType.ENTER, "value-of", 13, 1); // select="."
-		assertEventRecorded(result.events(), ExecutionEventType.LEAVE, "value-of", 13, 1); // select="."
+		assertEventRecorded(result.events(), ExecutionEventType.ENTER, "value-of", 13, 33); // select="."
+		assertEventRecorded(result.events(), ExecutionEventType.LEAVE, "value-of", 13, 33); // select="."
 		assertEventRecorded(result.events(), ExecutionEventType.LEAVE, "element", 12, 10); // div
 		assertEventRecorded(result.events(), ExecutionEventType.LEAVE, "forEach", 11, 47); // select="elem[@attrib='bar']"
 		assertEventRecorded(result.events(), ExecutionEventType.ENTER, "forEach", 16, 47); // select="elem[@attrib='baz']"

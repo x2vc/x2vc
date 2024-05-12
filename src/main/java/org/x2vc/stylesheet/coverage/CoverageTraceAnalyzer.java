@@ -24,8 +24,10 @@ import org.apache.logging.log4j.Logger;
 import org.x2vc.processor.IExecutionTraceEvent;
 import org.x2vc.processor.IHTMLDocumentContainer;
 import org.x2vc.processor.ITraceEvent;
+import org.x2vc.processor.IValueAccessTraceEvent;
 import org.x2vc.stylesheet.IStylesheetInformation;
 import org.x2vc.stylesheet.IStylesheetManager;
+import org.x2vc.utilities.xml.ITagInfo;
 import org.x2vc.utilities.xml.PolymorphLocation;
 
 import com.google.common.base.Splitter;
@@ -87,16 +89,21 @@ public class CoverageTraceAnalyzer implements ICoverageTraceAnalyzer {
 	private void processTraceEvents(CoverageTreeNode treeRoot, IStylesheetInformation stylesheetInfo,
 			ImmutableList<ITraceEvent> traceEvents) {
 		logger.traceEntry();
-		final List<IExecutionTraceEvent> filteredEvents = traceEvents.stream()
-			.filter(IExecutionTraceEvent.class::isInstance)
-			.map(IExecutionTraceEvent.class::cast)
-			.filter(IExecutionTraceEvent::isEnterEvent) // only count ENTER events
-			.toList();
-		if (filteredEvents.isEmpty()) {
-			logger.warn("No execution trace events available for coverage analysis");
+		if (traceEvents.isEmpty()) {
+			logger.warn("No trace events available for coverage analysis");
 		} else {
-			logger.debug("processing {} execution trace events", filteredEvents.size());
-			filteredEvents.forEach(ev -> processTraceEvent(treeRoot, stylesheetInfo, ev));
+			for (final ITraceEvent event : traceEvents) {
+				if (event instanceof final IExecutionTraceEvent executionEvent) {
+					// only process ENTER events
+					if (executionEvent.isEnterEvent()) {
+						processExecutionEvent(treeRoot, stylesheetInfo, executionEvent);
+					}
+				} else if (event instanceof final IValueAccessTraceEvent valueAccessEvent) {
+					processValueAccessEvent(treeRoot, stylesheetInfo, valueAccessEvent);
+				} else {
+					throw new UnsupportedOperationException("Unknown event type " + event.getClass().getName());
+				}
+			}
 		}
 		logger.traceExit();
 	}
@@ -106,11 +113,61 @@ public class CoverageTraceAnalyzer implements ICoverageTraceAnalyzer {
 	 * @param stylesheetInfo
 	 * @param event
 	 */
-	private void processTraceEvent(CoverageTreeNode treeRoot, IStylesheetInformation stylesheetInfo,
+	private void processExecutionEvent(CoverageTreeNode treeRoot, IStylesheetInformation stylesheetInfo,
 			IExecutionTraceEvent event) {
 		logger.traceEntry("for event {}", event);
 		final PolymorphLocation location = stylesheetInfo.getLocationMap().getLocation(event.getElementLocation());
-		final Optional<CoverageTreeNode> oNode = treeRoot.findNode(location);
+		logger.trace("normalized event location according to location map is {}", location);
+
+		Optional<CoverageTreeNode> oNode = Optional.empty();
+
+		// Try to find a tag at that position (using an offset of -1 because the location is reported AFTER the closing
+		// angular bracket: <tag/>| foobar).
+		final Optional<ITagInfo> oTag = stylesheetInfo.getTagMap().getTag(location, -1);
+		if (oTag.isPresent()) {
+			final ITagInfo tag = oTag.get();
+			logger.trace("identified {}", tag);
+			oNode = treeRoot.findNode(tag.getStartLocation());
+		} else {
+			logger.trace("no tag found at that location, using the position to approximate a match");
+			oNode = treeRoot.findNode(location);
+		}
+
+		if (oNode.isPresent()) {
+			final CoverageTreeNode node = oNode.get();
+			logger.trace("identified node {}", node);
+			node.incrementExecutionCounter();
+		} else {
+			logger.warn("Unable to find coverage tree node for event {}", event);
+		}
+		logger.traceExit();
+	}
+
+	/**
+	 * @param treeRoot
+	 * @param stylesheetInfo
+	 * @param event
+	 */
+	private void processValueAccessEvent(CoverageTreeNode treeRoot, IStylesheetInformation stylesheetInfo,
+			IValueAccessTraceEvent event) {
+		logger.traceEntry("for event {}", event);
+		final PolymorphLocation location = stylesheetInfo.getLocationMap().getLocation(event.getLocation());
+		logger.trace("normalized event location according to location map is {}", location);
+
+		Optional<CoverageTreeNode> oNode = Optional.empty();
+
+		// Try to find a tag at that position (using an offset of -1 because the location is reported AFTER the closing
+		// angular bracket: <tag/>| foobar).
+		final Optional<ITagInfo> oTag = stylesheetInfo.getTagMap().getTag(location, -1);
+		if (oTag.isPresent()) {
+			final ITagInfo tag = oTag.get();
+			logger.trace("identified {}", tag);
+			oNode = treeRoot.findNode(tag.getStartLocation());
+		} else {
+			logger.trace("no tag found at that location, using the position to approximate a match");
+			oNode = treeRoot.findNode(location);
+		}
+
 		if (oNode.isPresent()) {
 			final CoverageTreeNode node = oNode.get();
 			logger.trace("identified node {}", node);
