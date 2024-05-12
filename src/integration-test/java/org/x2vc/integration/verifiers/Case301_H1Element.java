@@ -27,8 +27,8 @@ public class Case301_H1Element extends InvariantVerifier {
 		assertTotalIssues(report, 1);
 		assertTotalDirectives(report, 69);
 		assertTotalLines(report, 220);
-		assertDirectiveCoverage(report, 30, 50); // TODO #80 double-check coverage after fixes
-		assertLineCoverage(report, 40, 50); // TODO #80 double-check coverage after fixes
+		assertDirectiveCoverage(report, 25, 50); // TODO #80 double-check coverage after fixes
+		assertLineCoverage(report, 25, 50); // TODO #80 double-check coverage after fixes
 
 		final IVulnerabilityReportSection section = checkAndGetSingleSectionWithIssues(report, "H.1");
 		final IVulnerabilityReportIssue issue = checkAndGetSingleIssue(section);

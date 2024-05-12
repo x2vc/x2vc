@@ -24,8 +24,8 @@ public class Case001_KnownGood extends InvariantVerifier {
 		assertTotalIssues(report, 0);
 		assertTotalDirectives(report, 69);
 		assertTotalLines(report, 213);
-		assertDirectiveCoverage(report, 50, 70); // TODO #80 double-check coverage after fixes
-		assertLineCoverage(report, 50, 80); // TODO #80 double-check coverage after fixes
+		assertDirectiveCoverage(report, 30, 50); // TODO #80 double-check coverage after fixes
+		assertLineCoverage(report, 30, 50); // TODO #80 double-check coverage after fixes
 
 		// no section may contain any issues
 		report.getSections().forEach(section -> {

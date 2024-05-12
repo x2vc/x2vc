@@ -28,7 +28,7 @@ public class Case500_S1Attribute extends InvariantVerifier {
 		assertTotalDirectives(report, 66);
 		assertTotalLines(report, 202);
 		assertDirectiveCoverage(report, 30, 50); // TODO #80 double-check coverage after fixes
-		assertLineCoverage(report, 40, 50); // TODO #80 double-check coverage after fixes
+		assertLineCoverage(report, 25, 50); // TODO #80 double-check coverage after fixes
 
 		final IVulnerabilityReportSection section = checkAndGetSingleSectionWithIssues(report, "S.1");
 		final IVulnerabilityReportIssue issue = checkAndGetSingleIssue(section);

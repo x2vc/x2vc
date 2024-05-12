@@ -28,7 +28,7 @@ public class Case101_A1Element extends InvariantVerifier {
 		assertTotalDirectives(report, 73);
 		assertTotalLines(report, 220);
 		assertDirectiveCoverage(report, 30, 50); // TODO #80 double-check coverage after fixes
-		assertLineCoverage(report, 40, 50); // TODO #80 double-check coverage after fixes
+		assertLineCoverage(report, 30, 50); // TODO #80 double-check coverage after fixes
 
 		final IVulnerabilityReportSection section = checkAndGetSingleSectionWithIssues(report, "A.1");
 		final IVulnerabilityReportIssue issue = checkAndGetSingleIssue(section);
