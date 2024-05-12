@@ -46,6 +46,13 @@ public class Checker {
 	public static void main(String[] args) {
 		Thread.currentThread().setName("x2vc-main");
 
+		// detect broken JRE version and bail out early
+		if (System.getProperty("java.version").equals("21.0.2")) {
+			System.err
+				.println("x2vc will not work with Java version 21.0.2, see https://github.com/x2vc/x2vc/issues/107");
+			System.exit(1);
+		}
+
 		// first process the global options
 		final CommonOptions commonOptions = new CommonOptions();
 		new CommandLine(commonOptions).parseArgs(args);
