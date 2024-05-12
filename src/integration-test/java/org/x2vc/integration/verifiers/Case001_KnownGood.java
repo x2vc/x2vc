@@ -9,6 +9,15 @@ import org.x2vc.report.IVulnerabilityReport;
  */
 public class Case001_KnownGood extends InvariantVerifier {
 
+	private static final String TEST_CASE_NAME = "Case001_KnownGood";
+
+	/**
+	 * Default constructor.
+	 */
+	public Case001_KnownGood() {
+		super(TEST_CASE_NAME);
+	}
+
 	@Override
 	public void verify(IVulnerabilityReport report) {
 		super.verify(report);
