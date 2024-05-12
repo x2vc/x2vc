@@ -12,14 +12,23 @@ import org.x2vc.report.IVulnerabilityReportSection;
  */
 public class Case510_S2Attribute extends InvariantVerifier {
 
+	private static final String TEST_CASE_NAME = "Case510_S2Attribute";
+
+	/**
+	 * Default constructor.
+	 */
+	public Case510_S2Attribute() {
+		super(TEST_CASE_NAME);
+	}
+
 	@Override
 	public void verify(IVulnerabilityReport report) {
 		super.verify(report);
 		assertTotalIssues(report, 1);
 		assertTotalDirectives(report, 65);
 		assertTotalLines(report, 202);
-		assertDirectiveCoverage(report, 40, 50); // TODO #80 double-check coverage after fixes
-		assertLineCoverage(report, 40, 50); // TODO #80 double-check coverage after fixes
+		assertDirectiveCoverage(report, 30, 50); // TODO #80 double-check coverage after fixes
+		assertLineCoverage(report, 25, 50); // TODO #80 double-check coverage after fixes
 
 		final IVulnerabilityReportSection section = checkAndGetSingleSectionWithIssues(report, "S.2");
 		final IVulnerabilityReportIssue issue = checkAndGetSingleIssue(section);

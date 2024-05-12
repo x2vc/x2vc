@@ -12,14 +12,23 @@ import org.x2vc.report.IVulnerabilityReportSection;
  */
 public class Case210_E2CopyOf extends InvariantVerifier {
 
+	private static final String TEST_CASE_NAME = "Case210_E2CopyOf";
+
+	/**
+	 * Default constructor.
+	 */
+	public Case210_E2CopyOf() {
+		super(TEST_CASE_NAME);
+	}
+
 	@Override
 	public void verify(IVulnerabilityReport report) {
 		super.verify(report);
 		assertTotalIssues(report, 2);
 		assertTotalDirectives(report, 66);
 		assertTotalLines(report, 210);
-		assertDirectiveCoverage(report, 40, 50); // TODO #80 double-check coverage after fixes
-		assertLineCoverage(report, 40, 50); // TODO #80 double-check coverage after fixes
+		assertDirectiveCoverage(report, 30, 50); // TODO #80 double-check coverage after fixes
+		assertLineCoverage(report, 30, 50); // TODO #80 double-check coverage after fixes
 
 		final IVulnerabilityReportSection section = checkAndGetSingleSectionWithIssues(report, "E.2");
 

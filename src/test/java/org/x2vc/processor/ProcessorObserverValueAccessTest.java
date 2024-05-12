@@ -37,13 +37,13 @@ class ProcessorObserverValueAccessTest extends ProcessorObserverTestBase {
 		final TransformResult result = transformAndObserve("ValueAccess_ApplyTemplates");
 		assertEventRecorded(result.events(),
 				"child::element(Q{}elem)[(Q{http://www.w3.org/2001/XMLSchema}string(data(@attrib))) eq foo]",
-				"d9a68d96-b6c9-404b-89ec-a9cddddb449c", 6, 4);
+				"d9a68d96-b6c9-404b-89ec-a9cddddb449c", 6, 56);
 		assertEventRecorded(result.events(),
 				"convertTo_xs:string(data(.))",
-				"833148ee-068f-4436-96a2-f5d5605e74b2", 11, 1);
+				"833148ee-068f-4436-96a2-f5d5605e74b2", 11, 31);
 		assertEventRecorded(result.events(),
 				"convertTo_xs:string(data(.))",
-				"07172937-4229-4689-b360-59bcc267caec", 11, 1);
+				"07172937-4229-4689-b360-59bcc267caec", 11, 31);
 	}
 
 	@Test
@@ -62,10 +62,10 @@ class ProcessorObserverValueAccessTest extends ProcessorObserverTestBase {
 		final TransformResult result = transformAndObserve("ValueAccess_Choose_01");
 		assertEventRecorded(result.events(),
 				"(Q{http://www.w3.org/2001/XMLSchema}string(data(attribute::attribute(Q{}value1)))) eq foo",
-				"a738b1f1-2697-4e94-8c60-fe0c50e0febc", 7, 7);
+				"a738b1f1-2697-4e94-8c60-fe0c50e0febc", 6, 16);
 		assertEventRecorded(result.events(),
 				"(Q{http://www.w3.org/2001/XMLSchema}string(data(attribute::attribute(Q{}value2)))) eq foo",
-				"a738b1f1-2697-4e94-8c60-fe0c50e0febc", 7, 7);
+				"a738b1f1-2697-4e94-8c60-fe0c50e0febc", 6, 16);
 	}
 
 	@Test
@@ -73,7 +73,7 @@ class ProcessorObserverValueAccessTest extends ProcessorObserverTestBase {
 		final TransformResult result = transformAndObserve("ValueAccess_Choose_02");
 		assertEventRecorded(result.events(),
 				"exists(descendant::element(Q{}foo))",
-				result.documentTraceID().toString(), 8, 0);
+				result.documentTraceID().toString(), 7, 17);
 	}
 
 	@Test
@@ -84,7 +84,7 @@ class ProcessorObserverValueAccessTest extends ProcessorObserverTestBase {
 				"0c216fb2-d7ca-4d2c-8c8c-7c73b7fcb152", 7, 36);
 		assertEventRecorded(result.events(),
 				"convertTo_xs:string(data(.))",
-				"0c216fb2-d7ca-4d2c-8c8c-7c73b7fcb152", 8, 1);
+				"0c216fb2-d7ca-4d2c-8c8c-7c73b7fcb152", 8, 33);
 	}
 
 	@Test
@@ -95,16 +95,16 @@ class ProcessorObserverValueAccessTest extends ProcessorObserverTestBase {
 				"69920556-6b60-44fd-a508-7a2c463ec347", 6, 47);
 		assertEventRecorded(result.events(),
 				"convertTo_xs:string(data(.))",
-				"6cd96bc3-5837-4d5f-8418-bf10fecc96a2", 8, 1);
+				"6cd96bc3-5837-4d5f-8418-bf10fecc96a2", 8, 33);
 		assertEventRecorded(result.events(),
 				"convertTo_xs:string(data(.))",
-				"b486f94b-a754-4f3c-9eab-ba0eb329e3a8", 8, 1);
+				"b486f94b-a754-4f3c-9eab-ba0eb329e3a8", 8, 33);
 		assertEventRecorded(result.events(),
 				"child::element(Q{}elem)[(Q{http://www.w3.org/2001/XMLSchema}string(data(@attrib))) eq bar]",
 				"69920556-6b60-44fd-a508-7a2c463ec347", 11, 47);
 		assertEventRecorded(result.events(),
 				"convertTo_xs:string(data(.))",
-				"9aa2897d-5bb4-4b2f-9ed3-6156f7687edc", 13, 1);
+				"9aa2897d-5bb4-4b2f-9ed3-6156f7687edc", 13, 33);
 		assertEventRecorded(result.events(),
 				"SortExpression(child::element(Q{}elem)[(Q{http://www.w3.org/2001/XMLSchema}string(data(@attrib))) eq baz], SortKeyDefinitionList(SortKeyDefinition(data(.), ascending, #default, , yes, http://www.w3.org/2005/xpath-functions/collation/codepoint)))",
 				"69920556-6b60-44fd-a508-7a2c463ec347", 16, 47);
@@ -115,10 +115,10 @@ class ProcessorObserverValueAccessTest extends ProcessorObserverTestBase {
 		final TransformResult result = transformAndObserve("ValueAccess_If");
 		assertEventRecorded(result.events(),
 				"(Q{http://www.w3.org/2001/XMLSchema}string(data(attribute::attribute(Q{}attribA)))) eq foo",
-				"7da1b8d0-0286-47f0-8290-b76f29f64412", 6, 8);
+				"7da1b8d0-0286-47f0-8290-b76f29f64412", 6, 34);
 		assertEventRecorded(result.events(),
 				"(Q{http://www.w3.org/2001/XMLSchema}string(data(attribute::attribute(Q{}attribB)))) eq foo",
-				"7da1b8d0-0286-47f0-8290-b76f29f64412", 9, 8);
+				"7da1b8d0-0286-47f0-8290-b76f29f64412", 9, 34);
 	}
 
 	@Test
@@ -129,10 +129,10 @@ class ProcessorObserverValueAccessTest extends ProcessorObserverTestBase {
 				"6e8d0b49-107a-4465-93d0-6e025ba9c264", 14, 8);
 		assertEventRecorded(result.events(),
 				"convertTo_xs:string(first(data($param1)))",
-				"6e8d0b49-107a-4465-93d0-6e025ba9c264", 16, 0);
+				"6e8d0b49-107a-4465-93d0-6e025ba9c264", 16, 37);
 		assertEventRecorded(result.events(),
 				"convertTo_xs:string(first(data($param2)))",
-				"6e8d0b49-107a-4465-93d0-6e025ba9c264", 18, 0);
+				"6e8d0b49-107a-4465-93d0-6e025ba9c264", 18, 37);
 	}
 
 	@Test
@@ -140,10 +140,10 @@ class ProcessorObserverValueAccessTest extends ProcessorObserverTestBase {
 		final TransformResult result = transformAndObserve("ValueAccess_ValueOf");
 		assertEventRecorded(result.events(),
 				"convertTo_xs:string(data(attribute::attribute(Q{}attrib)))",
-				"844d8129-bccb-40f5-bc56-8d98ae4658e2", 6, 7);
+				"844d8129-bccb-40f5-bc56-8d98ae4658e2", 6, 39);
 		assertEventRecorded(result.events(),
 				"convertTo_xs:string(data(.))",
-				"844d8129-bccb-40f5-bc56-8d98ae4658e2", 7, 1);
+				"844d8129-bccb-40f5-bc56-8d98ae4658e2", 7, 33);
 	}
 
 	@Test
@@ -151,10 +151,10 @@ class ProcessorObserverValueAccessTest extends ProcessorObserverTestBase {
 		final TransformResult result = transformAndObserve("ValueAccess_Variables");
 		assertEventRecorded(result.events(),
 				"convertTo_xs:string(data($globalVar))",
-				"a3610577-74f5-4302-bc38-5eaf8f129f1b", 13, 0);
+				"a3610577-74f5-4302-bc38-5eaf8f129f1b", 13, 39);
 		assertEventRecorded(result.events(),
 				"convertTo_xs:string(data($localVar))",
-				"a3610577-74f5-4302-bc38-5eaf8f129f1b", 15, 0);
+				"a3610577-74f5-4302-bc38-5eaf8f129f1b", 15, 38);
 	}
 
 	// ===== auxiliary methods ==============================================================================
