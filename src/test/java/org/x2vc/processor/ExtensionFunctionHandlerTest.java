@@ -7,12 +7,11 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.processor;
-
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -71,6 +70,7 @@ class ExtensionFunctionHandlerTest {
 	private List<IExtensionFunctionResult> functionResults;
 
 	@BeforeEach
+	@SuppressWarnings("java:S4738") // suggestion is nonsense, java type does not fit
 	void setUp() {
 		// prepare a list of functions to be returned by the schema when requested
 		this.functionDefinitions = Lists.newArrayList();
@@ -125,8 +125,7 @@ class ExtensionFunctionHandlerTest {
 		verify(processor).registerExtensionFunction(functionCaptor.capture());
 
 		assertNotNull(functionCaptor.getValue());
-		final ExtensionFunction registeredFunction = functionCaptor.getValue();
-		return registeredFunction;
+		return functionCaptor.getValue();
 	}
 
 	@Test

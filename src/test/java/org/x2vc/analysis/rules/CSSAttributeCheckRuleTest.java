@@ -7,12 +7,11 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.analysis.rules;
-
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -80,6 +79,7 @@ class CSSAttributeCheckRuleTest extends AnalyzerRuleTestBase {
 			"<p style=\"aaaqwer1234\">test</p>, aaaqwer1234, true",
 			"<p style=\"qwer1234zzz\">test</p>, qwer1234zzz, true",
 	})
+	@SuppressWarnings("java:S4738") // suggestion is nonsense, java type does not fit
 	void testCheckAttributeNode(String html, String query, boolean modifiersExpected) {
 		// common test values
 		final String valuePrefix = "qwer";
@@ -134,6 +134,7 @@ class CSSAttributeCheckRuleTest extends AnalyzerRuleTestBase {
 			"<p style=\"aaaqwer1234\">test</p>, aaaqwer1234, true",
 			"<p style=\"qwer1234zzz\">test</p>, qwer1234zzz, true",
 	})
+	@SuppressWarnings("java:S4738") // suggestion is nonsense, java type does not fit
 	void testCheckElementNode(String html, String query, boolean modifiersExpected) {
 		// common test values
 		final String valuePrefix = "qwer";

@@ -61,7 +61,7 @@ public abstract class ProcessorObserverTestBase {
 		final String xmlOutput = outputWriter.toString();
 		assertFalse(Strings.isNullOrEmpty(xmlOutput));
 		logger.debug("===== file {}: XML output =====", fileName);
-		logger.debug("\n" + xmlOutput);
+		logger.debug(String.format("%n%s", xmlOutput));
 		final ImmutableList<ITraceEvent> traceEvents = observer.getTraceEvents();
 		logger.debug("===== file {}: collected {} events =====", fileName, traceEvents.size());
 		traceEvents.forEach(event -> logger.debug(event.toString()));

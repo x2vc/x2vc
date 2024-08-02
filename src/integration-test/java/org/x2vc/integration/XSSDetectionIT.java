@@ -153,7 +153,7 @@ class XSSDetectionIT {
 		command.add("-D");
 		command.add("x2vc.report.source.write_to_file=true");
 		final String scriptCommand = String.join(" ", command);
-		logger.info("Using script invocation " + scriptCommand);
+		logger.info(String.format("Using script invocation %s", scriptCommand));
 
 		if (isWindows) {
 			builder.command("cmd.exe", "/c", scriptCommand);
