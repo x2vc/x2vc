@@ -7,11 +7,12 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.processor;
+
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.lenient;
@@ -78,6 +79,7 @@ class XSLTProcessorTest {
 	 * @throws java.lang.Exception
 	 */
 	@BeforeEach
+	@SuppressWarnings("java:S4738") // suggestion is nonsense, java type does not fit
 	void setUp() throws Exception {
 		this.wrapper = new XSLTProcessor(this.stylesheetManager, this.schemaManager, 25);
 

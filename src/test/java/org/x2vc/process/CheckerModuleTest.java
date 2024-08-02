@@ -89,7 +89,7 @@ class CheckerModuleTest {
 	private Provider<Random> randomProvider;
 
 	@BeforeEach
-	void setUp() throws Exception {
+	void setUp() {
 		this.config = ConfigFactory.load();
 		Guice.createInjector(new CheckerModule(this.config),
 				TypesafeConfigModule.fromConfigWithPackage(this.config, "org.x2vc"))

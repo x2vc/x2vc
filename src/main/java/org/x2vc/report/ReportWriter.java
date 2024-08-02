@@ -7,12 +7,11 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.report;
-
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
@@ -110,19 +109,18 @@ public class ReportWriter implements IReportWriter {
 	}
 
 	/**
-	 * Ensures that the resources that are included by the generated report are
-	 * present.
+	 * Ensures that the resources that are included by the generated report are present.
 	 *
 	 * @param targetPath
 	 */
 	private synchronized void provideResources(String targetPath) {
 		logger.traceEntry();
 		if (!this.resourcesProvidedTo.contains(targetPath)) {
-			try {
+			try (var resourceNameReader = new BufferedReader(
+					new InputStreamReader(getClass().getClassLoader().getResourceAsStream("report/resources.txt"),
+							StandardCharsets.UTF_8))) {
 				// get the list of resources to provide
-				final List<String> resourceNames = new BufferedReader(
-						new InputStreamReader(getClass().getClassLoader().getResourceAsStream("report/resources.txt"),
-								StandardCharsets.UTF_8))
+				final List<String> resourceNames = resourceNameReader
 					.lines().toList();
 
 				final File resourcePath = new File(targetPath, ".x2vc");
