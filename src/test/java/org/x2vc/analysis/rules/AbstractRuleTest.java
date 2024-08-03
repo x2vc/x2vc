@@ -7,13 +7,13 @@
  * This program and the accompanying materials are made
  * available under the terms of the Eclipse Public License 2.0
  * which is available at https://www.eclipse.org/legal/epl-2.0/
- * 
+ *
  * SPDX-License-Identifier: EPL-2.0
  * #L%
  */
 package org.x2vc.analysis.rules;
 
-
+import static org.junit.Assert.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
@@ -34,20 +34,24 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.x2vc.report.IVulnerabilityCandidate;
-import org.x2vc.report.IVulnerabilityReportSection;
 import org.x2vc.schema.structure.IXMLSchema;
 import org.x2vc.xml.document.IDocumentModifier;
 import org.x2vc.xml.document.IModifierPayload;
 import org.x2vc.xml.document.IXMLDocumentContainer;
 import org.x2vc.xml.document.IXMLDocumentDescriptor;
 
+import com.google.common.collect.ImmutableSet;
+
 @ExtendWith(MockitoExtension.class)
 class AbstractRuleTest {
 
+	public static final String TEST_RULE_ID = "testRuleID";
+
 	private AbstractRule rule = new AbstractRule() {
+
 		@Override
 		public String getRuleID() {
-			throw new UnsupportedOperationException();
+			return TEST_RULE_ID;
 		}
 
 		@Override
@@ -62,16 +66,10 @@ class AbstractRuleTest {
 			throw new UnsupportedOperationException();
 		}
 
-		@Override
-		public List<IVulnerabilityReportSection> consolidateResults(IXMLSchema schema,
-				Set<IVulnerabilityCandidate> candidates) {
-			throw new UnsupportedOperationException();
-		}
 	};
 
 	/**
-	 * Test method for
-	 * {@link org.x2vc.analysis.rules.AbstractRule#getPathToNode(org.jsoup.nodes.Node)}.
+	 * Test method for {@link org.x2vc.analysis.rules.AbstractRule#getPathToNode(org.jsoup.nodes.Node)}.
 	 */
 	@Test
 	void testGetPathToNode() {
@@ -187,6 +185,43 @@ class AbstractRuleTest {
 		final Set<String> selectors = this.rule.getElementSelectors(documentContainer);
 		assertEquals(1, selectors.size());
 		assertEquals("elementSelector", selectors.iterator().next());
+	}
+
+	/**
+	 * Test method for {@link org.x2vc.analysis.rules.AbstractRule#consolidateResults(IXMLSchema, Set)}.
+	 */
+	@Test
+	void testConsolidateResultsWithEmptyInput() {
+		final IXMLSchema schema = mock();
+		final Set<IVulnerabilityCandidate> candidates = Set.of();
+		final var result = this.rule.consolidateResults(schema, candidates);
+		assertNotNull(result);
+		assertEquals(1, result.size(), "number of sections");
+		final var section = result.getFirst();
+		assertEquals(TEST_RULE_ID, section.getRuleID());
+	}
+
+	/**
+	 * Test method for {@link org.x2vc.analysis.rules.AbstractRule#consolidateResults(IXMLSchema, Set)}.
+	 */
+	@Test
+	void testConsolidateResultsSingleCandidate() {
+		final var schemaObjectID = UUID.randomUUID();
+		final IXMLSchema schema = mock();
+		when(schema.getObjectPaths(schemaObjectID)).thenReturn(ImmutableSet.of("pathA"));
+		final IVulnerabilityCandidate candidate = mock();
+		when(candidate.getAffectedOutputElement()).thenReturn("outputElement");
+		when(candidate.getAffectingSchemaObject()).thenReturn(schemaObjectID);
+		final Set<IVulnerabilityCandidate> candidates = Set.of(candidate);
+		final var result = this.rule.consolidateResults(schema, candidates);
+		assertNotNull(result);
+		assertEquals(1, result.size(), "number of sections");
+		final var section = result.getFirst();
+		assertEquals(TEST_RULE_ID, section.getRuleID());
+		final var issues = section.getIssues();
+		assertEquals(1, issues.size(), "number of issues in section");
+		final var issue = issues.getFirst();
+		assertEquals("outputElement", issue.getAffectedOutputElement());
 	}
 
 }

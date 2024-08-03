@@ -182,8 +182,6 @@ public abstract class AbstractRule implements IAnalyzerRule {
 			Set<IVulnerabilityCandidate> candidates) {
 		logger.traceEntry();
 
-		// TODO #35 Report Output: add missing unit tests for this
-
 		// sort the candidates by section ID
 		final Multimap<String, IVulnerabilityCandidate> candidatesBySectionID = MultimapBuilder.hashKeys()
 			.arrayListValues().build();
